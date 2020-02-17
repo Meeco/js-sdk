@@ -1,0 +1,14 @@
+kind: Share
+metadata:
+spec:
+  item_id: from_user_vault_item_to_share_id
+  to:
+    keystore_access_token: to_user_keystore_access_token
+    vault_access_token: to_user_vault_access_token
+    data_encryption_key: dG9fdXNlcl9kYXRhX2VuY3J5cHRpb25fa2V5
+    key_encryption_key: dG9fdXNlcl9rZXlfZW5jcnlwdGlvbl9rZXk=
+  from:
+    keystore_access_token: from_user_keystore_access_token
+    vault_access_token: from_user_vault_access_token
+    data_encryption_key: ZnJvbV91c2VyX2RhdGFfZW5jcnlwdGlvbl9rZXk=
+    key_encryption_key: ZnJvbV91c2VyX2tleV9lbmNyeXB0aW9uX2tleQ==

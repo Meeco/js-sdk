@@ -1,0 +1,8 @@
+kind: Items
+spec:
+  - name: My Car
+    slot_ids:
+      - make_model
+  - name: My House
+    slot_ids:
+      - add

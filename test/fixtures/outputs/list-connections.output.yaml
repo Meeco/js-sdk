@@ -1,0 +1,8 @@
+- name: Some Encrypted Name[decrypted with my_generated_dek]
+  connection:
+    id: abc123
+    encrypted_recipient_name: Some Encrypted Name
+- name: Some Other Encrypted Name[decrypted with my_generated_dek]
+  connection:
+    id: def456
+    encrypted_recipient_name: Some Other Encrypted Name

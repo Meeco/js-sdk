@@ -1,0 +1,5 @@
+kind: EncryptionSpace
+spec:
+  to_user_connection_id: to_user_connection_id
+  from_user_connection_id: from_user_connection_id
+  shared_data_encryption_key: c2VyaWFsaXplZF9zaGFyZWRfZGF0YV9lbmNyeXB0aW9uX2tleVtkZWNyeXB0ZWQgd2l0aCBmcm9tX3VzZXJfa2V5X2VuY3J5cHRpb25fa2V5XQ==

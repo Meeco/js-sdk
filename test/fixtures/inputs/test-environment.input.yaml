@@ -1,0 +1,9 @@
+vault:
+  url: https://api-sandbox.meeco.me
+keystore:
+  url: https://keystore-sandbox.meeco.me
+  provider_api_key: MyProviderApiKey
+downloader:
+  url: https://downloader-esafe-test.meeco.me
+passphrase:
+  url: https://passphrasestore-esafe-test.meeco.me

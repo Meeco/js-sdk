@@ -1,0 +1,12 @@
+kind: Item
+metadata:
+  template: password
+spec:
+  label: My Account
+  slots:
+    - name: url
+      value: https://www.example.com
+    - name: account
+      value: 'jsmith@example.com'
+    - name: password
+      value: mySecretPassword1

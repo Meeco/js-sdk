@@ -1,0 +1,8 @@
+kind: Authentication
+metadata:
+  secret: 1.user-1.my_secret_key
+  keystore_access_token: keystore_auth_token
+  vault_access_token: "[decrypted]encrypted_vault_session_string--PRIVATE_KEY--12324"
+  data_encryption_key: cmFuZG9tbHlfZ2VuZXJhdGVkX2tleQ==
+  key_encryption_key: cmFuZG9tbHlfZ2VuZXJhdGVkX2tleQ==
+  passphrase_derived_key: ZGVyaXZlZF9rZXlfMTIzLmFzdXBlcnNlY3JldHBhc3NwaHJhc2U=

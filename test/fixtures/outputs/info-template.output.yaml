@@ -1,0 +1,11 @@
+kind: Template
+spec:
+  name: drink
+  slot_ids:
+    - yoghurt
+    - water
+    - beer
+  slots:
+    - id: yoghurt
+    - id: water
+    - id: beer

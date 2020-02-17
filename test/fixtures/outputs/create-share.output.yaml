@@ -1,0 +1,15 @@
+shareable_id: from_user_vault_item_to_share_id
+shareable_type: Item
+encrypted_values: '{"slot_a":"[serialized][encrypted]aes.slot_a[decrypted with
+  from_user_data_encryption_key][with
+  randomly_generated_key]","slot_b":"[serialized][encrypted]aes.slot_b[decrypted
+  with from_user_data_encryption_key][with randomly_generated_key]"}'
+distributable: false
+outgoing: true
+user_id: to_user_id
+share:
+  slots:
+    - id: slot_a
+      encrypted_value: re_encrypted_a_ value
+    - id: slot_b
+      encrypted_value: re_encrypted_b_value

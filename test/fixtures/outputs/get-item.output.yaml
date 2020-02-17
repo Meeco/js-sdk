@@ -1,0 +1,24 @@
+kind: Item
+spec:
+  label: My Fave Foods
+  name: food
+  slot_ids:
+    - steak
+    - pizza
+    - yoghurt
+  slots:
+    - id: pizza
+      name: pizza
+      value: Hawaiian[decrypted with my_generated_dek]
+      label: Pizza
+      encrypted_value: Hawaiian
+    - id: steak
+      name: steak
+      value: Rump[decrypted with my_generated_dek]
+      label: Steak
+      encrypted_value: Rump
+    - id: beer
+      name: beer
+      value: Session Ale[decrypted with my_generated_dek]
+      label: Beer
+      encrypted_value: Session Ale

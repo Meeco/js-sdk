@@ -1,0 +1,5 @@
+kind: User
+metadata:
+spec:
+  secret: 1.user-1.my_secret_key
+  password: 123.asupersecretpassphrase

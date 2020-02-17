@@ -1,0 +1,39 @@
+name: Node.js CI
+inputs:
+  release_notes:
+    description: 'Notes for this release'
+    required: true
+on:
+  push:
+    tags:
+      - releases/*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x]
+
+    steps:
+      - name: Decrypt npmrc
+        run: ./decrypt_npmrc.sh
+        env:
+          NPMRC_DECRYPTION_PASSPHRASE: ${{ secrets.npmrc_decryption_secret }}
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm test
+        env:
+          CI: true
+      - run: npm run pkg
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: 'dist/**/*.tar.gz'
+          body: ${{ inputs.release_notes }}
+          token: ${{ secrets.GITHUB_TOKEN }}

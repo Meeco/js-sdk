@@ -1,0 +1,14 @@
+*-debug.log
+*-error.log
+/.nyc_output
+/dist
+/lib
+/tmp
+/coverage
+/yarn.lock
+node_modules
+# local environment
+.environment.yaml
+.user.yaml
+.npmrc
+package-lock.json

@@ -1,0 +1,10 @@
+kind: Item
+metadata:
+  template: food
+spec:
+  label: ""
+  slots:
+    - name: pizza
+      value: ""
+    - name: steak
+      value: ""
