@@ -21,7 +21,8 @@ A CLI tool for interacting with Meeco services and databases
 
 # Setup
 
-Run `meeco` command out of the `./bin` folder
+1. Download the latest release from the [releases](https://github.com/Meeco/cli/releases) page
+1. Run `meeco` command out of the `./bin` folder
 
 # Dev Set up
 
