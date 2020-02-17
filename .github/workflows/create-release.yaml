@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Release
 inputs:
   release_notes:
     description: "Notes for this release"
@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Decrypt npmrc
-        run: ./.github/decrypt_npmrc.sh
+        run: ./.github/scripts/decrypt_npmrc.sh
         env:
           NPMRC_DECRYPTION_PASSPHRASE: ${{ secrets.npmrc_decryption_secret }}
       - uses: actions/checkout@v2
