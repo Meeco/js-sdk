@@ -1,8 +1,5 @@
 name: Release
-inputs:
-  release_notes:
-    description: "Notes for this release"
-    required: true
+
 on:
   push:
     tags:
@@ -35,5 +32,4 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/**/*.tar.gz"
-          body: ${{ inputs.release_notes }}
           token: ${{ secrets.GITHUB_TOKEN }}
