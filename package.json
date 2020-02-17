@@ -64,6 +64,7 @@
   "oclif": {
     "commands": "./lib/commands",
     "bin": "meeco",
+    "repositoryPrefix": "https://github.com/Meeco/cli/blob/master/<%- commandPath %>",
     "topics": {
       "connections": {
         "description": "Commands related to connections between Meeco users"

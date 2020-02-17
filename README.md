@@ -10,7 +10,7 @@ A CLI tool for interacting with Meeco services and databases
 
 <!-- toc -->
 
-- [Meeco CLI](#cli)
+- [Meeco CLI](#meeco-cli)
 - [Table of Contents](#table-of-contents)
 - [Setup](#setup)
 - [Dev Set up](#dev-set-up)
@@ -110,7 +110,7 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
-_See code: [src/commands/connections/create.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/connections/create.ts)_
+_See code: [src/commands/connections/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/connections/create.ts)_
 
 ## `meeco connections:create-config`
 
@@ -126,7 +126,7 @@ OPTIONS
   -t, --to=to                    (required) User config file for the 'to' user
 ```
 
-_See code: [src/commands/connections/create-config.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/connections/create-config.ts)_
+_See code: [src/commands/connections/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/connections/create-config.ts)_
 
 ## `meeco connections:list`
 
@@ -141,7 +141,7 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
-_See code: [src/commands/connections/list.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/connections/list.ts)_
+_See code: [src/commands/connections/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/connections/list.ts)_
 
 ## `meeco help [COMMAND]`
 
@@ -177,7 +177,7 @@ EXAMPLE
   meeco items:create -i path/to/item-config.yaml -a path/to/auth.yaml
 ```
 
-_See code: [src/commands/items/create.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/items/create.ts)_
+_See code: [src/commands/items/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/create.ts)_
 
 ## `meeco items:create-config TEMPLATENAME`
 
@@ -195,7 +195,7 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
-_See code: [src/commands/items/create-config.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/items/create-config.ts)_
+_See code: [src/commands/items/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/create-config.ts)_
 
 ## `meeco items:get ITEMID`
 
@@ -210,7 +210,7 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
-_See code: [src/commands/items/get.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/items/get.ts)_
+_See code: [src/commands/items/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get.ts)_
 
 ## `meeco items:list`
 
@@ -228,7 +228,7 @@ EXAMPLE
   meeco items:list -a path/to/auth.yaml
 ```
 
-_See code: [src/commands/items/list.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/items/list.ts)_
+_See code: [src/commands/items/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/list.ts)_
 
 ## `meeco shares:create [FILE]`
 
@@ -243,7 +243,7 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
-_See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/shares/create.ts)_
+_See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_
 
 ## `meeco shares:create-config`
 
@@ -260,7 +260,7 @@ OPTIONS
   -t, --to=to                    (required) User config file for the 'to' user
 ```
 
-_See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/shares/create-config.ts)_
+_See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create-config.ts)_
 
 ## `meeco shares:info [FILE]`
 
@@ -275,7 +275,7 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
-_See code: [src/commands/shares/info.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/shares/info.ts)_
+_See code: [src/commands/shares/info.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/info.ts)_
 
 ## `meeco templates:info TEMPLATENAME`
 
@@ -293,7 +293,7 @@ EXAMPLE
   meeco templates:info password
 ```
 
-_See code: [src/commands/templates/info.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/templates/info.ts)_
+_See code: [src/commands/templates/info.ts](https://github.com/Meeco/cli/blob/master/src/commands/templates/info.ts)_
 
 ## `meeco templates:list`
 
@@ -308,7 +308,7 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
-_See code: [src/commands/templates/list.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/templates/list.ts)_
+_See code: [src/commands/templates/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/templates/list.ts)_
 
 ## `meeco users:create`
 
@@ -326,7 +326,7 @@ EXAMPLE
   meeco users:create -c path/to/user-config.yaml
 ```
 
-_See code: [src/commands/users/create.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/users/create.ts)_
+_See code: [src/commands/users/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/users/create.ts)_
 
 ## `meeco users:get`
 
@@ -346,7 +346,7 @@ EXAMPLE
   meeco users:get -c path/to/user-config.yaml
 ```
 
-_See code: [src/commands/users/get.ts](https://github.com/Meeco/cli/blob/v0.1.2/src/commands/users/get.ts)_
+_See code: [src/commands/users/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/users/get.ts)_
 
 <!-- commandsstop -->
 
