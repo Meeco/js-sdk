@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Decrypt npmrc
-        run: ./decrypt_npmrc.sh
+        run: ./.github/decrypt_npmrc.sh
         env:
           NPMRC_DECRYPTION_PASSPHRASE: ${{ secrets.npmrc_decryption_secret }}
       - uses: actions/checkout@v2

@@ -1,7 +1,7 @@
 name: Node.js CI
 inputs:
   release_notes:
-    description: 'Notes for this release'
+    description: "Notes for this release"
     required: true
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Decrypt npmrc
-        run: ./decrypt_npmrc.sh
+        run: ./.github/decrypt_npmrc.sh
         env:
           NPMRC_DECRYPTION_PASSPHRASE: ${{ secrets.npmrc_decryption_secret }}
       - uses: actions/checkout@v2
@@ -34,6 +34,6 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: 'dist/**/*.tar.gz'
+          artifacts: "dist/**/*.tar.gz"
           body: ${{ inputs.release_notes }}
           token: ${{ secrets.GITHUB_TOKEN }}
