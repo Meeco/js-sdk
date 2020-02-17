@@ -1,6 +1,6 @@
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
-import { customTest, inputFixture, outputFixture } from '../../test-helpers';
+import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('shares:create-config', () => {
   customTest
@@ -13,7 +13,8 @@ describe('shares:create-config', () => {
       '-t',
       inputFixture('connection-to.input.yaml'),
       '-i',
-      'my-item'
+      'my-item',
+      ...testEnvironmentFile
     ])
     .it('builds a share template file from two users and an item', ctx => {
       const expected = readFileSync(outputFixture('create-config-share.output.yaml'), 'utf-8');

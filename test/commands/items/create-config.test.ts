@@ -1,13 +1,13 @@
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
-import { customTest, outputFixture, testUserAuth } from '../../test-helpers';
+import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 describe('items:create-config', () => {
   customTest
     .stdout()
     .stderr()
     .nock('https://api-sandbox.meeco.me', mockVault)
-    .run(['items:create-config', 'food', ...testUserAuth])
+    .run(['items:create-config', 'food', ...testUserAuth, ...testEnvironmentFile])
     .it('builds an item template from an api template name', ctx => {
       const expected = readFileSync(outputFixture('create-config-item.output.yaml'), 'utf-8');
       expect(ctx.stdout).to.contain(expected);

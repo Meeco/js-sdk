@@ -16,6 +16,7 @@ describe('item:create', () => {
     .run([
       'items:create',
       ...testUserAuth,
+      ...testEnvironmentFile,
       '-i',
       inputFixture('create-item-from-template.input.yaml')
     ])

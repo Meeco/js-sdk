@@ -1,6 +1,6 @@
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
-import { customTest, outputFixture, testUserAuth } from '../../test-helpers';
+import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 describe('items:get', () => {
   customTest
@@ -8,7 +8,7 @@ describe('items:get', () => {
     .stderr()
     .mockCryppo()
     .nock('https://api-sandbox.meeco.me', mockVault)
-    .run(['items:get', 'my-item', ...testUserAuth])
+    .run(['items:get', 'my-item', ...testUserAuth, ...testEnvironmentFile])
     .it('returns an item with all slots decrypted', ctx => {
       const expected = readFileSync(outputFixture('get-item.output.yaml'), 'utf-8');
       expect(ctx.stdout).to.contain(expected);
