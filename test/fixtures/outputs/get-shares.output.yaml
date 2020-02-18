@@ -1,0 +1,19 @@
+kind: Item
+spec:
+  id: it_1
+  label: My Cat
+  encrypted: true
+  slot_ids:
+    - sl_1
+    - sl_2
+  slots:
+    - id: sl_1
+      value: encrypted_fluffy[decrypted with secret_shared_key[decrypted with
+        my_key_encryption_key]]
+      label: name
+      encrypted_value: encrypted_fluffy
+    - id: sl_2
+      value: encrypted_12[decrypted with secret_shared_key[decrypted with
+        my_key_encryption_key]]
+      label: age
+      encrypted_value: encrypted_12

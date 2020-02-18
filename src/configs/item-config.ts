@@ -3,13 +3,14 @@ import { SLOT_TYPE_BLACKLIST, SLOT_WHITELIST } from '../util/constants';
 import { whitelistObject } from '../util/whitelist-object';
 import { ConfigReader, IYamlConfig } from './yaml-config';
 
-interface IItemTemplate {
+export interface IItemTemplate {
   label: string;
   slots: Slot[];
 }
 
-interface IItemMetadata {
+export interface IItemMetadata {
   template: string;
+  shareId?: string;
 }
 
 @ConfigReader<ItemConfig>()

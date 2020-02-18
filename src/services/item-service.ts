@@ -53,7 +53,7 @@ export class ItemService {
       slots: result.slots?.map(slot => ({
         ...slot
       }))
-    }) as any;
+    });
   }
 
   public async get(id: string, accessToken: string, dataEncryptionKey: EncryptionKey) {
@@ -67,7 +67,7 @@ export class ItemService {
     return ItemConfig.encodeFromJson({
       ...item,
       slots
-    }) as any;
+    });
   }
 
   private async encryptSlot(slot: Slot, dek: EncryptionKey) {
@@ -91,6 +91,6 @@ export class ItemService {
     });
 
     const result = await itemApi.itemsGet();
-    return ItemListConfig.encodeFromJson(result) as any;
+    return ItemListConfig.encodeFromJson(result);
   }
 }

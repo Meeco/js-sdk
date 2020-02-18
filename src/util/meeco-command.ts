@@ -86,7 +86,7 @@ export default class MeecoCommand extends Command {
      * Error from the API - convert the body stream to JSON and print that
      */
     if (err.json && typeof err.json === 'function') {
-      const result = await err.json();
+      const result = await err.json().catch(() => '');
       message = `API Responded with ${err.status}:\n ${JSON.stringify(result, null, 2)}`;
     } else {
       // Normal error object - print it with a stack trace if possible
