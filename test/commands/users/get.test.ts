@@ -42,7 +42,7 @@ describe('meeco users:get', () => {
 
 function stubKeystore(api: Nock.Scope) {
   api
-    .post('/srp/challenge', {
+    .post('/srp/challenges', {
       srp_a: '000000000CLIENTPUBLIC',
       username: 'user-1'
     })

@@ -29,7 +29,7 @@ describe('meeco users:create', () => {
 
 function stubKeystore(api: Nock.Scope) {
   api
-    .post('/srp/user', {
+    .post('/srp/users', {
       username: 'user-1',
       srp_salt: '00SALT',
       srp_verifier: '000000000VERIFIER'
@@ -37,7 +37,7 @@ function stubKeystore(api: Nock.Scope) {
     .reply(200, {});
 
   api
-    .post('/srp/challenge', {
+    .post('/srp/challenges', {
       srp_a: '000000000CLIENTPUBLIC',
       username: 'user-1'
     })
