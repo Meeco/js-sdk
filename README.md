@@ -47,37 +47,41 @@ USAGE
 
 **NOTE** for all commands, an environment yaml file should be specified using `-e path/to/environment.yaml` - See the [Environment](#Environment) section of File Specifications for information. The default for the environment is `.environment.yaml`.
 
-**Note** Most commands require authentication data from one or more users. This can be specified with the `-a <path/to/auth file.yaml>` flag. However, since it is required by almost all commands you can place your auth file at `.user.yaml` and it will be read automatically.
+**NOTE** Most commands require authentication data from one or more users. This can be specified with the `-a <path/to/auth file.yaml>` flag. However, since it is required by almost all commands you can place your auth file at `.user.yaml` and it will be read automatically.
+
+All yaml files beginning with a `.` in the root of the project are git ignored.
 
 ## Basic Flow
 
 ### 1. Create an Account
 
-1. Create your first user: `meeco users:create -p <password> > user_1.yaml`
+1. Create your first user: `meeco users:create -p <password> > .user.yaml`
 
 ### 2. Create an Item
 
 1. Get a list of item templates you can use `meeco templates:list` - you can view more details on a template with `meeco templates:info <template>`
-1. Create an item template file from an item template `meeco items:create-config <template_name> > my_item_config.yaml`
+1. Create an item template file from an item template `meeco items:create-config <template_name> > .my_item_config.yaml`
    - Edit this file to add values for fields as applicable
-1. Create your first item: `meeco items:create -i my_item_config.yaml -a user_1.yaml`
+1. Create your first item: `meeco items:create -i .my_item_config.yaml -a .user.yaml`
 1. You can check the item was created with `meeco items:list` or `meeco items:get <itemId>`
 
 ## 3. Create a Second User and Connect
 
-1. Create your second user: `meeco users:create -p <password> > user_2.yaml`
-1. Make a connection config file between your two users: `meeco connections:create-config --from user_1.yaml --to user_2.yaml > connection_config.yaml`
+1. Create your second user: `meeco users:create -p <password> > .user_2.yaml`
+1. Make a connection config file between your two users: `meeco connections:create-config --from .user.yaml --to .user_2.yaml > .connection_config.yaml`
    - Edit this file to add connection names as appropriate
-1. Create the connection between the two users: `meeco connections:create -c connection_config.yaml`
+1. Create the connection between the two users: `meeco connections:create -c .connection_config.yaml`
 
 ## 4. Share an Item Between Connected Users
 
 1. Ensure users are connected first (see above)
 2. Select an item from user 1 to share to user 2
-3. Create the share template: `meeco shares:create-config -f user_1.yaml -t user2.yaml -i <item_id_to_share> > share_config.yaml`
-4. Create the share: `meeco shares:create -c share_config.yaml`
+3. Create the share template: `meeco shares:create-config --from .user.yaml --to .user_2.yaml -i <item_id_to_share> > .share_config.yaml`
+4. Create the share: `meeco shares:create -c .share_config.yaml`
 
 This will setup a private encryption space between the two users (if it does not exist already) and then share the item.
+
+You can fetch the shared item as the second user with `meeco shares:list -a .user_2.yaml` / `meeco shares:get -a .user_2.yaml <share_id>`
 
 <!-- commands -->
 
@@ -91,7 +95,9 @@ This will setup a private encryption space between the two users (if it does not
 - [`meeco items:list`](#meeco-itemslist)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
+- [`meeco shares:get ITEMID`](#meeco-sharesget-itemid)
 - [`meeco shares:info [FILE]`](#meeco-sharesinfo-file)
+- [`meeco shares:list`](#meeco-shareslist)
 - [`meeco templates:info TEMPLATENAME`](#meeco-templatesinfo-templatename)
 - [`meeco templates:list`](#meeco-templateslist)
 - [`meeco users:create`](#meeco-userscreate)
@@ -262,6 +268,24 @@ OPTIONS
 
 _See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create-config.ts)_
 
+## `meeco shares:get ITEMID`
+
+Get the item associated with a share, along with the decrypted values
+
+```
+USAGE
+  $ meeco shares:get ITEMID
+
+ARGUMENTS
+  ITEMID  ID of the shared item to fetch
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] auth yaml file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/shares/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/get.ts)_
+
 ## `meeco shares:info [FILE]`
 
 View information about the shared encryption space of two users
@@ -276,6 +300,21 @@ OPTIONS
 ```
 
 _See code: [src/commands/shares/info.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/info.ts)_
+
+## `meeco shares:list`
+
+Get a list of shares for the specified user
+
+```
+USAGE
+  $ meeco shares:list
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] auth yaml file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/shares/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/list.ts)_
 
 ## `meeco templates:info TEMPLATENAME`
 

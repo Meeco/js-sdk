@@ -5,6 +5,8 @@ import * as KeyStoreAPI from '@meeco/meeco-keystore-sdk';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../configs/auth-config';
 import { EncryptionSpaceConfig } from '../configs/encryption-space-config';
+import { ItemConfig } from '../configs/item-config';
+import { ShareListConfig } from '../configs/share-list-config';
 import { EncryptionKey } from '../models/encryption-key';
 import { IEnvironment } from '../models/environment';
 import { findConnectionBetween } from '../util/ find-connection-between';
@@ -50,6 +52,39 @@ export class ShareService {
       ...share,
       share: shareResult
     };
+  }
+
+  public async listShares(user: AuthConfig) {
+    const result = await new VaultAPI.ShareApi({
+      apiKey: user.vault_access_token,
+      basePath: this.environment.vault.url
+    }).sharesGet();
+    return ShareListConfig.encodeFromResult(result);
+  }
+
+  public async getSharedItem(user: AuthConfig, itemId: string) {
+    const result = await new VaultAPI.ShareApi({
+      apiKey: user.vault_access_token,
+      basePath: this.environment.vault.url
+    })
+      .sharesIdGet(itemId)
+      .then(shares => shares);
+    const [item] = result.items;
+    const [share] = result.shares;
+    const slots = result.slots;
+    const space = await this.encryptionSpaceApi(user).encryptionSpacesIdGet(
+      share.encryption_space_id
+    );
+    const decryptedSharedDataEncryptionKey = await cryppo.decryptWithKey({
+      serialized: space.encryption_space_data_encryption_key.serialized_data_encryption_key,
+      key: user.key_encryption_key.key
+    });
+    const key = EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey);
+    const decryptedSlots = await ItemService.decryptAllSlots(slots!, key);
+    return ItemConfig.encodeFromJson({
+      ...item,
+      slots: decryptedSlots
+    });
   }
 
   private async shareItemFromVaultItem(

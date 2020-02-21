@@ -1,20 +1,20 @@
 import { Item, Slot } from '@meeco/meeco-api-sdk';
 import { ItemConfig } from './item-config';
 
-interface IItemTemplate {
+export interface IItemListTemplate {
   items: ItemConfig[];
 }
 
-interface IItemMetadata {
+export interface IItemListMetadata {
   template: string;
 }
 
 export class ItemListConfig {
   static kind = 'Items';
 
-  constructor(public readonly templateName: string, public readonly itemList: IItemTemplate) {}
+  constructor(public readonly templateName: string, public readonly itemList: IItemListTemplate) {}
 
-  static encodeFromJson(json: { items?: Item[]; slots?: Slot[] }, metadata?: IItemMetadata) {
+  static encodeFromJson(json: { items?: Item[]; slots?: Slot[] }, metadata?: IItemListMetadata) {
     return {
       kind: ItemListConfig.kind,
       ...(metadata ? { metadata } : {}),

@@ -7,8 +7,10 @@
 /coverage
 /yarn.lock
 node_modules
+.npmrc
+package-lock.json
+
 # local environment
 .environment.yaml
 .user.yaml
-.npmrc
-package-lock.json
+/.*.yaml

@@ -247,7 +247,7 @@ export class UserService {
 
     this.log('Create SRP keystore user');
     await this.keystoreUserApi
-      .srpUserPost({
+      .srpUsersPost({
         username,
         srp_salt: verifier.salt,
         srp_verifier: verifier.verifier
@@ -275,7 +275,7 @@ export class UserService {
 
     this.log('Requesting SRP challenge from server');
     const challenge = await this.keystoreUserApi
-      .srpChallengePost({
+      .srpChallengesPost({
         srp_a,
         username
       })
