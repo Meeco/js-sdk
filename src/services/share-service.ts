@@ -1,6 +1,5 @@
 import * as cryppo from '@meeco/cryppo';
 import * as VaultAPI from '@meeco/meeco-api-sdk';
-import { Slot } from '@meeco/meeco-api-sdk';
 import * as KeyStoreAPI from '@meeco/meeco-keystore-sdk';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../configs/auth-config';
@@ -9,6 +8,7 @@ import { ItemConfig } from '../configs/item-config';
 import { ShareListConfig } from '../configs/share-list-config';
 import { EncryptionKey } from '../models/encryption-key';
 import { IEnvironment } from '../models/environment';
+import { LocalSlot } from '../models/local-slot';
 import { findConnectionBetween } from '../util/ find-connection-between';
 import { ItemService } from './item-service';
 
@@ -328,7 +328,7 @@ export class ShareService {
    * encrypted with a shared data encryption key.
    */
   private async convertSlotsToEncryptedValuesForShare(
-    slots: Slot[],
+    slots: LocalSlot[],
     sharedDataEncryptionKey: EncryptionKey
   ) {
     const encryptions = slots.map(async slot => {
