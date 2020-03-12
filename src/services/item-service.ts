@@ -5,6 +5,7 @@ import { ItemConfig } from '../configs/item-config';
 import { ItemListConfig } from '../configs/item-list-config';
 import { EncryptionKey } from '../models/encryption-key';
 import { IEnvironment } from '../models/environment';
+import { LocalSlot } from '../models/local-slot';
 
 export class ItemService {
   constructor(private environment: IEnvironment) {}
@@ -20,13 +21,13 @@ export class ItemService {
               key: dataEncryptionKey.key,
               serialized: slot.encrypted_value
             })
-          : slot.value;
+          : (slot as LocalSlot).value;
         const decrypted = {
           ...slot,
           encrypted: false,
           value
         };
-        return decrypted as Slot;
+        return decrypted as LocalSlot;
       })
     );
   }
@@ -70,7 +71,7 @@ export class ItemService {
     });
   }
 
-  private async encryptSlot(slot: Slot, dek: EncryptionKey) {
+  private async encryptSlot(slot: LocalSlot, dek: EncryptionKey) {
     const encrypted: any = {
       ...slot
     };
