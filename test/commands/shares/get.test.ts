@@ -28,7 +28,11 @@ function mockVault(api: nock.Scope) {
           id: 'sh_1',
           connection_id: 'con_1',
           shareable_id: 'it_1',
-          encryption_space_id: 'es_1'
+          encryption_space_id: 'es_1',
+          encrypted_values: {
+            sl_1: 'encrypted_fluffy',
+            sl_2: 'encrypted_12'
+          }
         }
       ],
       items: [
@@ -44,13 +48,15 @@ function mockVault(api: nock.Scope) {
           id: 'sl_1',
           label: 'name',
           encrypted: true,
-          encrypted_value: 'encrypted_fluffy'
+          // The API will return null as the encrypted_values on the share are to be used
+          encrypted_value: null
         },
         {
           id: 'sl_2',
           label: 'age',
           encrypted: true,
-          encrypted_value: 'encrypted_12'
+          // The API will return null as the encrypted_values on the share are to be used
+          encrypted_value: null
         }
       ]
     });

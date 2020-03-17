@@ -1,5 +1,5 @@
 import * as cryppo from '@meeco/cryppo';
-import { Connection } from '@meeco/meeco-api-sdk';
+import { Connection, Share, Slot } from '@meeco/meeco-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../configs/auth-config';
 import { EncryptionSpaceConfig } from '../configs/encryption-space-config';
@@ -76,7 +76,7 @@ export class ShareService {
       .then(shares => shares);
     const [item] = result.items;
     const [share] = result.shares;
-    const slots = result.slots;
+    const slots = this.addShareValuesToSlots(share, result.slots);
     const space = await this.keystoreApiFactory(user).EncryptionSpaceApi.encryptionSpacesIdGet(
       share.encryption_space_id
     );
@@ -90,6 +90,13 @@ export class ShareService {
       ...item,
       slots: decryptedSlots
     });
+  }
+
+  private addShareValuesToSlots(share: Share, slots: Slot[]) {
+    slots.forEach(slot => {
+      slot.encrypted_value = (share?.encrypted_values || {})[slot.id];
+    });
+    return slots;
   }
 
   private async shareItemFromVaultItem(
