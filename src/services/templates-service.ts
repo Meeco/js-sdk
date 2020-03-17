@@ -2,15 +2,13 @@ import { ItemTemplateApi } from '@meeco/meeco-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { TemplateConfig } from '../configs/template-config';
 import { IEnvironment } from '../models/environment';
+import { vaultAPIFactory } from '../util/api-factory';
 
 export class TemplatesService {
   private api: ItemTemplateApi;
 
   constructor(environment: IEnvironment, vaultAccessToken: string) {
-    this.api = new ItemTemplateApi({
-      basePath: environment.vault.url,
-      apiKey: vaultAccessToken
-    });
+    this.api = vaultAPIFactory(environment)(vaultAccessToken).ItemTemplateApi;
   }
 
   public async listTemplates(classificationScheme: string, classificationName: string) {

@@ -6,7 +6,7 @@ describe('templates:list', () => {
   customTest
     .stderr()
     .stdout()
-    .nock('https://api-sandbox.meeco.me', api => {
+    .nock('https://sandbox.meeco.me/vault', api => {
       api
         .get('/item_templates')
         .query({
@@ -14,6 +14,7 @@ describe('templates:list', () => {
           'by_classification[name]': 'esafe_templates'
         })
         .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, response);
     })
     .run(['templates:list', ...testUserAuth, ...testEnvironmentFile])

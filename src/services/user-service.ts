@@ -1,10 +1,14 @@
 import * as cryppo from '@meeco/cryppo';
-import * as VaultAPI from '@meeco/meeco-api-sdk';
-import * as KeyStoreAPI from '@meeco/meeco-keystore-sdk';
 import { AuthConfig } from '../configs/auth-config';
 import { EncryptionKey } from '../models/encryption-key';
 import { IEnvironment } from '../models/environment';
 import { SRPSession } from '../models/srp-session';
+import {
+  keystoreAPIFactory,
+  KeystoreAPIFactory,
+  VaultAPIFactory,
+  vaultAPIFactory
+} from '../util/api-factory';
 import { VAULT_PAIR_EXTERNAL_IDENTIFIER } from '../util/constants';
 import { SecretService } from './secret-service';
 
@@ -12,33 +16,28 @@ export type AuthData = ReturnType<typeof AuthConfig.encodeFromJson>;
 export class UserService {
   public readonly vaultKeypairExternalId;
 
-  private keystoreUserApi: KeyStoreAPI.UserApi;
-  private keystoreSessionApi: KeyStoreAPI.SessionApi;
+  private keystoreApiFactory: KeystoreAPIFactory;
+  private vaultApiFactory: VaultAPIFactory;
+
   private keyGen: SecretService;
 
-  constructor(private environment: IEnvironment, private log = (msg: string) => {}) {
-    const keystoreBasePath = environment.keystore.url;
-    this.keystoreUserApi = new KeyStoreAPI.UserApi({ basePath: keystoreBasePath });
-    this.keystoreSessionApi = new KeyStoreAPI.SessionApi({ basePath: keystoreBasePath });
-
+  constructor(environment: IEnvironment, private log = (msg: string) => {}) {
+    this.keystoreApiFactory = keystoreAPIFactory(environment);
+    this.vaultApiFactory = vaultAPIFactory(environment);
     this.vaultKeypairExternalId = VAULT_PAIR_EXTERNAL_IDENTIFIER;
     this.keyGen = new SecretService();
   }
+
   private requestKeyPair(keystoreSessionToken: string) {
-    const vaultUserApi = new KeyStoreAPI.KeypairApi({
-      apiKey: keystoreSessionToken,
-      basePath: this.environment.keystore.url
-    });
+    const vaultUserApi = this.keystoreApiFactory(keystoreSessionToken).KeypairApi;
     return vaultUserApi
       .keypairsExternalIdExternalIdGet(this.vaultKeypairExternalId)
       .then(res => res.keypair);
   }
 
   private requestExternalAdmissionTokens(sessionAuthenticationToken: string) {
-    const keystoreExternalAdmissionApi = new KeyStoreAPI.ExternalAdmissionTokensApi({
-      apiKey: sessionAuthenticationToken,
-      basePath: this.environment.keystore.url
-    });
+    const keystoreExternalAdmissionApi = this.keystoreApiFactory(sessionAuthenticationToken)
+      .ExternalAdmissionTokensApi;
     this.log('Request external admission tokens from keystore');
     return keystoreExternalAdmissionApi
       .externalAdmissionTokensGet()
@@ -57,10 +56,8 @@ export class UserService {
       key: derivedKey,
       data: kek
     });
-    const keystoreKeyEncryptionKeyApi = new KeyStoreAPI.KeyEncryptionKeyApi({
-      apiKey: sessionAuthentication,
-      basePath: this.environment.keystore.url
-    });
+    const keystoreKeyEncryptionKeyApi = this.keystoreApiFactory(sessionAuthentication)
+      .KeyEncryptionKeyApi;
 
     await keystoreKeyEncryptionKeyApi.keyEncryptionKeyPost({
       serialized_key_encryption_key: encryptedKEK.serialized
@@ -70,10 +67,8 @@ export class UserService {
 
   private getKeyEncryptionKey(sessionAuthentication: string) {
     this.log('Requesting key encryption key');
-    const keystoreKeyEncryptionKeyApi = new KeyStoreAPI.KeyEncryptionKeyApi({
-      apiKey: sessionAuthentication,
-      basePath: this.environment.keystore.url
-    });
+    const keystoreKeyEncryptionKeyApi = this.keystoreApiFactory(sessionAuthentication)
+      .KeyEncryptionKeyApi;
     return keystoreKeyEncryptionKeyApi
       .keyEncryptionKeyGet()
       .then(result => result.key_encryption_key);
@@ -90,10 +85,8 @@ export class UserService {
       key: keyEncryptionKey,
       strategy: cryppo.CipherStrategy.AES_GCM
     });
-    const keystoreDataEncryptionKeyApi = new KeyStoreAPI.DataEncryptionKeyApi({
-      apiKey: sessionAuthentication,
-      basePath: this.environment.keystore.url
-    });
+    const keystoreDataEncryptionKeyApi = this.keystoreApiFactory(sessionAuthentication)
+      .DataEncryptionKeyApi;
     const stored = await keystoreDataEncryptionKeyApi.dataEncryptionKeysPost({
       serialized_data_encryption_key: dekEncryptedWithKEK.serialized
     });
@@ -106,10 +99,8 @@ export class UserService {
 
   private getDataEncryptionKey(sessionAuthentication, encryptionSpaceId: string) {
     this.log('Requesting data encryption key');
-    const keystoreDataEncryptionKeyApi = new KeyStoreAPI.DataEncryptionKeyApi({
-      apiKey: sessionAuthentication,
-      basePath: this.environment.keystore.url
-    });
+    const keystoreDataEncryptionKeyApi = this.keystoreApiFactory(sessionAuthentication)
+      .DataEncryptionKeyApi;
     return keystoreDataEncryptionKeyApi
       .dataEncryptionKeysIdGet(encryptionSpaceId)
       .then(result => result.data_encryption_key);
@@ -121,10 +112,7 @@ export class UserService {
   ) {
     this.log('Generate and store vault key pair');
     const keyPair = await cryppo.generateRSAKeyPair();
-    const keystoreKeypairApi = new KeyStoreAPI.KeypairApi({
-      apiKey: sessionAuthentication,
-      basePath: this.environment.keystore.url
-    });
+    const keystoreKeypairApi = this.keystoreApiFactory(sessionAuthentication).KeypairApi;
     const privateKeyEncryptedWithKEK = await cryppo.encryptWithKey({
       data: keyPair.privateKey,
       key: keyEncryptionKey,
@@ -146,9 +134,8 @@ export class UserService {
     vaultAdmissionToken: string
   ) {
     this.log('Create vault api user');
-    const vaultUserApi = new VaultAPI.UserApi({
-      basePath: this.environment.vault.url
-    });
+    // No key required as we're only registering a new user
+    const vaultUserApi = this.vaultApiFactory('').UserApi;
 
     const vaultUser = await vaultUserApi.mePost({
       public_key: keyPair.publicKey,
@@ -166,9 +153,8 @@ export class UserService {
   }
 
   private async getVaultSession(keyPair: { publicKey: string; privateKey: string }) {
-    const sessionApi = new VaultAPI.SessionApi({
-      basePath: this.environment.vault.url
-    });
+    // No auth key required as we're only logging in
+    const sessionApi = this.vaultApiFactory('').SessionApi;
 
     const session = await sessionApi
       .sessionPost({
@@ -191,10 +177,7 @@ export class UserService {
     keystoreSessionToken: string,
     vaultSessionToken: string
   ) {
-    const vaultUserApi = new VaultAPI.UserApi({
-      apiKey: vaultSessionToken,
-      basePath: this.environment.vault.url
-    });
+    const vaultUserApi = this.vaultApiFactory(vaultSessionToken).UserApi;
 
     const dek = await this.generateAndStoreDataEncryptionKey(
       keyEncryptionKey,
@@ -246,8 +229,8 @@ export class UserService {
     const verifier = await srpSession.createVerifier();
 
     this.log('Create SRP keystore user');
-    await this.keystoreUserApi
-      .srpUsersPost({
+    await this.keystoreApiFactory('')
+      .UserApi.srpUsersPost({
         username,
         srp_salt: verifier.salt,
         srp_verifier: verifier.verifier
@@ -274,8 +257,8 @@ export class UserService {
     const srp_a = await srpSession.getClientPublic();
 
     this.log('Requesting SRP challenge from server');
-    const challenge = await this.keystoreUserApi
-      .srpChallengesPost({
+    const challenge = await this.keystoreApiFactory('')
+      .UserApi.srpChallengesPost({
         srp_a,
         username
       })
@@ -287,8 +270,8 @@ export class UserService {
     });
 
     this.log('Creating SRP session with proof');
-    return this.keystoreSessionApi
-      .srpSessionPost({
+    return this.keystoreApiFactory('')
+      .SessionApi.srpSessionPost({
         username,
         srp_a,
         srp_m
@@ -337,18 +320,12 @@ export class UserService {
   }
 
   public getVaultUser(vaultAccessToken: string) {
-    return new VaultAPI.UserApi({
-      apiKey: vaultAccessToken,
-      basePath: this.environment.vault.url
-    }).meGet();
+    return this.vaultApiFactory(vaultAccessToken).UserApi.meGet();
   }
 
   public getVaultUserId(user: AuthConfig) {
-    return new VaultAPI.UserApi({
-      apiKey: user.vault_access_token,
-      basePath: this.environment.vault.url
-    })
-      .meGet()
+    return this.vaultApiFactory(user)
+      .UserApi.meGet()
       .then(result => result.user?.id);
   }
 }

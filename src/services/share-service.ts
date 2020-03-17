@@ -1,6 +1,5 @@
 import * as cryppo from '@meeco/cryppo';
-import * as VaultAPI from '@meeco/meeco-api-sdk';
-import * as KeyStoreAPI from '@meeco/meeco-keystore-sdk';
+import { Connection, Share, Slot } from '@meeco/meeco-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../configs/auth-config';
 import { EncryptionSpaceConfig } from '../configs/encryption-space-config';
@@ -10,6 +9,12 @@ import { EncryptionKey } from '../models/encryption-key';
 import { IEnvironment } from '../models/environment';
 import { LocalSlot } from '../models/local-slot';
 import { findConnectionBetween } from '../util/ find-connection-between';
+import {
+  KeystoreAPIFactory,
+  keystoreAPIFactory,
+  vaultAPIFactory,
+  VaultAPIFactory
+} from '../util/api-factory';
 import { ItemService } from './item-service';
 
 interface ISharedEncryptionSpace {
@@ -19,7 +24,13 @@ interface ISharedEncryptionSpace {
 }
 
 export class ShareService {
-  constructor(private environment: IEnvironment, private log: (message: string) => void) {}
+  private keystoreApiFactory: KeystoreAPIFactory;
+  private vaultApiFactory: VaultAPIFactory;
+
+  constructor(private environment: IEnvironment, private log: (message: string) => void) {
+    this.keystoreApiFactory = keystoreAPIFactory(environment);
+    this.vaultApiFactory = vaultAPIFactory(environment);
+  }
 
   public async shareItem(fromUser: AuthConfig, toUser: AuthConfig, itemId: string) {
     const { fromUserConnection, toUserConnection } = await findConnectionBetween(
@@ -45,7 +56,7 @@ export class ShareService {
     );
 
     this.log('Sending shared data');
-    const shareResult = await this.vaultShareApi(fromUser).sharesPost({
+    const shareResult = await this.vaultApiFactory(fromUser).ShareApi.sharesPost({
       shares: [share]
     });
     return {
@@ -55,24 +66,18 @@ export class ShareService {
   }
 
   public async listShares(user: AuthConfig) {
-    const result = await new VaultAPI.ShareApi({
-      apiKey: user.vault_access_token,
-      basePath: this.environment.vault.url
-    }).sharesGet();
+    const result = await this.vaultApiFactory(user).ShareApi.sharesGet();
     return ShareListConfig.encodeFromResult(result);
   }
 
   public async getSharedItem(user: AuthConfig, itemId: string) {
-    const result = await new VaultAPI.ShareApi({
-      apiKey: user.vault_access_token,
-      basePath: this.environment.vault.url
-    })
-      .sharesIdGet(itemId)
+    const result = await this.vaultApiFactory(user)
+      .ShareApi.sharesIdGet(itemId)
       .then(shares => shares);
     const [item] = result.items;
     const [share] = result.shares;
-    const slots = result.slots;
-    const space = await this.encryptionSpaceApi(user).encryptionSpacesIdGet(
+    const slots = this.addShareValuesToSlots(share, result.slots);
+    const space = await this.keystoreApiFactory(user).EncryptionSpaceApi.encryptionSpacesIdGet(
       share.encryption_space_id
     );
     const decryptedSharedDataEncryptionKey = await cryppo.decryptWithKey({
@@ -87,6 +92,13 @@ export class ShareService {
     });
   }
 
+  private addShareValuesToSlots(share: Share, slots: Slot[]) {
+    slots.forEach(slot => {
+      slot.encrypted_value = (share?.encrypted_values || {})[slot.id];
+    });
+    return slots;
+  }
+
   private async shareItemFromVaultItem(
     fromUser: AuthConfig,
     toUser: AuthConfig,
@@ -94,7 +106,7 @@ export class ShareService {
     itemId: string,
     toUserId: string
   ) {
-    const item = await this.itemApi(fromUser).itemsIdGet(itemId);
+    const item = await this.vaultApiFactory(fromUser).ItemApi.itemsIdGet(itemId);
 
     if (!item) {
       throw new CLIError(`Item '${itemId}' not found`);
@@ -147,8 +159,8 @@ export class ShareService {
 
   public async fetchSharedEncryptionSpace(
     fromUser: AuthConfig,
-    fromUserConnection: VaultAPI.Connection,
-    toUserConnection: VaultAPI.Connection
+    fromUserConnection: Connection,
+    toUserConnection: Connection
   ): Promise<ISharedEncryptionSpace> {
     if (!fromUserConnection.encryption_space_id) {
       // Users have no shared encryption space
@@ -159,9 +171,9 @@ export class ShareService {
     }
 
     this.log('Fetching shared encryption key');
-    const sharedDataEncryptionKey = await this.encryptionSpaceApi(fromUser).encryptionSpacesIdGet(
-      fromUserConnection.encryption_space_id
-    );
+    const sharedDataEncryptionKey = await this.keystoreApiFactory(
+      fromUser
+    ).EncryptionSpaceApi.encryptionSpacesIdGet(fromUserConnection.encryption_space_id);
 
     const decryptedSharedDataEncryptionKey = await cryppo.decryptWithKey({
       serialized: sharedDataEncryptionKey.encryption_space_data_encryption_key
@@ -195,12 +207,15 @@ export class ShareService {
     });
 
     this.log('Updating connection encryption space');
-    await this.connectionApi(fromUser).connectionsConnectionIdEncryptionSpacePost(connection.id!, {
-      encryption_space_id: encryptionSpaceId
-    });
+    await this.vaultApiFactory(fromUser).ConnectionApi.connectionsConnectionIdEncryptionSpacePost(
+      connection.id!,
+      {
+        encryption_space_id: encryptionSpaceId
+      }
+    );
 
     this.log('Sending shared key');
-    const sharedKey = await this.sharedKeyApi(fromUser).sharedKeysPost({
+    const sharedKey = await this.keystoreApiFactory(fromUser).SharedKeyApi.sharedKeysPost({
       encrypted_key: shareableDataEncryptionKey.serialized,
       external_id: encryptionSpaceId,
       public_key: recipientPublicKey,
@@ -220,8 +235,8 @@ export class ShareService {
     const connection = await this.fetchConnectionWithId(toUser, connectionId);
     const encryptionSpaceId = connection.other_user_connection_encryption_space_id!;
     this.log('Fetching key pair');
-    const keyPair = await this.keyPairApi(toUser)
-      .keypairsIdGet(connection.key_store_keypair_id)
+    const keyPair = await this.keystoreApiFactory(toUser)
+      .KeypairApi.keypairsIdGet(connection.key_store_keypair_id)
       .then(res => res.keypair);
 
     const privateKey = await cryppo.decryptWithKey({
@@ -239,15 +254,20 @@ export class ShareService {
     );
 
     this.log('Creating new encryption space with re-encrypted claimed key');
-    const encryptionSpace = await this.encryptionSpaceApi(toUser).encryptionSpacesPost({
+    const encryptionSpace = await this.keystoreApiFactory(
+      toUser
+    ).EncryptionSpaceApi.encryptionSpacesPost({
       encrypted_serialized_key: reEncryptedDataEncryptionKey.serialized
     });
     const { encryption_space_id } = encryptionSpace.encryption_space_data_encryption_key!;
 
     this.log('Updating shared encryption space');
-    await this.connectionApi(toUser).connectionsConnectionIdEncryptionSpacePost(connectionId, {
-      encryption_space_id
-    });
+    await this.vaultApiFactory(toUser).ConnectionApi.connectionsConnectionIdEncryptionSpacePost(
+      connectionId,
+      {
+        encryption_space_id
+      }
+    );
 
     return {
       connection,
@@ -263,8 +283,8 @@ export class ShareService {
       key: user.key_encryption_key.key,
       strategy: cryppo.CipherStrategy.AES_GCM
     });
-    const encryptionSpace = await this.encryptionSpaceApi(user)
-      .encryptionSpacesPost({
+    const encryptionSpace = await this.keystoreApiFactory(user)
+      .EncryptionSpaceApi.encryptionSpacesPost({
         encrypted_serialized_key: encryptedDataEncryptionKey.serialized
       })
       .then(result => result.encryption_space_data_encryption_key);
@@ -284,13 +304,12 @@ export class ShareService {
     }
   ) {
     const signature = await this.buildClaimKeySignature(encryptionSpaceId, keyPair.privateKey);
-    const claimedKey = await this.sharedKeyApi(user).sharedKeysExternalIdClaimKeyPost(
-      encryptionSpaceId,
-      {
-        public_key: keyPair.publicKey,
-        request_signature: signature.serialized
-      }
-    );
+    const claimedKey = await this.keystoreApiFactory(
+      user
+    ).SharedKeyApi.sharedKeysExternalIdClaimKeyPost(encryptionSpaceId, {
+      public_key: keyPair.publicKey,
+      request_signature: signature.serialized
+    });
     const decryptedDataEncryptionKey = await cryppo.decryptSerializedWithPrivateKey({
       serialized: claimedKey.shared_key_claimed?.serialized_shared_key!,
       privateKeyPem: keyPair.privateKey
@@ -313,7 +332,9 @@ export class ShareService {
 
   private async fetchConnectionWithId(user: AuthConfig, connectionId: string) {
     this.log('Fetching connection');
-    const connectionResponse = await this.connectionApi(user).connectionsIdGet(connectionId);
+    const connectionResponse = await this.vaultApiFactory(user).ConnectionApi.connectionsIdGet(
+      connectionId
+    );
     const connection = connectionResponse.connection;
     if (!connection || !connection.id) {
       throw new CLIError(`Connection '${connectionId}' not found.`);
@@ -351,51 +372,5 @@ export class ShareService {
       encryptedSlots.reduce((prev, next) => ({ ...prev, ...next }), {})
     );
     return encrypted_values;
-  }
-
-  /**
-   * Helper methods for creating APIs from users
-   */
-
-  private itemApi(user: AuthConfig) {
-    return new VaultAPI.ItemApi({
-      apiKey: user.vault_access_token,
-      basePath: this.environment.vault.url
-    });
-  }
-
-  private connectionApi(user: AuthConfig) {
-    return new VaultAPI.ConnectionApi({
-      apiKey: user.vault_access_token,
-      basePath: this.environment.vault.url
-    });
-  }
-
-  private vaultShareApi(user: AuthConfig) {
-    return new VaultAPI.ShareApi({
-      apiKey: user.vault_access_token,
-      basePath: this.environment.vault.url
-    });
-  }
-
-  private encryptionSpaceApi(user: AuthConfig) {
-    return new KeyStoreAPI.EncryptionSpaceApi({
-      apiKey: user.keystore_access_token,
-      basePath: this.environment.keystore.url
-    });
-  }
-
-  private keyPairApi(user: AuthConfig) {
-    return new KeyStoreAPI.KeypairApi({
-      apiKey: user.keystore_access_token,
-      basePath: this.environment.keystore.url
-    });
-  }
-
-  private sharedKeyApi(user: AuthConfig) {
-    return new KeyStoreAPI.SharedKeyApi({
-      apiKey: user.keystore_access_token,
-      basePath: this.environment.keystore.url
-    });
   }
 }

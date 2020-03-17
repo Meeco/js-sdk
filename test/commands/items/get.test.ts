@@ -7,7 +7,7 @@ describe('items:get', () => {
     .stdout()
     .stderr()
     .mockCryppo()
-    .nock('https://api-sandbox.meeco.me', mockVault)
+    .nock('https://sandbox.meeco.me/vault', mockVault)
     .run(['items:get', 'my-item', ...testUserAuth, ...testEnvironmentFile])
     .it('returns an item with all slots decrypted', ctx => {
       const expected = readFileSync(outputFixture('get-item.output.yaml'), 'utf-8');
@@ -56,5 +56,6 @@ function mockVault(api) {
   api
     .get('/items/my-item')
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, response);
 }

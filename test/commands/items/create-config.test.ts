@@ -6,7 +6,7 @@ describe('items:create-config', () => {
   customTest
     .stdout()
     .stderr()
-    .nock('https://api-sandbox.meeco.me', mockVault)
+    .nock('https://sandbox.meeco.me/vault', mockVault)
     .run(['items:create-config', 'food', ...testUserAuth, ...testEnvironmentFile])
     .it('builds an item template from an api template name', ctx => {
       const expected = readFileSync(outputFixture('create-config-item.output.yaml'), 'utf-8');
@@ -57,5 +57,6 @@ function mockVault(api) {
       'by_classification[name]': 'esafe_templates'
     })
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, response);
 }

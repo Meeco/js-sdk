@@ -6,10 +6,11 @@ describe('shares:list', () => {
   customTest
     .stdout()
     .stderr()
-    .nock('https://api-sandbox.meeco.me', api => {
+    .nock('https://sandbox.meeco.me/vault', api => {
       api
         .get('/shares')
         .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, {
           shares: [
             {

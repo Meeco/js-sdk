@@ -12,8 +12,8 @@ describe('shares:create', () => {
     .stderr()
     .mockCryppo()
     .stub(global, 'Date', sinon.stub().returns(constantDate))
-    .nock('https://api-sandbox.meeco.me', stubVault)
-    .nock('https://keystore-sandbox.meeco.me', stubKeystore)
+    .nock('https://sandbox.meeco.me/vault', stubVault)
+    .nock('https://sandbox.meeco.me/keystore', stubKeystore)
     .run(['shares:create', '-c', inputFixture('create-share.input.yaml'), ...testEnvironmentFile])
     .it('can setup sharing between two users', ctx => {
       const expected = readFileSync(outputFixture('create-share.output.yaml'), 'utf-8');
@@ -25,6 +25,7 @@ function stubVault(api: nock.Scope) {
   api
     .get('/items/from_user_vault_item_to_share_id')
     .matchHeader('Authorization', 'from_user_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       slots: [
         {
@@ -43,6 +44,7 @@ function stubVault(api: nock.Scope) {
   api
     .get('/connections')
     .matchHeader('Authorization', 'from_user_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       connections: [
         {
@@ -57,6 +59,7 @@ function stubVault(api: nock.Scope) {
   api
     .get('/connections')
     .matchHeader('Authorization', 'to_user_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       connections: [
         {
@@ -72,6 +75,7 @@ function stubVault(api: nock.Scope) {
   api
     .get('/connections/from_user_connection_id')
     .matchHeader('Authorization', 'from_user_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       connection: {
         id: 'from_user_connection_id',
@@ -85,12 +89,14 @@ function stubVault(api: nock.Scope) {
       encryption_space_id: 'from_user_created_encryption_space_id'
     })
     .matchHeader('Authorization', 'from_user_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200);
 
   // Fetch connection from the other user's perspective
   api
     .get('/connections/to_user_connection_id')
     .matchHeader('authorization', 'to_user_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       connection: {
         id: 'to_user_connection_id',
@@ -105,6 +111,7 @@ function stubVault(api: nock.Scope) {
       encryption_space_id: 'to_user_encryption_space_id'
     })
     .matchHeader('Authorization', 'to_user_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {});
 
   api
@@ -126,6 +133,7 @@ function stubVault(api: nock.Scope) {
       ]
     })
     .matchHeader('Authorization', 'from_user_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       slots: [
         {
@@ -147,6 +155,7 @@ function stubKeystore(api: nock.Scope) {
       encrypted_serialized_key: `[serialized][encrypted]randomly_generated_key[with from_user_key_encryption_key]`
     })
     .matchHeader('Authorization', 'from_user_keystore_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       encryption_space_data_encryption_key: {
         encryption_space_id: 'from_user_created_encryption_space_id'
@@ -162,6 +171,7 @@ function stubKeystore(api: nock.Scope) {
       key_metadata: { key_type: 'AES-GCM' }
     })
     .matchHeader('Authorization', 'from_user_keystore_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       shared_key: {}
     });
@@ -170,6 +180,7 @@ function stubKeystore(api: nock.Scope) {
   api
     .get('/keypairs/to_user_keystore_keypair_id')
     .matchHeader('Authorization', 'to_user_keystore_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       keypair: {
         public_key: 'my_public_key',
@@ -182,11 +193,12 @@ function stubKeystore(api: nock.Scope) {
     .post('/shared_keys/from_user_encryption_space_id/claim_key', {
       public_key: 'my_public_key',
       request_signature:
-        '[serialized]https://keystore-sandbox.meeco.me/shared_keys/from_user_encryption_space_id/claim_key--request-timestamp=1970-01-01T00:00:00.000Z[signed ' +
+        '[serialized]https://sandbox.meeco.me/keystore/shared_keys/from_user_encryption_space_id/claim_key--request-timestamp=1970-01-01T00:00:00.000Z[signed ' +
         'with encrypted_shared_dek[decrypted with ' +
         'to_user_key_encryption_key]]'
     })
     .matchHeader('authorization', 'to_user_keystore_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       shared_key_claimed: {
         serialized_shared_key: 'encrypted_shared_dek'
@@ -202,6 +214,7 @@ function stubKeystore(api: nock.Scope) {
         'to_user_key_encryption_key]'
     })
     .matchHeader('Authorization', 'to_user_keystore_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       encryption_space_data_encryption_key: {
         encryption_space_id: 'to_user_encryption_space_id'

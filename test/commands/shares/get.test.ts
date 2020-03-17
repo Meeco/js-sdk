@@ -8,8 +8,8 @@ describe('shares:get', () => {
     .stdout()
     .stderr()
     .mockCryppo()
-    .nock('https://api-sandbox.meeco.me', mockVault)
-    .nock('https://keystore-sandbox.meeco.me', mockKeystore)
+    .nock('https://sandbox.meeco.me/vault', mockVault)
+    .nock('https://sandbox.meeco.me/keystore', mockKeystore)
     .run(['shares:get', ...testUserAuth, ...testEnvironmentFile, 'share_1'])
     .it('lists the decrypted slots from a shared item', ctx => {
       const expected = readFileSync(outputFixture('get-shares.output.yaml'), 'utf-8');
@@ -21,13 +21,18 @@ function mockVault(api: nock.Scope) {
   api
     .get('/shares/share_1')
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       shares: [
         {
           id: 'sh_1',
           connection_id: 'con_1',
           shareable_id: 'it_1',
-          encryption_space_id: 'es_1'
+          encryption_space_id: 'es_1',
+          encrypted_values: {
+            sl_1: 'encrypted_fluffy',
+            sl_2: 'encrypted_12'
+          }
         }
       ],
       items: [
@@ -43,13 +48,15 @@ function mockVault(api: nock.Scope) {
           id: 'sl_1',
           label: 'name',
           encrypted: true,
-          encrypted_value: 'encrypted_fluffy'
+          // The API will return null as the encrypted_values on the share are to be used
+          encrypted_value: null
         },
         {
           id: 'sl_2',
           label: 'age',
           encrypted: true,
-          encrypted_value: 'encrypted_12'
+          // The API will return null as the encrypted_values on the share are to be used
+          encrypted_value: null
         }
       ]
     });
@@ -59,6 +66,7 @@ function mockKeystore(api: nock.Scope) {
   api
     .get('/encryption_spaces/es_1')
     .matchHeader('Authorization', 'a2V5c3RvcmVfYXV0aF90b2tlbg==')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       encryption_space_data_encryption_key: {
         serialized_data_encryption_key: 'secret_shared_key'

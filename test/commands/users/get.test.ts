@@ -7,8 +7,8 @@ import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '..
 
 describe('meeco users:get', () => {
   customTest
-    .nock('https://keystore-sandbox.meeco.me', stubKeystore)
-    .nock('https://api-sandbox.meeco.me', stubVault)
+    .nock('https://sandbox.meeco.me/keystore', stubKeystore)
+    .nock('https://sandbox.meeco.me/vault', stubVault)
     .mockCryppo()
     .mockSRP()
     .stderr()
@@ -20,8 +20,8 @@ describe('meeco users:get', () => {
     });
 
   customTest
-    .nock('https://keystore-sandbox.meeco.me', stubKeystore)
-    .nock('https://api-sandbox.meeco.me', stubVault)
+    .nock('https://sandbox.meeco.me/keystore', stubKeystore)
+    .nock('https://sandbox.meeco.me/vault', stubVault)
     .mockCryppo()
     .mockSRP()
     .stderr()
@@ -66,6 +66,7 @@ function stubKeystore(api: Nock.Scope) {
   api
     .get('/key_encryption_key')
     .matchHeader('Authorization', 'keystore_auth_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       key_encryption_key: {
         serialized_key_encryption_key: `key_encryption_key`
@@ -74,6 +75,7 @@ function stubKeystore(api: Nock.Scope) {
   api
     .get('/data_encryption_keys/data_encryption_key_id')
     .matchHeader('Authorization', 'keystore_auth_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       data_encryption_key: {
         serialized_data_encryption_key: `data_encryption_key`
@@ -82,6 +84,7 @@ function stubKeystore(api: Nock.Scope) {
   api
     .get('/keypairs/external_id/auth')
     .matchHeader('Authorization', 'keystore_auth_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       keypair: {
         public_key: '--PUBLIC_KEY--ABCD',

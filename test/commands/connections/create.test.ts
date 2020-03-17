@@ -8,8 +8,8 @@ describe('connections:create', () => {
     .stdout()
     .stderr()
     .mockCryppo()
-    .nock('https://api-sandbox.meeco.me', stubVault)
-    .nock('https://keystore-sandbox.meeco.me', stubKeystore)
+    .nock('https://sandbox.meeco.me/vault', stubVault)
+    .nock('https://sandbox.meeco.me/keystore', stubKeystore)
     .run([
       'connections:create',
       ...testEnvironmentFile,
@@ -38,6 +38,7 @@ function stubVault(api: nock.Scope) {
   api
     .get('/connections')
     .matchHeader('Authorization', 'from_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       connections: [
         {
@@ -50,6 +51,7 @@ function stubVault(api: nock.Scope) {
   api
     .get('/connections')
     .matchHeader('Authorization', 'to_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       connections: [
         {
@@ -79,6 +81,7 @@ function stubVault(api: nock.Scope) {
       public_key: '--PUBLIC_KEY--ABCD'
     })
     .matchHeader('Authorization', 'from_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       public_key: {
         id: 'from_public_key_id'
@@ -91,6 +94,7 @@ function stubVault(api: nock.Scope) {
       public_key: '--PUBLIC_KEY--ABCD'
     })
     .matchHeader('Authorization', 'to_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       public_key: {
         id: 'to_public_key_id'
@@ -108,6 +112,7 @@ function stubKeystore(api: nock.Scope) {
       external_identifiers: []
     })
     .matchHeader('Authorization', 'to_keystore_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       keypair: {
         id: 'to_stored_keypair_id'
@@ -123,6 +128,7 @@ function stubKeystore(api: nock.Scope) {
       external_identifiers: []
     })
     .matchHeader('Authorization', 'from_keystore_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       keypair: {
         id: 'from_stored_keypair_id'

@@ -5,7 +5,7 @@ import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '..
 describe('shares:create-config', () => {
   customTest
     .stdout()
-    .nock('https://api-sandbox.meeco.me', mockVault)
+    .nock('https://sandbox.meeco.me/vault', mockVault)
     .run([
       'shares:create-config',
       '-f',
@@ -31,5 +31,6 @@ function mockVault(api) {
   api
     .get('/items/my-item')
     .matchHeader('Authorization', 'from_vault_access')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, response);
 }
