@@ -7,8 +7,8 @@ import { customTest, outputFixture, testEnvironmentFile } from '../../test-helpe
 
 describe('meeco users:create', () => {
   customTest
-    .nock('https://keystore-sandbox.meeco.me', stubKeystore)
-    .nock('https://api-sandbox.meeco.me', stubVault)
+    .nock('https://sandbox.meeco.me/keystore', stubKeystore)
+    .nock('https://sandbox.meeco.me/vault', stubVault)
     .mockCryppo()
     .mockSRP()
     .stderr()
@@ -63,6 +63,7 @@ function stubKeystore(api: Nock.Scope) {
   api
     .get('/external_admission_tokens')
     .matchHeader('Authorization', 'keystore_auth_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       external_admission_token: <ExternalAdmissionTokens>{
         passphrase_store_admission_token: 'passphrase_token',
@@ -75,6 +76,7 @@ function stubKeystore(api: Nock.Scope) {
       serialized_key_encryption_key: `[serialized][encrypted]randomly_generated_key[with derived_key_123.asupersecretpassphrase]`
     })
     .matchHeader('Authorization', 'keystore_auth_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       key_encryption_key: {
         id: 'key_encryption_key_id'
@@ -86,6 +88,7 @@ function stubKeystore(api: Nock.Scope) {
       serialized_data_encryption_key: `[serialized][encrypted]randomly_generated_key[with randomly_generated_key]`
     })
     .matchHeader('Authorization', 'keystore_auth_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       data_encryption_key: {
         id: 'data_encryption_key_id'
@@ -100,6 +103,7 @@ function stubKeystore(api: Nock.Scope) {
       external_identifiers: [VAULT_PAIR_EXTERNAL_IDENTIFIER]
     })
     .matchHeader('Authorization', 'keystore_auth_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {});
 }
 
@@ -123,5 +127,6 @@ function stubVault(api: Nock.Scope) {
       }
     })
     .matchHeader('Authorization', '[decrypted]encrypted_vault_session_string--PRIVATE_KEY--12324')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {});
 }

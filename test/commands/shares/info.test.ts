@@ -8,8 +8,8 @@ describe('shares:info', () => {
     .stdout()
     .stderr()
     .mockCryppo()
-    .nock('https://api-sandbox.meeco.me', stubVault)
-    .nock('https://keystore-sandbox.meeco.me', stubKeystore)
+    .nock('https://sandbox.meeco.me/vault', stubVault)
+    .nock('https://sandbox.meeco.me/keystore', stubKeystore)
     .run(['shares:info', '-c', inputFixture('info-share.input.yaml'), ...testEnvironmentFile])
     .it('shows share information between two users', ctx => {
       const expected = readFileSync(outputFixture('info-share.output.yaml'), 'utf-8');
@@ -21,6 +21,7 @@ function stubVault(api: nock.Scope) {
   api
     .get('/connections')
     .matchHeader('Authorization', 'from_user_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       connections: [
         {
@@ -35,6 +36,7 @@ function stubVault(api: nock.Scope) {
   api
     .get('/connections')
     .matchHeader('Authorization', 'to_user_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       connections: [
         {
@@ -51,6 +53,7 @@ function stubKeystore(api: nock.Scope) {
   api
     .get('/encryption_spaces/from_user_shared_encryption_space_id')
     .matchHeader('Authorization', 'from_user_keystore_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       encryption_space_data_encryption_key: {
         serialized_data_encryption_key: 'serialized_shared_data_encryption_key'

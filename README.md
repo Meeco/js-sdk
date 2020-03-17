@@ -30,6 +30,12 @@ Note - because the API SDK's are not currently publicly published, the `.npmrc.g
 
 After cloning the repo, run `npm install` to install dependencies.
 
+## The `meeco` command
+
+If you want to run `meeco <command>` and have it point to your dev environment - run `npm link .` to hook up a global `meeco` to the current workspace.
+
+Alternatively, just run `./bin/meeco` when developing
+
 # Usage
 
 ```sh-session
@@ -433,14 +439,17 @@ spec:
 
 ```yaml
 vault:
-  url: https://api-sandbox-test.meeco.me
+  url: https://sandbox.meeco.me/vault
+  subscription_key: my_api_subscription_key
 keystore:
-  url: https://keystore-sandbox-test.meeco.me
-  provider_api_key: my_provider_api_key
+  url: https://sandbox.meeco.me/keystore
+  subscription_key: my_api_subscription_key
 downloader:
-  url: https://downloader-sandbox-test.meeco.me
+  url: https://sandbox.meeco.me/downloader
+  subscription_key: my_api_subscription_key
 passphrase:
-  url: https://passphrasestore-sandbox-test.meeco.me
+  url: https://sandbox.meeco.me/passphrasestore
+  subscription_key: my_api_subscription_key
 ```
 
 ## Item

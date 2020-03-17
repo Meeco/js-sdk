@@ -1,13 +1,22 @@
 import * as cryppo from '@meeco/cryppo';
-import { ConnectionApi, InvitationApi, PublicKeyApi } from '@meeco/meeco-api-sdk';
-import { KeypairApi } from '@meeco/meeco-keystore-sdk';
 import { AuthConfig } from '../configs/auth-config';
 import { ConnectionConfig } from '../configs/connection-config';
 import { IEnvironment } from '../models/environment';
 import { findConnectionBetween } from '../util/ find-connection-between';
+import {
+  KeystoreAPIFactory,
+  keystoreAPIFactory,
+  VaultAPIFactory,
+  vaultAPIFactory
+} from '../util/api-factory';
 
 export class ConnectionService {
-  constructor(private environment: IEnvironment, private log: (message: string) => void) {}
+  private vaultApiFactory: VaultAPIFactory;
+  private keystoreApiFactory: KeystoreAPIFactory;
+  constructor(private environment: IEnvironment, private log: (message: string) => void) {
+    this.vaultApiFactory = vaultAPIFactory(environment);
+    this.keystoreApiFactory = keystoreAPIFactory(environment);
+  }
 
   async createConnection(config: ConnectionConfig) {
     const { to, from, options } = config;
@@ -20,22 +29,16 @@ export class ConnectionService {
     const encryptedFromName: string = await this.encryptRecipientName(options.fromName, to);
 
     this.log('Sending invitation request');
-    const invitation = await new InvitationApi({
-      apiKey: from.vault_access_token,
-      basePath: this.environment.vault.url
-    })
-      .invitationsPost({
+    const invitation = await this.vaultApiFactory(from)
+      .InvitationApi.invitationsPost({
         public_key_id: fromKeyPair.vaultStoredKeyPair.id,
         encrypted_recipient_name: encryptedToName
       })
       .then(result => result.invitation);
 
     this.log('Accepting invitation');
-    await new ConnectionApi({
-      apiKey: to.vault_access_token,
-      basePath: this.environment.vault.url
-    })
-      .connectionsPost({
+    this.vaultApiFactory(to)
+      .ConnectionApi.connectionsPost({
         public_key_id: toKeyPair.vaultStoredKeyPair.id,
         encrypted_recipient_name: encryptedFromName,
         invitation_token: invitation.token
@@ -61,10 +64,7 @@ export class ConnectionService {
   }
 
   public async listConnections(user: AuthConfig) {
-    const result = await new ConnectionApi({
-      apiKey: user.vault_access_token,
-      basePath: this.environment.vault.url
-    }).connectionsGet();
+    const result = await this.vaultApiFactory(user).ConnectionApi.connectionsGet();
     const decryptions = (result.connections || []).map(connection =>
       cryppo
         .decryptWithKey({
@@ -98,11 +98,8 @@ export class ConnectionService {
       strategy: cryppo.CipherStrategy.AES_GCM
     });
 
-    const keystoreStoredKeyPair = await new KeypairApi({
-      apiKey: user.keystore_access_token,
-      basePath: this.environment.keystore.url
-    })
-      .keypairsPost({
+    const keystoreStoredKeyPair = await this.keystoreApiFactory(user)
+      .KeypairApi.keypairsPost({
         public_key: keyPair.publicKey,
         encrypted_serialized_key: toPrivateKeyEncrypted.serialized,
         // API will 500 without
@@ -111,11 +108,8 @@ export class ConnectionService {
       })
       .then(result => result.keypair);
 
-    const vaultStoredKeyPair = await new PublicKeyApi({
-      apiKey: user.vault_access_token,
-      basePath: this.environment.vault.url
-    })
-      .keyStorePublicKeysPost({
+    const vaultStoredKeyPair = await this.vaultApiFactory(user)
+      .PublicKeyApi.keyStorePublicKeysPost({
         key_store_id: keystoreStoredKeyPair.id,
         encryption_strategy: 'Rsa4096',
         public_key: keyPair.publicKey

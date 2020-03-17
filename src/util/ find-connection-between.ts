@@ -1,13 +1,10 @@
-import * as VaultAPI from '@meeco/meeco-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../configs/auth-config';
 import { IEnvironment } from '../models/environment';
+import { vaultAPIFactory } from './api-factory';
 
 function connectionApi(user: AuthConfig, environment: IEnvironment) {
-  return new VaultAPI.ConnectionApi({
-    apiKey: user.vault_access_token,
-    basePath: environment.vault.url
-  });
+  return vaultAPIFactory(environment)(user).ConnectionApi;
 }
 
 export async function findConnectionBetween(

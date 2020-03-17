@@ -8,8 +8,8 @@ describe('shares:get', () => {
     .stdout()
     .stderr()
     .mockCryppo()
-    .nock('https://api-sandbox.meeco.me', mockVault)
-    .nock('https://keystore-sandbox.meeco.me', mockKeystore)
+    .nock('https://sandbox.meeco.me/vault', mockVault)
+    .nock('https://sandbox.meeco.me/keystore', mockKeystore)
     .run(['shares:get', ...testUserAuth, ...testEnvironmentFile, 'share_1'])
     .it('lists the decrypted slots from a shared item', ctx => {
       const expected = readFileSync(outputFixture('get-shares.output.yaml'), 'utf-8');
@@ -21,6 +21,7 @@ function mockVault(api: nock.Scope) {
   api
     .get('/shares/share_1')
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       shares: [
         {
@@ -59,6 +60,7 @@ function mockKeystore(api: nock.Scope) {
   api
     .get('/encryption_spaces/es_1')
     .matchHeader('Authorization', 'a2V5c3RvcmVfYXV0aF90b2tlbg==')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       encryption_space_data_encryption_key: {
         serialized_data_encryption_key: 'secret_shared_key'

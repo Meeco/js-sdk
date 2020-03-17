@@ -1,14 +1,18 @@
 import * as cryppo from '@meeco/cryppo';
 import { CipherStrategy, encryptWithKey } from '@meeco/cryppo';
-import { ItemApi, Slot } from '@meeco/meeco-api-sdk';
+import { Slot } from '@meeco/meeco-api-sdk';
 import { ItemConfig } from '../configs/item-config';
 import { ItemListConfig } from '../configs/item-list-config';
 import { EncryptionKey } from '../models/encryption-key';
 import { IEnvironment } from '../models/environment';
 import { LocalSlot } from '../models/local-slot';
+import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 
 export class ItemService {
-  constructor(private environment: IEnvironment) {}
+  private vaultAPIFactory: VaultAPIFactory;
+  constructor(environment: IEnvironment) {
+    this.vaultAPIFactory = vaultAPIFactory(environment);
+  }
 
   /**
    * Updates 'value' to the decrypted 'encrypted_value' and sets 'encrypted' to false.
@@ -32,23 +36,19 @@ export class ItemService {
     );
   }
 
-  public async create(accessToken: string, dek: EncryptionKey, config: ItemConfig) {
-    const itemApi = new ItemApi({
-      apiKey: accessToken,
-      basePath: this.environment.vault.url
-    });
-
+  public async create(vaultAccessToken: string, dek: EncryptionKey, config: ItemConfig) {
     const slots_attributes = await Promise.all(
       (config.itemConfig.slots || []).map(slot => this.encryptSlot(slot, dek))
     );
 
-    const result = await itemApi.itemsPost({
+    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsPost({
       template_name: config.templateName,
       item: {
         label: config.itemConfig.label,
         slots_attributes
       }
     });
+
     return ItemConfig.encodeFromJson({
       ...result.item,
       slots: result.slots?.map(slot => ({
@@ -57,12 +57,8 @@ export class ItemService {
     });
   }
 
-  public async get(id: string, accessToken: string, dataEncryptionKey: EncryptionKey) {
-    const itemApi = new ItemApi({
-      apiKey: accessToken,
-      basePath: this.environment.vault.url
-    });
-    const result = await itemApi.itemsIdGet(id);
+  public async get(id: string, vaultAccessToken: string, dataEncryptionKey: EncryptionKey) {
+    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
     const { item } = result;
     const slots = await ItemService.decryptAllSlots(result.slots, dataEncryptionKey);
     return ItemConfig.encodeFromJson({
@@ -85,13 +81,8 @@ export class ItemService {
     return encrypted;
   }
 
-  public async list(accessToken: string) {
-    const itemApi = new ItemApi({
-      apiKey: accessToken,
-      basePath: this.environment.vault.url
-    });
-
-    const result = await itemApi.itemsGet();
+  public async list(vaultAccessToken: string) {
+    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet();
     return ItemListConfig.encodeFromJson(result);
   }
 }

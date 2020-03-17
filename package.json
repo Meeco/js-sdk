@@ -9,8 +9,8 @@
   "bugs": "https://github.com/Meeco/cli/issues",
   "dependencies": {
     "@meeco/cryppo": "~0.3.3",
-    "@meeco/meeco-api-sdk": "0.3.0-20200310-170636-99acaf5",
-    "@meeco/meeco-keystore-sdk": "0.8.0-20200306-103720-d73d7d6-sandbox",
+    "@meeco/meeco-api-sdk": "0.3.0-20200317-091501-ec77e6e6",
+    "@meeco/meeco-keystore-sdk": "0.8.0-20200317-091014-3d3ffaf-sandbox",
     "@meeco/meeco-passphrasestore-sdk": "0.8.0-20191108-141359-e2bb2dc",
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.13.3",
