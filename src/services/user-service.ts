@@ -194,6 +194,13 @@ export class UserService {
     return dek;
   }
 
+  public async generateUsername() {
+    this.log('Generating username');
+    return this.keystoreApiFactory('')
+      .UserApi.srpUsernamePost()
+      .then(res => res.username);
+  }
+
   public async create(userPassword: string, secret: string): Promise<AuthData> {
     await this.registerKeystoreViaSRP(userPassword, secret);
 
