@@ -22,15 +22,12 @@ export class SecretService {
     return this.deriveSRPPasswordFromSecretKey(userEnteredPassword, secretKey);
   }
 
-  public async generateSecret() {
+  public async generateSecret(username: string) {
     const key = await generateRandomKey(32);
-    // TODO: Should come from the server
-    const mockUsername = await generateRandomKey(8);
-    const userName = this.encodeBase58(mockUsername);
     const secretKey = this.encodeBase58(key);
     const version = 1;
     const readable = secretKey.match(/(.{1,6})/g)!.join('-');
-    return `${version}.${userName}.${readable}`;
+    return `${version}.${username}.${readable}`;
   }
 
   public encodeBase58(val: string | Buffer) {
