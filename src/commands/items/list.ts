@@ -4,7 +4,7 @@ import { ItemService } from '../../services/item-service';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ItemsList extends MeecoCommand {
-  static description = 'describe the command here';
+  static description = 'List the items that a user has in their vault';
   static examples = [`meeco items:list -a path/to/auth.yaml`];
 
   static flags = {
