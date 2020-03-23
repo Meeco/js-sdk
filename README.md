@@ -226,7 +226,7 @@ _See code: [src/commands/items/get.ts](https://github.com/Meeco/cli/blob/master/
 
 ## `meeco items:list`
 
-describe the command here
+List the items that a user has in their vault
 
 ```
 USAGE
