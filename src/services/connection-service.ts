@@ -37,7 +37,7 @@ export class ConnectionService {
       .then(result => result.invitation);
 
     this.log('Accepting invitation');
-    this.vaultApiFactory(to)
+    await this.vaultApiFactory(to)
       .ConnectionApi.connectionsPost({
         public_key_id: toKeyPair.vaultStoredKeyPair.id,
         encrypted_recipient_name: encryptedFromName,

@@ -27,21 +27,21 @@ export default class CreateUser extends MeecoCommand {
     const { flags } = this.parse(this.constructor as typeof CreateUser);
     let { password, secret } = flags;
 
-    const environment = await this.readEnvironmentFile();
-    const service = new UserService(environment, this.updateStatus);
-
-    if (!secret) {
-      const username = await service.generateUsername();
-      secret = await new SecretService().generateSecret(username);
-    }
-
-    if (!password) {
-      while (!password) {
-        password = await cli.prompt('Enter a new password', { type: 'hide' });
-      }
-    }
-
     try {
+      const environment = await this.readEnvironmentFile();
+      const service = new UserService(environment, this.updateStatus);
+
+      if (!secret) {
+        const username = await service.generateUsername();
+        secret = await new SecretService().generateSecret(username);
+      }
+
+      if (!password) {
+        while (!password) {
+          password = await cli.prompt('Enter a new password', { type: 'hide' });
+        }
+      }
+
       const result = await service.create(password, secret);
       this.printYaml(result);
     } catch (err) {
