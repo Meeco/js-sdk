@@ -34,7 +34,7 @@ After cloning the repo, run `npm install` to install dependencies.
 
 If you want to run `meeco <command>` and have it point to your dev environment - run `npm link .` to hook up a global `meeco` to the current workspace.
 
-Alternatively, just run `./bin/meeco` when developing
+Alternatively, just run `./bin/run` when developing (e.g. `/bin/run users:create`)
 
 # Usage
 
