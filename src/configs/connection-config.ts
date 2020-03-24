@@ -1,4 +1,5 @@
 import { Connection, Invitation } from '@meeco/meeco-api-sdk';
+import { CLIError } from '@oclif/errors';
 import { AuthConfig } from './auth-config';
 import { IYamlConfig } from './yaml-config';
 
@@ -29,7 +30,7 @@ export class ConnectionConfig {
     yamlConfigObj: IYamlConfig<IConnectionMetadata, IConnectionSpec>
   ): ConnectionConfig {
     if (yamlConfigObj.kind !== ConnectionConfig.kind) {
-      throw new Error(
+      throw new CLIError(
         `Config file of incorrect kind: '${yamlConfigObj.kind}' (expected '${ConnectionConfig.kind}')`
       );
     }

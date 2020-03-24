@@ -1,4 +1,5 @@
 import { Item, ItemTemplate, Slot } from '@meeco/meeco-api-sdk';
+import { CLIError } from '@oclif/errors';
 import { SLOT_TYPE_BLACKLIST, SLOT_WHITELIST } from '../util/constants';
 import { whitelistObject } from '../util/whitelist-object';
 import { ConfigReader, IYamlConfig } from './yaml-config';
@@ -21,7 +22,7 @@ export class ItemConfig {
 
   static fromYamlConfig(yamlConfigObj: IYamlConfig<IItemMetadata, IItemTemplate>): ItemConfig {
     if (yamlConfigObj.kind !== ItemConfig.kind) {
-      throw new Error(
+      throw new CLIError(
         `Config file of incorrect kind: ${yamlConfigObj.kind} (expected '${ItemConfig.kind}')`
       );
     }

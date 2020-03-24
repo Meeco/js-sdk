@@ -1,3 +1,4 @@
+import { CLIError } from '@oclif/errors';
 import { EncryptionKey } from '../models/encryption-key';
 import { IYamlConfig } from './yaml-config';
 
@@ -31,7 +32,7 @@ export class AuthConfig {
 
   static fromYamlConfig(yamlConfigObj: IYamlConfig<IAuthMetadata>): AuthConfig {
     if (yamlConfigObj.kind !== AuthConfig.kind) {
-      throw new Error(
+      throw new CLIError(
         `Config file of incorrect kind: ${yamlConfigObj.kind} (expected '${AuthConfig.kind}')`
       );
     }

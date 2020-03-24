@@ -73,7 +73,12 @@ export class ShareService {
   public async getSharedItem(user: AuthConfig, itemId: string) {
     const result = await this.vaultApiFactory(user)
       .ShareApi.sharesIdGet(itemId)
-      .then(shares => shares);
+      .catch(err => {
+        if ((<Response>err).status === 404) {
+          throw new CLIError(`Share with id '${itemId}' not found for the specified user`);
+        }
+        throw err;
+      });
     const [item] = result.items;
     const [share] = result.shares;
     const slots = this.addShareValuesToSlots(share, result.slots);

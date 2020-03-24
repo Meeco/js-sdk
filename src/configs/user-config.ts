@@ -1,3 +1,4 @@
+import { CLIError } from '@oclif/errors';
 import { ConfigReader, IYamlConfig } from './yaml-config';
 
 @ConfigReader<UserConfig>()
@@ -6,7 +7,7 @@ export class UserConfig {
 
   static fromYamlConfig(yamlConfigObj: IYamlConfig) {
     if (yamlConfigObj.kind !== 'User') {
-      throw new Error(`Config file of incorrect kind: ${yamlConfigObj.kind} (expected 'User')`);
+      throw new CLIError(`Config file of incorrect kind: ${yamlConfigObj.kind} (expected 'User')`);
     }
     return new UserConfig(yamlConfigObj.spec.password, yamlConfigObj.spec.secret);
   }

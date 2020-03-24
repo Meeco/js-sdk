@@ -90,7 +90,11 @@ export default class MeecoCommand extends Command {
       message = `API Responded with ${err.status}:\n ${JSON.stringify(result, null, 2)}`;
     } else {
       // Normal error object - print it with a stack trace if possible
-      message = err.message ? err.message + '\n' + (<any>err).stack : err;
+      if (err.stack) {
+        message = err.stack;
+      } else if (err.message) {
+        message = err.message;
+      }
     }
 
     this.error(message);

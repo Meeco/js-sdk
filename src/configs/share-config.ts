@@ -1,3 +1,4 @@
+import { CLIError } from '@oclif/errors';
 import { EncryptionKey } from '../models/encryption-key';
 import { AuthConfig } from './auth-config';
 import { IYamlConfig } from './yaml-config';
@@ -25,7 +26,7 @@ export class ShareConfig {
 
   static fromYamlConfig(yamlConfigObj: IYamlConfig<{}, IShareSpec>): ShareConfig {
     if (yamlConfigObj.kind !== ShareConfig.kind) {
-      throw new Error(
+      throw new CLIError(
         `Config file of incorrect kind: '${yamlConfigObj.kind}' (expected '${ShareConfig.kind}')`
       );
     }
