@@ -39,6 +39,7 @@ export default class SharesInfo extends MeecoCommand {
       );
       const result = await service.fetchSharedEncryptionSpace(
         share.from,
+        share.to,
         fromUserConnection,
         toUserConnection
       );

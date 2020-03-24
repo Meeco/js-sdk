@@ -20,6 +20,7 @@ export class ConnectionService {
 
   async createConnection(config: ConnectionConfig) {
     const { to, from, options } = config;
+
     this.log('Generating key pairs');
     const fromKeyPair = await this.createAndStoreKeyPair(from);
     const toKeyPair = await this.createAndStoreKeyPair(to);

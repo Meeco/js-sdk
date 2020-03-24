@@ -43,6 +43,7 @@ export class ShareService {
     this.log('Fetching shared encryption space');
     const sharedEncryptionSpace = await this.fetchSharedEncryptionSpace(
       fromUser,
+      toUser,
       fromUserConnection,
       toUserConnection
     );
@@ -164,6 +165,7 @@ export class ShareService {
 
   public async fetchSharedEncryptionSpace(
     fromUser: AuthConfig,
+    toUser: AuthConfig,
     fromUserConnection: Connection,
     toUserConnection: Connection
   ): Promise<ISharedEncryptionSpace> {
@@ -173,6 +175,11 @@ export class ShareService {
         from_user_connection_id: fromUserConnection.id,
         to_user_connection_id: toUserConnection!.id
       });
+    }
+
+    if (!toUserConnection.encryption_space_id) {
+      this.log('Shared encryption space does not appear to be claimed - claiming...');
+      await this.claimSharedEncryptionSpace(toUser, toUserConnection.id);
     }
 
     this.log('Fetching shared encryption key');

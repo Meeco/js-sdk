@@ -15,6 +15,7 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 - [Meeco CLI](#meeco-cli)
 - [Table of Contents](#table-of-contents)
 - [Setup](#setup)
+- [Reporting Errors](#reporting-errors)
 - [Dev Set up](#dev-set-up)
 - [Usage](#usage)
 - [Commands](#commands)
