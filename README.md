@@ -16,7 +16,7 @@ A CLI tool for interacting with Meeco services and databases
 - [Dev Set up](#dev-set-up)
 - [Usage](#usage)
 - [Commands](#commands)
-- [File Specifications](#file-specifications)
+- [Config File Specifications](#config-file-specifications)
   <!-- tocstop -->
 
 # Setup
@@ -415,7 +415,7 @@ _See code: [src/commands/users/get.ts](https://github.com/Meeco/cli/blob/master/
 
 <!-- commandsstop -->
 
-# File Specifications
+# Config File Specifications
 
 **Note** For consistency with API responses, all config files developed should use `snake_case` for properties.
 
