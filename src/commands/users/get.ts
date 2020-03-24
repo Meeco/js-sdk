@@ -3,8 +3,12 @@ import { UserService } from '../../services/user-service';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class GetUser extends MeecoCommand {
-  static description = 'Fetch details about Meeco user from the various microservices';
-  static examples = [`meeco users:get -c path/to/user-config.yaml`];
+  static description =
+    'Fetch details about Meeco user from the various microservices. Provide either a User config file or password and secret. Outputs an Authorization config file for use with future commands.';
+  static examples = [
+    `meeco users:get -c path/to/user-config.yaml`,
+    `meeco users:get -p My$ecretPassword1 -s 1.xxxxxx.xxxx-xxxxx-xxxxxxx-xxxxx`
+  ];
 
   static flags = {
     ...MeecoCommand.flags,

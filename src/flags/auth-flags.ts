@@ -4,7 +4,7 @@ export const authFlags = {
   auth: flags.string({
     char: 'a',
     required: true,
-    description: 'auth yaml file',
+    description: 'Authorization config file yaml file (if not using the default .user.yaml)',
     default: '.user.yaml'
   })
 };

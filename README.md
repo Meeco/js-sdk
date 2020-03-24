@@ -149,7 +149,9 @@ USAGE
   $ meeco connections:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] auth yaml file
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
@@ -181,8 +183,11 @@ USAGE
   $ meeco items:create
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] auth yaml file
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
   -i, --item=item                (required) item yaml file
 
 EXAMPLE
@@ -203,7 +208,9 @@ ARGUMENTS
   TEMPLATENAME  Name of the template to use for the item
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] auth yaml file
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
@@ -218,7 +225,9 @@ USAGE
   $ meeco items:get ITEMID
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] auth yaml file
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
@@ -233,7 +242,9 @@ USAGE
   $ meeco items:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] auth yaml file
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLE
@@ -286,7 +297,9 @@ ARGUMENTS
   ITEMID  ID of the shared item to fetch
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] auth yaml file
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
@@ -316,7 +329,9 @@ USAGE
   $ meeco shares:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] auth yaml file
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
@@ -331,7 +346,9 @@ USAGE
   $ meeco templates:info TEMPLATENAME
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] auth yaml file
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLE
@@ -349,7 +366,9 @@ USAGE
   $ meeco templates:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] auth yaml file
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
@@ -357,7 +376,7 @@ _See code: [src/commands/templates/list.ts](https://github.com/Meeco/cli/blob/ma
 
 ## `meeco users:create`
 
-Create a new Meeco user against the various microservices
+Create a new Meeco user against the various microservices using only a password. Outputs an Authorization config file for use with future commands.
 
 ```
 USAGE
@@ -365,30 +384,31 @@ USAGE
 
 OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
-  -p, --password=password        Password to use for the new user
+  -p, --password=password        Password to use for the new user (will be prompted for if not provided)
 
 EXAMPLE
-  meeco users:create -c path/to/user-config.yaml
+  meeco users:create -p My$ecretPassword1
 ```
 
 _See code: [src/commands/users/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/users/create.ts)_
 
 ## `meeco users:get`
 
-Fetch details about Meeco user from the various microservices
+Fetch details about Meeco user from the various microservices. Provide either a User config file or password and secret. Outputs an Authorization config file for use with future commands.
 
 ```
 USAGE
   $ meeco users:get
 
 OPTIONS
-  -c, --user=user                user config file
+  -c, --user=user                User config file (if not providing secret and password)
   -e, --environment=environment  [default: .environment.yaml] environment config file
-  -p, --password=password        the password of the user
-  -s, --secret=secret            the secret key of the user
+  -p, --password=password        the password of the user (will be prompted for if not provided)
+  -s, --secret=secret            the secret key of the user (will be prompted for if not provided)
 
-EXAMPLE
+EXAMPLES
   meeco users:get -c path/to/user-config.yaml
+  meeco users:get -p My$ecretPassword1 -s 1.xxxxxx.xxxx-xxxxx-xxxxxxx-xxxxx
 ```
 
 _See code: [src/commands/users/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/users/get.ts)_
