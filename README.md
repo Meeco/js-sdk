@@ -26,6 +26,11 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 1. Download the latest release from the [releases](https://github.com/Meeco/cli/releases) page
 1. Run `meeco` command out of the `./bin` folder
 
+# Reporting Errors
+
+1. Always make sure you are running the [latest release](https://github.com/Meeco/cli/releases) of the CLI.
+1. Include any stack traces if possible (re-run your command with `MEECO_DEBUG=1` environment variable)
+
 # Dev Set up
 
 Note - because the API SDK's are not currently publicly published, the `.npmrc.grpg` needs to be decrypted to `.npmrc` to install dependencies. This is likely to change in future.
