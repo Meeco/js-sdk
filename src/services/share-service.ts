@@ -82,6 +82,9 @@ export class ShareService {
       });
     const [item] = result.items;
     const [share] = result.shares;
+
+    await this.ensureClaimedKey(user, share.connection_id);
+
     const slots = this.addShareValuesToSlots(share, result.slots);
     const space = await this.keystoreApiFactory(user).EncryptionSpaceApi.encryptionSpacesIdGet(
       share.encryption_space_id
@@ -154,11 +157,11 @@ export class ShareService {
     toUserConnectionId: string
   ) {
     const fromResult = await this.createSharedEncryptionSpace(fromUser, fromUserConnectionId);
-    const toResult = await this.claimSharedEncryptionSpace(toUser, toUserConnectionId);
+    const toResult = await this.ensureClaimedKey(toUser, toUserConnectionId);
 
     return {
       from_user_connection_id: fromResult.connectionId,
-      to_user_connection_id: toResult.connectionId,
+      to_user_connection_id: toResult.connection.id,
       shared_data_encryption_key: EncryptionKey.fromRaw(fromResult.dataEncryptionKey)
     };
   }
@@ -179,7 +182,7 @@ export class ShareService {
 
     if (!toUserConnection.encryption_space_id) {
       this.log('Shared encryption space does not appear to be claimed - claiming...');
-      await this.claimSharedEncryptionSpace(toUser, toUserConnection.id);
+      await this.claimSharedEncryptionSpace(toUser, toUserConnection);
     }
 
     this.log('Fetching shared encryption key');
@@ -243,8 +246,19 @@ export class ShareService {
     };
   }
 
-  private async claimSharedEncryptionSpace(toUser: AuthConfig, connectionId: string) {
-    const connection = await this.fetchConnectionWithId(toUser, connectionId);
+  private async ensureClaimedKey(user: AuthConfig, connectionId: string) {
+    const connection = await this.fetchConnectionWithId(user, connectionId);
+    if (!connection.encryption_space_id) {
+      this.log('Shared data encryption key not yet claimed - claiming');
+      return this.claimSharedEncryptionSpace(user, connection);
+    }
+
+    return {
+      connection
+    };
+  }
+
+  private async claimSharedEncryptionSpace(toUser: AuthConfig, connection: Connection) {
     const encryptionSpaceId = connection.other_user_connection_encryption_space_id!;
     this.log('Fetching key pair');
     const keyPair = await this.keystoreApiFactory(toUser)
@@ -275,16 +289,14 @@ export class ShareService {
 
     this.log('Updating shared encryption space');
     await this.vaultApiFactory(toUser).ConnectionApi.connectionsConnectionIdEncryptionSpacePost(
-      connectionId,
+      connection.id,
       {
         encryption_space_id
       }
     );
 
     return {
-      connection,
-      connectionId,
-      toUserEncryptionSpace: encryptionSpace.encryption_space_data_encryption_key
+      connection
     };
   }
 
@@ -316,12 +328,22 @@ export class ShareService {
     }
   ) {
     const signature = await this.buildClaimKeySignature(encryptionSpaceId, keyPair.privateKey);
-    const claimedKey = await this.keystoreApiFactory(
-      user
-    ).SharedKeyApi.sharedKeysExternalIdClaimKeyPost(encryptionSpaceId, {
-      public_key: keyPair.publicKey,
-      request_signature: signature.serialized
-    });
+    const claimedKey = await this.keystoreApiFactory(user)
+      .SharedKeyApi.sharedKeysExternalIdClaimKeyPost(encryptionSpaceId, {
+        public_key: keyPair.publicKey,
+        request_signature: signature.serialized
+      })
+      .catch(async err => {
+        if (err?.status === 403 && typeof err?.json === 'function') {
+          const json = await err.json();
+          if (json?.errors[0].error === 'invalid_request_signature') {
+            throw new CLIError(
+              `Failed to claim shared encryption key - the request signature was rejected by the API`
+            );
+          }
+        }
+        throw err;
+      });
     const decryptedDataEncryptionKey = await cryppo.decryptSerializedWithPrivateKey({
       serialized: claimedKey.shared_key_claimed?.serialized_shared_key!,
       privateKeyPem: keyPair.privateKey

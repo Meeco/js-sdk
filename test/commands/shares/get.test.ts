@@ -18,6 +18,18 @@ describe('shares:get', () => {
 });
 
 function mockVault(api: nock.Scope) {
+  // Will verify that the connection exists and the key is claimed
+  api
+    .get('/connections/con_1')
+    .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+    .reply(200, {
+      connection: {
+        id: 'con_1',
+        encryption_space_id: 'encryption_space_id'
+      }
+    });
+
   api
     .get('/shares/share_1')
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
