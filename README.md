@@ -501,4 +501,5 @@ kind: User
 metadata:
 spec:
   password: <string>
+  secret: <string>
 ```
