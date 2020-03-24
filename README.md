@@ -4,7 +4,9 @@
 
 # Meeco CLI
 
-A CLI tool for interacting with Meeco services and databases
+<img width="100px" src="https://uploads-ssl.webflow.com/5cd5168c6c861f4fc7cfe969/5ddcaba04d724676d8758927_Meeco-Logo-2019-Circle-RGB.svg">
+
+A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and databases
 
 # Table of Contents
 
