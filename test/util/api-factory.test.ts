@@ -61,6 +61,37 @@ describe('API Factories', () => {
         status: 'ok'
       });
     });
+
+    it('captures api version issues and throws a special error', async () => {
+      nock('https://meeco-keystore.example.com/')
+        .get('/keypairs/my-id')
+        .reply(426);
+      const apiFactory = keystoreAPIFactory(<any>{
+        keystore: {
+          subscription_key: 'my_sub_key',
+          url: 'https://meeco-keystore.example.com'
+        }
+      });
+      const forUser = apiFactory(<any>{
+        keystore_access_token: 'my-keystore-token'
+      });
+      let error;
+      try {
+        const result = await forUser.KeypairApi.keypairsIdGet('my-id', {
+          headers: {
+            X_MY_CUSTOM_HEADER: 'foo'
+          }
+        });
+        expect(result).to.eql({
+          status: 'ok'
+        });
+      } catch (err) {
+        error = err;
+      }
+      expect(error.message).to.include(
+        'The API returned 426 and therefore does not support this version of the CLI. Please check for an update to the Meeco CLI'
+      );
+    });
   });
 
   describe('vaultAPIFactory', () => {
@@ -117,6 +148,37 @@ describe('API Factories', () => {
       expect(result).to.eql({
         status: 'ok'
       });
+    });
+
+    it('captures api version issues and throws a special error', async () => {
+      nock('https://meeco-vault.example.com/')
+        .get('/items/my-id')
+        .reply(426);
+      const apiFactory = vaultAPIFactory(<any>{
+        vault: {
+          subscription_key: 'my_sub_key',
+          url: 'https://meeco-vault.example.com'
+        }
+      });
+      const forUser = apiFactory(<any>{
+        vault_access_token: 'my-vault-token'
+      });
+      let error;
+      try {
+        const result = await forUser.ItemApi.itemsIdGet('my-id', {
+          headers: {
+            X_MY_CUSTOM_HEADER: 'foo'
+          }
+        });
+        expect(result).to.eql({
+          status: 'ok'
+        });
+      } catch (err) {
+        error = err;
+      }
+      expect(error.message).to.include(
+        'The API returned 426 and therefore does not support this version of the CLI. Please check for an update to the Meeco CLI'
+      );
     });
   });
 });
