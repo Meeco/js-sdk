@@ -21,6 +21,16 @@ export class ConnectionService {
   async createConnection(config: ConnectionConfig) {
     const { to, from, options } = config;
 
+    try {
+      // We want to avoid creating keypairs etc. only to find out that the users were connected from the beginning
+      this.log('Checking for an existing connection');
+      const existingConnection = await findConnectionBetween(from, to, this.environment, this.log);
+      if (existingConnection.fromUserConnection && existingConnection.toUserConnection) {
+        this.log('Connection exists between the specified users');
+        process.exit(0);
+      }
+    } catch (err) {}
+
     this.log('Generating key pairs');
     const fromKeyPair = await this.createAndStoreKeyPair(from);
     const toKeyPair = await this.createAndStoreKeyPair(to);
