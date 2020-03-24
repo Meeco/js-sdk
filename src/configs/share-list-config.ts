@@ -12,7 +12,7 @@ export class ShareListConfig {
   constructor(public readonly templateName: string, public readonly itemList: IShareListTemplate) {}
 
   static encodeFromResult(result: { shares: Share[]; items: Item[] }) {
-    const shares = result.shares.map(share => {
+    const shares = (result.shares || []).map(share => {
       return {
         share_id: share.id,
         connection_id: share.connection_id,

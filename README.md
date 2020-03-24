@@ -59,9 +59,19 @@ All yaml files beginning with a `.` in the root of the project are git ignored.
 
 ## Basic Flow
 
-### 1. Create an Account
+### 1. Account and Authorization Setup
 
-1. Create your first user: `meeco users:create -p <password> > .user.yaml`
+Create your first user:
+
+- `meeco users:create -p <password> > .user.yaml`
+
+Or - if you have an existing account (e.g if you would like to set up on a new computer) - you can fetch your user by providing your password and secret
+
+- `meeco users:get -p <password> -s <secret>` (or `meeco users:get` to be prompted for these).
+
+If you would prefer to provide a configuration file with your credentials, supply a [User Config](#User) file i.e.
+
+- `meeco users:get -c path/to/my-user-config.yaml`
 
 ### 2. Create an Item
 
