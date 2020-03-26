@@ -3,6 +3,8 @@ import * as Keystore from '@meeco/meeco-keystore-sdk';
 import { AuthConfig } from '../configs/auth-config';
 import { IEnvironment } from '../models/environment';
 
+const X_MEECO_API_VERSION = '2.0.0';
+
 /**
  * User authentication token for the given API or the entire user with tokens
  */
@@ -93,7 +95,7 @@ const keystoreAPI = (api: KeystoreAPIName, environment: IEnvironment, userAuth: 
             keystoreAPIKeys(environment, userAuth),
             environment.keystore.url,
             {
-              X_MEECO_API_VERSION: '3.0.0',
+              X_MEECO_API_VERSION: '2.0.0',
               X_MEECO_API_COMPONENT: 'keystore'
             },
             args
@@ -119,7 +121,7 @@ const vaultAPI = (api: VaultAPIName, environment: IEnvironment, userAuth: UserAu
             vaultAPIKeys(environment, userAuth),
             environment.vault.url,
             {
-              X_MEECO_API_VERSION: '3.0.0',
+              X_MEECO_API_VERSION,
               X_MEECO_API_COMPONENT: 'vault'
             },
             args
