@@ -3,6 +3,8 @@ import * as Keystore from '@meeco/meeco-keystore-sdk';
 import { AuthConfig } from '../configs/auth-config';
 import { IEnvironment } from '../models/environment';
 
+const X_MEECO_API_VERSION = '2.0.0';
+
 /**
  * User authentication token for the given API or the entire user with tokens
  */
@@ -45,24 +47,88 @@ const vaultAPIKeys = (environment: IEnvironment, userAuth: UserAuth) => (name: s
     'Authorization': vaultToken(userAuth)
   }[name]);
 
+const callApiWithDefaultHeaders = (
+  sdk: any,
+  api: string,
+  apiMethodName: string | symbol | number,
+  apiKey: string | ((name: string) => string),
+  basePath: string,
+  defaultHeaders: { [key: string]: string },
+  args: any[]
+) => {
+  const apiInstance = new sdk[api]({
+    apiKey,
+    basePath
+  });
+  const apiMethod = apiInstance[apiMethodName];
+  const argsCount = apiMethod.length;
+  const fetchOptions = args[argsCount - 1] || {};
+  fetchOptions.headers = {
+    ...defaultHeaders,
+    ...fetchOptions.headers
+  };
+  args[argsCount - 1] = fetchOptions;
+  return apiMethod.call(apiInstance, ...args).catch(err => {
+    if (err.status === 426) {
+      throw new Error(
+        'The API returned 426 and therefore does not support this version of the CLI. Please check for an update to the Meeco CLI.'
+      );
+    } else {
+      throw err;
+    }
+  });
+};
+
 /**
  * Helper for constructing instances of Keystore apis with all the required auth params
  */
 const keystoreAPI = (api: KeystoreAPIName, environment: IEnvironment, userAuth: UserAuth) => {
-  return new Keystore[api]({
-    apiKey: keystoreAPIKeys(environment, userAuth),
-    basePath: environment.keystore.url
-  }) as InstanceType<typeof Keystore[typeof api]>;
+  return new Proxy(
+    {},
+    {
+      get(target, apiMethodName) {
+        return (...args) =>
+          callApiWithDefaultHeaders(
+            Keystore,
+            api,
+            apiMethodName,
+            keystoreAPIKeys(environment, userAuth),
+            environment.keystore.url,
+            {
+              X_MEECO_API_VERSION: '2.0.0',
+              X_MEECO_API_COMPONENT: 'keystore'
+            },
+            args
+          );
+      }
+    }
+  ) as InstanceType<typeof Keystore[typeof api]>;
 };
 
 /**
  * Helper for constructing instances of Vault apis with all the required auth params
  */
 const vaultAPI = (api: VaultAPIName, environment: IEnvironment, userAuth: UserAuth) => {
-  return new Vault[api]({
-    apiKey: vaultAPIKeys(environment, userAuth),
-    basePath: environment.vault.url
-  }) as InstanceType<typeof Vault[typeof api]>;
+  return new Proxy(
+    {},
+    {
+      get(target, apiMethodName) {
+        return (...args) =>
+          callApiWithDefaultHeaders(
+            Vault,
+            api,
+            apiMethodName,
+            vaultAPIKeys(environment, userAuth),
+            environment.vault.url,
+            {
+              X_MEECO_API_VERSION,
+              X_MEECO_API_COMPONENT: 'vault'
+            },
+            args
+          );
+      }
+    }
+  ) as InstanceType<typeof Vault[typeof api]>;
 };
 
 /**
