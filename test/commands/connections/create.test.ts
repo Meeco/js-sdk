@@ -39,6 +39,14 @@ function stubVault(api: nock.Scope) {
     .get('/connections')
     .matchHeader('Authorization', 'from_vault_access_token')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+    .once()
+    .reply(404);
+
+  api
+    .get('/connections')
+    .matchHeader('Authorization', 'from_vault_access_token')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+    .once()
     .reply(200, {
       connections: [
         {
