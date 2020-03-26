@@ -3,7 +3,12 @@ import { AuthConfig } from '../configs/auth-config';
 import { ConnectionConfig } from '../configs/connection-config';
 import { IEnvironment } from '../models/environment';
 import { findConnectionBetween } from '../util/ find-connection-between';
-import { KeystoreAPIFactory, keystoreAPIFactory, VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
+import {
+  KeystoreAPIFactory,
+  keystoreAPIFactory,
+  VaultAPIFactory,
+  vaultAPIFactory
+} from '../util/api-factory';
 
 export class ConnectionService {
   private vaultApiFactory: VaultAPIFactory;
@@ -24,7 +29,7 @@ export class ConnectionService {
         this.log('Connection exists between the specified users');
         process.exit(1);
       }
-    } catch (err) { }
+    } catch (err) {}
 
     this.log('Generating key pairs');
     const fromKeyPair = await this.createAndStoreKeyPair(from);

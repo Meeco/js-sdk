@@ -1,4 +1,4 @@
-import { ItemTemplateApi } from '@meeco/meeco-api-sdk';
+import { ItemTemplateApi } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { TemplateConfig } from '../configs/template-config';
 import { IEnvironment } from '../models/environment';

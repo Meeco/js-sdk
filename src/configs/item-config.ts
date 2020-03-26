@@ -1,4 +1,4 @@
-import { Item, ItemTemplate, Slot } from '@meeco/meeco-api-sdk';
+import { Item, ItemTemplate, Slot } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { SLOT_TYPE_BLACKLIST, SLOT_WHITELIST } from '../util/constants';
 import { whitelistObject } from '../util/whitelist-object';

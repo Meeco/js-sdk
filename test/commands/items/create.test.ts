@@ -1,4 +1,4 @@
-import { ItemApi } from '@meeco/meeco-api-sdk';
+import { ItemApi } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import {

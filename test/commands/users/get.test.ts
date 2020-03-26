@@ -1,4 +1,4 @@
-import { Session, SrpChallenge } from '@meeco/meeco-keystore-sdk';
+import { Session, SrpChallenge } from '@meeco/keystore-api-sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import * as Nock from 'nock';

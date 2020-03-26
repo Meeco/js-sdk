@@ -14,10 +14,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Decrypt npmrc
-        run: ./.github/scripts/decrypt_npmrc.sh
-        env:
-          NPMRC_DECRYPTION_PASSPHRASE: ${{ secrets.npmrc_decryption_secret }}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
