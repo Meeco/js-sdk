@@ -1,4 +1,4 @@
-import { Item, Slot } from '@meeco/meeco-api-sdk';
+import { Item, Slot } from '@meeco/vault-api-sdk';
 import { ItemConfig } from './item-config';
 
 export interface IItemListTemplate {

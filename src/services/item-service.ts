@@ -1,6 +1,6 @@
 import * as cryppo from '@meeco/cryppo';
 import { CipherStrategy, encryptWithKey } from '@meeco/cryppo';
-import { Slot } from '@meeco/meeco-api-sdk';
+import { Slot } from '@meeco/vault-api-sdk';
 import { ItemConfig } from '../configs/item-config';
 import { ItemListConfig } from '../configs/item-list-config';
 import { EncryptionKey } from '../models/encryption-key';

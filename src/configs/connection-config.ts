@@ -1,4 +1,4 @@
-import { Connection, Invitation } from '@meeco/meeco-api-sdk';
+import { Connection, Invitation } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from './auth-config';
 import { IYamlConfig } from './yaml-config';

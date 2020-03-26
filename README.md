@@ -34,9 +34,7 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 
 # Dev Set up
 
-Note - because the API SDK's are not currently publicly published, the `.npmrc.grpg` needs to be decrypted to `.npmrc` to install dependencies. This is likely to change in future.
-
-After cloning the repo, run `npm install` to install dependencies.
+After cloning the repo, run `npm install` to install dependencies. You can then run the meeco command as below.
 
 ## The `meeco` command
 

@@ -1,4 +1,4 @@
-import { Item, Share } from '@meeco/meeco-api-sdk';
+import { Item, Share } from '@meeco/vault-api-sdk';
 
 type IShareListTemplate = Array<{
   connection_id: string;

@@ -1,5 +1,5 @@
-import * as Vault from '@meeco/meeco-api-sdk';
-import * as Keystore from '@meeco/meeco-keystore-sdk';
+import * as Keystore from '@meeco/keystore-api-sdk';
+import * as Vault from '@meeco/vault-api-sdk';
 import { AuthConfig } from '../configs/auth-config';
 import { IEnvironment } from '../models/environment';
 

@@ -1,5 +1,5 @@
 import * as cryppo from '@meeco/cryppo';
-import { Connection, Share, Slot } from '@meeco/meeco-api-sdk';
+import { Connection, Share, Slot } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../configs/auth-config';
 import { EncryptionSpaceConfig } from '../configs/encryption-space-config';

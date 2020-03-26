@@ -1,4 +1,4 @@
-import { ItemTemplate, Slot } from '@meeco/meeco-api-sdk';
+import { ItemTemplate, Slot } from '@meeco/vault-api-sdk';
 
 export class TemplateConfig {
   static readonly kind = 'Template';
