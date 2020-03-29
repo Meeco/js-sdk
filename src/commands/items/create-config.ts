@@ -8,6 +8,8 @@ import MeecoCommand from '../../util/meeco-command';
 export default class ItemsCreateConfig extends MeecoCommand {
   static description = 'Provide a template name to construct an item config file';
 
+  static example = `meeco items:create-config password`;
+
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags

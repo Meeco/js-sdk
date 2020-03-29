@@ -228,6 +228,9 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLES
+  meeco items:create-config password
 ```
 
 _See code: [src/commands/items/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/create-config.ts)_
