@@ -31,7 +31,8 @@ export default class CreateUser extends MeecoCommand {
 
   async run() {
     const { flags } = this.parse(this.constructor as typeof CreateUser);
-    let { password, secret, port } = flags;
+    let { password, secret } = flags;
+    const { port } = flags;
 
     try {
       const environment = await this.readEnvironmentFile();

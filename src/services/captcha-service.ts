@@ -36,7 +36,6 @@ export class CaptchaService {
     this.server.use(bodyParser.json());
     this.server.use(bodyParser.urlencoded({ extended: true }));
     this.server.post('/', (req, res) => {
-      console.log(req.body);
       this.tokenReady!(req.body['g-recaptcha-response']);
       res.send(`You may now close this browser tab and return to the terminal`);
     });
