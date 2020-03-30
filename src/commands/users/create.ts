@@ -22,17 +22,21 @@ export default class CreateUser extends MeecoCommand {
       char: 's',
       description: 'Manual secret to use (for testing purposes)',
       required: false
+    }),
+    port: _flags.integer({
+      default: 5210,
+      description: 'Port to listen on for captcha response (optional - use if 5210 is reserved)'
     })
   };
 
   async run() {
     const { flags } = this.parse(this.constructor as typeof CreateUser);
-    let { password, secret } = flags;
+    let { password, secret, port } = flags;
 
     try {
       const environment = await this.readEnvironmentFile();
       const userService = new UserService(environment, this.updateStatus);
-      const captchaService = new CaptchaService(environment);
+      const captchaService = new CaptchaService(environment, port);
       const secretService = new SecretService();
 
       if (!password) {
