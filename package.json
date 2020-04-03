@@ -1,7 +1,7 @@
 {
   "name": "cli",
   "description": "A CLI tool for interacting with the Meeco APIs",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "author": "Meeco",
   "bin": {
     "meeco": "./bin/run"
