@@ -16,7 +16,7 @@ export class CaptchaService {
     cli.action.start('Starting server');
     await this.startServer();
     await cli.open(
-      `${this.environment.keystore.url}/home/captcha_callback_form?redirect_url=http://localhost:${this.port}`
+      `${this.environment.keystore.url}/home/captcha_callback_form?redirect_url=http://localhost:${this.port}&subscription-key=${this.environment.keystore.subscription_key}`
     );
     cli.action.start('Please solve captcha in the browser - waiting for CAPTCHA token');
     const token = await this.tokenResult!;
