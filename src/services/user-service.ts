@@ -194,10 +194,12 @@ export class UserService {
     return dek;
   }
 
-  public async generateUsername() {
+  public async generateUsername(captcha_token: string) {
     this.log('Generating username');
     return this.keystoreApiFactory('')
-      .UserApi.srpUsernamePost()
+      .UserApi.srpUsernamePost({
+        captcha_token
+      })
       .then(res => res.username);
   }
 

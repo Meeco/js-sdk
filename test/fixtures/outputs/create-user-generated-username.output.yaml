@@ -1,6 +1,6 @@
 kind: Authentication
 metadata:
-  secret: 1.mocked_generated_username.my_secret_key
+  secret: 1.mocked_generated_username.Y3ZXUY-tKdUxt-i35BfF-RGn4ZN-uWAxHe
   keystore_access_token: keystore_auth_token
   vault_access_token: "[decrypted]encrypted_vault_session_string--PRIVATE_KEY--12324"
   data_encryption_key: cmFuZG9tbHlfZ2VuZXJhdGVkX2tleQ==

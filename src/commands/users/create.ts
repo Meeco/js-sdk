@@ -1,5 +1,6 @@
 import { flags as _flags } from '@oclif/command';
 import cli from 'cli-ux';
+import { CaptchaService } from '../../services/captcha-service';
 import { SecretService } from '../../services/secret-service';
 import { UserService } from '../../services/user-service';
 import MeecoCommand from '../../util/meeco-command';
@@ -21,21 +22,23 @@ export default class CreateUser extends MeecoCommand {
       char: 's',
       description: 'Manual secret to use (for testing purposes)',
       required: false
+    }),
+    port: _flags.integer({
+      default: 5210,
+      description: 'Port to listen on for captcha response (optional - use if 5210 is reserved)'
     })
   };
 
   async run() {
     const { flags } = this.parse(this.constructor as typeof CreateUser);
     let { password, secret } = flags;
+    const { port } = flags;
 
     try {
       const environment = await this.readEnvironmentFile();
-      const service = new UserService(environment, this.updateStatus);
-
-      if (!secret) {
-        const username = await service.generateUsername();
-        secret = await new SecretService().generateSecret(username);
-      }
+      const userService = new UserService(environment, this.updateStatus);
+      const captchaService = new CaptchaService(environment, port);
+      const secretService = new SecretService();
 
       if (!password) {
         while (!password) {
@@ -43,7 +46,13 @@ export default class CreateUser extends MeecoCommand {
         }
       }
 
-      const result = await service.create(password, secret);
+      if (!secret) {
+        const captchaToken = await captchaService.requestCaptchaToken();
+        const username = await userService.generateUsername(captchaToken);
+        secret = await secretService.generateSecret(username);
+      }
+
+      const result = await userService.create(password, secret);
       this.printYaml(result);
     } catch (err) {
       await this.handleException(err);

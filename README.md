@@ -71,6 +71,8 @@ Create your first user:
 
 - `meeco users:create -p <password> > .user.yaml`
 
+Note: this will open a browser with a Captcha to be solved.
+
 Or - if you have an existing account (e.g if you would like to set up on a new computer) - you can fetch your user by providing your password and secret
 
 - `meeco users:get -p <password> -s <secret>` (or `meeco users:get` to be prompted for these).
@@ -404,6 +406,9 @@ USAGE
 OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
   -p, --password=password        Password to use for the new user (will be prompted for if not provided)
+
+  --port=port                    [default: 5210] Port to listen on for captcha response (optional - use if 5210 is
+                                 reserved)
 
 EXAMPLE
   meeco users:create -p My$ecretPassword1
