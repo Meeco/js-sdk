@@ -9,9 +9,9 @@ type IShareListTemplate = Array<{
 export class ShareListConfig {
   static kind = 'Shares';
 
-  constructor(public readonly templateName: string, public readonly itemList: IShareListTemplate) { }
+  constructor(public readonly templateName: string, public readonly itemList: IShareListTemplate) {}
 
-  static encodeFromResult(result: { shares: Share[]; }) {
+  static encodeFromResult(result: { shares: Share[] }) {
     const shares = (result.shares || []).map(share => {
       return {
         share_id: share.id,

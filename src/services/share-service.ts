@@ -9,7 +9,12 @@ import { EncryptionKey } from '../models/encryption-key';
 import { IEnvironment } from '../models/environment';
 import { LocalSlot } from '../models/local-slot';
 import { findConnectionBetween } from '../util/ find-connection-between';
-import { KeystoreAPIFactory, keystoreAPIFactory, vaultAPIFactory, VaultAPIFactory } from '../util/api-factory';
+import {
+  KeystoreAPIFactory,
+  keystoreAPIFactory,
+  vaultAPIFactory,
+  VaultAPIFactory
+} from '../util/api-factory';
 import { ItemService } from './item-service';
 
 interface ISharedEncryptionSpace {
@@ -384,12 +389,12 @@ export class ShareService {
       const encrypted =
         typeof slot.value === 'string'
           ? await cryppo
-            .encryptWithKey({
-              data: slot.value || '',
-              key: sharedDataEncryptionKey.key,
-              strategy: cryppo.CipherStrategy.AES_GCM
-            })
-            .then(result => result.serialized)
+              .encryptWithKey({
+                data: slot.value || '',
+                key: sharedDataEncryptionKey.key,
+                strategy: cryppo.CipherStrategy.AES_GCM
+              })
+              .then(result => result.serialized)
           : slot.value;
       return {
         [slot.id!]: encrypted

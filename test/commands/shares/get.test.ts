@@ -35,26 +35,22 @@ function mockVault(api: nock.Scope) {
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
-      shares: [
-        {
-          id: 'sh_1',
-          connection_id: 'con_1',
-          shareable_id: 'it_1',
-          encryption_space_id: 'es_1',
-          encrypted_values: {
-            sl_1: 'encrypted_fluffy',
-            sl_2: 'encrypted_12'
-          }
+      share: {
+        id: 'sh_1',
+        connection_id: 'con_1',
+        shareable_id: 'it_1',
+        encryption_space_id: 'es_1',
+        encrypted_values: {
+          sl_1: 'encrypted_fluffy',
+          sl_2: 'encrypted_12'
         }
-      ],
-      items: [
-        {
-          id: 'it_1',
-          label: 'My Cat',
-          encrypted: true,
-          slot_ids: ['sl_1', 'sl_2']
-        }
-      ],
+      },
+      item: {
+        id: 'it_1',
+        label: 'My Cat',
+        encrypted: true,
+        slot_ids: ['sl_1', 'sl_2']
+      },
       slots: [
         {
           id: 'sl_1',
