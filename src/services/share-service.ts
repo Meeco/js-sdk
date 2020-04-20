@@ -9,12 +9,7 @@ import { EncryptionKey } from '../models/encryption-key';
 import { IEnvironment } from '../models/environment';
 import { LocalSlot } from '../models/local-slot';
 import { findConnectionBetween } from '../util/ find-connection-between';
-import {
-  KeystoreAPIFactory,
-  keystoreAPIFactory,
-  vaultAPIFactory,
-  VaultAPIFactory
-} from '../util/api-factory';
+import { KeystoreAPIFactory, keystoreAPIFactory, vaultAPIFactory, VaultAPIFactory } from '../util/api-factory';
 import { ItemService } from './item-service';
 
 interface ISharedEncryptionSpace {
@@ -57,7 +52,7 @@ export class ShareService {
     );
 
     this.log('Sending shared data');
-    const shareResult = await this.vaultApiFactory(fromUser).ShareApi.sharesPost({
+    const shareResult = await this.vaultApiFactory(fromUser).SharesApi.sharesPost({
       shares: [share]
     });
     return {
@@ -67,21 +62,20 @@ export class ShareService {
   }
 
   public async listShares(user: AuthConfig) {
-    const result = await this.vaultApiFactory(user).ShareApi.sharesGet();
+    const result = await this.vaultApiFactory(user).SharesApi.sharesIncomingGet();
     return ShareListConfig.encodeFromResult(result);
   }
 
   public async getSharedItem(user: AuthConfig, itemId: string) {
     const result = await this.vaultApiFactory(user)
-      .ShareApi.sharesIdGet(itemId)
+      .SharesApi.sharesIdGet(itemId)
       .catch(err => {
         if ((<Response>err).status === 404) {
           throw new CLIError(`Share with id '${itemId}' not found for the specified user`);
         }
         throw err;
       });
-    const [item] = result.items;
-    const [share] = result.shares;
+    const { item, share } = result;
 
     await this.ensureClaimedKey(user, share.connection_id);
 
@@ -390,12 +384,12 @@ export class ShareService {
       const encrypted =
         typeof slot.value === 'string'
           ? await cryppo
-              .encryptWithKey({
-                data: slot.value || '',
-                key: sharedDataEncryptionKey.key,
-                strategy: cryppo.CipherStrategy.AES_GCM
-              })
-              .then(result => result.serialized)
+            .encryptWithKey({
+              data: slot.value || '',
+              key: sharedDataEncryptionKey.key,
+              strategy: cryppo.CipherStrategy.AES_GCM
+            })
+            .then(result => result.serialized)
           : slot.value;
       return {
         [slot.id!]: encrypted
