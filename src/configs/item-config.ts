@@ -1,4 +1,4 @@
-import { Item, ItemTemplate, Slot } from '@meeco/vault-api-sdk';
+import { Item, ItemTemplateWithoutAssociations, Slot } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { SLOT_TYPE_BLACKLIST, SLOT_WHITELIST } from '../util/constants';
 import { whitelistObject } from '../util/whitelist-object';
@@ -41,7 +41,7 @@ export class ItemConfig {
     };
   }
 
-  static encodeFromTemplate(template: ItemTemplate & { slots: Slot[] }) {
+  static encodeFromTemplate(template: ItemTemplateWithoutAssociations & { slots: Slot[] }) {
     const notBlacklisted = (slot: Slot) => !SLOT_TYPE_BLACKLIST.includes(slot.slot_type_name);
     return ItemConfig.encodeFromJson(
       {

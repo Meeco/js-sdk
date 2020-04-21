@@ -11,12 +11,11 @@ export class ShareListConfig {
 
   constructor(public readonly templateName: string, public readonly itemList: IShareListTemplate) {}
 
-  static encodeFromResult(result: { shares: Share[]; items: Item[] }) {
+  static encodeFromResult(result: { shares: Share[] }) {
     const shares = (result.shares || []).map(share => {
       return {
         share_id: share.id,
-        connection_id: share.connection_id,
-        item: result.items.find(item => item.id === share.shareable_id)
+        connection_id: share.connection_id
       };
     });
     return ShareListConfig.encodeFromJson({ shares });

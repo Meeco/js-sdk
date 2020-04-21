@@ -57,7 +57,7 @@ export class ShareService {
     );
 
     this.log('Sending shared data');
-    const shareResult = await this.vaultApiFactory(fromUser).ShareApi.sharesPost({
+    const shareResult = await this.vaultApiFactory(fromUser).SharesApi.sharesPost({
       shares: [share]
     });
     return {
@@ -67,21 +67,20 @@ export class ShareService {
   }
 
   public async listShares(user: AuthConfig) {
-    const result = await this.vaultApiFactory(user).ShareApi.sharesGet();
+    const result = await this.vaultApiFactory(user).SharesApi.sharesIncomingGet();
     return ShareListConfig.encodeFromResult(result);
   }
 
   public async getSharedItem(user: AuthConfig, itemId: string) {
     const result = await this.vaultApiFactory(user)
-      .ShareApi.sharesIdGet(itemId)
+      .SharesApi.sharesIdGet(itemId)
       .catch(err => {
         if ((<Response>err).status === 404) {
           throw new CLIError(`Share with id '${itemId}' not found for the specified user`);
         }
         throw err;
       });
-    const [item] = result.items;
-    const [share] = result.shares;
+    const { item, share } = result;
 
     await this.ensureClaimedKey(user, share.connection_id);
 

@@ -2,23 +2,7 @@ kind: Shares
 spec:
   - share_id: sh_1
     connection_id: con_1
-    item:
-      id: it_1
-      label: My Cat
-      slot_ids:
-        - sl_1
-        - sl_2
   - share_id: sh_2
     connection_id: con_1
-    item:
-      id: it_3
-      label: My Rat
-      slot_ids:
-        - sl_5
   - share_id: sh_3
     connection_id: con_2
-    item:
-      id: it_2
-      label: My Dog
-      slot_ids:
-        - sl_3

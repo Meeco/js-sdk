@@ -65,6 +65,11 @@ All yaml files beginning with a `.` in the root of the project are git ignored.
 
 ## Basic Flow
 
+A simple end-to-end script is available in test/e2e.sh which shows setting up two
+users, (Alice and Bob) creating a connection between them and sharing a card between them.
+
+You can open it and step through the commands yourself or run the entire script.
+
 ### 1. Account and Authorization Setup
 
 Create your first user:
