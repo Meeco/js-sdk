@@ -16,7 +16,7 @@ echo "Setup a connection between 'Bob' and 'Alice'"
 ./bin/run connections:create -c .connection_Alice_Bob.yaml
 echo "List 'Alice's items and prepare one for sharing"
 ./bin/run items:list -a .Alice.yaml
-itemid=`meeco items:list -a .Alice.yaml | awk '/^  - id: / {print $3}'`
+itemid=`./bin/run items:list -a .Alice.yaml | awk '/^  - id: / {print $3}'`
 ./bin/run shares:create-config --from .Alice.yaml --to .Bob.yaml -i $itemid > .share_Alice_Bob.yaml
 echo "Share the card to 'Bob'"
 ./bin/run shares:create -c .share_Alice_Bob.yaml
