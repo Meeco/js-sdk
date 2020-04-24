@@ -40,19 +40,32 @@ export class ConnectionService {
     const encryptedFromName: string = await this.encryptRecipientName(options.fromName, to);
 
     this.log('Sending invitation request');
+
     const invitation = await this.vaultApiFactory(from)
       .InvitationApi.invitationsPost({
-        public_key_id: fromKeyPair.vaultStoredKeyPair.id,
-        encrypted_recipient_name: encryptedToName
+        public_key: {
+          key_store_id: fromKeyPair.keystoreStoredKeyPair.id,
+          public_key: fromKeyPair.keystoreStoredKeyPair.public_key,
+          encryption_strategy: 'Rsa4096'
+        },
+        invitation: {
+          encrypted_recipient_name: encryptedToName
+        }
       })
       .then(result => result.invitation);
 
     this.log('Accepting invitation');
     await this.vaultApiFactory(to)
       .ConnectionApi.connectionsPost({
-        public_key_id: toKeyPair.vaultStoredKeyPair.id,
-        encrypted_recipient_name: encryptedFromName,
-        invitation_token: invitation.token
+        public_key: {
+          key_store_id: toKeyPair.keystoreStoredKeyPair.id,
+          public_key: toKeyPair.keystoreStoredKeyPair.public_key,
+          encryption_strategy: 'Rsa4096'
+        },
+        connection: {
+          encrypted_recipient_name: encryptedFromName,
+          invitation_token: invitation.token
+        }
       })
       .then(res => res.connection);
 
@@ -119,18 +132,9 @@ export class ConnectionService {
       })
       .then(result => result.keypair);
 
-    const vaultStoredKeyPair = await this.vaultApiFactory(user)
-      .PublicKeyApi.keyStorePublicKeysPost({
-        key_store_id: keystoreStoredKeyPair.id,
-        encryption_strategy: 'Rsa4096',
-        public_key: keyPair.publicKey
-      })
-      .then(result => result.public_key);
-
     return {
       keyPair,
-      keystoreStoredKeyPair,
-      vaultStoredKeyPair
+      keystoreStoredKeyPair
     };
   }
 }

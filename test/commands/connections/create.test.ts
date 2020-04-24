@@ -25,8 +25,10 @@ describe('connections:create', () => {
 function stubVault(api: nock.Scope) {
   api
     .post('/invitations', {
-      public_key_id: 'from_public_key_id',
-      encrypted_recipient_name: '[serialized][encrypted]TestTo[with from_data_encryption_key]'
+      public_key: { key_store_id: 'from_stored_keypair_id', encryption_strategy: 'Rsa4096' },
+      invitation: {
+        encrypted_recipient_name: '[serialized][encrypted]TestTo[with from_data_encryption_key]'
+      }
     })
     .reply(200, {
       invitation: {
@@ -71,41 +73,16 @@ function stubVault(api: nock.Scope) {
 
   api
     .post('/connections', {
-      public_key_id: 'to_public_key_id',
-      encrypted_recipient_name:
-        '[serialized][encrypted]TestFrom[with to_data_encryption_key\u0000\u0000]',
-      invitation_token: 'invitation_token'
+      public_key: { key_store_id: 'to_stored_keypair_id', encryption_strategy: 'Rsa4096' },
+      connection: {
+        encrypted_recipient_name:
+          '[serialized][encrypted]TestFrom[with to_data_encryption_key\u0000\u0000]',
+        invitation_token: 'invitation_token'
+      }
     })
     .reply(200, {
       connection: {
         id: 'connection_id'
-      }
-    });
-
-  api
-    .post('/key_store/public_keys', {
-      key_store_id: 'from_stored_keypair_id',
-      encryption_strategy: 'Rsa4096',
-      public_key: '--PUBLIC_KEY--ABCD'
-    })
-    .matchHeader('Authorization', 'from_vault_access_token')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, {
-      public_key: {
-        id: 'from_public_key_id'
-      }
-    });
-  api
-    .post('/key_store/public_keys', {
-      key_store_id: 'to_stored_keypair_id',
-      encryption_strategy: 'Rsa4096',
-      public_key: '--PUBLIC_KEY--ABCD'
-    })
-    .matchHeader('Authorization', 'to_vault_access_token')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, {
-      public_key: {
-        id: 'to_public_key_id'
       }
     });
 }
