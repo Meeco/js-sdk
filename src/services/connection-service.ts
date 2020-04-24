@@ -40,11 +40,13 @@ export class ConnectionService {
     const encryptedFromName: string = await this.encryptRecipientName(options.fromName, to);
 
     this.log('Sending invitation request');
+
     const invitation = await this.vaultApiFactory(from)
       .InvitationApi.invitationsPost({
         public_key: {
           key_store_id: fromKeyPair.keystoreStoredKeyPair.id,
-          public_Key: fromKeyPair.keystoreStoredKeyPair.public_key
+          public_key: fromKeyPair.keystoreStoredKeyPair.public_key,
+          encryption_strategy: 'Rsa4096'
         },
         invitation: {
           encrypted_recipient_name: encryptedToName
@@ -57,7 +59,8 @@ export class ConnectionService {
       .ConnectionApi.connectionsPost({
         public_key: {
           key_store_id: toKeyPair.keystoreStoredKeyPair.id,
-          public_Key: toKeyPair.keystoreStoredKeyPair.public_key
+          public_key: toKeyPair.keystoreStoredKeyPair.public_key,
+          encryption_strategy: 'Rsa4096'
         },
         connection: {
           encrypted_recipient_name: encryptedFromName,

@@ -25,7 +25,7 @@ describe('connections:create', () => {
 function stubVault(api: nock.Scope) {
   api
     .post('/invitations', {
-      public_key: { key_store_id: 'from_stored_keypair_id' },
+      public_key: { key_store_id: 'from_stored_keypair_id', encryption_strategy: 'Rsa4096' },
       invitation: {
         encrypted_recipient_name: '[serialized][encrypted]TestTo[with from_data_encryption_key]'
       }
@@ -73,7 +73,7 @@ function stubVault(api: nock.Scope) {
 
   api
     .post('/connections', {
-      public_key: { key_store_id: 'to_stored_keypair_id' },
+      public_key: { key_store_id: 'to_stored_keypair_id', encryption_strategy: 'Rsa4096' },
       connection: {
         encrypted_recipient_name:
           '[serialized][encrypted]TestFrom[with to_data_encryption_key\u0000\u0000]',
