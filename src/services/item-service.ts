@@ -1,16 +1,25 @@
 import * as cryppo from '@meeco/cryppo';
-import { CipherStrategy, encryptWithKey } from '@meeco/cryppo';
-import { Slot } from '@meeco/vault-api-sdk';
+import { CipherStrategy, decryptWithKey, encryptWithKey } from '@meeco/cryppo';
+import { binaryBufferToString } from '@meeco/cryppo/dist/src/util';
+import { AttachmentResponse, Slot } from '@meeco/vault-api-sdk';
+import { CLIError } from '@oclif/errors';
+import { createReadStream, unlinkSync, writeFile } from 'fs';
+import { lookup } from 'mime-types';
+import { basename } from 'path';
+import { promisify } from 'util';
+import { AuthConfig } from '../configs/auth-config';
+import { FileAttachmentConfig } from '../configs/file-attachment-config';
 import { ItemConfig } from '../configs/item-config';
 import { ItemListConfig } from '../configs/item-list-config';
 import { EncryptionKey } from '../models/encryption-key';
 import { IEnvironment } from '../models/environment';
 import { LocalSlot } from '../models/local-slot';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
+import { readFileAsBuffer } from '../util/file';
 
 export class ItemService {
   private vaultAPIFactory: VaultAPIFactory;
-  constructor(environment: IEnvironment) {
+  constructor(environment: IEnvironment, private log: (message: string) => void) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
   }
 
@@ -20,11 +29,11 @@ export class ItemService {
   public static decryptAllSlots(slots: Slot[], dataEncryptionKey: EncryptionKey): Promise<Slot[]> {
     return Promise.all(
       slots.map(async slot => {
-        const value = slot.encrypted
+        const value = slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
           ? await cryppo.decryptWithKey({
-              key: dataEncryptionKey.key,
-              serialized: slot.encrypted_value
-            })
+            key: dataEncryptionKey.key,
+            serialized: slot.encrypted_value
+          })
           : (slot as LocalSlot).value;
         const decrypted = {
           ...slot,
@@ -57,10 +66,112 @@ export class ItemService {
     });
   }
 
+  public async attachFile(config: FileAttachmentConfig, auth: AuthConfig) {
+    let file: Buffer, fileName: string, fileType: string;
+    const filePath = config.template.file;
+    this.log('Reading file');
+    try {
+      file = await readFileAsBuffer(filePath);
+      fileName = basename(filePath);
+      fileType = lookup(filePath) || 'application/octet-stream';
+    } catch (err) {
+      throw new CLIError(
+        `Failed to read file '${config.template.file}' - please check that the file exists and is readable`
+      );
+    }
+
+    // TODO - File Thumbnail
+
+    this.log('Fetching item');
+    const item = await this.get(
+      config.itemId,
+      auth.vault_access_token,
+      auth.data_encryption_key
+    ).catch(err => {
+      throw new CLIError(
+        `Unable to find item '${config.itemId}' - please check that the item exists for the current user.`
+      );
+    });
+
+    this.log('Encrypting File');
+    const encryptedFile = await cryppo.encryptWithKey({
+      key: auth.data_encryption_key.key,
+      data: binaryBufferToString(file),
+      strategy: CipherStrategy.AES_GCM
+    });
+
+    // No matter what was attempted, the only way to get a binary to upload in multi-part formdata was to pass it in as a ReadStream
+    // so we need to encrypt the file, write it down to a temp file and then read it back in again for upload
+    const tmpEncryptedFile = `./.encrypted_file_tmp`;
+    await promisify(writeFile)(tmpEncryptedFile, encryptedFile.serialized);
+    const fileStream = createReadStream(tmpEncryptedFile);
+    const removeTempEncryptedFile = () => unlinkSync(tmpEncryptedFile);
+
+    let uploadedBinary: AttachmentResponse;
+    try {
+      this.log('Uploading encrypted file');
+      uploadedBinary = await this.vaultAPIFactory(
+        auth.vault_access_token
+      ).AttachmentApi.attachmentsPost(fileStream as any, fileName, fileType);
+    } catch (err) {
+      this.log('Upload encrypted file failed - removing temp encrypted version');
+      throw err;
+    } finally {
+      removeTempEncryptedFile();
+    }
+
+    this.log('Adding attachment to item');
+    await this.vaultAPIFactory(auth.vault_access_token).ItemApi.itemsIdPut(item.spec.id, <any>{
+      item: {
+        slots_attributes: [
+          {
+            label: config.template.label,
+            slot_type_name: 'attachment',
+            attachments_attributes: [
+              {
+                id: uploadedBinary.attachment.id
+              }
+            ]
+          }
+        ]
+      }
+    });
+  }
+
+  public async downloadAttachment(id: string, vaultAccessToken: string, dataEncryptionKey: EncryptionKey, destination: string) {
+    this.log('Downloading attachment');
+    const result = await this.vaultAPIFactory(
+      vaultAccessToken
+    ).AttachmentApi.attachmentsIdDownloadGet(id);
+    this.log('Decrypting downloaded file');
+    const buffer = await result.arrayBuffer();
+    const encryptedContents = await binaryBufferToString(buffer);
+    const decryptedContents = await decryptWithKey({
+      serialized: encryptedContents,
+      key: dataEncryptionKey.key
+    });
+    this.log('Writing decrypted file to destination');
+    return promisify(writeFile)(destination, decryptedContents, {
+      flag: 'wx'  // Write if not exists but fail if the file exists
+    }).catch(err => {
+      if (err.code === 'EEXIST') {
+        throw new CLIError('The destination file exists - please use a different destination file');
+      } else {
+        throw new CLIError(`Failed to write to destionat file: '${err.message}'`);
+      }
+    });
+  }
+
+  public async removeSlot(slotId: string, vaultAccessToken: string) {
+    this.log('Removing slot');
+    await this.vaultAPIFactory(vaultAccessToken).SlotApi.slotsIdDelete(slotId);
+  }
+
   public async get(id: string, vaultAccessToken: string, dataEncryptionKey: EncryptionKey) {
     const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
     const { item } = result;
     const slots = await ItemService.decryptAllSlots(result.slots, dataEncryptionKey);
+
     return ItemConfig.encodeFromJson({
       ...item,
       slots
