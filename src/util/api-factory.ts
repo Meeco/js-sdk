@@ -91,13 +91,6 @@ const callApiWithDefaultHeaders = (
     // fetchInterceptor
   );
   const apiMethod = apiInstance[apiMethodName];
-  // const argsCount = apiMethod.length;
-  // const fetchOptions = args[argsCount - 1] || {};
-  // fetchOptions.headers = {
-  //   ...defaultHeaders,
-  //   ...fetchOptions.headers
-  // };
-  // args[argsCount - 1] = fetchOptions;
   return apiMethod.call(apiInstance, ...args).catch(err => {
     if (err.status === 426) {
       throw new Error(
