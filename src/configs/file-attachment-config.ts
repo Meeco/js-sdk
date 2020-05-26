@@ -1,7 +1,6 @@
 import { ConfigReader, IYamlConfig } from './yaml-config';
 
 export interface IFileAttachmentConfigTemplate {
-  name: string;
   label: string;
   file: string;
 }

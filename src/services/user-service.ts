@@ -311,7 +311,7 @@ export class UserService {
 
     const encryptedDek = await this.getDataEncryptionKey(
       sessionAuthenticationToken,
-      vaultUser.user.private_encryption_space_id
+      vaultUser.user.private_encryption_space_id!
     );
     const dek = await cryppo.decryptWithKey({
       serialized: encryptedDek.serialized_data_encryption_key,

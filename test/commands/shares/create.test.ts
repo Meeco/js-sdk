@@ -38,7 +38,13 @@ function stubVault(api: nock.Scope) {
           encrypted: true,
           encrypted_value: 'aes.slot_b'
         }
-      ]
+      ],
+      associations_to: [],
+      associations: [],
+      attachments: [],
+      classification_nodes: [],
+      shares: [],
+      thumbnails: []
     });
 
   api

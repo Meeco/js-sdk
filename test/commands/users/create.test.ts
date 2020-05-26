@@ -156,14 +156,16 @@ function stubVault(api: Nock.Scope) {
       user: {
         id: 'vault_user'
       },
-      encrypted_session_authentication_string: 'encrypted_vault_session_string'
+      encrypted_session_authentication_string: 'encrypted_vault_session_string',
+      associations: []
     });
 
   api
     .put('/me', {
       user: {
         private_encryption_space_id: 'data_encryption_key_id'
-      }
+      },
+      associations: []
     })
     .matchHeader('Authorization', '[decrypted]encrypted_vault_session_string--PRIVATE_KEY--12324')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')

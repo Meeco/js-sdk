@@ -11,6 +11,12 @@
     },
     {
       "type": "node",
+      "request": "attach",
+      "name": "Attach",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "type": "node",
       "request": "launch",
       "name": "Debug Current Test File",
       "skipFiles": ["<node_internals>/**"],

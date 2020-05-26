@@ -49,7 +49,13 @@ const response = {
       encrypted_value: 'Session Ale',
       encrypted: true
     }
-  ]
+  ],
+  associations_to: [],
+  associations: [],
+  attachments: [],
+  classification_nodes: [],
+  shares: [],
+  thumbnails: []
 };
 
 function mockVault(api) {

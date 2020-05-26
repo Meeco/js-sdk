@@ -41,7 +41,13 @@ describe('API Factories', () => {
         .matchHeader('X_MEECO_API_COMPONENT', 'keystore')
         .matchHeader('X_MY_CUSTOM_HEADER', 'foo')
         .reply(200, {
-          status: 'ok'
+          associations_to: [],
+          associations: [],
+          attachments: [],
+          classification_nodes: [],
+          shares: [],
+          slots: [],
+          thumbnails: []
         });
       const apiFactory = keystoreAPIFactory(<any>{
         keystore: {
@@ -57,9 +63,7 @@ describe('API Factories', () => {
           X_MY_CUSTOM_HEADER: 'foo'
         }
       });
-      expect(result).to.eql({
-        status: 'ok'
-      });
+      expect(result).to.be.ok;
     });
 
     it('captures api version issues and throws a special error', async () => {
@@ -103,7 +107,42 @@ describe('API Factories', () => {
         .matchHeader('X_MEECO_API_VERSION', '2.0.0')
         .matchHeader('X_MEECO_API_COMPONENT', 'vault')
         .reply(200, {
-          status: 'ok'
+          associations_to: [],
+          associations: [],
+          attachments: [],
+          classification_nodes: [],
+          shares: [],
+          slots: [],
+          thumbnails: []
+        });
+      const apiFactory = vaultAPIFactory(<any>{
+        vault: {
+          subscription_key: 'my_sub_key',
+          url: 'https://meeco-vault.example.com'
+        }
+      });
+      const forUser = apiFactory(<any>{
+        vault_access_token: 'my-vault-token'
+      });
+      const result = await forUser.ItemApi.itemsIdGet('my-id');
+      expect(result).to.be.ok;
+    });
+
+    it('mixes any user-defined headers with the default ones', async () => {
+      nock('https://meeco-vault.example.com/')
+        .get('/items/my-id')
+        .matchHeader('Meeco-Subscription-Key', 'my_sub_key')
+        .matchHeader('Authorization', 'my-vault-token')
+        .matchHeader('X_MEECO_API_VERSION', '2.0.0')
+        .matchHeader('X_MEECO_API_COMPONENT', 'vault')
+        .reply(200, {
+          associations_to: [],
+          associations: [],
+          attachments: [],
+          classification_nodes: [],
+          shares: [],
+          slots: [],
+          thumbnails: []
         });
       const apiFactory = vaultAPIFactory(<any>{
         vault: {
@@ -116,37 +155,13 @@ describe('API Factories', () => {
       });
       const result = await forUser.ItemApi.itemsIdGet('my-id');
       expect(result).to.eql({
-        status: 'ok'
-      });
-    });
-
-    it('mixes any user-defined headers with the default ones', async () => {
-      nock('https://meeco-vault.example.com/')
-        .get('/items/my-id')
-        .matchHeader('Meeco-Subscription-Key', 'my_sub_key')
-        .matchHeader('Authorization', 'my-vault-token')
-        .matchHeader('X_MEECO_API_VERSION', '2.0.0')
-        .matchHeader('X_MEECO_API_COMPONENT', 'vault')
-        .matchHeader('X_MY_CUSTOM_HEADER', 'bar')
-        .reply(200, {
-          status: 'ok'
-        });
-      const apiFactory = vaultAPIFactory(<any>{
-        vault: {
-          subscription_key: 'my_sub_key',
-          url: 'https://meeco-vault.example.com'
-        }
-      });
-      const forUser = apiFactory(<any>{
-        vault_access_token: 'my-vault-token'
-      });
-      const result = await forUser.ItemApi.itemsIdGet('my-id', {
-        headers: {
-          X_MY_CUSTOM_HEADER: 'bar'
-        }
-      });
-      expect(result).to.eql({
-        status: 'ok'
+        associations_to: [],
+        associations: [],
+        attachments: [],
+        classification_nodes: [],
+        shares: [],
+        slots: [],
+        thumbnails: []
       });
     });
 
@@ -165,11 +180,7 @@ describe('API Factories', () => {
       });
       let error;
       try {
-        const result = await forUser.ItemApi.itemsIdGet('my-id', {
-          headers: {
-            X_MY_CUSTOM_HEADER: 'foo'
-          }
-        });
+        const result = await forUser.ItemApi.itemsIdGet('my-id');
         expect(result).to.eql({
           status: 'ok'
         });

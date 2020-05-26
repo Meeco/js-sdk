@@ -86,7 +86,7 @@ export class ShareService {
 
     const slots = this.addShareValuesToSlots(share, result.slots);
     const space = await this.keystoreApiFactory(user).EncryptionSpaceApi.encryptionSpacesIdGet(
-      share.encryption_space_id
+      share.encryption_space_id!
     );
     const decryptedSharedDataEncryptionKey = await cryppo.decryptWithKey({
       serialized: space.encryption_space_data_encryption_key.serialized_data_encryption_key,

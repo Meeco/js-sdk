@@ -24,7 +24,13 @@ describe('shares:create-config', () => {
 
 const response = {
   item: {},
-  slots: []
+  slots: [],
+  associations_to: [],
+  associations: [],
+  attachments: [],
+  classification_nodes: [],
+  shares: [],
+  thumbnails: []
 };
 
 function mockVault(api) {

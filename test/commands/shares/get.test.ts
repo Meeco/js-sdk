@@ -66,7 +66,13 @@ function mockVault(api: nock.Scope) {
           // The API will return null as the encrypted_values on the share are to be used
           encrypted_value: null
         }
-      ]
+      ],
+      associations_to: [],
+      associations: [],
+      attachments: [],
+      classification_nodes: [],
+      shares: [],
+      thumbnails: []
     });
 }
 

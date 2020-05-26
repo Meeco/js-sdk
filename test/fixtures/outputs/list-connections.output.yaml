@@ -1,8 +1,32 @@
 - name: Some Encrypted Name[decrypted with my_generated_dek]
   connection:
     id: abc123
+    user_id: null
+    user_name: null
+    user_image: null
+    user_email: null
+    encryption_space_id: null
+    public_key: null
+    public_key_encryption_strategy: null
+    key_store_keypair_id: null
+    other_user_connection_public_key: null
+    other_user_connection_public_key_encryption_strategy: null
+    other_user_connection_encryption_space_id: null
+    other_user_connection_key_store_keypair_id: null
     encrypted_recipient_name: Some Encrypted Name
 - name: Some Other Encrypted Name[decrypted with my_generated_dek]
   connection:
     id: def456
+    user_id: null
+    user_name: null
+    user_image: null
+    user_email: null
+    encryption_space_id: null
+    public_key: null
+    public_key_encryption_strategy: null
+    key_store_keypair_id: null
+    other_user_connection_public_key: null
+    other_user_connection_public_key_encryption_strategy: null
+    other_user_connection_encryption_space_id: null
+    other_user_connection_key_store_keypair_id: null
     encrypted_recipient_name: Some Other Encrypted Name

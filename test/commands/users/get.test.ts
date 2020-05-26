@@ -107,7 +107,8 @@ function stubVault(api: Nock.Scope) {
       user: {
         id: 'vault_user',
         private_encryption_space_id: 'data_encryption_key_id'
-      }
+      },
+      associations: []
     });
   api
     .post('/session', {

@@ -51,5 +51,8 @@ const response = {
     {
       id: 'beer'
     }
-  ]
+  ],
+  attachments: [],
+  thumbnails: [],
+  classification_nodes: []
 };

@@ -4,7 +4,7 @@
  * (because if you just mock fs.readFile / fs.writeFile then
  * oclif itself ceases to work as it can not read commands)
  */
-import { readFile, writeFile } from 'fs';
+import { readFile, unlinkSync, writeFile, WriteFileOptions } from 'fs';
 import { promisify } from 'util';
 
 const read = promisify(readFile);
@@ -12,4 +12,6 @@ const write = promisify(writeFile);
 
 export const readFileAsText = file => read(file, 'binary');
 export const readFileAsBuffer = file => read(file);
-export const writeFileContents = (file, contents) => write(file, contents);
+export const writeFileContents = (file, contents, options?: WriteFileOptions) =>
+  write(file, contents, options);
+export const deleteFileSync = path => unlinkSync(path);

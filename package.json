@@ -10,7 +10,7 @@
   "dependencies": {
     "@meeco/cryppo": "^0.3.4",
     "@meeco/keystore-api-sdk": "0.13.0",
-    "@meeco/vault-api-sdk": "0.13.0",
+    "@meeco/vault-api-sdk": "^0.14.0",
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.13.3",
     "@oclif/plugin-help": "^2.2.1",
@@ -26,6 +26,7 @@
     "form-data": "^3.0.0",
     "globby": "~11.0.0",
     "jsrp": "~0.2.4",
+    "node-fetch": "^2.6.0",
     "node-forge": "0.8.5",
     "qs": "~6.9.1",
     "tslib": "^1.10.0",
@@ -93,7 +94,7 @@
   "scripts": {
     "readme": "oclif-dev readme && prettier --write README.md",
     "lint": "tslint -p . -t stylish -c tslint.json && tslint -p test/tsconfig.json -t stylish -c tslint.json",
-    "posttest": "npm run lint && npm run format:check",
+    "posttest": "npm run lint && npm run format:check && npm run readme",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
     "prepack": "rm -rf lib && tsc -b",

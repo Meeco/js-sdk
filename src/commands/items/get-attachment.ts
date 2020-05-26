@@ -7,21 +7,27 @@ import MeecoCommand from '../../util/meeco-command';
 export default class ItemsGetAttachment extends MeecoCommand {
   static description = 'Download and decrypt an attachment by id';
 
-  static example = `meeco items:get-attachment -i my-attachment-id -o ./my-attachment.txt`;
+  static example = `meeco items:get-attachment my-attachment-id -o ./my-attachment.txt`;
 
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
-    attachmentId: _flags.string({ char: 'i', required: true, description: 'id of the attachment to download' }),
     outputPath: _flags.string({ char: 'o', required: true, description: 'output file path' })
   };
 
-  static args = [];
+  static args = [
+    {
+      name: 'attachmentId',
+      description: 'ID of the attachment to download',
+      required: true
+    }
+  ];
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof ItemsGetAttachment);
+    const { flags, args } = this.parse(this.constructor as typeof ItemsGetAttachment);
     const environment = await this.readEnvironmentFile();
-    const { auth, attachmentId, outputPath } = flags;
+    const { auth, outputPath } = flags;
+    const { attachmentId } = args;
 
     try {
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
@@ -31,7 +37,12 @@ export default class ItemsGetAttachment extends MeecoCommand {
       }
 
       const service = new ItemService(environment, this.updateStatus);
-      await service.downloadAttachment(attachmentId, authConfig.vault_access_token, authConfig.data_encryption_key, outputPath);
+      await service.downloadAttachment(
+        attachmentId,
+        authConfig.vault_access_token,
+        authConfig.data_encryption_key,
+        outputPath
+      );
     } catch (err) {
       await this.handleException(err);
     }

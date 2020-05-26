@@ -8,7 +8,7 @@ import MeecoCommand from '../../util/meeco-command';
 export default class ItemsAttachFile extends MeecoCommand {
   static description = 'Encrypt and attach a file to an item';
 
-  static example = `meeco items:attach-file -c file-attachment-config.yaml`;
+  static example = `meeco items:attach-file -c ./file-attachment-config.yaml`;
 
   static flags = {
     ...MeecoCommand.flags,
