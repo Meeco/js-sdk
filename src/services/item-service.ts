@@ -4,7 +4,7 @@ import { binaryBufferToString } from '@meeco/cryppo/dist/src/util';
 import { AttachmentResponse, Slot, ThumbnailResponse } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { createReadStream } from 'fs';
-import * as imageThumbnail from 'image-thumbnail';
+import * as Jimp from 'jimp';
 import { lookup } from 'mime-types';
 import { basename } from 'path';
 import { AuthConfig } from '../configs/auth-config';
@@ -85,10 +85,11 @@ export class ItemService {
     const sizeType = `png_${targetThumbnailSize}${targetThumbnailSize}`;
 
     this.log('Generating image thumbnail');
-    const thumbnail = await imageThumbnail(file, {
-      width: targetThumbnailSize,
-      height: targetThumbnailSize
-    });
+    const jimp = await Jimp.read(file);
+    const thumbnail: Buffer = await jimp
+      .resize(targetThumbnailSize, targetThumbnailSize)
+      .getBufferAsync(Jimp.MIME_PNG);
+    await writeFileContents('./thumb.png', thumbnail);
 
     this.log('Encrypting image thumbnail');
     const encryptedThumbnail = await cryppo.encryptWithKey({
@@ -163,10 +164,13 @@ export class ItemService {
       fileUpload.removeTempEncryptedFile();
     }
 
-    // TODO - File Thumbnail
-    let thumbnail: ThumbnailResponse;
     if (fileType.startsWith('image/')) {
-      thumbnail = await this.generateAndUploadThumbnail(file, uploadedBinary.attachment.id, auth);
+      try {
+        await this.generateAndUploadThumbnail(file, uploadedBinary.attachment.id, auth);
+      } catch (err) {
+        console.log('Creating thumbnail failed - continuing without thumbnail');
+        console.log(err.message);
+      }
     }
 
     this.log('Adding attachment to item');
