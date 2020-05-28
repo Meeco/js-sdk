@@ -11,7 +11,7 @@ import {
 
 describe('item:create', () => {
   customTest
-    .stub(ItemApi.prototype, 'itemsPost', createItem)
+    .stub(ItemApi.prototype, 'itemsPost', createItem as any)
     .stdout()
     .run([
       'items:create',
@@ -29,7 +29,7 @@ describe('item:create', () => {
     });
 
   customTest
-    .stub(ItemApi.prototype, 'itemsPost', createItem)
+    .stub(ItemApi.prototype, 'itemsPost', createItem as any)
     .mockCryppo()
     .stdout()
     .run([

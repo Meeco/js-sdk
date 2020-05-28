@@ -10,8 +10,8 @@ import { promisify } from 'util';
 const read = promisify(readFile);
 const write = promisify(writeFile);
 
-export const readFileAsText = file => read(file, 'binary');
-export const readFileAsBuffer = file => read(file);
-export const writeFileContents = (file, contents, options?: WriteFileOptions) =>
+export const readFileAsText = (file: string) => read(file, 'binary');
+export const readFileAsBuffer = (file: string) => read(file);
+export const writeFileContents = (file: string, contents, options?: WriteFileOptions) =>
   write(file, contents, options);
 export const deleteFileSync = path => unlinkSync(path);

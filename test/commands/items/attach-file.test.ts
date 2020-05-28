@@ -1,4 +1,3 @@
-import { stringAsBinaryBuffer } from '@meeco/cryppo/dist/src/util';
 import { expect } from '@oclif/test';
 import * as mime from 'mime-types';
 import { Scope } from 'nock';
@@ -7,19 +6,23 @@ import { customTest, inputFixture, testEnvironmentFile, testUserAuth } from '../
 
 const singleBluePixel = `iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg==`;
 
+const mockFileRead: any = (path: string) => {
+  expect(path).to.eql('./my/secret/file.txt');
+  return Promise.resolve(Buffer.from(singleBluePixel, 'binary'));
+};
+
+const mockLookup: any = (path: string) => {
+  if (path === './my/secret/file.txt') {
+    return 'image/png';
+  } else {
+    return 'text/plain';
+  }
+};
+
 describe('items:attach-file', () => {
   customTest
-    .stub(fileUtils, 'readFileAsBuffer', path => {
-      expect(path).to.eql('./my/secret/file.txt');
-      return Promise.resolve(stringAsBinaryBuffer(singleBluePixel));
-    })
-    .stub(mime, 'lookup', path => {
-      if (path === './my/secret/file.txt') {
-        return 'image/png';
-      } else {
-        return 'text/plain';
-      }
-    })
+    .stub(fileUtils, 'readFileAsBuffer', mockFileRead)
+    .stub(mime, 'lookup', mockLookup)
     .nock('https://sandbox.meeco.me/vault', mockVaultApi)
     .stdout()
     .stderr()

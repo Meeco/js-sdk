@@ -18,7 +18,7 @@ describe('items:get-attachment', () => {
   });
 
   customTest
-    .stub(fileUtils, 'writeFileContents', (path, contents, options) => {
+    .stub(fileUtils, 'writeFileContents', <any>((path, contents, options) => {
       expect(path).to.eql('out_file.txt');
       expect(contents).to.eql(binaryBufferToString(singleBluePixel));
       expect(options).to.eql({
@@ -26,8 +26,8 @@ describe('items:get-attachment', () => {
       });
       written = true;
       return Promise.resolve();
-    })
-    .stub(AttachmentApi.prototype, 'attachmentsIdDownloadGet', id => {
+    }))
+    .stub(AttachmentApi.prototype, 'attachmentsIdDownloadGet', <any>(id => {
       expect(id).to.eql('my_attachment_id');
       return Promise.resolve({
         async arrayBuffer() {
@@ -41,7 +41,7 @@ describe('items:get-attachment', () => {
           return stringAsBinaryBuffer(encryptedPixel.serialized);
         }
       });
-    })
+    }))
     .stdout()
     .stderr()
     .run([
@@ -57,12 +57,12 @@ describe('items:get-attachment', () => {
     });
 
   customTest
-    .stub(fileUtils, 'writeFileContents', (path, contents, options) => {
+    .stub(fileUtils, 'writeFileContents', <any>((path, contents, options) => {
       return Promise.reject({
         code: 'EEXIST'
       });
-    })
-    .stub(AttachmentApi.prototype, 'attachmentsIdDownloadGet', id => {
+    }))
+    .stub(AttachmentApi.prototype, 'attachmentsIdDownloadGet', <any>(id => {
       expect(id).to.eql('my_attachment_id');
       return Promise.resolve({
         async arrayBuffer() {
@@ -76,7 +76,7 @@ describe('items:get-attachment', () => {
           return stringAsBinaryBuffer(encryptedPixel.serialized);
         }
       });
-    })
+    }))
     .stdout()
     .stderr()
     .run([
@@ -91,12 +91,12 @@ describe('items:get-attachment', () => {
     .it('does not overwrite existing files');
 
   customTest
-    .stub(fileUtils, 'writeFileContents', (path, contents, options) => {
+    .stub(fileUtils, 'writeFileContents', <any>((path, contents, options) => {
       return Promise.reject({
         code: 'OTHER'
       });
-    })
-    .stub(AttachmentApi.prototype, 'attachmentsIdDownloadGet', id => {
+    }))
+    .stub(AttachmentApi.prototype, 'attachmentsIdDownloadGet', <any>(id => {
       expect(id).to.eql('my_attachment_id');
       return Promise.resolve({
         async arrayBuffer() {
@@ -110,7 +110,7 @@ describe('items:get-attachment', () => {
           return stringAsBinaryBuffer(encryptedPixel.serialized);
         }
       });
-    })
+    }))
     .stdout()
     .stderr()
     .run([
