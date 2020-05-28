@@ -1,4 +1,10 @@
-import { Item, ItemTemplateWithoutAssociations, Slot } from '@meeco/vault-api-sdk';
+import {
+  Attachment,
+  Item,
+  ItemTemplateWithoutAssociations,
+  Slot,
+  Thumbnail
+} from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { SLOT_TYPE_BLACKLIST, SLOT_WHITELIST } from '../util/constants';
 import { whitelistObject } from '../util/whitelist-object';
@@ -29,7 +35,10 @@ export class ItemConfig {
     return new ItemConfig(yamlConfigObj.metadata.template, yamlConfigObj.spec);
   }
 
-  static encodeFromJson(item: Item & { slots?: Slot[] }, metadata?: IItemMetadata) {
+  static encodeFromJson(
+    item: Item & { slots?: Slot[]; thumbnails?: Thumbnail[]; attachments?: Attachment[] },
+    metadata?: IItemMetadata
+  ) {
     const _item = { ...item };
     const _slots = item.slots?.slice().map(slot => whitelistObject(SLOT_WHITELIST, slot) as Slot);
     _item.slots = _slots || ([] as Slot[]);

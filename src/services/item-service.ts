@@ -1,9 +1,10 @@
 import * as cryppo from '@meeco/cryppo';
 import { CipherStrategy, decryptWithKey, encryptWithKey } from '@meeco/cryppo';
 import { binaryBufferToString } from '@meeco/cryppo/dist/src/util';
-import { AttachmentResponse, Slot } from '@meeco/vault-api-sdk';
+import { AttachmentResponse, Slot, ThumbnailResponse } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { createReadStream } from 'fs';
+import * as imageThumbnail from 'image-thumbnail';
 import { lookup } from 'mime-types';
 import { basename } from 'path';
 import { AuthConfig } from '../configs/auth-config';
@@ -66,6 +67,55 @@ export class ItemService {
     });
   }
 
+  private async getStringAsFileStream(fileContents: string) {
+    // No matter what was attempted, the only way to get a binary to upload in multi-part formdata was to pass it in as a ReadStream
+    // so we need to encrypt the file, write it down to a temp file and then read it back in again for upload
+    const tmpEncryptedFile = `./.encrypted_file_tmp`;
+    await writeFileContents(tmpEncryptedFile, fileContents);
+    const fileStream = createReadStream(tmpEncryptedFile);
+    const removeTempEncryptedFile = () => deleteFileSync(tmpEncryptedFile);
+    return {
+      fileStream,
+      removeTempEncryptedFile
+    };
+  }
+
+  public async generateAndUploadThumbnail(file: Buffer, binaryId: string, auth: AuthConfig) {
+    const targetThumbnailSize = 256;
+    const sizeType = `png_${targetThumbnailSize}${targetThumbnailSize}`;
+
+    this.log('Generating image thumbnail');
+    const thumbnail = await imageThumbnail(file, {
+      width: targetThumbnailSize,
+      height: targetThumbnailSize
+    });
+
+    this.log('Encrypting image thumbnail');
+    const encryptedThumbnail = await cryppo.encryptWithKey({
+      key: auth.data_encryption_key.key,
+      data: binaryBufferToString(thumbnail),
+      strategy: CipherStrategy.AES_GCM
+    });
+
+    this.log('Uploading encrypted image thumbnail');
+    const fileUpload = await this.getStringAsFileStream(encryptedThumbnail.serialized);
+    let response: ThumbnailResponse;
+    try {
+      response = await this.vaultAPIFactory(auth).ThumbnailApi.thumbnailsPost(
+        fileUpload.fileStream as any,
+        binaryId,
+        sizeType
+      );
+    } catch (err) {
+      this.log('Error uploading encrypted thumbnail file!');
+      throw err;
+    } finally {
+      fileUpload.removeTempEncryptedFile();
+    }
+
+    return response;
+  }
+
   public async attachFile(config: FileAttachmentConfig, auth: AuthConfig) {
     let file: Buffer, fileName: string, fileType: string;
     const filePath = config.template.file;
@@ -79,8 +129,6 @@ export class ItemService {
         `Failed to read file '${config.template.file}' - please check that the file exists and is readable`
       );
     }
-
-    // TODO - File Thumbnail
 
     this.log('Fetching item');
     const item = await this.get(
@@ -100,30 +148,31 @@ export class ItemService {
       strategy: CipherStrategy.AES_GCM
     });
 
-    // No matter what was attempted, the only way to get a binary to upload in multi-part formdata was to pass it in as a ReadStream
-    // so we need to encrypt the file, write it down to a temp file and then read it back in again for upload
-    const tmpEncryptedFile = `./.encrypted_file_tmp`;
-    await writeFileContents(tmpEncryptedFile, encryptedFile.serialized);
-    const fileStream = createReadStream(tmpEncryptedFile);
-    const removeTempEncryptedFile = () => deleteFileSync(tmpEncryptedFile);
+    const fileUpload = await this.getStringAsFileStream(encryptedFile.serialized);
 
     let uploadedBinary: AttachmentResponse;
     try {
       this.log('Uploading encrypted file');
       uploadedBinary = await this.vaultAPIFactory(
         auth.vault_access_token
-      ).AttachmentApi.attachmentsPost(fileStream as any, fileName, fileType);
+      ).AttachmentApi.attachmentsPost(fileUpload.fileStream as any, fileName, fileType);
     } catch (err) {
       this.log('Upload encrypted file failed - removing temp encrypted version');
       throw err;
     } finally {
-      removeTempEncryptedFile();
+      fileUpload.removeTempEncryptedFile();
+    }
+
+    // TODO - File Thumbnail
+    let thumbnail: ThumbnailResponse;
+    if (fileType.startsWith('image/')) {
+      thumbnail = await this.generateAndUploadThumbnail(file, uploadedBinary.attachment.id, auth);
     }
 
     this.log('Adding attachment to item');
     const updated = await this.vaultAPIFactory(auth.vault_access_token).ItemApi.itemsIdPut(
       item.spec.id,
-      <any>{
+      {
         item: {
           slots_attributes: [
             {
@@ -183,12 +232,14 @@ export class ItemService {
 
   public async get(id: string, vaultAccessToken: string, dataEncryptionKey: EncryptionKey) {
     const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
-    const { item } = result;
+    const { item, thumbnails, attachments } = result;
     const slots = await ItemService.decryptAllSlots(result.slots, dataEncryptionKey);
 
     return ItemConfig.encodeFromJson({
       ...item,
-      slots
+      slots,
+      thumbnails,
+      attachments
     });
   }
 

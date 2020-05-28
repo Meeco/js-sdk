@@ -25,6 +25,7 @@
     "express": "^4.17.1",
     "form-data": "^3.0.0",
     "globby": "~11.0.0",
+    "image-thumbnail": "^1.0.8",
     "jsrp": "~0.2.4",
     "node-fetch": "^2.6.0",
     "node-forge": "0.8.5",
