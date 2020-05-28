@@ -8,12 +8,15 @@ spec:
     - b
     - c
   slots:
-    - id: a
-      name: url
+    - name: url
       encrypted_value: "[serialized][encrypted]https://www.example.com[with my_generated_dek]"
-    - id: b
-      name: account
+      encrypted: true
+      id: a
+    - name: account
       encrypted_value: "[serialized][encrypted]jsmith@example.com[with my_generated_dek]"
-    - id: c
-      name: password
+      encrypted: true
+      id: b
+    - name: password
       encrypted_value: "[serialized][encrypted]mySecretPassword1[with my_generated_dek]"
+      encrypted: true
+      id: c

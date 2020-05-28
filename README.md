@@ -123,6 +123,7 @@ You can fetch the shared item as the second user with `meeco shares:list -a .use
 - [`meeco items:create-config TEMPLATENAME`](#meeco-itemscreate-config-templatename)
 - [`meeco items:get ITEMID`](#meeco-itemsget-itemid)
 - [`meeco items:get-attachment ATTACHMENTID`](#meeco-itemsget-attachment-attachmentid)
+- [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
 - [`meeco items:list`](#meeco-itemslist)
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
@@ -308,6 +309,31 @@ EXAMPLES
 ```
 
 _See code: [src/commands/items/get-attachment.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get-attachment.ts)_
+
+## `meeco items:get-thumbnail THUMBNAILID`
+
+Download and decrypt an thumbnail by id
+
+```
+USAGE
+  $ meeco items:get-thumbnail THUMBNAILID
+
+ARGUMENTS
+  THUMBNAILID  ID of the thumbnail to download
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  -o, --outputPath=outputPath    (required) output file path
+
+EXAMPLES
+  meeco items:get-thumbnail my-thumbnail-id -o ./my-thumbnail.png
+```
+
+_See code: [src/commands/items/get-thumbnail.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get-thumbnail.ts)_
 
 ## `meeco items:list`
 

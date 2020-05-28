@@ -25,17 +25,41 @@ spec:
   slots:
     - id: sl_1
       name: null
-      created_at: 1970-01-01
+      description: null
+      encrypted: false
+      ordinal: null
+      visible: null
+      classification_node_ids: null
+      attachment_ids: null
+      slotable_id: null
+      slotable_type: null
+      required: null
       updated_at: 1970-01-01
+      created_at: 1970-01-01
+      slot_type_name: null
+      creator: null
+      encrypted_value: encrypted_fluffy
+      image: null
+      label: name
       value: encrypted_fluffy[decrypted with secret_shared_key[decrypted with
         my_key_encryption_key]]
-      label: name
-      encrypted_value: encrypted_fluffy
     - id: sl_2
       name: null
-      created_at: 1970-01-01
+      description: null
+      encrypted: false
+      ordinal: null
+      visible: null
+      classification_node_ids: null
+      attachment_ids: null
+      slotable_id: null
+      slotable_type: null
+      required: null
       updated_at: 1970-01-01
+      created_at: 1970-01-01
+      slot_type_name: null
+      creator: null
+      encrypted_value: encrypted_12
+      image: null
+      label: age
       value: encrypted_12[decrypted with secret_shared_key[decrypted with
         my_key_encryption_key]]
-      label: age
-      encrypted_value: encrypted_12

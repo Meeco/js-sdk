@@ -6,8 +6,7 @@ import {
   Thumbnail
 } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
-import { SLOT_TYPE_BLACKLIST, SLOT_WHITELIST } from '../util/constants';
-import { whitelistObject } from '../util/whitelist-object';
+import { SLOT_TYPE_BLACKLIST } from '../util/constants';
 import { ConfigReader, IYamlConfig } from './yaml-config';
 
 export interface IItemTemplate {
@@ -40,8 +39,6 @@ export class ItemConfig {
     metadata?: IItemMetadata
   ) {
     const _item = { ...item };
-    const _slots = item.slots?.slice().map(slot => whitelistObject(SLOT_WHITELIST, slot) as Slot);
-    _item.slots = _slots || ([] as Slot[]);
 
     return {
       kind: ItemConfig.kind,

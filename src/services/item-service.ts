@@ -82,14 +82,13 @@ export class ItemService {
 
   public async generateAndUploadThumbnail(file: Buffer, binaryId: string, auth: AuthConfig) {
     const targetThumbnailSize = 256;
-    const sizeType = `png_${targetThumbnailSize}${targetThumbnailSize}`;
+    const sizeType = `png_${targetThumbnailSize}x${targetThumbnailSize}`;
 
     this.log('Generating image thumbnail');
     const jimp = await Jimp.read(file);
     const thumbnail: Buffer = await jimp
       .resize(targetThumbnailSize, targetThumbnailSize)
       .getBufferAsync(Jimp.MIME_PNG);
-    await writeFileContents('./thumb.png', thumbnail);
 
     this.log('Encrypting image thumbnail');
     const encryptedThumbnail = await cryppo.encryptWithKey({
@@ -199,17 +198,12 @@ export class ItemService {
     });
   }
 
-  public async downloadAttachment(
-    id: string,
-    vaultAccessToken: string,
+  private async downloadAndDecryptFile<T extends Blob>(
+    download: () => Promise<T>,
     dataEncryptionKey: EncryptionKey,
     destination: string
   ) {
-    this.log('Downloading attachment');
-    const result = await this.vaultAPIFactory(
-      vaultAccessToken
-    ).AttachmentApi.attachmentsIdDownloadGet(id);
-    this.log('Decrypting downloaded file');
+    const result = await download();
     const buffer = await (<any>result).arrayBuffer();
     const encryptedContents = await binaryBufferToString(buffer);
     const decryptedContents = await decryptWithKey({
@@ -226,6 +220,34 @@ export class ItemService {
         throw new CLIError(`Failed to write to destination file: '${err.message}'`);
       }
     });
+  }
+
+  public async downloadAttachment(
+    id: string,
+    vaultAccessToken: string,
+    dataEncryptionKey: EncryptionKey,
+    destination: string
+  ) {
+    this.log('Downloading attachment');
+    return this.downloadAndDecryptFile(
+      () => this.vaultAPIFactory(vaultAccessToken).AttachmentApi.attachmentsIdDownloadGet(id),
+      dataEncryptionKey,
+      destination
+    );
+  }
+
+  public async downloadThumbnail(
+    id: string,
+    vaultAccessToken: string,
+    dataEncryptionKey: EncryptionKey,
+    destination: string
+  ) {
+    this.log('Downloading thumbnail');
+    return this.downloadAndDecryptFile(
+      () => this.vaultAPIFactory(vaultAccessToken).ThumbnailApi.thumbnailsIdGet(id),
+      dataEncryptionKey,
+      destination
+    );
   }
 
   public async removeSlot(slotId: string, vaultAccessToken: string) {
