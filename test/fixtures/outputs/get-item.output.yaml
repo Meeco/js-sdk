@@ -1,24 +1,47 @@
 kind: Item
 spec:
-  label: My Fave Foods
+  id: null
   name: food
+  label: My Fave Foods
+  description: null
+  created_at: 1970-01-01
+  item_template_id: null
+  ordinal: null
+  visible: null
+  updated_at: 1970-01-01
+  item_template_label: null
+  shareable: null
+  image: null
+  item_image: null
+  item_image_background_colour: null
+  classification_node_ids: null
+  association_ids: null
+  associations_to_ids: null
   slot_ids:
     - steak
     - pizza
     - yoghurt
+  me: null
+  background_color: null
   slots:
     - id: pizza
       name: pizza
+      created_at: 1970-01-01
+      updated_at: 1970-01-01
       value: Hawaiian[decrypted with my_generated_dek]
       label: Pizza
       encrypted_value: Hawaiian
     - id: steak
       name: steak
+      created_at: 1970-01-01
+      updated_at: 1970-01-01
       value: Rump[decrypted with my_generated_dek]
       label: Steak
       encrypted_value: Rump
     - id: beer
       name: beer
+      created_at: 1970-01-01
+      updated_at: 1970-01-01
       value: Session Ale[decrypted with my_generated_dek]
       label: Beer
       encrypted_value: Session Ale

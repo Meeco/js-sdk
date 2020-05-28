@@ -63,6 +63,7 @@ describe('API Factories', () => {
           X_MY_CUSTOM_HEADER: 'foo'
         }
       });
+      // tslint:disable-next-line
       expect(result).to.be.ok;
     });
 
@@ -125,6 +126,7 @@ describe('API Factories', () => {
         vault_access_token: 'my-vault-token'
       });
       const result = await forUser.ItemApi.itemsIdGet('my-id');
+      // tslint:disable-next-line
       expect(result).to.be.ok;
     });
 
@@ -155,6 +157,7 @@ describe('API Factories', () => {
       });
       const result = await forUser.ItemApi.itemsIdGet('my-id');
       expect(result).to.eql({
+        item: undefined,
         associations_to: [],
         associations: [],
         attachments: [],

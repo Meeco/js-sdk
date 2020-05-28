@@ -27,29 +27,43 @@ describe('templates:info', () => {
 const response = {
   item_templates: [
     {
+      created_at: new Date(0),
+      updated_at: new Date(0),
       name: 'food',
       slots_ids: ['steak', 'pizza', 'yoghurt']
     },
     {
+      created_at: new Date(0),
+      updated_at: new Date(0),
       name: 'drink',
       slot_ids: ['yoghurt', 'water', 'beer']
     }
   ],
   slots: [
     {
-      id: 'pizza'
+      id: 'pizza',
+      created_at: new Date(0),
+      updated_at: new Date(0)
     },
     {
-      id: 'steak'
+      id: 'steak',
+      created_at: new Date(0),
+      updated_at: new Date(0)
     },
     {
-      id: 'yoghurt'
+      id: 'yoghurt',
+      created_at: new Date(0),
+      updated_at: new Date(0)
     },
     {
-      id: 'water'
+      id: 'water',
+      created_at: new Date(0),
+      updated_at: new Date(0)
     },
     {
-      id: 'beer'
+      id: 'beer',
+      created_at: new Date(0),
+      updated_at: new Date(0)
     }
   ],
   attachments: [],

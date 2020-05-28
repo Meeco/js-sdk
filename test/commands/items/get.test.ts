@@ -17,6 +17,8 @@ describe('items:get', () => {
 
 const response = {
   item: {
+    created_at: new Date(0),
+    updated_at: new Date(0),
     label: 'My Fave Foods',
     name: 'food',
     slot_ids: ['steak', 'pizza', 'yoghurt']
@@ -29,7 +31,9 @@ const response = {
       foo: 'bar',
       slot_type_name: 'key_value',
       encrypted_value: 'Hawaiian',
-      encrypted: true
+      encrypted: true,
+      created_at: new Date(0),
+      updated_at: new Date(0)
     },
     {
       id: 'steak',
@@ -38,7 +42,9 @@ const response = {
       foo: 'bar',
       slot_type_name: 'key_value',
       encrypted_value: 'Rump',
-      encrypted: true
+      encrypted: true,
+      created_at: new Date(0),
+      updated_at: new Date(0)
     },
     {
       id: 'beer',
@@ -47,7 +53,9 @@ const response = {
       foo: 'bar',
       slot_type_name: 'key_value',
       encrypted_value: 'Session Ale',
-      encrypted: true
+      encrypted: true,
+      created_at: new Date(0),
+      updated_at: new Date(0)
     }
   ],
   associations_to: [],

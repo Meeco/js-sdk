@@ -1,11 +1,73 @@
 kind: Template
 spec:
+  id: null
   name: drink
+  description: null
+  ordinal: null
+  visible: null
+  user_id: null
+  updated_at: 1970-01-01
+  image: null
+  template_type: null
+  classification_node_ids: null
   slot_ids:
     - yoghurt
     - water
     - beer
+  label: null
+  background_color: null
   slots:
     - id: yoghurt
+      name: null
+      description: null
+      encrypted: null
+      ordinal: null
+      visible: null
+      classification_node_ids: null
+      attachment_ids: null
+      slotable_id: null
+      slotable_type: null
+      required: null
+      updated_at: 1970-01-01
+      created_at: 1970-01-01
+      slot_type_name: null
+      creator: null
+      encrypted_value: null
+      image: null
+      label: null
     - id: water
+      name: null
+      description: null
+      encrypted: null
+      ordinal: null
+      visible: null
+      classification_node_ids: null
+      attachment_ids: null
+      slotable_id: null
+      slotable_type: null
+      required: null
+      updated_at: 1970-01-01
+      created_at: 1970-01-01
+      slot_type_name: null
+      creator: null
+      encrypted_value: null
+      image: null
+      label: null
     - id: beer
+      name: null
+      description: null
+      encrypted: null
+      ordinal: null
+      visible: null
+      classification_node_ids: null
+      attachment_ids: null
+      slotable_id: null
+      slotable_type: null
+      required: null
+      updated_at: 1970-01-01
+      created_at: 1970-01-01
+      slot_type_name: null
+      creator: null
+      encrypted_value: null
+      image: null
+      label: null

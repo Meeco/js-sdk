@@ -82,6 +82,7 @@ const callApiWithDefaultHeaders = (
       apiKey,
       basePath,
       middleware: [],
+      // openapi-sdk style headers
       headers: {
         ...defaultHeaders
       },
@@ -91,6 +92,16 @@ const callApiWithDefaultHeaders = (
     // fetchInterceptor
   );
   const apiMethod = apiInstance[apiMethodName];
+  // swagger-codegen style headers (Keystore still uses swagger-codegen)
+  if (apiInstance.constructor.__proto__ === Keystore.BaseAPI) {
+    const argsCount = apiMethod.length;
+    const fetchOptions = args[argsCount - 1] || {};
+    fetchOptions.headers = {
+      ...defaultHeaders,
+      ...fetchOptions.headers
+    };
+    args[argsCount - 1] = fetchOptions;
+  }
   return apiMethod.call(apiInstance, ...args).catch(err => {
     if (err.status === 426) {
       throw new Error(
