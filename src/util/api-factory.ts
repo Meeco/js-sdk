@@ -1,7 +1,15 @@
 import * as Keystore from '@meeco/keystore-api-sdk';
 import * as Vault from '@meeco/vault-api-sdk';
+import { Configuration } from '@meeco/vault-api-sdk';
+import { blue, green } from 'chalk';
+import * as debug from 'debug';
+import * as FormData from 'form-data';
+import nodeFetch from 'node-fetch';
 import { AuthConfig } from '../configs/auth-config';
 import { IEnvironment } from '../models/environment';
+
+const debugCurl = debug('meeco:http');
+(<any>global).FormData = FormData;
 
 const X_MEECO_API_VERSION = '2.0.0';
 
@@ -47,6 +55,19 @@ const vaultAPIKeys = (environment: IEnvironment, userAuth: UserAuth) => (name: s
     'Authorization': vaultToken(userAuth)
   }[name]);
 
+function fetchInterceptor(url, options) {
+  debugCurl(blue(`Sending Request:`));
+  debugCurl(toCurl(url, options));
+  return nodeFetch(url, options).then(async response => {
+    debugCurl(green(`Received Response:`));
+    debugCurl(`\
+status: ${response.status}
+statusText: ${response.statusText}
+`);
+    return response;
+  });
+}
+
 const callApiWithDefaultHeaders = (
   sdk: any,
   api: string,
@@ -56,18 +77,31 @@ const callApiWithDefaultHeaders = (
   defaultHeaders: { [key: string]: string },
   args: any[]
 ) => {
-  const apiInstance = new sdk[api]({
-    apiKey,
-    basePath
-  });
+  const apiInstance = new sdk[api](
+    new Configuration({
+      apiKey,
+      basePath,
+      middleware: [],
+      // openapi-sdk style headers
+      headers: {
+        ...defaultHeaders
+      },
+      fetchApi: fetchInterceptor
+    }),
+    null
+    // fetchInterceptor
+  );
   const apiMethod = apiInstance[apiMethodName];
-  const argsCount = apiMethod.length;
-  const fetchOptions = args[argsCount - 1] || {};
-  fetchOptions.headers = {
-    ...defaultHeaders,
-    ...fetchOptions.headers
-  };
-  args[argsCount - 1] = fetchOptions;
+  // swagger-codegen style headers (Keystore still uses swagger-codegen)
+  if (apiInstance.constructor.__proto__ === Keystore.BaseAPI) {
+    const argsCount = apiMethod.length;
+    const fetchOptions = args[argsCount - 1] || {};
+    fetchOptions.headers = {
+      ...defaultHeaders,
+      ...fetchOptions.headers
+    };
+    args[argsCount - 1] = fetchOptions;
+  }
   return apiMethod.call(apiInstance, ...args).catch(err => {
     if (err.status === 426) {
       throw new Error(
@@ -218,3 +252,24 @@ export const vaultAPIFactory = (environment: IEnvironment) => (userAuth: UserAut
       }
     }
   ) as VaultAPIFactoryInstance;
+
+const toCurl = (url, options) => {
+  const defaultHeaders = {
+    'Content-Type': 'application/json'
+  };
+  const allHeaders = {
+    ...defaultHeaders,
+    ...options.headers
+  };
+  const headersString = Object.keys(allHeaders)
+    .map(key => `  --header "${key}: ${allHeaders[key]}"`)
+    .join(' \\\n');
+
+  return `\
+curl \\
+  ${headersString.trim()} \\
+  --request ${options.method} \\
+  --data ${options.body || '{}'} \\
+  ${url}
+  `;
+};

@@ -46,7 +46,10 @@ const response = {
       slot_type_name: 'key_value',
       encrypted_value: 'Session Ale'
     }
-  ]
+  ],
+  attachments: [],
+  thumbnails: [],
+  classification_nodes: []
 };
 
 function mockVault(api) {

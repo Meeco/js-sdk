@@ -39,5 +39,8 @@ const response = {
       slot_ids: ['sport', 'recreational']
     }
   ],
-  slots: []
+  slots: [],
+  attachments: [],
+  thumbnails: [],
+  classification_nodes: []
 };

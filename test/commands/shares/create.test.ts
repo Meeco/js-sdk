@@ -2,16 +2,16 @@ import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
+import { ShareService } from '../../../src/services/share-service';
 import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('shares:create', () => {
   const constantDate = new Date(0);
-
   customTest
     .stdout()
     .stderr()
     .mockCryppo()
-    .stub(global, 'Date', sinon.stub().returns(constantDate))
+    .stub(ShareService, 'Date', sinon.stub().returns(constantDate))
     .nock('https://sandbox.meeco.me/vault', stubVault)
     .nock('https://sandbox.meeco.me/keystore', stubKeystore)
     .run(['shares:create', '-c', inputFixture('create-share.input.yaml'), ...testEnvironmentFile])
@@ -38,7 +38,13 @@ function stubVault(api: nock.Scope) {
           encrypted: true,
           encrypted_value: 'aes.slot_b'
         }
-      ]
+      ],
+      associations_to: [],
+      associations: [],
+      attachments: [],
+      classification_nodes: [],
+      shares: [],
+      thumbnails: []
     });
 
   api
@@ -118,31 +124,26 @@ function stubVault(api: nock.Scope) {
     .post('/shares', {
       shares: [
         {
+          distributable: false,
           shareable_id: 'from_user_vault_item_to_share_id',
           shareable_type: 'Item',
+          user_id: 'to_user_id',
           encrypted_values:
-            '{"slot_a":"[serialized][encrypted]aes.slot_a[decrypted with ' +
-            'from_user_data_encryption_key][with ' +
-            'randomly_generated_key]","slot_b":"[serialized][encrypted]aes.slot_b[decrypted ' +
-            'with from_user_data_encryption_key][with ' +
-            'randomly_generated_key]"}',
-          distributable: false,
-          outgoing: true,
-          user_id: 'to_user_id'
+            '{"slot_a":"[serialized][encrypted]aes.slot_a[decrypted with from_user_data_encryption_key][with randomly_generated_key]","slot_b":"[serialized][encrypted]aes.slot_b[decrypted with from_user_data_encryption_key][with randomly_generated_key]"}'
         }
       ]
     })
     .matchHeader('Authorization', 'from_user_vault_access_token')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
-      slots: [
+      shares: [
         {
-          id: 'slot_a',
-          encrypted_value: 're_encrypted_a_ value'
-        },
-        {
-          id: 'slot_b',
-          encrypted_value: 're_encrypted_b_value'
+          id: 'some_share',
+          expires_at: new Date(0),
+          created_at: new Date(0),
+          updated_at: new Date(0),
+          shareable_type: 'Item',
+          shareable_id: 'from_user_vault_item_to_share_id'
         }
       ]
     });

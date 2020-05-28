@@ -1,8 +1,44 @@
 kind: Items
 spec:
-  - name: My Car
+  - id: a
+    name: My Car
+    label: null
+    description: null
+    created_at: 1970-01-01
+    item_template_id: null
+    ordinal: null
+    visible: null
+    updated_at: 1970-01-01
+    item_template_label: null
+    shareable: null
+    image: null
+    item_image: null
+    item_image_background_colour: null
+    classification_node_ids: null
+    association_ids: null
+    associations_to_ids: null
     slot_ids:
       - make_model
-  - name: My House
+    me: null
+    background_color: null
+  - id: b
+    name: My House
+    label: null
+    description: null
+    created_at: 1970-01-01
+    item_template_id: null
+    ordinal: null
+    visible: null
+    updated_at: 1970-01-01
+    item_template_label: null
+    shareable: null
+    image: null
+    item_image: null
+    item_image_background_colour: null
+    classification_node_ids: null
+    association_ids: null
+    associations_to_ids: null
     slot_ids:
       - add
+    me: null
+    background_color: null

@@ -8,8 +8,19 @@ distributable: false
 outgoing: true
 user_id: to_user_id
 share:
-  slots:
-    - id: slot_a
-      encrypted_value: re_encrypted_a_ value
-    - id: slot_b
-      encrypted_value: re_encrypted_b_value
+  shares:
+    - id: some_share
+      sender_id: null
+      recipient_id: null
+      outgoing: null
+      shareable_type: Item
+      shareable_id: from_user_vault_item_to_share_id
+      item_id: null
+      encryption_space_id: null
+      connection_id: null
+      note: null
+      expires_at: 1970-01-01
+      terms: null
+      tradeable: null
+      distributable: null
+      encrypted_values: null

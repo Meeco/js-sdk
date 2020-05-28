@@ -36,6 +36,9 @@ function mockVault(api: nock.Scope) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       share: {
+        created_at: new Date(0),
+        updated_at: new Date(0),
+        expires_at: new Date(0),
         id: 'sh_1',
         connection_id: 'con_1',
         shareable_id: 'it_1',
@@ -46,6 +49,8 @@ function mockVault(api: nock.Scope) {
         }
       },
       item: {
+        created_at: new Date(0),
+        updated_at: new Date(0),
         id: 'it_1',
         label: 'My Cat',
         encrypted: true,
@@ -53,6 +58,8 @@ function mockVault(api: nock.Scope) {
       },
       slots: [
         {
+          created_at: new Date(0),
+          updated_at: new Date(0),
           id: 'sl_1',
           label: 'name',
           encrypted: true,
@@ -60,13 +67,21 @@ function mockVault(api: nock.Scope) {
           encrypted_value: null
         },
         {
+          created_at: new Date(0),
+          updated_at: new Date(0),
           id: 'sl_2',
           label: 'age',
           encrypted: true,
           // The API will return null as the encrypted_values on the share are to be used
           encrypted_value: null
         }
-      ]
+      ],
+      associations_to: [],
+      associations: [],
+      attachments: [],
+      classification_nodes: [],
+      shares: [],
+      thumbnails: []
     });
 }
 

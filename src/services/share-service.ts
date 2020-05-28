@@ -24,6 +24,8 @@ interface ISharedEncryptionSpace {
 }
 
 export class ShareService {
+  static Date = global.Date;
+
   private keystoreApiFactory: KeystoreAPIFactory;
   private vaultApiFactory: VaultAPIFactory;
 
@@ -86,7 +88,7 @@ export class ShareService {
 
     const slots = this.addShareValuesToSlots(share, result.slots);
     const space = await this.keystoreApiFactory(user).EncryptionSpaceApi.encryptionSpacesIdGet(
-      share.encryption_space_id
+      share.encryption_space_id!
     );
     const decryptedSharedDataEncryptionKey = await cryppo.decryptWithKey({
       serialized: space.encryption_space_data_encryption_key.serialized_data_encryption_key,
@@ -358,7 +360,7 @@ export class ShareService {
 
   private buildClaimKeySignature(encryptionSpaceId: string | undefined, privateKey: string) {
     const requestUrl = `${this.environment.keystore.url}/shared_keys/${encryptionSpaceId}/claim_key`;
-    const verification = `--request-timestamp=${new Date().toISOString()}`;
+    const verification = `--request-timestamp=${new ShareService.Date().toISOString()}`;
     const urlToSign = requestUrl + verification;
     return cryppo.signWithPrivateKey(privateKey, urlToSign);
   }
