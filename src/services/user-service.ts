@@ -1,7 +1,7 @@
 import * as cryppo from '@meeco/cryppo';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
-import { IEnvironment } from '../models/environment';
+import { Environment } from '../models/environment';
 import { SRPSession } from '../models/srp-session';
 import {
   keystoreAPIFactory,
@@ -20,7 +20,7 @@ export class UserService {
 
   private keyGen: SecretService;
 
-  constructor(environment: IEnvironment, private log = (msg: string) => {}) {
+  constructor(environment: Environment, private log = (msg: string) => {}) {
     this.keystoreApiFactory = keystoreAPIFactory(environment);
     this.vaultApiFactory = vaultAPIFactory(environment);
     this.vaultKeypairExternalId = VAULT_PAIR_EXTERNAL_IDENTIFIER;

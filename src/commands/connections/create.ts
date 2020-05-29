@@ -28,8 +28,8 @@ export default class ConnectionsCreate extends MeecoCommand {
       }
 
       const service = new ConnectionService(environment, this.updateStatus);
-      const result = await service.createConnection(connection);
-      this.printYaml(result);
+      const result = await service.createConnection(connection.toConnectionCreateData());
+      this.printYaml(ConnectionConfig.encodeFromJson(result));
     } catch (err) {
       await this.handleException(err);
     }

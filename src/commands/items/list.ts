@@ -1,4 +1,5 @@
 import { AuthConfig } from '../../configs/auth-config';
+import { ItemListConfig } from '../../configs/item-list-config';
 import { authFlags } from '../../flags/auth-flags';
 import { ItemService } from '../../services/item-service';
 import MeecoCommand from '../../util/meeco-command';
@@ -25,7 +26,7 @@ export default class ItemsList extends MeecoCommand {
 
     try {
       const items = await service.list(authConfig.vault_access_token);
-      this.printYaml(items);
+      this.printYaml(ItemListConfig.encodeFromItemData({ items }));
     } catch (err) {
       await this.handleException(err);
     }

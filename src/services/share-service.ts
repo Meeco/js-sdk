@@ -2,19 +2,18 @@ import * as cryppo from '@meeco/cryppo';
 import { Connection, Share, Slot } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { EncryptionSpaceConfig } from '../configs/encryption-space-config';
-import { ItemConfig } from '../configs/item-config';
-import { ShareListConfig } from '../configs/share-list-config';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
-import { IEnvironment } from '../models/environment';
+import { Environment } from '../models/environment';
+import { ItemData } from '../models/item-data';
 import { LocalSlot } from '../models/local-slot';
-import { findConnectionBetween } from '../util/ find-connection-between';
 import {
   KeystoreAPIFactory,
   keystoreAPIFactory,
   vaultAPIFactory,
   VaultAPIFactory
 } from '../util/api-factory';
+import { findConnectionBetween } from '../util/find-connection-between';
 import { ItemService } from './item-service';
 
 interface ISharedEncryptionSpace {
@@ -29,7 +28,7 @@ export class ShareService {
   private keystoreApiFactory: KeystoreAPIFactory;
   private vaultApiFactory: VaultAPIFactory;
 
-  constructor(private environment: IEnvironment, private log: (message: string) => void) {
+  constructor(private environment: Environment, private log: (message: string) => void) {
     this.keystoreApiFactory = keystoreAPIFactory(environment);
     this.vaultApiFactory = vaultAPIFactory(environment);
   }
@@ -69,8 +68,7 @@ export class ShareService {
   }
 
   public async listShares(user: AuthData) {
-    const result = await this.vaultApiFactory(user).SharesApi.sharesIncomingGet();
-    return ShareListConfig.encodeFromResult(result);
+    return await this.vaultApiFactory(user).SharesApi.sharesIncomingGet();
   }
 
   public async getSharedItem(user: AuthData, itemId: string) {
@@ -96,8 +94,8 @@ export class ShareService {
     });
     const key = EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey);
     const decryptedSlots = await ItemService.decryptAllSlots(slots!, key);
-    return ItemConfig.encodeFromJson({
-      ...item,
+    return new ItemData({
+      item,
       slots: decryptedSlots
     });
   }

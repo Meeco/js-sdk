@@ -36,9 +36,9 @@ export default class ItemsCreate extends MeecoCommand {
       const createdItem = await service.create(
         authConfig.vault_access_token,
         authConfig.data_encryption_key,
-        itemConfig
+        itemConfig.toItemCreateData()
       );
-      this.printYaml(createdItem);
+      this.printYaml(ItemConfig.encodeFromItemData(createdItem));
     } catch (err) {
       await this.handleException(err);
     }

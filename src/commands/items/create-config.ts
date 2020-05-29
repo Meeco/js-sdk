@@ -39,6 +39,6 @@ export default class ItemsCreateConfig extends MeecoCommand {
       DEFAULT_CLASSIFICATION_NAME,
       templateName
     );
-    this.printYaml(ItemConfig.encodeFromTemplate(template.spec));
+    this.printYaml(ItemConfig.encodeFromTemplate(template));
   }
 }

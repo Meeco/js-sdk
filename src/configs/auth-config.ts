@@ -1,4 +1,5 @@
 import { CLIError } from '@oclif/errors';
+import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { IYamlConfig } from './yaml-config';
 
@@ -21,7 +22,14 @@ export class AuthConfig {
   public readonly key_encryption_key: EncryptionKey;
   public readonly passphrase_derived_key: EncryptionKey;
 
-  constructor(data: AuthConfig) {
+  constructor(data: {
+    secret: string;
+    vault_access_token: string;
+    keystore_access_token: string;
+    data_encryption_key: EncryptionKey;
+    key_encryption_key: EncryptionKey;
+    passphrase_derived_key: EncryptionKey;
+  }) {
     this.secret = data.secret;
     this.keystore_access_token = data.keystore_access_token;
     this.vault_access_token = data.vault_access_token;
@@ -58,8 +66,8 @@ export class AuthConfig {
     });
   }
 
-  static encodeFromJson(payload: AuthConfig): IYamlConfig<IAuthMetadata> {
-    const payloadSortedAlphabetically: AuthConfig = Object.keys(payload)
+  static encodeFromAuthData(payload: AuthData): IYamlConfig<IAuthMetadata> {
+    const payloadSortedAlphabetically: AuthData = Object.keys(payload)
       .sort()
       .reduce((prev, key) => ({ ...prev, [key]: payload[key] }), {} as any);
     return {
@@ -67,5 +75,16 @@ export class AuthConfig {
       metadata: payloadSortedAlphabetically, // Note: EncryptionKey's should stringify with their own `toJSON()`
       spec: {}
     };
+  }
+
+  public toAuthData(): AuthData {
+    return new AuthData({
+      secret: this.secret,
+      keystore_access_token: this.keystore_access_token,
+      vault_access_token: this.vault_access_token,
+      data_encryption_key: this.data_encryption_key,
+      key_encryption_key: this.key_encryption_key,
+      passphrase_derived_key: this.passphrase_derived_key
+    });
   }
 }

@@ -2,7 +2,7 @@ import * as bodyParser from 'body-parser';
 import cli from 'cli-ux';
 import * as express from 'express';
 import { Server } from 'http';
-import { IEnvironment } from '../models/environment';
+import { Environment } from '../models/environment';
 
 export class CaptchaService {
   private server?: express.Express;
@@ -10,7 +10,7 @@ export class CaptchaService {
   private tokenResult?: Promise<string>;
   private tokenReady?: (token: string) => void;
 
-  constructor(private environment: IEnvironment, private port = 5210) {}
+  constructor(private environment: Environment, private port = 5210) {}
 
   public async requestCaptchaToken(): Promise<string> {
     cli.action.start('Starting server');

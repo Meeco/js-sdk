@@ -1,5 +1,6 @@
 import { cli } from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
+import { TemplateConfig } from '../../configs/template-config';
 import { authFlags } from '../../flags/auth-flags';
 import { TemplatesService } from '../../services/templates-service';
 import { DEFAULT_CLASSIFICATION_NAME, DEFAULT_CLASSIFICATION_SCHEME } from '../../util/constants';
@@ -26,7 +27,7 @@ export default class TemplatesList extends MeecoCommand {
         DEFAULT_CLASSIFICATION_NAME
       );
       cli.action.stop();
-      this.printYaml(templates);
+      this.printYaml(TemplateConfig.encodeFromList(templates));
     } catch (err) {
       await this.handleException(err);
     }

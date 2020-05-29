@@ -1,4 +1,5 @@
 import { AuthConfig } from '../../configs/auth-config';
+import { ShareListConfig } from '../../configs/share-list-config';
 import { authFlags } from '../../flags/auth-flags';
 import { ShareService } from '../../services/share-service';
 import MeecoCommand from '../../util/meeco-command';
@@ -25,7 +26,7 @@ export default class SharesList extends MeecoCommand {
     const service = new ShareService(environment, this.updateStatus);
     try {
       const shares = await service.listShares(authConfig);
-      this.printYaml(shares);
+      this.printYaml(ShareListConfig.encodeFromResult(shares));
     } catch (err) {
       await this.handleException(err);
     }

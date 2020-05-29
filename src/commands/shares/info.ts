@@ -1,7 +1,7 @@
 import { flags as _flags } from '@oclif/command';
 import { ConnectionConfig } from '../../configs/connection-config';
 import { ShareService } from '../../services/share-service';
-import { findConnectionBetween } from '../../util/ find-connection-between';
+import { findConnectionBetween } from '../../util/find-connection-between';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class SharesInfo extends MeecoCommand {

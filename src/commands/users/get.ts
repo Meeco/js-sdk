@@ -23,7 +23,7 @@ export default class GetUser extends MeecoCommand {
     const service = new UserService(environment, this.updateStatus);
     try {
       const result = await service.get(password, secret);
-      this.printYaml(AuthConfig.encodeFromJson(result));
+      this.printYaml(AuthConfig.encodeFromAuthData(result));
     } catch (err) {
       await this.handleException(err);
     }

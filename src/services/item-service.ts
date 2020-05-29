@@ -8,18 +8,18 @@ import * as Jimp from 'jimp';
 import { lookup } from 'mime-types';
 import { basename } from 'path';
 import { FileAttachmentConfig } from '../configs/file-attachment-config';
-import { ItemConfig } from '../configs/item-config';
-import { ItemListConfig } from '../configs/item-list-config';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
-import { IEnvironment } from '../models/environment';
+import { Environment } from '../models/environment';
+import { ItemCreateData } from '../models/item-create-data';
+import { ItemData } from '../models/item-data';
 import { LocalSlot } from '../models/local-slot';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 import { deleteFileSync, readFileAsBuffer, writeFileContents } from '../util/file';
 
 export class ItemService {
   private vaultAPIFactory: VaultAPIFactory;
-  constructor(environment: IEnvironment, private log: (message: string) => void = () => {}) {
+  constructor(environment: Environment, private log: (message: string) => void = () => {}) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
   }
 
@@ -46,24 +46,22 @@ export class ItemService {
     );
   }
 
-  public async create(vaultAccessToken: string, dek: EncryptionKey, config: ItemConfig) {
+  public async create(vaultAccessToken: string, dek: EncryptionKey, data: ItemCreateData) {
     const slots_attributes = await Promise.all(
-      (config.itemConfig.slots || []).map(slot => this.encryptSlot(slot, dek))
+      (data.slots || []).map(slot => this.encryptSlot(slot, dek))
     );
 
     const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsPost({
-      template_name: config.templateName,
+      template_name: data.templateName,
       item: {
-        label: config.itemConfig.label,
+        label: data.label,
         slots_attributes
       }
     });
 
-    return ItemConfig.encodeFromJson({
-      ...result.item,
-      slots: result.slots?.map(slot => ({
-        ...slot
-      }))
+    return new ItemData({
+      item: result.item,
+      slots: result.slots
     });
   }
 
@@ -131,7 +129,7 @@ export class ItemService {
     }
 
     this.log('Fetching item');
-    const item = await this.get(
+    const itemData = await this.get(
       config.itemId,
       auth.vault_access_token,
       auth.data_encryption_key
@@ -174,7 +172,7 @@ export class ItemService {
 
     this.log('Adding attachment to item');
     const updated = await this.vaultAPIFactory(auth.vault_access_token).ItemApi.itemsIdPut(
-      item.spec.id,
+      itemData.item.id,
       {
         item: {
           slots_attributes: [
@@ -192,8 +190,8 @@ export class ItemService {
       }
     );
     this.log('File was successfully attached');
-    return ItemConfig.encodeFromJson({
-      ...updated.item,
+    return new ItemData({
+      item: updated.item,
       slots: updated.slots
     });
   }
@@ -261,8 +259,8 @@ export class ItemService {
     const { item, thumbnails, attachments } = result;
     const slots = await ItemService.decryptAllSlots(result.slots, dataEncryptionKey);
 
-    return ItemConfig.encodeFromJson({
-      ...item,
+    return new ItemData({
+      item,
       slots,
       thumbnails,
       attachments
@@ -285,6 +283,8 @@ export class ItemService {
 
   public async list(vaultAccessToken: string) {
     const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet();
-    return ItemListConfig.encodeFromJson(result);
+    return result.items.map(item => {
+      return new ItemData({ item });
+    });
   }
 }

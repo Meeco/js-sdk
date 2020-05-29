@@ -1,26 +1,20 @@
-import { ItemTemplateWithoutAssociations, Slot } from '@meeco/vault-api-sdk';
+import { TemplateData } from '../models/template-data';
 
 export class TemplateConfig {
   static readonly kind = 'Template';
   static readonly pluralKind = 'Templates';
 
-  static encodeFromTemplateWithSlots(
-    template: ItemTemplateWithoutAssociations,
-    slots: Slot[] = []
-  ) {
+  static encodeFromTemplateData(data: TemplateData) {
     return {
       kind: TemplateConfig.kind,
-      spec: {
-        ...template,
-        slots
-      }
+      spec: data
     };
   }
 
-  static encodeFromList(templates: ItemTemplateWithoutAssociations[] = []) {
+  static encodeFromList(data: TemplateData[]) {
     return {
       kind: TemplateConfig.pluralKind,
-      spec: templates.map(template => template.name)
+      spec: data.map(templateData => templateData.template.name)
     };
   }
 }

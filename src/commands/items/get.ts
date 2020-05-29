@@ -1,4 +1,5 @@
 import { AuthConfig } from '../../configs/auth-config';
+import { ItemConfig } from '../../configs/item-config';
 import { authFlags } from '../../flags/auth-flags';
 import { ItemService } from '../../services/item-service';
 import MeecoCommand from '../../util/meeco-command';
@@ -32,6 +33,7 @@ export default class ItemsGet extends MeecoCommand {
       authConfig.vault_access_token,
       authConfig.data_encryption_key
     );
-    this.printYaml(result);
+
+    this.printYaml(ItemConfig.encodeFromItemData(result));
   }
 }

@@ -1,5 +1,6 @@
 import { cli } from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
+import { TemplateConfig } from '../../configs/template-config';
 import { authFlags } from '../../flags/auth-flags';
 import { TemplatesService } from '../../services/templates-service';
 import { DEFAULT_CLASSIFICATION_NAME, DEFAULT_CLASSIFICATION_SCHEME } from '../../util/constants';
@@ -26,13 +27,13 @@ export default class TemplatesInfo extends MeecoCommand {
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
       const service = new TemplatesService(environment, authConfig!.vault_access_token);
       cli.action.start(`Fetching template '${templateName}'`);
-      const template = await service.getTemplate(
+      const result = await service.getTemplate(
         DEFAULT_CLASSIFICATION_SCHEME,
         DEFAULT_CLASSIFICATION_NAME,
         templateName
       );
       cli.action.stop();
-      this.printYaml(template);
+      this.printYaml(TemplateConfig.encodeFromTemplateData(result));
     } catch (err) {
       await this.handleException(err);
     }

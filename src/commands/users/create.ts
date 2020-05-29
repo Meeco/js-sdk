@@ -54,7 +54,7 @@ export default class CreateUser extends MeecoCommand {
       }
 
       const result = await userService.create(password, secret);
-      this.printYaml(AuthConfig.encodeFromJson(result));
+      this.printYaml(AuthConfig.encodeFromAuthData(result));
     } catch (err) {
       await this.handleException(err);
     }

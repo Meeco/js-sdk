@@ -1,24 +1,24 @@
 import * as cryppo from '@meeco/cryppo';
-import { ConnectionConfig } from '../configs/connection-config';
 import { AuthData } from '../models/auth-data';
-import { IEnvironment } from '../models/environment';
-import { findConnectionBetween } from '../util/ find-connection-between';
+import { ConnectionCreateData } from '../models/connection-create-data';
+import { Environment } from '../models/environment';
 import {
   KeystoreAPIFactory,
   keystoreAPIFactory,
   VaultAPIFactory,
   vaultAPIFactory
 } from '../util/api-factory';
+import { findConnectionBetween } from '../util/find-connection-between';
 
 export class ConnectionService {
   private vaultApiFactory: VaultAPIFactory;
   private keystoreApiFactory: KeystoreAPIFactory;
-  constructor(private environment: IEnvironment, private log: (message: string) => void) {
+  constructor(private environment: Environment, private log: (message: string) => void) {
     this.vaultApiFactory = vaultAPIFactory(environment);
     this.keystoreApiFactory = keystoreAPIFactory(environment);
   }
 
-  async createConnection(config: ConnectionConfig) {
+  async createConnection(config: ConnectionCreateData) {
     const { to, from, options } = config;
 
     try {
@@ -79,12 +79,12 @@ export class ConnectionService {
       this.log
     );
 
-    return ConnectionConfig.encodeFromJson({
+    return {
       invitation,
       fromUserConnection,
       toUserConnection,
       options
-    });
+    };
   }
 
   public async listConnections(user: AuthData) {

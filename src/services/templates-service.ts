@@ -1,19 +1,19 @@
 import { ItemTemplateApi } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
-import { TemplateConfig } from '../configs/template-config';
-import { IEnvironment } from '../models/environment';
+import { Environment } from '../models/environment';
+import { TemplateData } from '../models/template-data';
 import { vaultAPIFactory } from '../util/api-factory';
 
 export class TemplatesService {
   private api: ItemTemplateApi;
 
-  constructor(environment: IEnvironment, vaultAccessToken: string) {
+  constructor(environment: Environment, vaultAccessToken: string) {
     this.api = vaultAPIFactory(environment)(vaultAccessToken).ItemTemplateApi;
   }
 
   public async listTemplates(classificationScheme: string, classificationName: string) {
     const result = await this.api.itemTemplatesGet(classificationScheme, classificationName);
-    return TemplateConfig.encodeFromList(result.item_templates);
+    return result.item_templates.map(template => new TemplateData({ template }));
   }
 
   public async getTemplate(classificationScheme: string, classificationName: string, name: string) {
@@ -25,6 +25,6 @@ export class TemplatesService {
       );
     }
     const slots = result.slots?.filter(slot => template.slot_ids?.includes(slot.id!));
-    return TemplateConfig.encodeFromTemplateWithSlots(template, slots);
+    return new TemplateData({ template, slots });
   }
 }

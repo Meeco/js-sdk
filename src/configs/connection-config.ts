@@ -1,12 +1,8 @@
 import { Connection, Invitation } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
+import { ConnectionCreateData, IConnectionMetadata } from '../models/connection-create-data';
 import { AuthConfig } from './auth-config';
 import { IYamlConfig } from './yaml-config';
-
-interface IConnectionMetadata {
-  toName: string;
-  fromName: string;
-}
 
 interface IConnectionSpec {
   to: AuthConfig;
@@ -20,7 +16,7 @@ export class ConnectionConfig {
   public readonly from: AuthConfig;
   public readonly options: IConnectionMetadata;
 
-  constructor(data: ConnectionConfig) {
+  constructor(data: { to: AuthConfig; from: AuthConfig; options: IConnectionMetadata }) {
     this.from = data.from;
     this.to = data.to;
     this.options = data.options;
@@ -76,5 +72,9 @@ export class ConnectionConfig {
         to
       }
     };
+  }
+
+  public toConnectionCreateData(): ConnectionCreateData {
+    return new ConnectionCreateData(this.from.toAuthData(), this.to.toAuthData(), this.options);
   }
 }
