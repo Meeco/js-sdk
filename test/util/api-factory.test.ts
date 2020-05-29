@@ -137,6 +137,7 @@ describe('API Factories', () => {
         .matchHeader('Authorization', 'my-vault-token')
         .matchHeader('X_MEECO_API_VERSION', '2.0.0')
         .matchHeader('X_MEECO_API_COMPONENT', 'vault')
+        .matchHeader('X_MY_CUSTOM_HEADER', 'foo')
         .reply(200, {
           associations_to: [],
           associations: [],
@@ -152,9 +153,14 @@ describe('API Factories', () => {
           url: 'https://meeco-vault.example.com'
         }
       });
-      const forUser = apiFactory(<any>{
-        vault_access_token: 'my-vault-token'
-      });
+      const forUser = apiFactory(
+        <any>{
+          vault_access_token: 'my-vault-token'
+        },
+        {
+          X_MY_CUSTOM_HEADER: 'foo'
+        }
+      );
       const result = await forUser.ItemApi.itemsIdGet('my-id');
       expect(result).to.eql({
         item: undefined,

@@ -1,5 +1,5 @@
 import * as cryppo from '@meeco/cryppo';
-import { AuthConfig } from '../configs/auth-config';
+import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { IEnvironment } from '../models/environment';
 import { SRPSession } from '../models/srp-session';
@@ -12,7 +12,6 @@ import {
 import { VAULT_PAIR_EXTERNAL_IDENTIFIER } from '../util/constants';
 import { SecretService } from './secret-service';
 
-export type AuthData = ReturnType<typeof AuthConfig.encodeFromJson>;
 export class UserService {
   public readonly vaultKeypairExternalId;
 
@@ -221,7 +220,7 @@ export class UserService {
       vaultUser.token
     );
 
-    return AuthConfig.encodeFromJson({
+    return new AuthData({
       secret,
       keystore_access_token: sessionAuthenticationToken,
       vault_access_token: vaultUser.token,
@@ -318,7 +317,7 @@ export class UserService {
       key: kek
     });
 
-    return AuthConfig.encodeFromJson({
+    return new AuthData({
       secret,
       keystore_access_token: sessionAuthenticationToken,
       vault_access_token: vaultUser.token,
@@ -332,7 +331,7 @@ export class UserService {
     return this.vaultApiFactory(vaultAccessToken).UserApi.meGet();
   }
 
-  public getVaultUserId(user: AuthConfig) {
+  public getVaultUserId(user: AuthData) {
     return this.vaultApiFactory(user)
       .UserApi.meGet()
       .then(result => result.user?.id);

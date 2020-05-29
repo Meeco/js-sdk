@@ -1,5 +1,6 @@
 import { flags as _flags } from '@oclif/command';
 import cli from 'cli-ux';
+import { AuthConfig } from '../../configs/auth-config';
 import { CaptchaService } from '../../services/captcha-service';
 import { SecretService } from '../../services/secret-service';
 import { UserService } from '../../services/user-service';
@@ -53,7 +54,7 @@ export default class CreateUser extends MeecoCommand {
       }
 
       const result = await userService.create(password, secret);
-      this.printYaml(result);
+      this.printYaml(AuthConfig.encodeFromJson(result));
     } catch (err) {
       await this.handleException(err);
     }

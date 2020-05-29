@@ -5,7 +5,7 @@ import { blue, green } from 'chalk';
 import * as debug from 'debug';
 import * as FormData from 'form-data';
 import nodeFetch from 'node-fetch';
-import { AuthConfig } from '../configs/auth-config';
+import { AuthData } from '../models/auth-data';
 import { IEnvironment } from '../models/environment';
 
 const debugCurl = debug('meeco:http');
@@ -16,7 +16,7 @@ const X_MEECO_API_VERSION = '2.0.0';
 /**
  * User authentication token for the given API or the entire user with tokens
  */
-type UserAuth = AuthConfig | string;
+type UserAuth = AuthData | string;
 
 type KeystoreAPIConstructor = new () => Keystore.BaseAPI;
 type VaultAPIConstructor = new () => Vault.BaseAPI;
@@ -24,6 +24,10 @@ type VaultAPIConstructor = new () => Vault.BaseAPI;
 type KeysOfType<T, TProp> = { [P in keyof T]: T[P] extends TProp ? P : never }[keyof T];
 type VaultAPIName = KeysOfType<typeof Vault, VaultAPIConstructor>;
 type KeystoreAPIName = KeysOfType<typeof Keystore, KeystoreAPIConstructor>;
+
+interface IHeaders {
+  [key: string]: string;
+}
 
 const vaultToken = (userAuth: UserAuth) => {
   return typeof userAuth === 'string' ? userAuth : userAuth.vault_access_token;
@@ -68,13 +72,13 @@ statusText: ${response.statusText}
   });
 }
 
-const callApiWithDefaultHeaders = (
+const callApiWithHeaders = (
   sdk: any,
   api: string,
   apiMethodName: string | symbol | number,
   apiKey: string | ((name: string) => string),
   basePath: string,
-  defaultHeaders: { [key: string]: string },
+  headers: { [key: string]: string },
   args: any[]
 ) => {
   const apiInstance = new sdk[api](
@@ -83,13 +87,11 @@ const callApiWithDefaultHeaders = (
       basePath,
       middleware: [],
       // openapi-sdk style headers
-      headers: {
-        ...defaultHeaders
-      },
+      headers,
       fetchApi: fetchInterceptor
     }),
-    null
-    // fetchInterceptor
+    null,
+    fetchInterceptor
   );
   const apiMethod = apiInstance[apiMethodName];
   // swagger-codegen style headers (Keystore still uses swagger-codegen)
@@ -97,7 +99,7 @@ const callApiWithDefaultHeaders = (
     const argsCount = apiMethod.length;
     const fetchOptions = args[argsCount - 1] || {};
     fetchOptions.headers = {
-      ...defaultHeaders,
+      ...headers,
       ...fetchOptions.headers
     };
     args[argsCount - 1] = fetchOptions;
@@ -116,20 +118,26 @@ const callApiWithDefaultHeaders = (
 /**
  * Helper for constructing instances of Keystore apis with all the required auth params
  */
-const keystoreAPI = (api: KeystoreAPIName, environment: IEnvironment, userAuth: UserAuth) => {
+const keystoreAPI = (
+  api: KeystoreAPIName,
+  environment: IEnvironment,
+  userAuth: UserAuth,
+  additionalHeaders: IHeaders = {}
+) => {
   return new Proxy(
     {},
     {
       get(target, apiMethodName) {
         return (...args) =>
-          callApiWithDefaultHeaders(
+          callApiWithHeaders(
             Keystore,
             api,
             apiMethodName,
             keystoreAPIKeys(environment, userAuth),
             environment.keystore.url,
             {
-              X_MEECO_API_VERSION: '2.0.0',
+              ...additionalHeaders,
+              X_MEECO_API_VERSION,
               X_MEECO_API_COMPONENT: 'keystore'
             },
             args
@@ -142,19 +150,25 @@ const keystoreAPI = (api: KeystoreAPIName, environment: IEnvironment, userAuth: 
 /**
  * Helper for constructing instances of Vault apis with all the required auth params
  */
-const vaultAPI = (api: VaultAPIName, environment: IEnvironment, userAuth: UserAuth) => {
+const vaultAPI = (
+  api: VaultAPIName,
+  environment: IEnvironment,
+  userAuth: UserAuth,
+  additionalHeaders: IHeaders = {}
+) => {
   return new Proxy(
     {},
     {
       get(target, apiMethodName) {
         return (...args) =>
-          callApiWithDefaultHeaders(
+          callApiWithHeaders(
             Vault,
             api,
             apiMethodName,
             vaultAPIKeys(environment, userAuth),
             environment.vault.url,
             {
+              ...additionalHeaders,
               X_MEECO_API_VERSION,
               X_MEECO_API_COMPONENT: 'vault'
             },
@@ -191,7 +205,10 @@ const vaultAPI = (api: VaultAPIName, environment: IEnvironment, userAuth: UserAu
  * // etc...
  * ```
  */
-export type KeystoreAPIFactory = (userAuth: UserAuth) => KeystoreAPIFactoryInstance;
+export type KeystoreAPIFactory = (
+  userAuth: UserAuth,
+  headers?: IHeaders
+) => KeystoreAPIFactoryInstance;
 type KeystoreAPIFactoryInstance = {
   [key in KeystoreAPIName]: InstanceType<typeof Keystore[key]>;
 };
@@ -222,19 +239,22 @@ type KeystoreAPIFactoryInstance = {
  * // etc...
  * ```
  */
-export type VaultAPIFactory = (userAuth: UserAuth) => VaultAPIFactoryInstance;
+export type VaultAPIFactory = (userAuth: UserAuth, headers?: IHeaders) => VaultAPIFactoryInstance;
 type VaultAPIFactoryInstance = { [key in VaultAPIName]: InstanceType<typeof Vault[key]> };
 
 /**
  * Results in a factory function that can be passed user auth information and then get
  * arbitrary Keystore api instances to use.
  */
-export const keystoreAPIFactory = (environment: IEnvironment) => (userAuth: UserAuth) =>
+export const keystoreAPIFactory = (environment: IEnvironment) => (
+  userAuth: UserAuth,
+  headers?: IHeaders
+) =>
   new Proxy(
     {},
     {
       get(target, property: KeystoreAPIName) {
-        return keystoreAPI(property, environment, userAuth);
+        return keystoreAPI(property, environment, userAuth, headers);
       }
     }
   ) as KeystoreAPIFactoryInstance;
@@ -243,12 +263,15 @@ export const keystoreAPIFactory = (environment: IEnvironment) => (userAuth: User
  * Results in a factory function that can be passed user auth information and then get
  * arbitrary Vault api instances to use.
  */
-export const vaultAPIFactory = (environment: IEnvironment) => (userAuth: UserAuth) =>
+export const vaultAPIFactory = (environment: IEnvironment) => (
+  userAuth: UserAuth,
+  headers?: IHeaders
+) =>
   new Proxy(
     {},
     {
       get(target, property: VaultAPIName) {
-        return vaultAPI(property, environment, userAuth);
+        return vaultAPI(property, environment, userAuth, headers);
       }
     }
   ) as VaultAPIFactoryInstance;

@@ -1,3 +1,4 @@
+import { AuthConfig } from '../../configs/auth-config';
 import { userFlags } from '../../flags/user-flags';
 import { UserService } from '../../services/user-service';
 import MeecoCommand from '../../util/meeco-command';
@@ -22,7 +23,7 @@ export default class GetUser extends MeecoCommand {
     const service = new UserService(environment, this.updateStatus);
     try {
       const result = await service.get(password, secret);
-      this.printYaml(result);
+      this.printYaml(AuthConfig.encodeFromJson(result));
     } catch (err) {
       await this.handleException(err);
     }

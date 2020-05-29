@@ -7,10 +7,10 @@ import { createReadStream } from 'fs';
 import * as Jimp from 'jimp';
 import { lookup } from 'mime-types';
 import { basename } from 'path';
-import { AuthConfig } from '../configs/auth-config';
 import { FileAttachmentConfig } from '../configs/file-attachment-config';
 import { ItemConfig } from '../configs/item-config';
 import { ItemListConfig } from '../configs/item-list-config';
+import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { IEnvironment } from '../models/environment';
 import { LocalSlot } from '../models/local-slot';
@@ -80,7 +80,7 @@ export class ItemService {
     };
   }
 
-  public async generateAndUploadThumbnail(file: Buffer, binaryId: string, auth: AuthConfig) {
+  public async generateAndUploadThumbnail(file: Buffer, binaryId: string, auth: AuthData) {
     const targetThumbnailSize = 256;
     const sizeType = `png_${targetThumbnailSize}x${targetThumbnailSize}`;
 
@@ -116,7 +116,7 @@ export class ItemService {
     return response;
   }
 
-  public async attachFile(config: FileAttachmentConfig, auth: AuthConfig) {
+  public async attachFile(config: FileAttachmentConfig, auth: AuthData) {
     let file: Buffer, fileName: string, fileType: string;
     const filePath = config.template.file;
     this.log('Reading file');

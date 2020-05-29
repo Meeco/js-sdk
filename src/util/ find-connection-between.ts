@@ -1,15 +1,15 @@
 import { CLIError } from '@oclif/errors';
-import { AuthConfig } from '../configs/auth-config';
+import { AuthData } from '../models/auth-data';
 import { IEnvironment } from '../models/environment';
 import { vaultAPIFactory } from './api-factory';
 
-function connectionApi(user: AuthConfig, environment: IEnvironment) {
+function connectionApi(user: AuthData, environment: IEnvironment) {
   return vaultAPIFactory(environment)(user).ConnectionApi;
 }
 
 export async function findConnectionBetween(
-  fromUser: AuthConfig,
-  toUser: AuthConfig,
+  fromUser: AuthData,
+  toUser: AuthData,
   environment: IEnvironment,
   log: (message: string) => void
 ) {

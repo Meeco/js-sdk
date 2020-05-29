@@ -59,9 +59,12 @@ export class AuthConfig {
   }
 
   static encodeFromJson(payload: AuthConfig): IYamlConfig<IAuthMetadata> {
+    const payloadSortedAlphabetically: AuthConfig = Object.keys(payload)
+      .sort()
+      .reduce((prev, key) => ({ ...prev, [key]: payload[key] }), {} as any);
     return {
       kind: AuthConfig.kind,
-      metadata: payload as any, // EncryptionKey's should stringify with their own `toJSON()`
+      metadata: payloadSortedAlphabetically, // Note: EncryptionKey's should stringify with their own `toJSON()`
       spec: {}
     };
   }

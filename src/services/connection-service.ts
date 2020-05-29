@@ -1,6 +1,6 @@
 import * as cryppo from '@meeco/cryppo';
-import { AuthConfig } from '../configs/auth-config';
 import { ConnectionConfig } from '../configs/connection-config';
+import { AuthData } from '../models/auth-data';
 import { IEnvironment } from '../models/environment';
 import { findConnectionBetween } from '../util/ find-connection-between';
 import {
@@ -87,7 +87,7 @@ export class ConnectionService {
     });
   }
 
-  public async listConnections(user: AuthConfig) {
+  public async listConnections(user: AuthData) {
     const result = await this.vaultApiFactory(user).ConnectionApi.connectionsGet();
     const decryptions = (result.connections || []).map(connection =>
       cryppo
@@ -103,7 +103,7 @@ export class ConnectionService {
     return Promise.all(decryptions);
   }
 
-  private encryptRecipientName(name: string, user: AuthConfig) {
+  private encryptRecipientName(name: string, user: AuthData) {
     return cryppo
       .encryptWithKey({
         data: name,
@@ -113,7 +113,7 @@ export class ConnectionService {
       .then(result => result.serialized);
   }
 
-  private async createAndStoreKeyPair(user: AuthConfig) {
+  private async createAndStoreKeyPair(user: AuthData) {
     const keyPair = await cryppo.generateRSAKeyPair();
 
     const toPrivateKeyEncrypted = await cryppo.encryptWithKey({
