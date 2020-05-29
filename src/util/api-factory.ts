@@ -263,10 +263,9 @@ export const keystoreAPIFactory = (environment: IEnvironment) => (
  * Results in a factory function that can be passed user auth information and then get
  * arbitrary Vault api instances to use.
  */
-export const vaultAPIFactory = (environment: IEnvironment) => (
-  userAuth: UserAuth,
-  headers?: IHeaders
-) =>
+export const vaultAPIFactory: (IEnvironment) => (UserAuth, IHeaders?) => VaultAPIFactoryInstance = (
+  environment: IEnvironment
+) => (userAuth: UserAuth, headers?: IHeaders) =>
   new Proxy(
     {},
     {
