@@ -34,6 +34,6 @@ export default class ItemsGet extends MeecoCommand {
       authConfig.data_encryption_key
     );
 
-    this.printYaml(ItemConfig.encodeFromItemData(result));
+    this.printYaml(ItemConfig.encodeFromJSON(result));
   }
 }

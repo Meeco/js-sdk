@@ -1,20 +1,24 @@
-import { TemplateData } from '../models/template-data';
+import { FastItemTemplatesResponse } from '@meeco/vault-api-sdk';
+import { ITemplateData } from '../models/template-data';
 
 export class TemplateConfig {
   static readonly kind = 'Template';
   static readonly pluralKind = 'Templates';
 
-  static encodeFromTemplateData(data: TemplateData) {
+  static encodeFromJSON(json: ITemplateData) {
     return {
       kind: TemplateConfig.kind,
-      spec: data
+      spec: {
+        ...json.template,
+        slots: json.slots
+      }
     };
   }
 
-  static encodeFromList(data: TemplateData[]) {
+  static encodeListFromJSON(json: FastItemTemplatesResponse) {
     return {
       kind: TemplateConfig.pluralKind,
-      spec: data.map(templateData => templateData.template.name)
+      spec: json.item_templates.map(template => template.name)
     };
   }
 }

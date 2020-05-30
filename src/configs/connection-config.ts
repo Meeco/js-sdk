@@ -75,6 +75,6 @@ export class ConnectionConfig {
   }
 
   public toConnectionCreateData(): ConnectionCreateData {
-    return new ConnectionCreateData(this.from.toAuthData(), this.to.toAuthData(), this.options);
+    return new ConnectionCreateData(this.from, this.to, this.options);
   }
 }

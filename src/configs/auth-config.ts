@@ -76,15 +76,4 @@ export class AuthConfig {
       spec: {}
     };
   }
-
-  public toAuthData(): AuthData {
-    return new AuthData({
-      secret: this.secret,
-      keystore_access_token: this.keystore_access_token,
-      vault_access_token: this.vault_access_token,
-      data_encryption_key: this.data_encryption_key,
-      key_encryption_key: this.key_encryption_key,
-      passphrase_derived_key: this.passphrase_derived_key
-    });
-  }
 }

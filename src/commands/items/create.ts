@@ -2,6 +2,7 @@ import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { ItemConfig } from '../../configs/item-config';
 import { authFlags } from '../../flags/auth-flags';
+import { ItemCreateData } from '../../models/item-create-data';
 import { ItemService } from '../../services/item-service';
 import MeecoCommand from '../../util/meeco-command';
 
@@ -32,13 +33,19 @@ export default class ItemsCreate extends MeecoCommand {
       this.error('Valid auth config file must be supplied');
     }
 
+    const itemCreateData = new ItemCreateData({
+      templateName: itemConfig.templateName,
+      slots: itemConfig.itemConfig.slots,
+      item: { label: itemConfig.itemConfig.label }
+    });
+
     try {
       const createdItem = await service.create(
         authConfig.vault_access_token,
         authConfig.data_encryption_key,
-        itemConfig.toItemCreateData()
+        itemCreateData
       );
-      this.printYaml(ItemConfig.encodeFromItemData(createdItem));
+      this.printYaml(ItemConfig.encodeFromJSON(createdItem));
     } catch (err) {
       await this.handleException(err);
     }

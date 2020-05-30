@@ -12,7 +12,6 @@ import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { ItemCreateData } from '../models/item-create-data';
-import { ItemData } from '../models/item-data';
 import { LocalSlot } from '../models/local-slot';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 import { deleteFileSync, readFileAsBuffer, writeFileContents } from '../util/file';
@@ -26,7 +25,10 @@ export class ItemService {
   /**
    * Updates 'value' to the decrypted 'encrypted_value' and sets 'encrypted' to false.
    */
-  public static decryptAllSlots(slots: Slot[], dataEncryptionKey: EncryptionKey): Promise<Slot[]> {
+  public static decryptAllSlots(
+    slots: Slot[],
+    dataEncryptionKey: EncryptionKey
+  ): Promise<LocalSlot[]> {
     return Promise.all(
       slots.map(async slot => {
         const value =
@@ -54,15 +56,12 @@ export class ItemService {
     const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsPost({
       template_name: data.templateName,
       item: {
-        label: data.label,
+        ...data.item,
         slots_attributes
       }
     });
 
-    return new ItemData({
-      item: result.item,
-      slots: result.slots
-    });
+    return result;
   }
 
   private async getStringAsFileStream(fileContents: string) {
@@ -190,10 +189,7 @@ export class ItemService {
       }
     );
     this.log('File was successfully attached');
-    return new ItemData({
-      item: updated.item,
-      slots: updated.slots
-    });
+    return updated;
   }
 
   private async downloadAndDecryptFile<T extends Blob>(
@@ -256,15 +252,12 @@ export class ItemService {
 
   public async get(id: string, vaultAccessToken: string, dataEncryptionKey: EncryptionKey) {
     const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
-    const { item, thumbnails, attachments } = result;
     const slots = await ItemService.decryptAllSlots(result.slots, dataEncryptionKey);
 
-    return new ItemData({
-      item,
-      slots,
-      thumbnails,
-      attachments
-    });
+    return {
+      ...result,
+      slots
+    };
   }
 
   private async encryptSlot(slot: LocalSlot, dek: EncryptionKey) {
@@ -282,9 +275,6 @@ export class ItemService {
   }
 
   public async list(vaultAccessToken: string) {
-    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet();
-    return result.items.map(item => {
-      return new ItemData({ item });
-    });
+    return await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet();
   }
 }

@@ -33,7 +33,7 @@ export default class TemplatesInfo extends MeecoCommand {
         templateName
       );
       cli.action.stop();
-      this.printYaml(TemplateConfig.encodeFromTemplateData(result));
+      this.printYaml(TemplateConfig.encodeFromJSON(result));
     } catch (err) {
       await this.handleException(err);
     }

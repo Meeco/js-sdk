@@ -3,3 +3,4 @@ export const DEFAULT_CLASSIFICATION_NAME = 'esafe_templates';
 // MEE-212 This should be more like `auth:my-user:api-sandbox.meeco.me`
 export const VAULT_PAIR_EXTERNAL_IDENTIFIER = 'auth';
 export const SLOT_TYPE_BLACKLIST = ['image', 'classification_node'];
+export const ITEM_ASSOCIATIONS = ['slots', 'thumbnails', 'attachments'];

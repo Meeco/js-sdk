@@ -1,4 +1,4 @@
-import { ItemData } from '../models/item-data';
+import { ItemsResponse } from '@meeco/vault-api-sdk';
 import { ItemConfig } from './item-config';
 
 export interface IItemListTemplate {
@@ -14,11 +14,11 @@ export class ItemListConfig {
 
   constructor(public readonly templateName: string, public readonly itemList: IItemListTemplate) {}
 
-  static encodeFromItemData(data: { items: ItemData[] }, metadata?: IItemListMetadata) {
+  static encodeFromJSON(json: ItemsResponse, metadata?: IItemListMetadata) {
     return {
       kind: ItemListConfig.kind,
       ...(metadata ? { metadata } : {}),
-      spec: data.items
+      spec: json.items
     };
   }
 }

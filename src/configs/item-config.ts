@@ -1,14 +1,18 @@
-import { Slot } from '@meeco/vault-api-sdk';
+import { Attachment, Item, Slot, Thumbnail } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
-import { ItemCreateData } from '../models/item-create-data';
-import { IItemMetadata, ItemData } from '../models/item-data';
-import { TemplateData } from '../models/template-data';
-import { SLOT_TYPE_BLACKLIST } from '../util/constants';
+import { LocalSlot } from '../models/local-slot';
+import { ITemplateData } from '../models/template-data';
+import { ITEM_ASSOCIATIONS, SLOT_TYPE_BLACKLIST } from '../util/constants';
 import { ConfigReader, IYamlConfig } from './yaml-config';
 
 export interface IItemTemplate {
   label: string;
   slots: Slot[];
+}
+
+export interface IItemMetadata {
+  template: string;
+  shareId?: string;
 }
 
 @ConfigReader<ItemConfig>()
@@ -26,38 +30,45 @@ export class ItemConfig {
     return new ItemConfig(yamlConfigObj.metadata.template, yamlConfigObj.spec);
   }
 
-  static encodeFromItemData(data: ItemData) {
+  static encodeFromJSON(data: {
+    item: Item;
+    slots?: LocalSlot[];
+    thumbnails?: Thumbnail[];
+    attachment?: Attachment[];
+    metadata?: IItemMetadata;
+  }) {
+    const nested = ITEM_ASSOCIATIONS.reduce((res, key) => {
+      if (data[key]) {
+        res[key] = data[key];
+      }
+      return res;
+    }, {});
+
     return {
       kind: ItemConfig.kind,
       ...(data.metadata ? { metadata: data.metadata } : {}),
-      spec: data
+      spec: {
+        ...data.item,
+        ...nested
+      }
     };
   }
 
-  static encodeFromTemplate(data: TemplateData) {
+  static encodeFromTemplate(template: ITemplateData) {
     const notBlacklisted = (slot: Slot) => !SLOT_TYPE_BLACKLIST.includes(slot.slot_type_name);
 
-    return ItemConfig.encodeFromItemData(
-      new ItemData({
-        item: {
-          label: ''
-        } as any,
-        slots: data.slots.filter(notBlacklisted).map(slot => ({
+    return {
+      kind: ItemConfig.kind,
+      metadata: {
+        template: template.template.name
+      },
+      spec: {
+        label: '',
+        slots: template.slots.filter(notBlacklisted).map(slot => ({
           name: slot.name,
           value: ''
-        })) as any,
-        metadata: {
-          template: data.template.name
-        }
-      })
-    );
-  }
-
-  public toItemCreateData(): ItemCreateData {
-    return new ItemCreateData({
-      label: this.itemConfig.label,
-      templateName: this.templateName,
-      slots: this.itemConfig.slots
-    });
+        }))
+      }
+    };
   }
 }

@@ -5,7 +5,6 @@ import { EncryptionSpaceConfig } from '../configs/encryption-space-config';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
-import { ItemData } from '../models/item-data';
 import { LocalSlot } from '../models/local-slot';
 import {
   KeystoreAPIFactory,
@@ -94,10 +93,11 @@ export class ShareService {
     });
     const key = EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey);
     const decryptedSlots = await ItemService.decryptAllSlots(slots!, key);
-    return new ItemData({
+
+    return {
       item,
       slots: decryptedSlots
-    });
+    };
   }
 
   private addShareValuesToSlots(share: Share, slots: Slot[]) {

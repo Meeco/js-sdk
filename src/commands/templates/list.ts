@@ -27,7 +27,7 @@ export default class TemplatesList extends MeecoCommand {
         DEFAULT_CLASSIFICATION_NAME
       );
       cli.action.stop();
-      this.printYaml(TemplateConfig.encodeFromList(templates));
+      this.printYaml(TemplateConfig.encodeListFromJSON(templates));
     } catch (err) {
       await this.handleException(err);
     }
