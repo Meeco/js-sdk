@@ -2,7 +2,6 @@ import * as cryppo from '@meeco/cryppo';
 import { CipherStrategy, decryptWithKey, encryptWithKey } from '@meeco/cryppo';
 import { binaryBufferToString } from '@meeco/cryppo/dist/src/util';
 import { AttachmentResponse, Slot, ThumbnailResponse } from '@meeco/vault-api-sdk';
-import { CLIError } from '@oclif/errors';
 import { createReadStream } from 'fs';
 import * as Jimp from 'jimp';
 import { lookup } from 'mime-types';
@@ -13,6 +12,7 @@ import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { ItemCreateData } from '../models/item-create-data';
 import { LocalSlot } from '../models/local-slot';
+import { MeecoServiceError } from '../models/service-error';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 import { deleteFileSync, readFileAsBuffer, writeFileContents } from '../util/file';
 
@@ -25,10 +25,7 @@ export class ItemService {
   /**
    * Updates 'value' to the decrypted 'encrypted_value' and sets 'encrypted' to false.
    */
-  public static decryptAllSlots(
-    slots: Slot[],
-    dataEncryptionKey: EncryptionKey
-  ): Promise<LocalSlot[]> {
+  public static decryptAllSlots(slots: Slot[], dataEncryptionKey: EncryptionKey): Promise<Slot[]> {
     return Promise.all(
       slots.map(async slot => {
         const value =
@@ -48,20 +45,18 @@ export class ItemService {
     );
   }
 
-  public async create(vaultAccessToken: string, dek: EncryptionKey, data: ItemCreateData) {
+  public async create(vaultAccessToken: string, dek: EncryptionKey, config: ItemCreateData) {
     const slots_attributes = await Promise.all(
-      (data.slots || []).map(slot => this.encryptSlot(slot, dek))
+      (config.slots || []).map(slot => this.encryptSlot(slot, dek))
     );
 
-    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsPost({
-      template_name: data.templateName,
+    return await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsPost({
+      template_name: config.templateName,
       item: {
-        ...data.item,
+        label: config.item.label,
         slots_attributes
       }
     });
-
-    return result;
   }
 
   private async getStringAsFileStream(fileContents: string) {
@@ -122,18 +117,18 @@ export class ItemService {
       fileName = basename(filePath);
       fileType = lookup(filePath) || 'application/octet-stream';
     } catch (err) {
-      throw new CLIError(
+      throw new MeecoServiceError(
         `Failed to read file '${config.template.file}' - please check that the file exists and is readable`
       );
     }
 
     this.log('Fetching item');
-    const itemData = await this.get(
+    const itemFetchResult = await this.get(
       config.itemId,
       auth.vault_access_token,
       auth.data_encryption_key
     ).catch(err => {
-      throw new CLIError(
+      throw new MeecoServiceError(
         `Unable to find item '${config.itemId}' - please check that the item exists for the current user.`
       );
     });
@@ -171,7 +166,7 @@ export class ItemService {
 
     this.log('Adding attachment to item');
     const updated = await this.vaultAPIFactory(auth.vault_access_token).ItemApi.itemsIdPut(
-      itemData.item.id,
+      itemFetchResult.item.id,
       {
         item: {
           slots_attributes: [
@@ -188,6 +183,7 @@ export class ItemService {
         }
       }
     );
+
     this.log('File was successfully attached');
     return updated;
   }
@@ -209,9 +205,11 @@ export class ItemService {
       flag: 'wx' // Write if not exists but fail if the file exists
     }).catch(err => {
       if (err.code === 'EEXIST') {
-        throw new CLIError('The destination file exists - please use a different destination file');
+        throw new MeecoServiceError(
+          'The destination file exists - please use a different destination file'
+        );
       } else {
-        throw new CLIError(`Failed to write to destination file: '${err.message}'`);
+        throw new MeecoServiceError(`Failed to write to destination file: '${err.message}'`);
       }
     });
   }
@@ -274,7 +272,7 @@ export class ItemService {
     return encrypted;
   }
 
-  public async list(vaultAccessToken: string) {
-    return await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet();
+  public list(vaultAccessToken: string) {
+    return this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet();
   }
 }

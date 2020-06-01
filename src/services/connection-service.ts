@@ -1,4 +1,5 @@
 import * as cryppo from '@meeco/cryppo';
+import { Connection } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { ConnectionCreateData } from '../models/connection-create-data';
 import { Environment } from '../models/environment';
@@ -21,15 +22,19 @@ export class ConnectionService {
   async createConnection(config: ConnectionCreateData) {
     const { to, from, options } = config;
 
+    let existingConnection: { fromUserConnection: Connection; toUserConnection: Connection };
     try {
       // We want to avoid creating keypairs etc. only to find out that the users were connected from the beginning
       this.log('Checking for an existing connection');
-      const existingConnection = await findConnectionBetween(from, to, this.environment, this.log);
-      if (existingConnection.fromUserConnection && existingConnection.toUserConnection) {
-        this.log('Connection exists between the specified users');
-        process.exit(1);
-      }
-    } catch (err) {}
+      existingConnection = await findConnectionBetween(from, to, this.environment, this.log);
+    } catch (err) {
+      // Empty catch because getting 404's is expected if the connection does not exist
+    }
+
+    // @ts-ignore
+    if (existingConnection?.fromUserConnection && existingConnection?.toUserConnection) {
+      throw new Error('Connection exists between the specified users');
+    }
 
     this.log('Generating key pairs');
     const fromKeyPair = await this.createAndStoreKeyPair(from);

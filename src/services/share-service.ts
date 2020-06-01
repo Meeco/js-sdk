@@ -1,11 +1,11 @@
 import * as cryppo from '@meeco/cryppo';
 import { Connection, Share, Slot } from '@meeco/vault-api-sdk';
-import { CLIError } from '@oclif/errors';
 import { EncryptionSpaceConfig } from '../configs/encryption-space-config';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { LocalSlot } from '../models/local-slot';
+import { MeecoServiceError } from '../models/service-error';
 import {
   KeystoreAPIFactory,
   keystoreAPIFactory,
@@ -75,7 +75,7 @@ export class ShareService {
       .SharesApi.sharesIdGet(itemId)
       .catch(err => {
         if ((<Response>err).status === 404) {
-          throw new CLIError(`Share with id '${itemId}' not found for the specified user`);
+          throw new MeecoServiceError(`Share with id '${itemId}' not found for the specified user`);
         }
         throw err;
       });
@@ -117,7 +117,7 @@ export class ShareService {
     const item = await this.vaultApiFactory(fromUser).ItemApi.itemsIdGet(itemId);
 
     if (!item) {
-      throw new CLIError(`Item '${itemId}' not found`);
+      throw new MeecoServiceError(`Item '${itemId}' not found`);
     }
     const { slots } = item;
 
@@ -212,7 +212,7 @@ export class ShareService {
 
     const recipientPublicKey = connection.other_user_connection_public_key;
     if (!recipientPublicKey) {
-      throw new CLIError('Other user public key missing!');
+      throw new MeecoServiceError('Other user public key missing!');
     }
 
     const shareableDataEncryptionKey = await cryppo.encryptWithPublicKey({
@@ -336,7 +336,7 @@ export class ShareService {
         if (err?.status === 403 && typeof err?.json === 'function') {
           const json = await err.json();
           if (json?.errors[0].error === 'invalid_request_signature') {
-            throw new CLIError(
+            throw new MeecoServiceError(
               `Failed to claim shared encryption key - the request signature was rejected by the API`
             );
           }
@@ -370,7 +370,7 @@ export class ShareService {
     );
     const connection = connectionResponse.connection;
     if (!connection || !connection.id) {
-      throw new CLIError(`Connection '${connectionId}' not found.`);
+      throw new MeecoServiceError(`Connection '${connectionId}' not found.`);
     }
     return connection;
   }

@@ -34,7 +34,7 @@ export class ItemConfig {
     item: Item;
     slots?: LocalSlot[];
     thumbnails?: Thumbnail[];
-    attachment?: Attachment[];
+    attachments?: Attachment[];
     metadata?: IItemMetadata;
   }) {
     const nested = ITEM_ASSOCIATIONS.reduce((res, key) => {

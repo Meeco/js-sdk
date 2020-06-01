@@ -1,6 +1,6 @@
 import { ItemTemplateApi } from '@meeco/vault-api-sdk';
-import { CLIError } from '@oclif/errors';
 import { Environment } from '../models/environment';
+import { MeecoServiceError } from '../models/service-error';
 import { ITemplateData } from '../models/template-data';
 import { vaultAPIFactory } from '../util/api-factory';
 
@@ -23,7 +23,7 @@ export class TemplatesService {
     const result = await this.api.itemTemplatesGet(classificationScheme, classificationName);
     const template = result.item_templates?.find(_template => _template.name === name);
     if (!template) {
-      throw new CLIError(
+      throw new MeecoServiceError(
         `Template '${name}' not found of classification name '${classificationName}' and scheme ${classificationScheme}`
       );
     }
