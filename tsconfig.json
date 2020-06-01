@@ -1,15 +1,18 @@
 {
   "compilerOptions": {
+    "baseUrl": "./packages",
     "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
     "outDir": "lib",
-    "rootDir": "src",
+    "rootDir": ".",
     "strict": true,
     "target": "es2017",
     "noImplicitAny": false,
     "noUnusedLocals": true,
-    "experimentalDecorators": true
-  },
-  "include": ["src/**/*"]
+    "experimentalDecorators": true,
+    "paths": {
+      "@meeco/sdk": ["sdk/src/public-api.ts"]
+    }
+  }
 }
