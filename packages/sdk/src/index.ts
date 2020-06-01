@@ -1,6 +1,7 @@
 /**
  * The publicly exposed API
  */
+export * from './mock-cryppo';
 export * from './models/auth-data';
 export * from './models/connection-create-data';
 export * from './models/encryption-key';

@@ -1,5 +1,4 @@
-import * as cryppo from '@meeco/cryppo';
-import { SRPSession } from '@meeco/sdk';
+import { SRPSession, _mockCryppo } from '@meeco/sdk';
 import test from '@oclif/test';
 import { join } from 'path';
 import { createSandbox } from 'sinon';
@@ -10,90 +9,9 @@ export const testUserAuth = ['-a', inputFixture('user-auth.input.yaml')];
 export const testEnvironmentFile = ['-e', inputFixture('test-environment.input.yaml')];
 
 export const customTest = test
-  .register('mockCryppo', mockCryppo)
+  .register('mockCryppo', _mockCryppo)
   .register('run', runCommand)
   .register('mockSRP', mockSRP);
-
-let _stubbed = false;
-export function mockCryppo() {
-  const sandbox = createSandbox();
-  return {
-    run: () => {
-      if (_stubbed) {
-        return;
-      }
-      _stubbed = true;
-      sandbox.stub(cryppo, 'generateDerivedKey').callsFake(args => {
-        return Promise.resolve({
-          key: `derived_key_${args.key}`,
-          options: <any>{
-            serialize() {
-              return `serialized.derivation.artifacts.${args.key}`;
-            }
-          }
-        });
-      });
-
-      sandbox.stub(cryppo, 'generateEncryptionVerificationArtifacts').callsFake(() => {
-        return {
-          token: 'token',
-          salt: 'salt'
-        };
-      });
-
-      sandbox.stub(cryppo, 'encryptWithKey').callsFake(args => {
-        return Promise.resolve({
-          serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
-          encrypted: `[encrypted]${args.data}`
-        });
-      });
-
-      sandbox.stub(cryppo, 'encryptWithPublicKey').callsFake(args => {
-        return Promise.resolve({
-          serialized: `[serialized][rsa_encrypted]${args.data}[with ${args.publicKeyPem}]`,
-          encrypted: `[rsa_encrypted]${args.data}`
-        });
-      });
-
-      sandbox.stub(cryppo, 'decryptWithKey').callsFake(args => {
-        return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
-      });
-
-      sandbox.stub(cryppo, 'signWithPrivateKey').callsFake((pem, data) => {
-        return {
-          signature: `${data}[signed with ${pem}]`,
-          serialized: `[serialized]${data}[signed with ${pem}]`,
-          data,
-          keySize: 4096
-        };
-      });
-
-      sandbox.stub(cryppo, 'encodeDerivationArtifacts').callsFake((args: any) => {
-        return `${args.token}.${args.encrypted}`;
-      });
-
-      sandbox.stub(cryppo, 'generateRandomKey').callsFake((args: any) => {
-        return `randomly_generated_key`;
-      });
-
-      sandbox.stub(cryppo, 'generateRSAKeyPair').callsFake(() => {
-        return Promise.resolve({
-          privateKey: '--PRIVATE_KEY--12324',
-          publicKey: '--PUBLIC_KEY--ABCD',
-          bits: 256
-        });
-      });
-
-      sandbox.stub(cryppo, 'decryptSerializedWithPrivateKey').callsFake(args => {
-        return Promise.resolve(`[decrypted]${args.serialized}${args.privateKeyPem}`);
-      });
-    },
-    finally: () => {
-      sandbox.restore();
-      _stubbed = false;
-    }
-  };
-}
 
 export function mockSRP() {
   const sandbox = createSandbox();
@@ -114,7 +32,6 @@ export function mockSRP() {
     },
     finally: () => {
       sandbox.restore();
-      _stubbed = false;
     }
   };
 }

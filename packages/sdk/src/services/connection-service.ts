@@ -12,6 +12,7 @@ import {
 import { findConnectionBetween } from '../util/find-connection-between';
 
 export class ConnectionService {
+  private cryppo = (<any>global).cryppo || cryppo;
   private vaultApiFactory: VaultAPIFactory;
   private keystoreApiFactory: KeystoreAPIFactory;
   constructor(private environment: Environment, private log: (message: string) => void) {
@@ -95,7 +96,7 @@ export class ConnectionService {
   public async listConnections(user: AuthData) {
     const result = await this.vaultApiFactory(user).ConnectionApi.connectionsGet();
     const decryptions = (result.connections || []).map(connection =>
-      cryppo
+      this.cryppo
         .decryptWithKey({
           serialized: connection.encrypted_recipient_name!,
           key: user.data_encryption_key.key
@@ -109,22 +110,22 @@ export class ConnectionService {
   }
 
   private encryptRecipientName(name: string, user: AuthData) {
-    return cryppo
+    return this.cryppo
       .encryptWithKey({
         data: name,
         key: user.data_encryption_key.key,
-        strategy: cryppo.CipherStrategy.AES_GCM
+        strategy: this.cryppo.CipherStrategy.AES_GCM
       })
       .then(result => result.serialized);
   }
 
   private async createAndStoreKeyPair(user: AuthData) {
-    const keyPair = await cryppo.generateRSAKeyPair();
+    const keyPair = await this.cryppo.generateRSAKeyPair();
 
-    const toPrivateKeyEncrypted = await cryppo.encryptWithKey({
+    const toPrivateKeyEncrypted = await this.cryppo.encryptWithKey({
       data: keyPair.privateKey,
       key: user.key_encryption_key.key,
-      strategy: cryppo.CipherStrategy.AES_GCM
+      strategy: this.cryppo.CipherStrategy.AES_GCM
     });
 
     const keystoreStoredKeyPair = await this.keystoreApiFactory(user)
