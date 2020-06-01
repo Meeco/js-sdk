@@ -1,4 +1,4 @@
-import { SRPSession, _mockCryppo } from '@meeco/sdk';
+import { _mockCryppo, SRPSession } from '@meeco/sdk';
 import test from '@oclif/test';
 import { join } from 'path';
 import { createSandbox } from 'sinon';

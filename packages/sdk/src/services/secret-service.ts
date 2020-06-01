@@ -1,5 +1,5 @@
-import { generateDerivedKey, generateRandomKey } from '@meeco/cryppo';
 import baseX from 'base-x';
+import cryppo from './cryppo-service';
 export class SecretService {
   private readonly derivationConstants = {
     iterationVariance: 0,
@@ -23,7 +23,7 @@ export class SecretService {
   }
 
   public async generateSecret(username: string) {
-    const key = await generateRandomKey(32);
+    const key = await cryppo.generateRandomKey(32);
     const secretKey = this.encodeBase58(key);
     const version = 1;
     const readable = secretKey.match(/(.{1,6})/g)!.join('-');
@@ -53,7 +53,7 @@ export class SecretService {
     if (secretKey.indexOf('.') >= 0) {
       throw new Error('Incorrect secret provided. Please destructure the secret_key.');
     }
-    return generateDerivedKey({
+    return cryppo.generateDerivedKey({
       ...this.derivationConstants,
       key: password,
       useSalt: secretKey
@@ -67,7 +67,7 @@ export class SecretService {
     if (secretKey.indexOf('.') >= 0) {
       throw new Error('Incorrect secret provided. Please destructure the secret_key.');
     }
-    return generateDerivedKey({
+    return cryppo.generateDerivedKey({
       ...this.derivationConstants,
       key: password,
       useSalt: secretKey

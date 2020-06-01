@@ -100,7 +100,7 @@ function stubVault(api: Nock.Scope) {
     .matchHeader(
       'Authorization',
       [
-        '[decrypted]vault_auth_token--PRIVATE_KEY--12324[decrypted with a2V5X2VuY3J5cHRpb25fa2V5W2RlY3J5cHRlZCB3aXRoIElFdjRHa3pVWjI0UXB2WjhIemFYN3FGczRaeG9QQjlDWm14NVJjMDhHalU9XQ==]'
+        '[decrypted]vault_auth_token--PRIVATE_KEY--12324[decrypted with key_encryption_key[decrypted with derived_key_123.asupersecretpassphrase]]'
       ].join('')
     )
     .reply(200, {

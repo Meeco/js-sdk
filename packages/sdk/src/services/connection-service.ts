@@ -1,14 +1,9 @@
-import * as cryppo from '@meeco/cryppo';
 import { Connection } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { ConnectionCreateData } from '../models/connection-create-data';
 import { Environment } from '../models/environment';
-import {
-  KeystoreAPIFactory,
-  keystoreAPIFactory,
-  VaultAPIFactory,
-  vaultAPIFactory
-} from '../util/api-factory';
+import cryppo from '../services/cryppo-service';
+import { KeystoreAPIFactory, keystoreAPIFactory, VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
 
 export class ConnectionService {

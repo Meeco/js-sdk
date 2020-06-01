@@ -1,4 +1,3 @@
-import * as cryppo from '@meeco/cryppo';
 import { AttachmentResponse, Slot, ThumbnailResponse } from '@meeco/vault-api-sdk';
 import * as Jimp from 'jimp';
 import { AuthData } from '../models/auth-data';
@@ -8,13 +7,14 @@ import { FileAttachmentData } from '../models/file-attachment-data';
 import { ItemCreateData } from '../models/item-create-data';
 import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
+import cryppo from '../services/cryppo-service';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 
 export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
   private vaultAPIFactory: VaultAPIFactory;
 
-  constructor(environment: Environment, private log: (message: string) => void = () => {}) {
+  constructor(environment: Environment, private log: (message: string) => void = () => { }) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
   }
 
@@ -27,9 +27,9 @@ export class ItemService {
         const value =
           slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
             ? await this.cryppo.decryptWithKey({
-                key: dataEncryptionKey.key,
-                serialized: slot.encrypted_value
-              })
+              key: dataEncryptionKey.key,
+              serialized: slot.encrypted_value
+            })
             : (slot as DecryptedSlot).value;
         const decrypted = {
           ...slot,

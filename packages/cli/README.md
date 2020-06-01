@@ -11,15 +11,16 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 # Table of Contents
 
 <!-- toc -->
-* [Meeco CLI](#meeco-cli)
-* [Table of Contents](#table-of-contents)
-* [Setup](#setup)
-* [Reporting Errors](#reporting-errors)
-* [Dev Set up](#dev-set-up)
-* [Usage](#usage)
-* [Commands](#commands)
-* [Config File Specifications](#config-file-specifications)
-<!-- tocstop -->
+
+- [Meeco CLI](#meeco-cli)
+- [Table of Contents](#table-of-contents)
+- [Setup](#setup)
+- [Reporting Errors](#reporting-errors)
+- [Dev Set up](#dev-set-up)
+- [Usage](#usage)
+- [Commands](#commands)
+- [Config File Specifications](#config-file-specifications)
+  <!-- tocstop -->
 
 # Setup
 
@@ -112,6 +113,25 @@ This will setup a private encryption space between the two users (if it does not
 You can fetch the shared item as the second user with `meeco shares:list -a .user_2.yaml` / `meeco shares:get -a .user_2.yaml <share_id>`
 
 <!-- commands -->
+
+- [`meeco help [COMMAND]`](#meeco-help-command)
+
+## `meeco help [COMMAND]`
+
+display help for meeco
+
+```
+USAGE
+  $ meeco help [COMMAND]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
 
 <!-- commandsstop -->
 
