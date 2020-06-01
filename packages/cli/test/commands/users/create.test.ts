@@ -111,7 +111,7 @@ function stubKeystore(stubUsername: boolean) {
 
     api
       .post('/key_encryption_key', {
-        serialized_key_encryption_key: `[serialized][encrypted]randomly_generated_key[with derived_key_123.asupersecretpassphrase]`
+        serialized_key_encryption_key: `[serialized][encrypted]randomly_generated_key[with IEv4GkzUZ24QpvZ8HzaX7qFs4ZxoPB9CZmx5Rc08GjU=]`
       })
       .matchHeader('Authorization', 'keystore_auth_token')
       .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
@@ -123,7 +123,7 @@ function stubKeystore(stubUsername: boolean) {
 
     api
       .post('/data_encryption_keys', {
-        serialized_data_encryption_key: `[serialized][encrypted]randomly_generated_key[with randomly_generated_key]`
+        serialized_data_encryption_key: `[serialized][encrypted]randomly_generated_key[with cmFuZG9tbHlfZ2VuZXJhdGVkX2tleQ==]`
       })
       .matchHeader('Authorization', 'keystore_auth_token')
       .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
@@ -137,7 +137,7 @@ function stubKeystore(stubUsername: boolean) {
       .post('/keypairs', {
         public_key: '--PUBLIC_KEY--ABCD',
         encrypted_serialized_key:
-          '[serialized][encrypted]--PRIVATE_KEY--12324[with randomly_generated_key]',
+          '[serialized][encrypted]--PRIVATE_KEY--12324[with cmFuZG9tbHlfZ2VuZXJhdGVkX2tleQ==]',
         external_identifiers: [UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER]
       })
       .matchHeader('Authorization', 'keystore_auth_token')

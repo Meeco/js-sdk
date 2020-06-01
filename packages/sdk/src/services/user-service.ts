@@ -16,6 +16,8 @@ export class UserService {
   static VAULT_PAIR_EXTERNAL_IDENTIFIER = 'auth';
   public readonly vaultKeypairExternalId;
 
+  private cryppo = (<any>global).cryppo || cryppo;
+
   private keystoreApiFactory: KeystoreAPIFactory;
   private vaultApiFactory: VaultAPIFactory;
 
@@ -49,10 +51,10 @@ export class UserService {
     sessionAuthentication: string
   ) {
     this.log('Generate and store key encryption key');
-    const kek = cryppo.generateRandomKey();
+    const kek = this.cryppo.generateRandomKey();
 
-    const encryptedKEK = await cryppo.encryptWithKey({
-      strategy: cryppo.CipherStrategy.AES_GCM,
+    const encryptedKEK = await this.cryppo.encryptWithKey({
+      strategy: this.cryppo.CipherStrategy.AES_GCM,
       key: derivedKey,
       data: kek
     });
@@ -79,11 +81,11 @@ export class UserService {
     sessionAuthentication: string
   ) {
     this.log('Generate and store data encryption key');
-    const dek = cryppo.generateRandomKey();
-    const dekEncryptedWithKEK = await cryppo.encryptWithKey({
+    const dek = this.cryppo.generateRandomKey();
+    const dekEncryptedWithKEK = await this.cryppo.encryptWithKey({
       data: dek,
       key: keyEncryptionKey,
-      strategy: cryppo.CipherStrategy.AES_GCM
+      strategy: this.cryppo.CipherStrategy.AES_GCM
     });
     const keystoreDataEncryptionKeyApi = this.keystoreApiFactory(sessionAuthentication)
       .DataEncryptionKeyApi;
@@ -111,12 +113,12 @@ export class UserService {
     sessionAuthentication: string
   ) {
     this.log('Generate and store vault key pair');
-    const keyPair = await cryppo.generateRSAKeyPair();
+    const keyPair = await this.cryppo.generateRSAKeyPair();
     const keystoreKeypairApi = this.keystoreApiFactory(sessionAuthentication).KeypairApi;
-    const privateKeyEncryptedWithKEK = await cryppo.encryptWithKey({
+    const privateKeyEncryptedWithKEK = await this.cryppo.encryptWithKey({
       data: keyPair.privateKey,
       key: keyEncryptionKey,
-      strategy: cryppo.CipherStrategy.AES_GCM
+      strategy: this.cryppo.CipherStrategy.AES_GCM
     });
     await keystoreKeypairApi.keypairsPost({
       public_key: keyPair.publicKey,
@@ -141,7 +143,7 @@ export class UserService {
       public_key: keyPair.publicKey,
       admission_token: vaultAdmissionToken
     });
-    const decryptedVaultSessionToken = await cryppo.decryptSerializedWithPrivateKey({
+    const decryptedVaultSessionToken = await this.cryppo.decryptSerializedWithPrivateKey({
       privateKeyPem: keyPair.privateKey,
       serialized: vaultUser.encrypted_session_authentication_string
     });
@@ -161,7 +163,7 @@ export class UserService {
         public_key: keyPair.publicKey
       })
       .then(result => result.session);
-    const decryptedVaultSessionToken = await cryppo.decryptSerializedWithPrivateKey({
+    const decryptedVaultSessionToken = await this.cryppo.decryptSerializedWithPrivateKey({
       privateKeyPem: keyPair.privateKey,
       serialized: session.encrypted_session_authentication_string
     });
@@ -293,13 +295,13 @@ export class UserService {
     const sessionAuthenticationToken = await this.loginKeystoreViaSRP(userPassword, secret);
 
     const encryptedKek = await this.getKeyEncryptionKey(sessionAuthenticationToken);
-    const kek = await cryppo.decryptWithKey({
+    const kek = await this.cryppo.decryptWithKey({
       serialized: encryptedKek.serialized_key_encryption_key,
       key: derivedKey
     });
 
     const keyPair = await this.requestKeyPair(sessionAuthenticationToken);
-    const decryptedPrivateKey = await cryppo.decryptWithKey({
+    const decryptedPrivateKey = await this.cryppo.decryptWithKey({
       serialized: keyPair.encrypted_serialized_key,
       key: kek
     });
@@ -313,7 +315,7 @@ export class UserService {
       sessionAuthenticationToken,
       vaultUser.user.private_encryption_space_id!
     );
-    const dek = await cryppo.decryptWithKey({
+    const dek = await this.cryppo.decryptWithKey({
       serialized: encryptedDek.serialized_data_encryption_key,
       key: kek
     });

@@ -34,7 +34,7 @@ export function _mockCryppo() {
 
       (<any>cryppo).encryptWithKey = args => {
         return Promise.resolve({
-          serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
+          serialized: `[serialized][encrypted]${args.data}[with ${_cryppo.encodeSafe64(args.key)}]`,
           encrypted: `[encrypted]${args.data}`
         });
       };
@@ -47,7 +47,9 @@ export function _mockCryppo() {
       };
 
       (<any>cryppo).decryptWithKey = args => {
-        return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
+        return Promise.resolve(
+          `${args.serialized}[decrypted with ${_cryppo.encodeSafe64(args.key)}]`
+        );
       };
 
       (<any>cryppo).signWithPrivateKey = (pem, data) => {
@@ -77,6 +79,14 @@ export function _mockCryppo() {
 
       (<any>cryppo).decryptSerializedWithPrivateKey = args => {
         return Promise.resolve(`[decrypted]${args.serialized}${args.privateKeyPem}`);
+      };
+
+      (<any>cryppo).binaryBufferToString = val => {
+        return _cryppo.binaryBufferToString(val);
+      };
+
+      (<any>cryppo).stringAsBinaryBuffer = val => {
+        return _cryppo.stringAsBinaryBuffer(val);
       };
     },
     finally: () => {

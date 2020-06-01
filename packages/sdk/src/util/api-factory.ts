@@ -3,7 +3,7 @@ import * as Vault from '@meeco/vault-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
 import { blue, green } from 'chalk';
 import { debug } from 'debug';
-import * as FormData from 'form-data';
+import FormData from 'form-data';
 import nodeFetch from 'node-fetch';
 import { AuthData } from '../models/auth-data';
 import { Environment } from '../models/environment';

@@ -1,6 +1,6 @@
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
-import * as nock from 'nock/types';
+import * as nock from 'nock';
 import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('connections:create', () => {

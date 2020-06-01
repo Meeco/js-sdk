@@ -1,4 +1,3 @@
-import { CLIError } from '@oclif/errors';
 import { AuthData } from '../models/auth-data';
 import { Environment } from '../models/environment';
 import { vaultAPIFactory } from './api-factory';
@@ -26,7 +25,7 @@ export async function findConnectionBetween(
   );
 
   if (sharedConnections.length < 1) {
-    throw new CLIError('Users are not connected. Please set up a connection first.');
+    throw new Error('Users are not connected. Please set up a connection first.');
   }
   const [fromUserConnection] = sharedConnections;
   const toUserConnection = toUserConnections.connections!.find(
@@ -34,7 +33,7 @@ export async function findConnectionBetween(
   );
 
   if (!toUserConnection) {
-    throw new CLIError('To user connection not found. Invitation may not have been accepted');
+    throw new Error('To user connection not found. Invitation may not have been accepted');
   }
 
   return { fromUserConnection, toUserConnection };

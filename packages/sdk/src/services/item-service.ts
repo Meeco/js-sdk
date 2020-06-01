@@ -1,11 +1,4 @@
 import * as cryppo from '@meeco/cryppo';
-import {
-  binaryBufferToString,
-  CipherStrategy,
-  decryptWithKey,
-  encryptWithKey,
-  stringAsBinaryBuffer
-} from '@meeco/cryppo';
 import { AttachmentResponse, Slot, ThumbnailResponse } from '@meeco/vault-api-sdk';
 import * as Jimp from 'jimp';
 import { AuthData } from '../models/auth-data';
@@ -18,7 +11,9 @@ import { MeecoServiceError } from '../models/service-error';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 
 export class ItemService {
+  private static cryppo = (<any>global).cryppo || cryppo;
   private vaultAPIFactory: VaultAPIFactory;
+
   constructor(environment: Environment, private log: (message: string) => void = () => {}) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
   }
@@ -31,7 +26,7 @@ export class ItemService {
       slots.map(async slot => {
         const value =
           slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
-            ? await cryppo.decryptWithKey({
+            ? await this.cryppo.decryptWithKey({
                 key: dataEncryptionKey.key,
                 serialized: slot.encrypted_value
               })
@@ -75,17 +70,17 @@ export class ItemService {
       .getBufferAsync(Jimp.MIME_PNG);
 
     this.log('Encrypting image thumbnail');
-    const encryptedThumbnail = await cryppo.encryptWithKey({
+    const encryptedThumbnail = await ItemService.cryppo.encryptWithKey({
       key: auth.data_encryption_key.key,
-      data: binaryBufferToString(thumbnail),
-      strategy: CipherStrategy.AES_GCM
+      data: ItemService.cryppo.binaryBufferToString(thumbnail),
+      strategy: ItemService.cryppo.CipherStrategy.AES_GCM
     });
 
     this.log('Uploading encrypted image thumbnail');
     let response: ThumbnailResponse;
     try {
       response = await this.vaultAPIFactory(auth).ThumbnailApi.thumbnailsPost(
-        stringAsBinaryBuffer(encryptedThumbnail.serialized) as any,
+        ItemService.cryppo.stringAsBinaryBuffer(encryptedThumbnail.serialized) as any,
         binaryId,
         sizeType
       );
@@ -113,10 +108,10 @@ export class ItemService {
     });
 
     this.log('Encrypting File');
-    const encryptedFile = await cryppo.encryptWithKey({
+    const encryptedFile = await ItemService.cryppo.encryptWithKey({
       key: auth.data_encryption_key.key,
-      data: binaryBufferToString(file),
-      strategy: CipherStrategy.AES_GCM
+      data: ItemService.cryppo.binaryBufferToString(file),
+      strategy: ItemService.cryppo.CipherStrategy.AES_GCM
     });
 
     let uploadedBinary: AttachmentResponse;
@@ -125,7 +120,7 @@ export class ItemService {
       uploadedBinary = await this.vaultAPIFactory(
         auth.vault_access_token
       ).AttachmentApi.attachmentsPost(
-        stringAsBinaryBuffer(encryptedFile.serialized) as any,
+        ItemService.cryppo.stringAsBinaryBuffer(encryptedFile.serialized) as any,
         fileName,
         fileType
       );
@@ -150,7 +145,7 @@ export class ItemService {
         item: {
           slots_attributes: [
             {
-              label: label,
+              label,
               slot_type_name: 'attachment',
               attachments_attributes: [
                 {
@@ -173,8 +168,8 @@ export class ItemService {
   ) {
     const result = await download();
     const buffer = await (<any>result).arrayBuffer();
-    const encryptedContents = await binaryBufferToString(buffer);
-    const decryptedContents = await decryptWithKey({
+    const encryptedContents = await ItemService.cryppo.binaryBufferToString(buffer);
+    const decryptedContents = await ItemService.cryppo.decryptWithKey({
       serialized: encryptedContents,
       key: dataEncryptionKey.key
     });
@@ -225,11 +220,13 @@ export class ItemService {
     const encrypted: any = {
       ...slot
     };
-    encrypted.encrypted_value = await encryptWithKey({
-      strategy: CipherStrategy.AES_GCM,
-      key: dek.key,
-      data: slot.value || ''
-    }).then(result => result.serialized);
+    encrypted.encrypted_value = await ItemService.cryppo
+      .encryptWithKey({
+        strategy: ItemService.cryppo.CipherStrategy.AES_GCM,
+        key: dek.key,
+        data: slot.value || ''
+      })
+      .then(result => result.serialized);
     delete encrypted.value;
     encrypted.encrypted = true;
     return encrypted;
