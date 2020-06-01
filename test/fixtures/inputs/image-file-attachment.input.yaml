@@ -1,0 +1,6 @@
+kind: FileAttachment
+metadata:
+  item_id: test_item_id
+spec:
+  label: 'My Secret File'
+  file: './my/secret/image.png'

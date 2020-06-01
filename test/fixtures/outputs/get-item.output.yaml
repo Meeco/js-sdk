@@ -26,22 +26,60 @@ spec:
   slots:
     - id: pizza
       name: pizza
-      created_at: 1970-01-01
+      description: null
+      encrypted: false
+      ordinal: null
+      visible: null
+      classification_node_ids: null
+      attachment_ids: null
+      slotable_id: null
+      slotable_type: null
+      required: null
       updated_at: 1970-01-01
-      value: Hawaiian[decrypted with my_generated_dek]
-      label: Pizza
+      created_at: 1970-01-01
+      slot_type_name: key_value
+      creator: null
       encrypted_value: Hawaiian
+      image: null
+      label: Pizza
+      value: Hawaiian[decrypted with my_generated_dek]
     - id: steak
       name: steak
-      created_at: 1970-01-01
+      description: null
+      encrypted: false
+      ordinal: null
+      visible: null
+      classification_node_ids: null
+      attachment_ids: null
+      slotable_id: null
+      slotable_type: null
+      required: null
       updated_at: 1970-01-01
-      value: Rump[decrypted with my_generated_dek]
-      label: Steak
+      created_at: 1970-01-01
+      slot_type_name: key_value
+      creator: null
       encrypted_value: Rump
+      image: null
+      label: Steak
+      value: Rump[decrypted with my_generated_dek]
     - id: beer
       name: beer
-      created_at: 1970-01-01
+      description: null
+      encrypted: false
+      ordinal: null
+      visible: null
+      classification_node_ids: null
+      attachment_ids: null
+      slotable_id: null
+      slotable_type: null
+      required: null
       updated_at: 1970-01-01
-      value: Session Ale[decrypted with my_generated_dek]
-      label: Beer
+      created_at: 1970-01-01
+      slot_type_name: key_value
+      creator: null
       encrypted_value: Session Ale
+      image: null
+      label: Beer
+      value: Session Ale[decrypted with my_generated_dek]
+  thumbnails: []
+  attachments: []
