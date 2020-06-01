@@ -5,8 +5,8 @@ keystore:
   url: https://sandbox.meeco.me/keystore
   subscription_key: environment_subscription_key
 downloader:
-  url: https://downloader-esafe-test.meeco.me
+  url: https://sandbox.meeco.me/downloader
   subscription_key: environment_subscription_key
 passphrase:
-  url: https://passphrasestore-esafe-test.meeco.me
+  url: https://sandbox.meeco.me/passphrasestore
   subscription_key: environment_subscription_key
