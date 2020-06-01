@@ -12,10 +12,17 @@ export interface IFileAttachmentConfigMetadata {
 @ConfigReader<FileAttachmentConfig>()
 export class FileAttachmentConfig {
   static kind = 'FileAttachment';
+
+  public readonly label: string;
+  public readonly file: string;
+
   constructor(
     public readonly itemId: string,
     public readonly template: IFileAttachmentConfigTemplate
-  ) {}
+  ) {
+    this.label = template.label;
+    this.file = template.file;
+  }
 
   static fromYamlConfig(
     yamlConfigObj: IYamlConfig<IFileAttachmentConfigMetadata, IFileAttachmentConfigTemplate>

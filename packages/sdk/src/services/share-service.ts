@@ -1,8 +1,8 @@
 import * as cryppo from '@meeco/cryppo';
 import { Connection, Share, Slot } from '@meeco/vault-api-sdk';
-import { EncryptionSpaceConfig } from '../configs/encryption-space-config';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
+import { EncryptionSpaceData } from '../models/encryption-space-data';
 import { Environment } from '../models/environment';
 import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
@@ -173,7 +173,7 @@ export class ShareService {
   ): Promise<ISharedEncryptionSpace> {
     if (!fromUserConnection.encryption_space_id) {
       // Users have no shared encryption space
-      return new EncryptionSpaceConfig({
+      return new EncryptionSpaceData({
         from_user_connection_id: fromUserConnection.id,
         to_user_connection_id: toUserConnection!.id
       });
@@ -195,7 +195,7 @@ export class ShareService {
       key: fromUser.key_encryption_key.key
     });
 
-    return new EncryptionSpaceConfig({
+    return new EncryptionSpaceData({
       from_user_connection_id: fromUserConnection.id,
       to_user_connection_id: toUserConnection!.id,
       shared_data_encryption_key: EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey)

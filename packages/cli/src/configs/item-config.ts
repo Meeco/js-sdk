@@ -54,6 +54,7 @@ export class ItemConfig {
   }
 
   static encodeFromTemplate(template: ITemplateData) {
+    // There are a bunch of boilerplate slots that the server returns - we filter them out for cleanliness
     const notBlacklisted = (slot: Slot) => !SLOT_TYPE_BLACKLIST.includes(slot.slot_type_name);
 
     return {

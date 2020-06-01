@@ -9,10 +9,11 @@ import {
   VaultAPIFactory,
   vaultAPIFactory
 } from '../util/api-factory';
-import { VAULT_PAIR_EXTERNAL_IDENTIFIER } from '../util/constants';
 import { SecretService } from './secret-service';
 
 export class UserService {
+  // This should be more like `auth:my-user:api-sandbox.meeco.me` but the api does not support it
+  static VAULT_PAIR_EXTERNAL_IDENTIFIER = 'auth';
   public readonly vaultKeypairExternalId;
 
   private keystoreApiFactory: KeystoreAPIFactory;
@@ -23,7 +24,7 @@ export class UserService {
   constructor(environment: Environment, private log = (msg: string) => {}) {
     this.keystoreApiFactory = keystoreAPIFactory(environment);
     this.vaultApiFactory = vaultAPIFactory(environment);
-    this.vaultKeypairExternalId = VAULT_PAIR_EXTERNAL_IDENTIFIER;
+    this.vaultKeypairExternalId = UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER;
     this.keyGen = new SecretService();
   }
 

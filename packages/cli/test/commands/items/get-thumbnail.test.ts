@@ -1,9 +1,9 @@
 import { CipherStrategy, encryptWithKey } from '@meeco/cryppo';
 import { binaryBufferToString, stringAsBinaryBuffer } from '@meeco/cryppo/dist/src/util';
+import * as fileUtils from '@meeco/sdk';
+import { EncryptionKey } from '@meeco/sdk';
 import { ThumbnailApi } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
-import { EncryptionKey } from '../../../src/models/encryption-key';
-import * as fileUtils from '../../../src/util/file';
 import { customTest, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 const singleBluePixel = Buffer.from(
@@ -87,7 +87,11 @@ describe('items:get-thumbnail', () => {
       ...testUserAuth,
       ...testEnvironmentFile
     ])
-    .catch(err => expect(err.message).to.contain('The destination file exists'))
+    .catch(err =>
+      expect(err.message)
+        .to.contain('The destination file')
+        .and.to.contain('exists')
+    )
     .it('does not overwrite existing files');
 
   customTest

@@ -1,5 +1,5 @@
 import { generateDerivedKey, generateRandomKey } from '@meeco/cryppo';
-import * as baseX from 'base-x';
+import baseX from 'base-x';
 export class SecretService {
   private readonly derivationConstants = {
     iterationVariance: 0,

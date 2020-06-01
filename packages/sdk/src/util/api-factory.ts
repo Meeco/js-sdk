@@ -2,7 +2,7 @@ import * as Keystore from '@meeco/keystore-api-sdk';
 import * as Vault from '@meeco/vault-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
 import { blue, green } from 'chalk';
-import * as debug from 'debug';
+import { debug } from 'debug';
 import * as FormData from 'form-data';
 import nodeFetch from 'node-fetch';
 import { AuthData } from '../models/auth-data';

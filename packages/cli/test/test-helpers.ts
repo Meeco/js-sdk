@@ -1,8 +1,8 @@
 import * as cryppo from '@meeco/cryppo';
+import { SRPSession } from '@meeco/sdk';
 import test from '@oclif/test';
 import { join } from 'path';
 import { createSandbox } from 'sinon';
-import { SRPSession } from '../src/models/srp-session';
 
 export const inputFixture = (fileName: string) => join(__dirname, 'fixtures', 'inputs', fileName);
 export const outputFixture = (fileName: string) => join(__dirname, 'fixtures', 'outputs', fileName);

@@ -1,8 +1,8 @@
+import { Environment } from '@meeco/sdk';
 import * as bodyParser from 'body-parser';
 import cli from 'cli-ux';
-import * as express from 'express';
+import express from 'express';
 import { Server } from 'http';
-import { Environment } from '../models/environment';
 
 export class CaptchaService {
   private server?: express.Express;

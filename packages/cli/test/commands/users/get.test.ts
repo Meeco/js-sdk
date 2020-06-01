@@ -1,8 +1,8 @@
 import { Session, SrpChallenge } from '@meeco/keystore-api-sdk';
+import { UserService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import * as Nock from 'nock';
-import { VAULT_PAIR_EXTERNAL_IDENTIFIER } from '../../../src/util/constants';
 import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('meeco users:get', () => {
@@ -89,7 +89,7 @@ function stubKeystore(api: Nock.Scope) {
       keypair: {
         public_key: '--PUBLIC_KEY--ABCD',
         encrypted_serialized_key: '--PRIVATE_KEY--12324',
-        external_identifiers: [VAULT_PAIR_EXTERNAL_IDENTIFIER]
+        external_identifiers: [UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER]
       }
     });
 }

@@ -1,7 +1,11 @@
+/**
+ * The publicly exposed API
+ */
 export * from './models/auth-data';
 export * from './models/connection-create-data';
 export * from './models/encryption-key';
 export * from './models/environment';
+export * from './models/file-attachment-data';
 export * from './models/item-create-data';
 export * from './models/local-slot';
 export * from './models/service-error';
@@ -14,4 +18,6 @@ export * from './services/share-service';
 export * from './services/templates-service';
 export * from './services/user-service';
 export * from './util/api-factory';
+// Should be deleted before publishing
+export * from './util/file';
 export * from './util/find-connection-between';

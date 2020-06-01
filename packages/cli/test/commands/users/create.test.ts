@@ -1,10 +1,10 @@
 import { ExternalAdmissionTokens, Session, SrpChallenge } from '@meeco/keystore-api-sdk';
+import { UserService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import open from 'cli-ux/lib/open';
 import { readFileSync } from 'fs';
 import * as Nock from 'nock';
 import * as request from 'node-fetch';
-import { VAULT_PAIR_EXTERNAL_IDENTIFIER } from '../../../src/util/constants';
 import { customTest, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('meeco users:create', () => {
@@ -138,7 +138,7 @@ function stubKeystore(stubUsername: boolean) {
         public_key: '--PUBLIC_KEY--ABCD',
         encrypted_serialized_key:
           '[serialized][encrypted]--PRIVATE_KEY--12324[with randomly_generated_key]',
-        external_identifiers: [VAULT_PAIR_EXTERNAL_IDENTIFIER]
+        external_identifiers: [UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER]
       })
       .matchHeader('Authorization', 'keystore_auth_token')
       .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')

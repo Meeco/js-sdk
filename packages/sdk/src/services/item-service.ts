@@ -6,10 +6,10 @@ import { createReadStream } from 'fs';
 import * as Jimp from 'jimp';
 import { lookup } from 'mime-types';
 import { basename } from 'path';
-import { FileAttachmentConfig } from '../configs/file-attachment-config';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
+import { FileAttachmentData } from '../models/file-attachment-data';
 import { ItemCreateData } from '../models/item-create-data';
 import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
@@ -108,9 +108,9 @@ export class ItemService {
     return response;
   }
 
-  public async attachFile(config: FileAttachmentConfig, auth: AuthData) {
+  public async attachFile(config: FileAttachmentData, auth: AuthData) {
     let file: Buffer, fileName: string, fileType: string;
-    const filePath = config.template.file;
+    const filePath = config.file;
     this.log('Reading file');
     try {
       file = await readFileAsBuffer(filePath);
@@ -118,7 +118,7 @@ export class ItemService {
       fileType = lookup(filePath) || 'application/octet-stream';
     } catch (err) {
       throw new MeecoServiceError(
-        `Failed to read file '${config.template.file}' - please check that the file exists and is readable`
+        `Failed to read file '${config.file}' - please check that the file exists and is readable`
       );
     }
 
@@ -171,7 +171,7 @@ export class ItemService {
         item: {
           slots_attributes: [
             {
-              label: config.template.label,
+              label: config.label,
               slot_type_name: 'attachment',
               attachments_attributes: [
                 {
@@ -206,7 +206,7 @@ export class ItemService {
     }).catch(err => {
       if (err.code === 'EEXIST') {
         throw new MeecoServiceError(
-          'The destination file exists - please use a different destination file'
+          `The destination file '${destination}' exists - please use a different destination file`
         );
       } else {
         throw new MeecoServiceError(`Failed to write to destination file: '${err.message}'`);

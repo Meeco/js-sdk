@@ -1,6 +1,6 @@
+import { SecretService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { util } from 'node-forge';
-import { SecretService } from '../../src/services/secret-service';
 
 describe('Key Generator', () => {
   it('generates valid base58 strings', () => {

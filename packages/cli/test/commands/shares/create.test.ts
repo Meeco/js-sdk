@@ -1,8 +1,8 @@
+import { ShareService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
-import { ShareService } from '../../../src/services/share-service';
 import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('shares:create', () => {

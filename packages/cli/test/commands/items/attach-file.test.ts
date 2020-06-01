@@ -1,7 +1,7 @@
+import * as fileUtils from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import * as mime from 'mime-types';
 import { Scope } from 'nock';
-import * as fileUtils from '../../../src/util/file';
 import { customTest, inputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 const singleBluePixel = `iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg==`;

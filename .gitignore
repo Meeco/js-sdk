@@ -1,6 +1,6 @@
 *-debug.log
 *-error.log
-/.nyc_output
+.nyc_output
 packages/**/dist
 packages/**/lib
 /tmp

@@ -1,6 +1,6 @@
-import { EncryptionKey } from '@meeco/sdk';
+import { EncryptionKey } from './encryption-key';
 
-export class EncryptionSpaceConfig {
+export class EncryptionSpaceData {
   static readonly kind = 'EncryptionSpace';
 
   to_user_connection_id: string;
@@ -19,7 +19,7 @@ export class EncryptionSpaceConfig {
 
   toJSON() {
     return {
-      kind: EncryptionSpaceConfig.kind,
+      kind: EncryptionSpaceData.kind,
       spec: {
         to_user_connection_id: this.to_user_connection_id,
         from_user_connection_id: this.from_user_connection_id,
