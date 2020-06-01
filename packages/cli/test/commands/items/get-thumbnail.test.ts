@@ -1,5 +1,9 @@
-import { CipherStrategy, encryptWithKey } from '@meeco/cryppo';
-import { binaryBufferToString, stringAsBinaryBuffer } from '@meeco/cryppo/dist/src/util';
+import {
+  binaryBufferToString,
+  CipherStrategy,
+  encryptWithKey,
+  stringAsBinaryBuffer
+} from '@meeco/cryppo';
 import * as fileUtils from '@meeco/sdk';
 import { EncryptionKey } from '@meeco/sdk';
 import { ThumbnailApi } from '@meeco/vault-api-sdk';

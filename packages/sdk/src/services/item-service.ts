@@ -1,6 +1,10 @@
 import * as cryppo from '@meeco/cryppo';
-import { CipherStrategy, decryptWithKey, encryptWithKey } from '@meeco/cryppo';
-import { binaryBufferToString } from '@meeco/cryppo/dist/src/util';
+import {
+  binaryBufferToString,
+  CipherStrategy,
+  decryptWithKey,
+  encryptWithKey
+} from '@meeco/cryppo';
 import { AttachmentResponse, Slot, ThumbnailResponse } from '@meeco/vault-api-sdk';
 import { createReadStream } from 'fs';
 import * as Jimp from 'jimp';
