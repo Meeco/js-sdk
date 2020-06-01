@@ -18,6 +18,4 @@ export * from './services/share-service';
 export * from './services/templates-service';
 export * from './services/user-service';
 export * from './util/api-factory';
-// Should be deleted before publishing
-export * from './util/file';
 export * from './util/find-connection-between';

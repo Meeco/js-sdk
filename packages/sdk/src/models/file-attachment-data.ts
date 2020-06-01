@@ -10,11 +10,21 @@ export class FileAttachmentData {
   /**
    * Path to the file to attach
    */
-  public readonly file: string;
+  public readonly file: Buffer | Uint8Array | ArrayBuffer;
+  public readonly fileName: string;
+  public readonly fileType: string;
 
-  constructor(config: { itemId: string; label: string; file: string }) {
+  constructor(config: {
+    itemId: string;
+    label: string;
+    fileName: string;
+    fileType: string;
+    file: Buffer | Uint8Array | ArrayBuffer;
+  }) {
     this.itemId = config.itemId;
     this.label = config.label;
     this.file = config.file;
+    this.fileName = config.fileName;
+    this.fileType = config.fileType;
   }
 }

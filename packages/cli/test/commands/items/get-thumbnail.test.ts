@@ -4,10 +4,10 @@ import {
   encryptWithKey,
   stringAsBinaryBuffer
 } from '@meeco/cryppo';
-import * as fileUtils from '@meeco/sdk';
 import { EncryptionKey } from '@meeco/sdk';
 import { ThumbnailApi } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
+import * as fileUtils from '../../../src/util/file';
 import { customTest, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 const singleBluePixel = Buffer.from(
