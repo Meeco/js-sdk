@@ -7,9 +7,9 @@ export class ItemCreateData {
   public item: IItemRequestData;
   public slots?: Slot[];
 
-  constructor(data: { templateName: string; slots?: Slot[]; item: IItemRequestData }) {
-    this.templateName = data.templateName;
-    this.item = data.item;
-    this.slots = data.slots;
+  constructor(config: { templateName: string; slots?: Slot[]; item: IItemRequestData }) {
+    this.templateName = config.templateName;
+    this.item = config.item;
+    this.slots = config.slots || [];
   }
 }

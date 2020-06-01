@@ -1,6 +1,6 @@
 import { Attachment, Item, Slot, Thumbnail } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
-import { LocalSlot } from '../models/local-slot';
+import { DecryptedSlot } from '../models/local-slot';
 import { ITemplateData } from '../models/template-data';
 import { ITEM_ASSOCIATIONS, SLOT_TYPE_BLACKLIST } from '../util/constants';
 import { ConfigReader, IYamlConfig } from './yaml-config';
@@ -32,7 +32,7 @@ export class ItemConfig {
 
   static encodeFromJSON(data: {
     item: Item;
-    slots?: LocalSlot[];
+    slots?: DecryptedSlot[];
     thumbnails?: Thumbnail[];
     attachments?: Attachment[];
     metadata?: IItemMetadata;

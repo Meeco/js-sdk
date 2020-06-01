@@ -1,7 +1,7 @@
 import { Slot } from '@meeco/vault-api-sdk';
 
-// Because the Meeco Vault API no longer has slot - slot represents the decrypted value.
-export type LocalSlot = Slot & {
+// Because the Meeco Vault API `Slot` no longer has `value` - `DecryptedSlot` represents a slot with a decrypted `encrypted_value`.
+export type DecryptedSlot = Slot & {
   /**
    * The decrypted slot value
    */

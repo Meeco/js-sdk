@@ -11,7 +11,7 @@ import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { ItemCreateData } from '../models/item-create-data';
-import { LocalSlot } from '../models/local-slot';
+import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 import { deleteFileSync, readFileAsBuffer, writeFileContents } from '../util/file';
@@ -34,13 +34,13 @@ export class ItemService {
                 key: dataEncryptionKey.key,
                 serialized: slot.encrypted_value
               })
-            : (slot as LocalSlot).value;
+            : (slot as DecryptedSlot).value;
         const decrypted = {
           ...slot,
           encrypted: false,
           value
         };
-        return decrypted as LocalSlot;
+        return decrypted as DecryptedSlot;
       })
     );
   }
@@ -258,7 +258,7 @@ export class ItemService {
     };
   }
 
-  private async encryptSlot(slot: LocalSlot, dek: EncryptionKey) {
+  private async encryptSlot(slot: DecryptedSlot, dek: EncryptionKey) {
     const encrypted: any = {
       ...slot
     };

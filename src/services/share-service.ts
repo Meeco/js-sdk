@@ -4,7 +4,7 @@ import { EncryptionSpaceConfig } from '../configs/encryption-space-config';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
-import { LocalSlot } from '../models/local-slot';
+import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import {
   KeystoreAPIFactory,
@@ -382,7 +382,7 @@ export class ShareService {
    * encrypted with a shared data encryption key.
    */
   private async convertSlotsToEncryptedValuesForShare(
-    slots: LocalSlot[],
+    slots: DecryptedSlot[],
     sharedDataEncryptionKey: EncryptionKey
   ) {
     const encryptions = slots.map(async slot => {
