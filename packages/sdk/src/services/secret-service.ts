@@ -53,24 +53,28 @@ export class SecretService {
     if (secretKey.indexOf('.') >= 0) {
       throw new Error('Incorrect secret provided. Please destructure the secret_key.');
     }
-    return cryppo.generateDerivedKey({
-      ...this.derivationConstants,
-      key: password,
-      useSalt: secretKey
-        .split('')
-        .reverse()
-        .join('')
-    }).then(derived => derived.key);
+    return cryppo
+      .generateDerivedKey({
+        ...this.derivationConstants,
+        key: password,
+        useSalt: secretKey
+          .split('')
+          .reverse()
+          .join('')
+      })
+      .then(derived => derived.key);
   }
 
   private derivePDK(password: string, secretKey: string) {
     if (secretKey.indexOf('.') >= 0) {
       throw new Error('Incorrect secret provided. Please destructure the secret_key.');
     }
-    return cryppo.generateDerivedKey({
-      ...this.derivationConstants,
-      key: password,
-      useSalt: secretKey
-    }).then(derived => derived.key);
+    return cryppo
+      .generateDerivedKey({
+        ...this.derivationConstants,
+        key: password,
+        useSalt: secretKey
+      })
+      .then(derived => derived.key);
   }
 }

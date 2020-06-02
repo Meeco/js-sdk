@@ -1,11 +1,13 @@
 import { Environment } from '@meeco/sdk';
 import * as bodyParser from 'body-parser';
 import cli from 'cli-ux';
-import express from 'express';
+import { Express } from 'express';
 import { Server } from 'http';
+// tslint:disable-next-line: no-var-requires
+const express = require('express');
 
 export class CaptchaService {
-  private server?: express.Express;
+  private server?: Express;
   private app?: Server;
   private tokenResult?: Promise<string>;
   private tokenReady?: (token: string) => void;
@@ -33,9 +35,9 @@ export class CaptchaService {
     this.tokenResult = new Promise(res => (this.tokenReady = res));
 
     this.server = express();
-    this.server.use(bodyParser.json());
-    this.server.use(bodyParser.urlencoded({ extended: true }));
-    this.server.post('/', (req, res) => {
+    this.server!.use(bodyParser.json());
+    this.server!.use(bodyParser.urlencoded({ extended: true }));
+    this.server!.post('/', (req, res) => {
       this.tokenReady!(req.body['g-recaptcha-response']);
       res.send(`You may now close this browser tab and return to the terminal`);
     });

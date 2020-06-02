@@ -3,7 +3,7 @@
 .nyc_output
 packages/**/dist
 packages/**/lib
-/tmp
+packages/**/tmp
 /coverage
 /yarn.lock
 node_modules

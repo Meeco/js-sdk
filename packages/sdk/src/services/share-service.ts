@@ -5,7 +5,12 @@ import { EncryptionSpaceData } from '../models/encryption-space-data';
 import { Environment } from '../models/environment';
 import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
-import { KeystoreAPIFactory, keystoreAPIFactory, vaultAPIFactory, VaultAPIFactory } from '../util/api-factory';
+import {
+  KeystoreAPIFactory,
+  keystoreAPIFactory,
+  vaultAPIFactory,
+  VaultAPIFactory
+} from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
 import cryppo from './cryppo-service';
 import { ItemService } from './item-service';
@@ -385,12 +390,12 @@ export class ShareService {
       const encrypted =
         typeof slot.value === 'string'
           ? await cryppo
-            .encryptWithKey({
-              data: slot.value || '',
-              key: sharedDataEncryptionKey.key,
-              strategy: this.cryppo.CipherStrategy.AES_GCM
-            })
-            .then(result => result.serialized)
+              .encryptWithKey({
+                data: slot.value || '',
+                key: sharedDataEncryptionKey.key,
+                strategy: this.cryppo.CipherStrategy.AES_GCM
+              })
+              .then(result => result.serialized)
           : slot.value;
       return {
         [slot.id!]: encrypted

@@ -3,7 +3,12 @@ import { AuthData } from '../models/auth-data';
 import { ConnectionCreateData } from '../models/connection-create-data';
 import { Environment } from '../models/environment';
 import cryppo from '../services/cryppo-service';
-import { KeystoreAPIFactory, keystoreAPIFactory, VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
+import {
+  KeystoreAPIFactory,
+  keystoreAPIFactory,
+  VaultAPIFactory,
+  vaultAPIFactory
+} from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
 
 export class ConnectionService {

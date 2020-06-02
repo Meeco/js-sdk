@@ -71,5 +71,9 @@
     "posttest": "npm run lint && npm run format:check",
     "prepack": "npm run build",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\""
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }

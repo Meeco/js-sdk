@@ -14,7 +14,7 @@ export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
   private vaultAPIFactory: VaultAPIFactory;
 
-  constructor(environment: Environment, private log: (message: string) => void = () => { }) {
+  constructor(environment: Environment, private log: (message: string) => void = () => {}) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
   }
 
@@ -27,9 +27,9 @@ export class ItemService {
         const value =
           slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
             ? await this.cryppo.decryptWithKey({
-              key: dataEncryptionKey.key,
-              serialized: slot.encrypted_value
-            })
+                key: dataEncryptionKey.key,
+                serialized: slot.encrypted_value
+              })
             : (slot as DecryptedSlot).value;
         const decrypted = {
           ...slot,

@@ -1,5 +1,5 @@
 import { expect } from '@oclif/test';
-import * as nock from 'nock';
+import nock from 'nock';
 import { keystoreAPIFactory, vaultAPIFactory } from '../src/util/api-factory';
 
 describe('API Factories', () => {

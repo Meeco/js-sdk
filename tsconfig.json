@@ -13,17 +13,9 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@meeco/sdk": [
-        "packages/sdk/src"
-      ]
+      "@meeco/sdk": ["packages/sdk/src"]
     }
   },
-  "include": [
-    "packages"
-  ],
-  "exclude": [
-    "packages/*/dist",
-    "packages/*/build",
-    "packages/*/lib"
-  ]
+  "include": ["packages"],
+  "exclude": ["packages/*/dist", "packages/*/build", "packages/*/lib"]
 }

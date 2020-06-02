@@ -8,6 +8,6 @@ import * as cryppo from '@meeco/cryppo';
  *
  * By having an intermediate module we can use `sinon.stub` to mock cryppo methods in tests
  */
-export default <typeof cryppo>{
+export default (<typeof cryppo>{
   ...cryppo
-} as typeof cryppo;
+}) as typeof cryppo;

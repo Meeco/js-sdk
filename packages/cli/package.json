@@ -8,9 +8,9 @@
   },
   "bugs": "https://github.com/Meeco/cli/issues",
   "dependencies": {
+    "@meeco/sdk": "0.0.1",
     "@meeco/cryppo": "^0.5.0",
     "@meeco/keystore-api-sdk": "0.13.0",
-    "@meeco/sdk": "^0.0.1",
     "@meeco/vault-api-sdk": "^0.14.0",
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.13.3",
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
-    "@oclif/test": "^1.2.5",
+    "@oclif/test": "^1.2.6",
     "@types/chai": "~4.2.7",
     "@types/express": "~4.17.2",
     "@types/jsrp": "~0.2.1",
@@ -69,9 +69,9 @@
     "oclif"
   ],
   "license": "MIT",
-  "main": "lib/index.js",
+  "main": "lib/packages/cli/index.js",
   "oclif": {
-    "commands": "./lib/commands",
+    "commands": "./lib/packages/cli/src/commands",
     "bin": "meeco",
     "repositoryPrefix": "https://github.com/Meeco/cli/blob/master/<%- commandPath %>",
     "topics": {
@@ -97,12 +97,12 @@
   },
   "repository": "Meeco/cli",
   "scripts": {
-    "readme": "oclif-dev readme && prettier --write README.md",
+    "readme": "node -r tsconfig-paths/register node_modules/.bin/oclif-dev readme && prettier --write README.md",
     "lint": "tslint -p . -t stylish -c ../../tslint.json && tslint -p test/tsconfig.json -t stylish -c ../../tslint.json",
     "posttest": "npm run lint && npm run format:check && npm run readme",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
-    "prepack": "rm -rf lib && tsc -b",
+    "prepack": "touch package-lock.json && rm -rf lib && tsc -b",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "prepkg": "npm run prepack",
     "pkg": "oclif-dev pack"

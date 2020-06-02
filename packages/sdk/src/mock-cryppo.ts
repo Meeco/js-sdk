@@ -44,9 +44,7 @@ export function _mockCryppo() {
       });
 
       sandbox.stub(cryppo, 'decryptWithKey').callsFake(args => {
-        return Promise.resolve(
-          `${args.serialized}[decrypted with ${args.key}]`
-        );
+        return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
       });
 
       sandbox.stub(cryppo, 'signWithPrivateKey').callsFake((pem, data) => {

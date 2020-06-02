@@ -2,7 +2,12 @@ import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { SRPSession } from '../models/srp-session';
-import { keystoreAPIFactory, KeystoreAPIFactory, VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
+import {
+  keystoreAPIFactory,
+  KeystoreAPIFactory,
+  VaultAPIFactory,
+  vaultAPIFactory
+} from '../util/api-factory';
 import cryppo from './cryppo-service';
 import { SecretService } from './secret-service';
 
@@ -18,7 +23,7 @@ export class UserService {
 
   private keyGen: SecretService;
 
-  constructor(environment: Environment, private log = (msg: string) => { }) {
+  constructor(environment: Environment, private log = (msg: string) => {}) {
     this.keystoreApiFactory = keystoreAPIFactory(environment);
     this.vaultApiFactory = vaultAPIFactory(environment);
     this.vaultKeypairExternalId = UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER;

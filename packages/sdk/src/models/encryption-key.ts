@@ -3,7 +3,7 @@ import cryppo from '../services/cryppo-service';
 export class EncryptionKey {
   // Value as binary string. Avoid outputting to console but should be used for actual encryption.
 
-  private constructor(private readonly _value: string) { }
+  private constructor(private readonly _value: string) {}
 
   /**
    * Encryption key from encoded base 64 version of the key

@@ -1,9 +1,9 @@
-name: Release
+name: Release CLI
 
 on:
   push:
     tags:
-      - releases/*
+      - releases/cli/*
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,14 +18,14 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: npm test
+      - run: npx lerna bootstrap --hoist
+      - run: npx lerna run test
         env:
           CI: true
-      - run: npm run pkg
+      - run: npx lerna run pkg --scope @meeco/cli
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "dist/**/*.tar.gz"
+          artifacts: 'packages/cli/dist/**/*.tar.gz'
           token: ${{ secrets.GITHUB_TOKEN }}
