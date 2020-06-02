@@ -8,7 +8,7 @@
   },
   "bugs": "https://github.com/Meeco/cli/issues",
   "dependencies": {
-    "@meeco/sdk": "0.0.1",
+    "@meeco/sdk": "0.0.2",
     "@meeco/cryppo": "^0.5.0",
     "@meeco/keystore-api-sdk": "0.13.0",
     "@meeco/vault-api-sdk": "^0.14.0",
@@ -69,9 +69,9 @@
     "oclif"
   ],
   "license": "MIT",
-  "main": "lib/packages/cli/index.js",
+  "main": "lib/src/index.js",
   "oclif": {
-    "commands": "./lib/packages/cli/src/commands",
+    "commands": "./lib/src/commands",
     "bin": "meeco",
     "repositoryPrefix": "https://github.com/Meeco/cli/blob/master/<%- commandPath %>",
     "topics": {
@@ -102,7 +102,7 @@
     "posttest": "npm run lint && npm run format:check && npm run readme",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
-    "prepack": "touch package-lock.json && rm -rf lib && tsc -b",
+    "prepack": "touch package-lock.json && rm -rf lib && tsc -p tsconfig.build.json",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "prepkg": "npm run prepack",
     "pkg": "oclif-dev pack"
