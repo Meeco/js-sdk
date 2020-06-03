@@ -24,6 +24,6 @@ jobs:
           CI: true
       - run: npx lerna run build --scope @meeco/sdk
       - name: Publish NPM
+        run: npx lerna exec --scope @meeco/sdk -- npm publish
         env:
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-        run: npx lerna run publish --scope @meeco/sdk
