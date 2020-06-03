@@ -292,6 +292,6 @@ curl \\
   ${headersString.trim()} \\
   --request ${options.method} \\
   --data ${options.body || '{}'} \\
-  ${url}
+  "${url}"
   `;
 };
