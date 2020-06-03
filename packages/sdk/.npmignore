@@ -8,4 +8,5 @@ test/
 coverage/
 
 tsconfig.json
+tsconfig.build.json
 

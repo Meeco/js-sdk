@@ -64,7 +64,7 @@
   "license": "MIT",
   "repository": "Meeco/cli",
   "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig.build.json && bili src/index.ts --format cjs --format es --module-name meeco",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && bili src/index.ts --format cjs --format es --module-name meeco-sdk",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
     "lint": "tslint -p . -t stylish -c ../../tslint.json && tslint -p test/tsconfig.json -t stylish -c ../../tslint.json",
