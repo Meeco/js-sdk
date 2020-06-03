@@ -70,9 +70,9 @@
     "oclif"
   ],
   "license": "MIT",
-  "main": "lib/src/index.js",
+  "main": "lib/index.js",
   "oclif": {
-    "commands": "./lib/src/commands",
+    "commands": "./lib/commands",
     "bin": "meeco",
     "repositoryPrefix": "https://github.com/Meeco/cli/blob/master/<%- commandPath %>",
     "topics": {
@@ -103,7 +103,7 @@
     "posttest": "npm run lint && npm run format:check && npm run readme",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
-    "prepack": "touch package-lock.json && rm -rf lib && tsc -p tsconfig.build.json",
+    "prepack": "touch package-lock.json && ./node_modules/.bin/tsc -p tsconfig.build.json",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "prepkg": "npm run prepack",
     "build": "npm run pkg",
