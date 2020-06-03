@@ -1,7 +1,6 @@
 /**
  * The publicly exposed API
  */
-export * from './mock-cryppo';
 export * from './models/auth-data';
 export * from './models/connection-create-data';
 export * from './models/encryption-key';
@@ -20,3 +19,5 @@ export * from './services/templates-service';
 export * from './services/user-service';
 export * from './util/api-factory';
 export * from './util/find-connection-between';
+import _cryppo from './services/cryppo-service';
+export const _cryppoService = _cryppo;

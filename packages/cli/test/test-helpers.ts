@@ -1,7 +1,8 @@
-import { _mockCryppo, SRPSession } from '@meeco/sdk';
+import { SRPSession } from '@meeco/sdk';
 import test from '@oclif/test';
 import { join } from 'path';
 import { createSandbox } from 'sinon';
+import { _mockCryppo } from './mock-cryppo';
 
 export const inputFixture = (fileName: string) => join(__dirname, 'fixtures', 'inputs', fileName);
 export const outputFixture = (fileName: string) => join(__dirname, 'fixtures', 'outputs', fileName);

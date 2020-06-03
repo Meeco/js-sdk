@@ -2,7 +2,7 @@
   "extends": "../tsconfig",
   "compilerOptions": {
     "noEmit": true,
-    "rootDir": "."
+    "rootDir": "../../../"
   },
   "references": [{ "path": ".." }],
   "include": ["**/*"]

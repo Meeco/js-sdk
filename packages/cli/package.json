@@ -105,6 +105,7 @@
     "prepack": "touch package-lock.json && rm -rf lib && tsc -p tsconfig.build.json",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "prepkg": "npm run prepack",
+    "build": "npm run pkg",
     "pkg": "oclif-dev pack"
   },
   "types": "lib/index.d.ts"
