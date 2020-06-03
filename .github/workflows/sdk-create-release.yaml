@@ -24,7 +24,7 @@ jobs:
           CI: true
       - run: npx lerna run build --scope @meeco/sdk
       - name: Publish NPM
-      - run: |
+        run: |
           npx lerna exec --scope @meeco/sdk -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
           npx lerna exec --scope @meeco/sdk -- npm config set scope "@meeco"
           npx lerna exec --scope @meeco/sdk -- npm publish --access public
