@@ -3,6 +3,7 @@
   "description": "A CLI tool for interacting with the Meeco APIs",
   "version": "0.8.0",
   "author": "Meeco",
+  "private": true,
   "bin": {
     "meeco": "./bin/run"
   },
@@ -71,7 +72,7 @@
   "license": "MIT",
   "main": "lib/src/index.js",
   "oclif": {
-    "commands": "./lib/src/commands",
+    "commands": "./src/commands",
     "bin": "meeco",
     "repositoryPrefix": "https://github.com/Meeco/cli/blob/master/<%- commandPath %>",
     "topics": {

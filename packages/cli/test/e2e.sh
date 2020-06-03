@@ -5,7 +5,7 @@ echo "Create user 'Alice'"
 echo "Fetch template list"
 ./bin/run templates:list -a .Alice.yaml
 echo "Create a 'Vehicle' card template for 'Alice'"
-./bin/run items:create-config vehicle -a .Alice.yaml > .template_vehicle.yaml
+./bin/run items:create-config ng_vehicle -a .Alice.yaml > .template_vehicle.yaml
 sed '5,6 s/label: ""/label: "My Vehicle"/' .template_vehicle.yaml > .my_vehicle.yaml
 echo "Create a 'Vehicle' card for 'Alice'"
 ./bin/run items:create -i .my_vehicle.yaml -a .Alice.yaml
