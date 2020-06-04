@@ -80,7 +80,7 @@ export class ItemService {
     let response: ThumbnailResponse;
     try {
       response = await this.vaultAPIFactory(auth).ThumbnailApi.thumbnailsPost(
-        ItemService.cryppo.stringAsBinaryBuffer(encryptedThumbnail.serialized) as any,
+        encryptedThumbnail.serialized,
         binaryId,
         sizeType
       );
@@ -119,11 +119,7 @@ export class ItemService {
       this.log('Uploading encrypted file');
       uploadedBinary = await this.vaultAPIFactory(
         auth.vault_access_token
-      ).AttachmentApi.attachmentsPost(
-        ItemService.cryppo.stringAsBinaryBuffer(encryptedFile.serialized) as any,
-        fileName,
-        fileType
-      );
+      ).AttachmentApi.attachmentsPost(encryptedFile.serialized, fileName, fileType);
     } catch (err) {
       this.log('Upload encrypted file failed - removing temp encrypted version');
       throw err;
@@ -233,6 +229,7 @@ export class ItemService {
   }
 
   public list(vaultAccessToken: string) {
+    console.log('test');
     return this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet();
   }
 }

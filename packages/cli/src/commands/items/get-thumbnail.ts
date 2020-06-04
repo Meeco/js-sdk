@@ -1,3 +1,4 @@
+import { stringAsBinaryBuffer } from '@meeco/cryppo';
 import { ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
@@ -52,7 +53,7 @@ export default class ItemsGetThumbnail extends MeecoCommand {
 
   writeFile(destination: string, decryptedContents: string) {
     this.updateStatus('Writing decrypted file to destination');
-    return writeFileContents(destination, decryptedContents, {
+    return writeFileContents(destination, stringAsBinaryBuffer(decryptedContents), {
       flag: 'wx' // Write if not exists but fail if the file exists
     }).catch(err => {
       if (err.code === 'EEXIST') {

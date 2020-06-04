@@ -3,13 +3,13 @@ import * as Vault from '@meeco/vault-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
 import { blue, green } from 'chalk';
 import { debug } from 'debug';
-import FormData from 'form-data';
 import nodeFetch from 'node-fetch';
 import { AuthData } from '../models/auth-data';
 import { Environment } from '../models/environment';
+import { SDKFormData } from './sdk-form-data';
 
 const debugCurl = debug('meeco:http');
-(<any>global).FormData = FormData;
+(<any>global).FormData = SDKFormData;
 
 const X_MEECO_API_VERSION = '2.0.0';
 

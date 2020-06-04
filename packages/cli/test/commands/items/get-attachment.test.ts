@@ -24,7 +24,7 @@ describe('items:get-attachment', () => {
   customTest
     .stub(fileUtils, 'writeFileContents', <any>((path, contents, options) => {
       expect(path).to.eql('out_file.txt');
-      expect(contents).to.eql(binaryBufferToString(singleBluePixel));
+      expect(contents).to.eql(singleBluePixel);
       expect(options).to.eql({
         flag: 'wx'
       });
