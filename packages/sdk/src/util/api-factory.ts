@@ -6,7 +6,7 @@ import { debug } from 'debug';
 import nodeFetch from 'node-fetch';
 import { AuthData } from '../models/auth-data';
 import { Environment } from '../models/environment';
-import { SDKFormData } from './sdk-form-data';
+import SDKFormData from './sdk-form-data';
 
 const debugCurl = debug('meeco:http');
 (<any>global).FormData = SDKFormData;
