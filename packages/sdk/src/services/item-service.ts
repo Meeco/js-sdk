@@ -79,8 +79,12 @@ export class ItemService {
     this.log('Uploading encrypted image thumbnail');
     let response: ThumbnailResponse;
     try {
+      const blob =
+        typeof Blob === 'function'
+          ? new Blob([encryptedThumbnail.serialized])
+          : Buffer.from(encryptedThumbnail.serialized, 'binary');
       response = await this.vaultAPIFactory(auth).ThumbnailApi.thumbnailsPost(
-        encryptedThumbnail.serialized,
+        blob as any,
         binaryId,
         sizeType
       );

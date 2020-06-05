@@ -6,6 +6,7 @@ import {
   SecretService,
   UserService
 } from '../src/index';
+import cryppo from '../src/services/cryppo-service';
 import * as environment from './.environment.json';
 import './styles.scss';
 
@@ -51,6 +52,8 @@ $('fetchUserData').addEventListener('click', fetchUserData);
 $('createUser').addEventListener('click', createUser);
 $('getItems').addEventListener('click', getItems);
 $('attachFile').addEventListener('click', attachFile, false);
+$('downloadAttachment').addEventListener('click', downloadAttachment);
+$('downloadThumbnail').addEventListener('click', downloadThumbnail);
 
 async function getUsername() {
   try {
@@ -155,6 +158,55 @@ async function attachFile() {
   }
 }
 
+async function downloadAttachment() {
+  if (!STATE.user) {
+    return alert('Please fetch user data above first');
+  }
+
+  const attachmentId = $get('attachmentId');
+  if (!attachmentId) {
+    return alert('Please enter attachmentId first');
+  }
+
+  $set('downloadAttachmentDetails', '');
+
+  try {
+    const itemService = await new ItemService(environment, log);
+    const attachment = await itemService.downloadAttachment(
+      attachmentId,
+      STATE.user.vault_access_token,
+      STATE.user.data_encryption_key
+    );
+    openToDownload(attachment, 'attachment.png', 'image/png');
+  } catch (error) {
+    $set('downloadAttachmentDetails', `Error ${error.message}`);
+  }
+}
+
+async function downloadThumbnail() {
+  if (!STATE.user) {
+    return alert('Please fetch user data above first');
+  }
+
+  const thumbnailId = $get('thumbnailId');
+  if (!thumbnailId) {
+    return alert('Please enter thumbnailId first');
+  }
+
+  $set('downloadThumbnailDetails', '');
+
+  try {
+    const thumbnail = await new ItemService(environment, log).downloadThumbnail(
+      thumbnailId,
+      STATE.user.vault_access_token,
+      STATE.user.data_encryption_key
+    );
+    openToDownload(thumbnail, 'thumb.png', 'image/png');
+  } catch (error) {
+    $set('downloadThumbnailDetails', `Error ${error.message}`);
+  }
+}
+
 // Todo - cryppo should possibly take care of this under the hood?
 function fileAsBinaryString(file: Blob): Promise<ArrayBuffer> {
   return new Promise((resolve, reject) => {
@@ -165,6 +217,16 @@ function fileAsBinaryString(file: Blob): Promise<ArrayBuffer> {
     reader.onerror = err => reject(err);
     reader.readAsArrayBuffer(file);
   });
+}
+
+function openToDownload(decryptedFileContent: string, fileName: string, contentType: string) {
+  const blob = new Blob([cryppo.stringAsBinaryBuffer(decryptedFileContent)], { type: contentType });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  window.URL.revokeObjectURL(url);
 }
 
 function log(message: string) {
