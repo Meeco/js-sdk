@@ -12,8 +12,8 @@ interface IConnectionSpec {
 export class ConnectionConfig {
   static kind = 'Connection';
 
-  public readonly to: AuthConfig;
   public readonly from: AuthConfig;
+  public readonly to: AuthConfig;
   public readonly options: IConnectionMetadata;
 
   constructor(data: { to: AuthConfig; from: AuthConfig; options: IConnectionMetadata }) {

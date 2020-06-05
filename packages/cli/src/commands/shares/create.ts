@@ -30,7 +30,7 @@ export default class SharesCreate extends MeecoCommand {
       }
 
       const service = new ShareService(environment, this.updateStatus);
-      const result = await service.shareItem(share.from, share.to, share.itemId);
+      const result = await service.shareItem(share.from, share.connectionId, share.itemId);
       this.printYaml(result);
     } catch (err) {
       await this.handleException(err);

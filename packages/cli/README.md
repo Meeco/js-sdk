@@ -105,7 +105,7 @@ If you would prefer to provide a configuration file with your credentials, suppl
 
 1. Ensure users are connected first (see above)
 2. Select an item from user 1 to share to user 2
-3. Create the share template: `meeco shares:create-config --from .user.yaml --to .user_2.yaml -i <item_id_to_share> > .share_config.yaml`
+3. Create the share template: `meeco shares:create-config --from .user.yaml --connectionId <connection_id_to_share_to> -i <item_id_to_share> > .share_config.yaml`
 4. Create the share: `meeco shares:create -c .share_config.yaml`
 
 This will setup a private encryption space between the two users (if it does not exist already) and then share the item.
@@ -399,10 +399,10 @@ USAGE
   $ meeco shares:create-config
 
 OPTIONS
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-  -f, --from=from                (required) User config file for the 'from' user
-  -i, --itemId=itemId            (required) Item id of the 'from' user to share with the 'to' use
-  -t, --to=to                    (required) User config file for the 'to' user
+  -c, --connectionId=connectionId  (required) Connection id for the 'to' user
+  -e, --environment=environment    [default: .environment.yaml] environment config file
+  -f, --from=from                  (required) User config file for the 'from' user
+  -i, --itemId=itemId              (required) Item id of the 'from' user to share with the 'to' use
 ```
 
 _See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create-config.ts)_
@@ -635,14 +635,9 @@ spec:
 kind: Share
 metadata:
 spec:
-  item_id: <string> # id of the item to be shared (all slots will be shard)
+  item_id: <string> # id of the item to be shared (all slots will be shared)
+  connection_id: <string> # id of the connection the item will be shared with
   from:
-    keystore_access_token: <string>
-    vault_access_token: <string>
-    passphrase_derived_key: <string> # url-safe base64
-    key_encryption_key: <string> # url-safe base64
-    data_encryption_key: <string> # url-safe base64
-  to:
     keystore_access_token: <string>
     vault_access_token: <string>
     passphrase_derived_key: <string> # url-safe base64

@@ -38,3 +38,20 @@ export async function findConnectionBetween(
 
   return { fromUserConnection, toUserConnection };
 }
+
+export async function fetchConnectionWithId(
+  user: AuthData,
+  connectionId: string,
+  environment: Environment,
+  log: (message: string) => void
+) {
+  log('Fetching user connection');
+  const response = await connectionApi(user, environment).connectionsIdGet(connectionId);
+  const connection = response.connection;
+
+  if (!connection || !connection.id) {
+    throw new Error(`Conncetion ${connectionId} not found.`);
+  }
+
+  return connection;
+}
