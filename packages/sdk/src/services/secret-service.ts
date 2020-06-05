@@ -1,4 +1,5 @@
-import baseX from 'base-x';
+// tslint:disable-next-line: no-var-requires
+const baseX = require('base-x');
 import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import cryppo from './cryppo-service';
 export class SecretService {

@@ -20,6 +20,51 @@ export class ConnectionService {
     this.keystoreApiFactory = keystoreAPIFactory(environment);
   }
 
+  async createInvitation(name: string, auth: AuthData) {
+    this.log('Generating key pair');
+    const keyPair = await this.createAndStoreKeyPair(auth);
+
+    this.log('Encrypting recipient name');
+    const encryptedName: string = await this.encryptRecipientName(name, auth);
+
+    this.log('Sending invitation request');
+    return await this.vaultApiFactory(auth)
+      .InvitationApi.invitationsPost({
+        public_key: {
+          key_store_id: keyPair.keystoreStoredKeyPair.id,
+          public_key: keyPair.keystoreStoredKeyPair.public_key,
+          encryption_strategy: 'Rsa4096'
+        },
+        invitation: {
+          encrypted_recipient_name: encryptedName
+        }
+      })
+      .then(result => result.invitation);
+  }
+
+  async acceptInvitation(name: string, invitationToken: string, auth: AuthData) {
+    this.log('Generating key pair');
+    const keyPair = await this.createAndStoreKeyPair(auth);
+
+    this.log('Encrypting connection name');
+    const encryptedName: string = await this.encryptRecipientName(name, auth);
+
+    this.log('Accepting invitation');
+    return await this.vaultApiFactory(auth)
+      .ConnectionApi.connectionsPost({
+        public_key: {
+          key_store_id: keyPair.keystoreStoredKeyPair.id,
+          public_key: keyPair.keystoreStoredKeyPair.public_key,
+          encryption_strategy: 'Rsa4096'
+        },
+        connection: {
+          encrypted_recipient_name: encryptedName,
+          invitation_token: invitationToken
+        }
+      })
+      .then(res => res.connection);
+  }
+
   async createConnection(config: ConnectionCreateData) {
     const { to, from, options } = config;
 
@@ -37,43 +82,8 @@ export class ConnectionService {
       throw new Error('Connection exists between the specified users');
     }
 
-    this.log('Generating key pairs');
-    const fromKeyPair = await this.createAndStoreKeyPair(from);
-    const toKeyPair = await this.createAndStoreKeyPair(to);
-
-    this.log('Encrypting recipient names');
-    const encryptedToName: string = await this.encryptRecipientName(options.toName, from);
-    const encryptedFromName: string = await this.encryptRecipientName(options.fromName, to);
-
-    this.log('Sending invitation request');
-
-    const invitation = await this.vaultApiFactory(from)
-      .InvitationApi.invitationsPost({
-        public_key: {
-          key_store_id: fromKeyPair.keystoreStoredKeyPair.id,
-          public_key: fromKeyPair.keystoreStoredKeyPair.public_key,
-          encryption_strategy: 'Rsa4096'
-        },
-        invitation: {
-          encrypted_recipient_name: encryptedToName
-        }
-      })
-      .then(result => result.invitation);
-
-    this.log('Accepting invitation');
-    await this.vaultApiFactory(to)
-      .ConnectionApi.connectionsPost({
-        public_key: {
-          key_store_id: toKeyPair.keystoreStoredKeyPair.id,
-          public_key: toKeyPair.keystoreStoredKeyPair.public_key,
-          encryption_strategy: 'Rsa4096'
-        },
-        connection: {
-          encrypted_recipient_name: encryptedFromName,
-          invitation_token: invitation.token
-        }
-      })
-      .then(res => res.connection);
+    const invitation = await this.createInvitation(options.toName, from);
+    await this.acceptInvitation(options.fromName, invitation.token, to);
 
     // Now the connection has been created we need to re-fetch the original user's connection.
     // We might as well fetch both to ensure it's connected both ways correctly.
