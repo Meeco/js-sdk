@@ -19,4 +19,4 @@ class SDKFormData extends FormData {
 
 // We might be able to assume an existing window.FormData works
 // const _global = this;
-export = SDKFormData;
+export default SDKFormData;
