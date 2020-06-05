@@ -1,8 +1,13 @@
 import { expect } from '@oclif/test';
 import nock from 'nock';
-import { keystoreAPIFactory, vaultAPIFactory } from '../src/util/api-factory';
+import * as nodeFetch from 'node-fetch';
+import { configureFetch, keystoreAPIFactory, vaultAPIFactory } from '../src/util/api-factory';
 
 describe('API Factories', () => {
+  before(() => {
+    configureFetch(nodeFetch);
+  });
+
   afterEach(() => {
     nock.cleanAll();
   });

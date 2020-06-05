@@ -6,8 +6,8 @@ interface IAPIConfig {
 export class Environment {
   public vault: IAPIConfig;
   public keystore: IAPIConfig;
-  public passphrase: IAPIConfig;
-  public downloader: IAPIConfig;
+  public passphrase?: IAPIConfig;
+  public downloader?: IAPIConfig;
 
   constructor(config: {
     vault: IAPIConfig;

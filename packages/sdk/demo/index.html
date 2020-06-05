@@ -1,0 +1,66 @@
+<!-- index.html -->
+<html>
+  <body>
+    <!-- <fieldset>
+      <legend>Captcha</legend>
+      <button id="getCaptcha">Get Captcha Token</button>
+      <input placeholder="captcha" id="captcha" />
+    </fieldset> -->
+    <fieldset>
+      <legend>Event Log</legend>
+      <textarea disabled id="log" rows="5"></textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend>Username</legend>
+      <input
+        placeholder="Enter or Generate Username"
+        autocapitalize="off"
+        autocomplete="off"
+        id="username"
+      />
+      <button id="getUsername">Get Username</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>Secrets</legend>
+      <input
+        placeholder="Enter or Generate User Secret"
+        autocapitalize="off"
+        autocomplete="off"
+        id="secret"
+      />
+      <button id="getSecret">Generate Secret</button>
+      <input
+        placeholder="Enter Passphrase"
+        type="password"
+        autocapitalize="off"
+        autocomplete="off"
+        id="passphrase"
+      />
+    </fieldset>
+
+    <fieldset>
+      <legend>Get User</legend>
+      <button id="fetchUserData">Fetch User Data</button>
+      <button id="createUser">Create New User</button>
+      <textarea disabled id="userData" rows="10"></textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend>Get Items</legend>
+      <button id="getItems">Get Items</button>
+      <textarea disabled id="items" rows="10"></textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend>Add Attachment</legend>
+      <input id="attachment" type="file" />
+      <input id="itemId" placeholder="itemId" type="text" autocapitalize="off" autocomplete="off" />
+      <button type="button" id="attachFile">Attach</button>
+      <textarea disabled id="attached" rows="10"></textarea>
+    </fieldset>
+
+    <script src="./index.ts"></script>
+  </body>
+</html>

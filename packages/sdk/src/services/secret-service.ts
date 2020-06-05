@@ -1,4 +1,5 @@
 import baseX from 'base-x';
+import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import cryppo from './cryppo-service';
 export class SecretService {
   private readonly derivationConstants = {
@@ -42,6 +43,9 @@ export class SecretService {
    */
   private destructureSecret(secret: string) {
     const [version, username, secretKey] = secret.split('.');
+    if (!version || !username || !secretKey) {
+      throw new MeecoServiceError('Invalid secret format', ERROR_CODES.InvalidSecretFormat);
+    }
     return {
       version,
       username,

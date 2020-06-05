@@ -1,6 +1,7 @@
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
+import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import { SRPSession } from '../models/srp-session';
 import {
   keystoreAPIFactory,
@@ -196,7 +197,7 @@ export class UserService {
     return dek;
   }
 
-  public async generateUsername(captcha_token: string) {
+  public async generateUsername(captcha_token?: string) {
     this.log('Generating username');
     return this.keystoreApiFactory('')
       .UserApi.srpUsernamePost({
@@ -234,6 +235,7 @@ export class UserService {
   }
 
   private async registerKeystoreViaSRP(userPassword: string, secret: string) {
+    this.log('Initializing SRP');
     const username = this.keyGen.usernameFromSecret(secret);
     const srpPassword = await this.keyGen.srpPasswordFromSecret(userPassword, secret);
     const srpSession = await new SRPSession().init(username, srpPassword);
@@ -263,6 +265,7 @@ export class UserService {
 
   private async loginKeystoreViaSRP(userPassword: string, secret: string) {
     const username = this.keyGen.usernameFromSecret(secret);
+    this.log('Starting SRP login');
     const password = await this.keyGen.srpPasswordFromSecret(userPassword, secret);
     const srpSession = await new SRPSession().init(username, password);
     const srp_a = await srpSession.getClientPublic();
@@ -287,10 +290,21 @@ export class UserService {
         srp_a,
         srp_m
       })
-      .then(res => res.session.session_authentication_string);
+      .then(res => res.session.session_authentication_string)
+      .catch(err => {
+        if (err.status === 401) {
+          throw new MeecoServiceError(
+            'Login failed - please check details',
+            ERROR_CODES.LoginFailed
+          );
+        }
+
+        throw err;
+      });
   }
 
   public async get(userPassword: string, secret: string): Promise<AuthData> {
+    this.log('Deriving keys');
     const derivedKey = await this.keyGen.derivePDKFromSecret(userPassword, secret);
     const sessionAuthenticationToken = await this.loginKeystoreViaSRP(userPassword, secret);
 

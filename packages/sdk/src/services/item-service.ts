@@ -117,9 +117,13 @@ export class ItemService {
     let uploadedBinary: AttachmentResponse;
     try {
       this.log('Uploading encrypted file');
+      const blob =
+        typeof Blob === 'function'
+          ? new Blob([encryptedFile.serialized])
+          : Buffer.from(encryptedFile.serialized, 'binary');
       uploadedBinary = await this.vaultAPIFactory(
         auth.vault_access_token
-      ).AttachmentApi.attachmentsPost(encryptedFile.serialized, fileName, fileType);
+      ).AttachmentApi.attachmentsPost(blob as any, fileName, fileType);
     } catch (err) {
       this.log('Upload encrypted file failed - removing temp encrypted version');
       throw err;
@@ -229,7 +233,6 @@ export class ItemService {
   }
 
   public list(vaultAccessToken: string) {
-    console.log('test');
     return this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet();
   }
 }

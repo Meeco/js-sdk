@@ -57,13 +57,9 @@ describe('meeco users:create', () => {
 function stubKeystore(stubUsername: boolean) {
   return (api: Nock.Scope) => {
     if (stubUsername) {
-      api
-        .post('/srp/username', {
-          captcha_token: 'mock_captcha'
-        })
-        .reply(200, {
-          username: 'mocked_generated_username'
-        });
+      api.post('/srp/username', {}).reply(200, {
+        username: 'mocked_generated_username'
+      });
     }
 
     api

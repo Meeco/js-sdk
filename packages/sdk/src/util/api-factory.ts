@@ -3,13 +3,19 @@ import * as Vault from '@meeco/vault-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
 import { blue, green } from 'chalk';
 import { debug } from 'debug';
-import nodeFetch from 'node-fetch';
 import { AuthData } from '../models/auth-data';
 import { Environment } from '../models/environment';
 import SDKFormData from './sdk-form-data';
 
+let fetchLib = this.fetch;
+
+/**
+ * Configure the fetch library to use for API requests
+ */
+export const configureFetch = (_fetch: any) => (fetchLib = _fetch);
+
 const debugCurl = debug('meeco:http');
-(<any>global).FormData = SDKFormData;
+(<any>global).FormData = (<any>global).FormData || SDKFormData;
 
 const X_MEECO_API_VERSION = '2.0.0';
 
@@ -62,7 +68,7 @@ const vaultAPIKeys = (environment: Environment, userAuth: UserAuth) => (name: st
 function fetchInterceptor(url, options) {
   debugCurl(blue(`Sending Request:`));
   debugCurl(toCurl(url, options));
-  return nodeFetch(url, options).then(async response => {
+  return fetchLib(url, options).then(async response => {
     debugCurl(green(`Received Response:`));
     debugCurl(`\
 status: ${response.status}

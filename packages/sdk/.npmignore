@@ -6,6 +6,7 @@ lib/
 src/
 test/
 coverage/
+demo/
 
 tsconfig.json
 tsconfig.build.json

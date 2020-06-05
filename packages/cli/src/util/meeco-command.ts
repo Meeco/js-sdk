@@ -1,6 +1,9 @@
+import { configureFetch } from '@meeco/sdk';
 import { Command, flags as _flags } from '@oclif/command';
+import { IConfig } from '@oclif/config';
 import { CLIError } from '@oclif/errors';
 import cli from 'cli-ux';
+import nodeFetch from 'node-fetch';
 import { stringify } from 'yaml';
 import { UserConfig } from '../configs/user-config';
 import { IYamlConfig, IYamlConfigReader } from '../configs/yaml-config';
@@ -8,6 +11,11 @@ import { readEnvironmentFromYamlFile } from './parse-environment';
 import { parseInputFile } from './parse-input-file';
 
 export default class MeecoCommand extends Command {
+  constructor(argv: string[], config: IConfig) {
+    super(argv, config);
+    configureFetch(nodeFetch);
+  }
+
   /**
    * Note we use this.constructor for parsing flags as superclass/subclass
    * flag sharing isn't properly supported by CLI at this time

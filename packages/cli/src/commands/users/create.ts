@@ -2,7 +2,6 @@ import { SecretService, UserService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import cli from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
-import { CaptchaService } from '../../services/captcha-service';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class CreateUser extends MeecoCommand {
@@ -32,12 +31,12 @@ export default class CreateUser extends MeecoCommand {
   async run() {
     const { flags } = this.parse(this.constructor as typeof CreateUser);
     let { password, secret } = flags;
-    const { port } = flags;
+    // const { port } = flags;
 
     try {
       const environment = await this.readEnvironmentFile();
       const userService = new UserService(environment, this.updateStatus);
-      const captchaService = new CaptchaService(environment, port);
+      // const captchaService = new CaptchaService(environment, port);
       const secretService = new SecretService();
 
       if (!password) {
@@ -47,8 +46,8 @@ export default class CreateUser extends MeecoCommand {
       }
 
       if (!secret) {
-        const captchaToken = await captchaService.requestCaptchaToken();
-        const username = await userService.generateUsername(captchaToken);
+        // const captchaToken = await captchaService.requestCaptchaToken();
+        const username = await userService.generateUsername();
         secret = await secretService.generateSecret(username);
       }
 
