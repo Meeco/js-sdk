@@ -24,5 +24,7 @@ connectionId=`run connections:list -a .Alice.yaml | awk '/^    id: / {print $2}'
 run shares:create-config --from .Alice.yaml --connectionId $connectionId -i $itemid > .share_Alice_Bob.yaml
 echo "Share the card to 'Bob'"
 run shares:create -c .share_Alice_Bob.yaml
-echo "Fetch the shared card as 'Bob'"
-run shares:list -a .Bob.yaml
+echo "Fetch shared cards as 'Bob'"
+shareId=`run shares:list -a .Bob.yaml | awk '/^  - share_id: / {print $3}'`
+echo "Fetch one shard card as Bob"
+run shares:get $shareId -a .Bob.yaml

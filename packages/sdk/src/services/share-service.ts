@@ -80,11 +80,11 @@ export class ShareService {
       });
     const { item, share } = result;
 
-    await this.ensureClaimedKey(user, share.connection_id);
+    const connection = await this.ensureClaimedKey(user, share.connection_id);
 
     const slots = this.addShareValuesToSlots(share, result.slots);
     const space = await this.keystoreApiFactory(user).EncryptionSpaceApi.encryptionSpacesIdGet(
-      share.encryption_space_id!
+      connection.encryption_space_id!
     );
     const decryptedSharedDataEncryptionKey = await this.cryppo.decryptWithKey({
       serialized: space.encryption_space_data_encryption_key.serialized_data_encryption_key,
@@ -261,12 +261,9 @@ export class ShareService {
       }
     );
 
-    return {
-      connection: {
-        ...connection,
-        encryption_space_id
-      }
-    };
+    connection.encryption_space_id = encryption_space_id;
+
+    return connection;
   }
 
   private async createAndStoreNewDataEncryptionKey(user: AuthData) {
