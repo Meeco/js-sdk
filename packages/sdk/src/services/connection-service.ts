@@ -15,7 +15,7 @@ export class ConnectionService {
   private cryppo = (<any>global).cryppo || cryppo;
   private vaultApiFactory: VaultAPIFactory;
   private keystoreApiFactory: KeystoreAPIFactory;
-  constructor(private environment: Environment, private log: (message: string) => void) {
+  constructor(private environment: Environment, private log: (message: string) => void = () => {}) {
     this.vaultApiFactory = vaultAPIFactory(environment);
     this.keystoreApiFactory = keystoreAPIFactory(environment);
   }
