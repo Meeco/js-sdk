@@ -7,7 +7,7 @@ import { AuthData } from '../models/auth-data';
 import { Environment } from '../models/environment';
 import SDKFormData from './sdk-form-data';
 
-let fetchLib = this.fetch;
+let fetchLib = (<any>global).fetch;
 
 /**
  * Configure the fetch library to use for API requests
