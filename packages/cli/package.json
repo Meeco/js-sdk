@@ -9,7 +9,7 @@
   },
   "bugs": "https://github.com/Meeco/cli/issues",
   "dependencies": {
-    "@meeco/sdk": "0.0.5",
+    "@meeco/sdk": "0.0.6",
     "@meeco/cryppo": "^0.5.0",
     "@meeco/keystore-api-sdk": "0.13.0",
     "@meeco/vault-api-sdk": "^0.14.0",
