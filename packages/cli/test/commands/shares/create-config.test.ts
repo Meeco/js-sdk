@@ -10,8 +10,8 @@ describe('shares:create-config', () => {
       'shares:create-config',
       '-f',
       inputFixture('connection-from.input.yaml'),
-      '-t',
-      inputFixture('connection-to.input.yaml'),
+      '-c',
+      'connection-id',
       '-i',
       'my-item',
       ...testEnvironmentFile
@@ -39,4 +39,10 @@ function mockVault(api) {
     .matchHeader('Authorization', 'from_vault_access')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, response);
+
+  api
+    .get('/connections/connection-id')
+    .matchHeader('Authorization', 'from_vault_access')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+    .reply(200, { connection: { id: 'connection-id' } });
 }

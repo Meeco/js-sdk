@@ -20,7 +20,8 @@ run connections:create -c .connection_Alice_Bob.yaml
 echo "List 'Alice's items and prepare one for sharing"
 run items:list -a .Alice.yaml
 itemid=`run items:list -a .Alice.yaml | awk '/^  - id: / {print $3}'`
-run shares:create-config --from .Alice.yaml --to .Bob.yaml -i $itemid > .share_Alice_Bob.yaml
+connectionId=`run connections:list -a .Alice.yaml | awk '/^    id: / {print $2}'`
+run shares:create-config --from .Alice.yaml --connectionId $connectionId -i $itemid > .share_Alice_Bob.yaml
 echo "Share the card to 'Bob'"
 run shares:create -c .share_Alice_Bob.yaml
 echo "Fetch the shared card as 'Bob'"
