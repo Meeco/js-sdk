@@ -34,14 +34,11 @@ export default class SharesInfo extends MeecoCommand {
         share.from,
         share.to,
         environment,
-        this.log
+        this.updateStatus
       );
-      const result = await service.fetchSharedEncryptionSpace(
-        share.from,
-        share.to,
-        fromUserConnection,
-        toUserConnection
-      );
+
+      const result = await service.fetchSharedEncryptionSpace(share.from, fromUserConnection);
+      result.to_user_connection_id = toUserConnection.id;
       this.printYaml(result);
     } catch (err) {
       await this.handleException(err);

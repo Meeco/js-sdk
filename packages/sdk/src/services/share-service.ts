@@ -11,13 +11,13 @@ import {
   vaultAPIFactory,
   VaultAPIFactory
 } from '../util/api-factory';
-import { findConnectionBetween } from '../util/find-connection-between';
+import { fetchConnectionWithId } from '../util/find-connection-between';
 import cryppo from './cryppo-service';
 import { ItemService } from './item-service';
 
 interface ISharedEncryptionSpace {
   from_user_connection_id: string;
-  to_user_connection_id: string;
+  to_user_connection_id?: string;
   shared_data_encryption_key?: EncryptionKey;
 }
 
@@ -33,10 +33,10 @@ export class ShareService {
     this.vaultApiFactory = vaultAPIFactory(environment);
   }
 
-  public async shareItem(fromUser: AuthData, toUser: AuthData, itemId: string) {
-    const { fromUserConnection, toUserConnection } = await findConnectionBetween(
+  public async shareItem(fromUser: AuthData, connectionId: string, itemId: string) {
+    const fromUserConnection = await fetchConnectionWithId(
       fromUser,
-      toUser,
+      connectionId,
       this.environment,
       this.log
     );
@@ -44,14 +44,12 @@ export class ShareService {
     this.log('Fetching shared encryption space');
     const sharedEncryptionSpace = await this.fetchSharedEncryptionSpace(
       fromUser,
-      toUser,
-      fromUserConnection,
-      toUserConnection
+      fromUserConnection
     );
 
     const share = await this.shareItemFromVaultItem(
       fromUser,
-      toUser,
+      fromUserConnection,
       sharedEncryptionSpace,
       itemId,
       fromUserConnection.user_id
@@ -110,7 +108,7 @@ export class ShareService {
 
   private async shareItemFromVaultItem(
     fromUser: AuthData,
-    toUser: AuthData,
+    connection: Connection,
     sharedEncryptionSpace: ISharedEncryptionSpace,
     itemId: string,
     toUserId: string
@@ -124,12 +122,11 @@ export class ShareService {
 
     if (!sharedEncryptionSpace.shared_data_encryption_key) {
       this.log('No encryption space found - creating one');
-      sharedEncryptionSpace = await this.configureSharedEncryptionSpace(
-        fromUser,
-        sharedEncryptionSpace.from_user_connection_id,
-        toUser,
-        sharedEncryptionSpace.to_user_connection_id
-      );
+      const encryptonSpace = await this.createSharedEncryptionSpace(fromUser, connection);
+      sharedEncryptionSpace = {
+        from_user_connection_id: connection.id,
+        shared_data_encryption_key: EncryptionKey.fromRaw(encryptonSpace.dataEncryptionKey)
+      };
     }
 
     this.log('Decrypting all slots');
@@ -150,66 +147,38 @@ export class ShareService {
     };
   }
 
-  public async configureSharedEncryptionSpace(
-    fromUser: AuthData,
-    fromUserConnectionId: string,
-    toUser: AuthData,
-    toUserConnectionId: string
-  ) {
-    const fromResult = await this.createSharedEncryptionSpace(fromUser, fromUserConnectionId);
-    const toResult = await this.ensureClaimedKey(toUser, toUserConnectionId);
-
-    return {
-      from_user_connection_id: fromResult.connectionId,
-      to_user_connection_id: toResult.connection.id,
-      shared_data_encryption_key: EncryptionKey.fromRaw(fromResult.dataEncryptionKey)
-    };
-  }
-
   public async fetchSharedEncryptionSpace(
-    fromUser: AuthData,
-    toUser: AuthData,
-    fromUserConnection: Connection,
-    toUserConnection: Connection
+    user: AuthData,
+    connection: Connection
   ): Promise<ISharedEncryptionSpace> {
-    if (!fromUserConnection.encryption_space_id) {
+    if (!connection.encryption_space_id) {
       // Users have no shared encryption space
       return new EncryptionSpaceData({
-        from_user_connection_id: fromUserConnection.id,
-        to_user_connection_id: toUserConnection!.id
+        from_user_connection_id: connection.id
       });
-    }
-
-    if (!toUserConnection.encryption_space_id) {
-      this.log('Shared encryption space does not appear to be claimed - claiming...');
-      await this.claimSharedEncryptionSpace(toUser, toUserConnection);
     }
 
     this.log('Fetching shared encryption key');
     const sharedDataEncryptionKey = await this.keystoreApiFactory(
-      fromUser
-    ).EncryptionSpaceApi.encryptionSpacesIdGet(fromUserConnection.encryption_space_id);
+      user
+    ).EncryptionSpaceApi.encryptionSpacesIdGet(connection.encryption_space_id);
 
     const decryptedSharedDataEncryptionKey = await this.cryppo.decryptWithKey({
       serialized: sharedDataEncryptionKey.encryption_space_data_encryption_key
         ?.serialized_data_encryption_key!,
-      key: fromUser.key_encryption_key.key
+      key: user.key_encryption_key.key
     });
 
     return new EncryptionSpaceData({
-      from_user_connection_id: fromUserConnection.id,
-      to_user_connection_id: toUserConnection!.id,
+      from_user_connection_id: connection.id,
       shared_data_encryption_key: EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey)
     });
   }
 
-  private async createSharedEncryptionSpace(fromUser: AuthData, connectionId: string) {
+  private async createSharedEncryptionSpace(fromUser: AuthData, connection: Connection) {
     this.log('Generating from user data encryption key');
     const fromUserEncryptionSpace = await this.createAndStoreNewDataEncryptionKey(fromUser);
     const encryptionSpaceId = fromUserEncryptionSpace.encryptionSpace?.encryption_space_id!;
-
-    this.log('Fetching connection');
-    const connection = await this.fetchConnectionWithId(fromUser, connectionId);
 
     const recipientPublicKey = connection.other_user_connection_public_key;
     if (!recipientPublicKey) {
@@ -241,21 +210,18 @@ export class ShareService {
     return {
       connection,
       dataEncryptionKey: fromUserEncryptionSpace.dataEncryptionKey,
-      connectionId,
       fromUserSharedKey: sharedKey.shared_key
     };
   }
 
   private async ensureClaimedKey(user: AuthData, connectionId: string) {
-    const connection = await this.fetchConnectionWithId(user, connectionId);
+    const connection = await fetchConnectionWithId(user, connectionId, this.environment, this.log);
     if (!connection.encryption_space_id) {
       this.log('Shared data encryption key not yet claimed - claiming');
       return this.claimSharedEncryptionSpace(user, connection);
     }
 
-    return {
-      connection
-    };
+    return connection;
   }
 
   private async claimSharedEncryptionSpace(toUser: AuthData, connection: Connection) {
@@ -296,7 +262,10 @@ export class ShareService {
     );
 
     return {
-      connection
+      connection: {
+        ...connection,
+        encryption_space_id
+      }
     };
   }
 
@@ -362,18 +331,6 @@ export class ShareService {
     const verification = `--request-timestamp=${new ShareService.Date().toISOString()}`;
     const urlToSign = requestUrl + verification;
     return this.cryppo.signWithPrivateKey(privateKey, urlToSign);
-  }
-
-  private async fetchConnectionWithId(user: AuthData, connectionId: string) {
-    this.log('Fetching connection');
-    const connectionResponse = await this.vaultApiFactory(user).ConnectionApi.connectionsIdGet(
-      connectionId
-    );
-    const connection = connectionResponse.connection;
-    if (!connection || !connection.id) {
-      throw new MeecoServiceError(`Connection '${connectionId}' not found.`);
-    }
-    return connection;
   }
 
   /**

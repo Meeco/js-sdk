@@ -1,4 +1,4 @@
-import { ItemService } from '@meeco/sdk';
+import { fetchConnectionWithId, ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
@@ -20,10 +20,10 @@ export default class SharesCreateConfig extends MeecoCommand {
       char: 'f',
       description: `User config file for the 'from' user`
     }),
-    to: _flags.string({
+    connectionId: _flags.string({
       required: true,
-      char: 't',
-      description: `User config file for the 'to' user`
+      char: 'c',
+      description: `Connection id for the 'to' user`
     })
   };
 
@@ -32,13 +32,16 @@ export default class SharesCreateConfig extends MeecoCommand {
   async run() {
     try {
       const { flags } = this.parse(this.constructor as typeof SharesCreateConfig);
-      const { from, to, itemId } = flags;
+      const { from, connectionId, itemId } = flags;
       const environment = await this.readEnvironmentFile();
       const fromUser = await this.readConfigFromFile(AuthConfig, from);
-      const toUser = await this.readConfigFromFile(AuthConfig, to);
-      if (!fromUser || !toUser) {
+
+      if (!fromUser || !connectionId) {
         this.error('Both a valid from and to user config file are required');
       }
+
+      await fetchConnectionWithId(fromUser, connectionId, environment, this.updateStatus);
+
       // Ensure the item to share exists first since setting up a first share takes a bit of work
       await new ItemService(environment)
         .get(itemId, fromUser.vault_access_token, fromUser.data_encryption_key)
@@ -48,7 +51,7 @@ export default class SharesCreateConfig extends MeecoCommand {
           }
           throw err;
         });
-      this.printYaml(ShareConfig.encodeFromUsersWithItem(fromUser, toUser, itemId));
+      this.printYaml(ShareConfig.encodeFromUsersWithItem(fromUser, connectionId, itemId));
     } catch (err) {
       await this.handleException(err);
     }
