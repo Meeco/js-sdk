@@ -26,7 +26,7 @@ function mockVault(api: nock.Scope) {
     .reply(200, {
       connection: {
         id: 'con_1',
-        encryption_space_id: 'encryption_space_id'
+        encryption_space_id: 'es_1'
       }
     });
 
