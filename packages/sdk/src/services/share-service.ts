@@ -28,7 +28,7 @@ export class ShareService {
   private keystoreApiFactory: KeystoreAPIFactory;
   private vaultApiFactory: VaultAPIFactory;
 
-  constructor(private environment: Environment, private log: (message: string) => void) {
+  constructor(private environment: Environment, private log: (message: string) => void = () => {}) {
     this.keystoreApiFactory = keystoreAPIFactory(environment);
     this.vaultApiFactory = vaultAPIFactory(environment);
   }
