@@ -4,18 +4,12 @@
     "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
-    "outDir": "lib",
     "strict": true,
     "target": "es2017",
     "noImplicitAny": false,
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@meeco/sdk": ["packages/sdk/src"]
-    }
-  },
-  "include": ["packages"],
-  "exclude": ["packages/*/dist", "packages/*/build", "packages/*/lib"]
+    "forceConsistentCasingInFileNames": true
+  }
 }

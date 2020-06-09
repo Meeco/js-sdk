@@ -1,9 +1,9 @@
 *-debug.log
 *-error.log
-/.nyc_output
-/dist
-/lib
-/tmp
+.nyc_output
+packages/**/dist
+packages/**/lib
+packages/**/tmp
 /coverage
 /yarn.lock
 node_modules
@@ -14,3 +14,6 @@ package-lock.json
 .environment.yaml
 .user.yaml
 /.*.yaml
+
+# Incremental build file
+tsconfig.build.tsbuildinfo

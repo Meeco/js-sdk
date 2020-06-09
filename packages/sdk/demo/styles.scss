@@ -1,0 +1,16 @@
+html,
+body {
+  width: 100vw;
+  max-width: 600px;
+  margin: auto;
+}
+fieldset {
+  margin: 2rem;
+  padding: 2rem;
+  textarea {
+    width: 100%;
+  }
+  input {
+    width: 200px;
+  }
+}
