@@ -22,7 +22,7 @@ jobs:
       - run: npx lerna run test
         env:
           CI: true
-      - run: npx lerna run pkg --scope @meeco/cli
+      - run: npx lerna run build
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
