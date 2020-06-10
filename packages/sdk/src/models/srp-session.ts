@@ -3,6 +3,9 @@ import * as jsrp from 'jsrp';
 export class SRPSession {
   private _client: jsrp.client | null;
 
+  /**
+   * The raw `jsrp` client
+   */
   get client() {
     if (!this._client) {
       throw new Error('Must call SRPSession init() first');
@@ -15,16 +18,20 @@ export class SRPSession {
   }
 
   async init(username, passwordDerivedFromPassphrase) {
-    this._client = await this.getSrpClient(username, passwordDerivedFromPassphrase);
+    this._client = await this.createSrpClient(username, passwordDerivedFromPassphrase);
     return this;
   }
 
-  /** "srp_a" value */
+  /**
+   * Computes the client public key - Also known as the "srp_a" value
+   */
   async getClientPublic() {
     return this.client.getPublicKey();
   }
 
-  /** "srp_m" or "proof" or  */
+  /**
+   * Computes the client proof from the server challenge - Also known as the "srp_m" value
+   */
   async computeProofFromChallenge({ salt, serverPublic }: { salt: string; serverPublic: string }) {
     this.client.setSalt(salt);
     this.client.setServerPublicKey(serverPublic);
@@ -39,7 +46,7 @@ export class SRPSession {
     });
   }
 
-  private getSrpClient(username, password): Promise<jsrp.client> {
+  private createSrpClient(username, password): Promise<jsrp.client> {
     return new Promise(resolve => {
       const client = new jsrp.client();
       client.init({ username, password, length: 2048 }, () => {

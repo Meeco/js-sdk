@@ -6,6 +6,9 @@ function connectionApi(user: AuthData, environment: Environment) {
   return vaultAPIFactory(environment)(user).ConnectionApi;
 }
 
+/**
+ * Helper to find connection between two users (if one exists)
+ */
 export async function findConnectionBetween(
   fromUser: AuthData,
   toUser: AuthData,

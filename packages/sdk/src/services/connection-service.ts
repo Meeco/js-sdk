@@ -11,6 +11,9 @@ import {
 } from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
 
+/**
+ * Used for setting up connections between Meeco `User`s to allow the secure sharing of data (see also {@link ShareService})
+ */
 export class ConnectionService {
   private cryppo = (<any>global).cryppo || cryppo;
   private vaultApiFactory: VaultAPIFactory;
@@ -20,7 +23,7 @@ export class ConnectionService {
     this.keystoreApiFactory = keystoreAPIFactory(environment);
   }
 
-  async createInvitation(name: string, auth: AuthData) {
+  public async createInvitation(name: string, auth: AuthData) {
     this.log('Generating key pair');
     const keyPair = await this.createAndStoreKeyPair(auth);
 
@@ -42,7 +45,7 @@ export class ConnectionService {
       .then(result => result.invitation);
   }
 
-  async acceptInvitation(name: string, invitationToken: string, auth: AuthData) {
+  public async acceptInvitation(name: string, invitationToken: string, auth: AuthData) {
     this.log('Generating key pair');
     const keyPair = await this.createAndStoreKeyPair(auth);
 
@@ -65,7 +68,7 @@ export class ConnectionService {
       .then(res => res.connection);
   }
 
-  async createConnection(config: ConnectionCreateData) {
+  public async createConnection(config: ConnectionCreateData) {
     const { to, from, options } = config;
 
     let existingConnection: { fromUserConnection: Connection; toUserConnection: Connection };
@@ -104,7 +107,9 @@ export class ConnectionService {
   }
 
   public async listConnections(user: AuthData) {
+    this.log('Fetching connections');
     const result = await this.vaultApiFactory(user).ConnectionApi.connectionsGet();
+    this.log('Decrypting connection names');
     const decryptions = (result.connections || []).map(connection =>
       this.cryppo
         .decryptWithKey({

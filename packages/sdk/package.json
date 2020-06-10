@@ -49,6 +49,7 @@
     "ts-node": "^8.1.0",
     "tsconfig-paths": "^3.9.0",
     "tslint": "^5.16.0",
+    "typedoc": "^0.17.0-3",
     "typescript": "^3.9.3"
   },
   "engines": {
@@ -73,6 +74,7 @@
     "lint": "tslint -p . -t stylish -c ../../tslint.json && tslint -p test/tsconfig.json -t stylish -c ../../tslint.json",
     "posttest": "npm run lint && npm run format:check",
     "prepack": "npm run build",
+    "docs": "typedoc --inputFiles src/index.ts --mode library --out ../../docs/sdk --tsconfig tsconfig.json --ignoreCompilerErrors --name 'Meeco SDK Documentation' --toc AuthData,ConnectionService,EncryptionKey,Environment,ItemService,SecretService,ShareService,TemplatesService,UserService --excludePrivate",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\""
   },
   "publishConfig": {

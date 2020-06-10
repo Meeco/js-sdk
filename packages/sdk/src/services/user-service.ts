@@ -12,11 +12,15 @@ import {
 import cryppo from './cryppo-service';
 import { SecretService } from './secret-service';
 
+/**
+ * Create and update Meeco Users.
+ */
 export class UserService {
   // This should be more like `auth:my-user:api-sandbox.meeco.me` but the api does not support it
   static VAULT_PAIR_EXTERNAL_IDENTIFIER = 'auth';
   public readonly vaultKeypairExternalId;
 
+  // for mocking during testing
   private cryppo = (<any>global).cryppo || cryppo;
 
   private keystoreApiFactory: KeystoreAPIFactory;
@@ -197,6 +201,9 @@ export class UserService {
     return dek;
   }
 
+  /**
+   * Request a new random username from the Keystore API to use for user creation
+   */
   public async generateUsername(captcha_token?: string) {
     this.log('Generating username');
     return this.keystoreApiFactory('')
@@ -206,6 +213,9 @@ export class UserService {
       .then(res => res.username);
   }
 
+  /**
+   * Usernames for secrets can be generated via {@link generateUsername}
+   */
   public async create(userPassword: string, secret: string): Promise<AuthData> {
     await this.registerKeystoreViaSRP(userPassword, secret);
 
@@ -303,6 +313,9 @@ export class UserService {
       });
   }
 
+  /**
+   * Given a user's passphrase and secret - fetch all data required to interact with Meeco's APIs on their behalf such as encryption keys
+   */
   public async get(userPassword: string, secret: string): Promise<AuthData> {
     this.log('Deriving keys');
     const derivedKey = await this.keyGen.derivePDKFromSecret(userPassword, secret);
@@ -346,11 +359,5 @@ export class UserService {
 
   public getVaultUser(vaultAccessToken: string) {
     return this.vaultApiFactory(vaultAccessToken).UserApi.meGet();
-  }
-
-  public getVaultUserId(user: AuthData) {
-    return this.vaultApiFactory(user)
-      .UserApi.meGet()
-      .then(result => result.user?.id);
   }
 }

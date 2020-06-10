@@ -2,6 +2,8 @@
 const FormData = require('form-data');
 
 /**
+ * @hidden
+ *
  * This exists because of what appears to be an issue in the generated SDK.
  * Attaching a `Buffer()` to `FormData` does not work if the file name property isn't provided
  * (which it isn't in the generated code).

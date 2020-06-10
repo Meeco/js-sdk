@@ -21,10 +21,19 @@ interface ISharedEncryptionSpace {
   shared_data_encryption_key?: EncryptionKey;
 }
 
+/**
+ * Service for sharing data between two connected Meeco users.
+ * Connections can be setup via the {@link ConnectionService}
+ */
 export class ShareService {
+  /**
+   * @visibleForTesting
+   * @ignore
+   */
   static Date = global.Date;
-  private cryppo = (<any>global).cryppo || cryppo;
 
+  // for mocking during testing
+  private cryppo = (<any>global).cryppo || cryppo;
   private keystoreApiFactory: KeystoreAPIFactory;
   private vaultApiFactory: VaultAPIFactory;
 
