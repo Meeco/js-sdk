@@ -2,6 +2,10 @@
 const baseX = require('base-x');
 import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import cryppo from './cryppo-service';
+
+/**
+ * Used for dealing with Meeco secrets - used for user authentication and login
+ */
 export class SecretService {
   private readonly derivationConstants = {
     iterationVariance: 0,
@@ -9,11 +13,17 @@ export class SecretService {
     length: 32
   };
 
+  /**
+   * Pluck the SRP Username from a users' secret
+   */
   public usernameFromSecret(secret: string) {
     const { username } = this.destructureSecret(secret);
     return username;
   }
 
+  /**
+   * Given a user's Secret and Passphrase - derive the Passphrase Derived Key (used to decrypt their Key Encryption Key)
+   */
   public derivePDKFromSecret(userEnteredPassword: string, secret: string) {
     const { secretKey } = this.destructureSecret(secret);
     return this.derivePDK(userEnteredPassword, secretKey);
@@ -24,6 +34,10 @@ export class SecretService {
     return this.deriveSRPPasswordFromSecretKey(userEnteredPassword, secretKey);
   }
 
+  /**
+   * Generate a new user Secret from the provided username.
+   * Usernames can be requested via the {@link UserService}
+   */
   public async generateSecret(username: string) {
     const key = await cryppo.generateRandomKey(32);
     const secretKey = this.encodeBase58(key);
@@ -32,6 +46,11 @@ export class SecretService {
     return `${version}.${username}.${readable}`;
   }
 
+  /**
+   * Public for testing purposes only.
+   *
+   * @ignore
+   */
   public encodeBase58(val: string | Buffer) {
     // https://tools.ietf.org/html/draft-msporny-base58-01
     const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';

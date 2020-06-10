@@ -10,6 +10,9 @@ import { MeecoServiceError } from '../models/service-error';
 import cryppo from '../services/cryppo-service';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 
+/**
+ * Used for fetching and sending `Items` to and from the Vault.
+ */
 export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
   private vaultAPIFactory: VaultAPIFactory;
@@ -21,7 +24,10 @@ export class ItemService {
   /**
    * Updates 'value' to the decrypted 'encrypted_value' and sets 'encrypted' to false.
    */
-  public static decryptAllSlots(slots: Slot[], dataEncryptionKey: EncryptionKey): Promise<Slot[]> {
+  public static decryptAllSlots(
+    slots: Slot[],
+    dataEncryptionKey: EncryptionKey
+  ): Promise<DecryptedSlot[]> {
     return Promise.all(
       slots.map(async slot => {
         const value =
@@ -36,7 +42,7 @@ export class ItemService {
           encrypted: false,
           value
         };
-        return decrypted as DecryptedSlot;
+        return decrypted;
       })
     );
   }
@@ -55,7 +61,7 @@ export class ItemService {
     });
   }
 
-  public async generateAndUploadThumbnail(
+  private async generateAndUploadThumbnail(
     file: Buffer | Uint8Array | ArrayBuffer,
     binaryId: string,
     auth: AuthData

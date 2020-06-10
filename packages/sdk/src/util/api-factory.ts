@@ -122,7 +122,7 @@ const callApiWithHeaders = (
 };
 
 /**
- * Helper for constructing instances of Keystore apis with all the required auth params
+ * Helper for constructing instances of Keystore apis with all the required auth and header params
  */
 const keystoreAPI = (
   api: KeystoreAPIName,
@@ -154,7 +154,7 @@ const keystoreAPI = (
 };
 
 /**
- * Helper for constructing instances of Vault apis with all the required auth params
+ * Helper for constructing instances of Vault apis with all the required auth and header params
  */
 const vaultAPI = (
   api: VaultAPIName,

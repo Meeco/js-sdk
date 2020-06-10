@@ -3,21 +3,19 @@ interface IAPIConfig {
   subscription_key: string;
 }
 
+/**
+ * Environment configuration - used to point to the desired API host (e.g sandbox or production) and configure
+ * your subscription keys for API access.
+ */
 export class Environment {
   public vault: IAPIConfig;
   public keystore: IAPIConfig;
-  public passphrase?: IAPIConfig;
-  public downloader?: IAPIConfig;
 
   constructor(config: {
     vault: IAPIConfig;
     keystore: IAPIConfig & { provider_api_key: string }; // TODO: check if this one is still needed
-    passphrase: IAPIConfig;
-    downloader: IAPIConfig;
   }) {
     this.vault = config.vault;
     this.keystore = config.keystore;
-    this.passphrase = config.passphrase;
-    this.downloader = config.downloader;
   }
 }

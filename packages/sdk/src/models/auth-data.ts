@@ -1,5 +1,10 @@
 import { EncryptionKey } from './encryption-key';
 
+/**
+ * `AuthData` is a container for all the data required to perform actions on behalf of a Meeco User.
+ *
+ * *Note:* Actual `AuthData` passed to method calls doesn't need to be an instance of this class - it can just conform to the interface.
+ */
 export class AuthData {
   public data_encryption_key: EncryptionKey;
   public key_encryption_key: EncryptionKey;

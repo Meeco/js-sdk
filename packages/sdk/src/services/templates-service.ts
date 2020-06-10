@@ -4,6 +4,9 @@ import { MeecoServiceError } from '../models/service-error';
 import { ITemplateData } from '../models/template-data';
 import { vaultAPIFactory } from '../util/api-factory';
 
+/**
+ * List and fetch available templates for Meeco Items from the API.
+ */
 export class TemplatesService {
   private api: ItemTemplateApi;
 
