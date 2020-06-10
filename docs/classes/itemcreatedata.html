@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AuthData | Meeco SDK Documentation</title>
+	<title>ItemCreateData | Meeco SDK Documentation</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,29 +56,21 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="authdata.html">AuthData</a>
+					<a href="itemcreatedata.html">ItemCreateData</a>
 				</li>
 			</ul>
-			<h1>Class AuthData</h1>
+			<h1>Class ItemCreateData</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p><code>AuthData</code> is a container for all the data required to perform actions on behalf of a Meeco User.</p>
-					</div>
-					<p><em>Note:</em> Actual <code>AuthData</code> passed to method calls doesn&#39;t need to be an instance of this class - it can just conform to the interface.</p>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">AuthData</span>
+						<span class="target">ItemCreateData</span>
 					</li>
 				</ul>
 			</section>
@@ -89,18 +81,15 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="authdata.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="itemcreatedata.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="authdata.html#data_encryption_key" class="tsd-kind-icon">data_<wbr>encryption_<wbr>key</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="authdata.html#key_encryption_key" class="tsd-kind-icon">key_<wbr>encryption_<wbr>key</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="authdata.html#keystore_access_token" class="tsd-kind-icon">keystore_<wbr>access_<wbr>token</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="authdata.html#passphrase_derived_key" class="tsd-kind-icon">passphrase_<wbr>derived_<wbr>key</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="authdata.html#secret" class="tsd-kind-icon">secret</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="authdata.html#vault_access_token" class="tsd-kind-icon">vault_<wbr>access_<wbr>token</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="itemcreatedata.html#item" class="tsd-kind-icon">item</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="itemcreatedata.html#slots" class="tsd-kind-icon">slots</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="itemcreatedata.html#templatename" class="tsd-kind-icon">template<wbr>Name</a></li>
 							</ul>
 						</section>
 					</div>
@@ -112,42 +101,33 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Auth<wbr>Data<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>data_encryption_key<span class="tsd-signature-symbol">: </span><a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a><span class="tsd-signature-symbol">; </span>key_encryption_key<span class="tsd-signature-symbol">: </span><a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a><span class="tsd-signature-symbol">; </span>keystore_access_token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>passphrase_derived_key<span class="tsd-signature-symbol">: </span><a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a><span class="tsd-signature-symbol">; </span>secret<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>vault_access_token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="authdata.html" class="tsd-signature-type">AuthData</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Item<wbr>Create<wbr>Data<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>item<span class="tsd-signature-symbol">: </span><a href="../globals.html#iitemrequestdata" class="tsd-signature-type">IItemRequestData</a><span class="tsd-signature-symbol">; </span>slots<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Slot</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>templateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="itemcreatedata.html" class="tsd-signature-type">ItemCreateData</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/auth-data.ts#L14">src/models/auth-data.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/Meeco/cli/blob/a4d0e94/packages/sdk/src/models/item-create-data.ts#L8">src/models/item-create-data.ts:8</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>config: <span class="tsd-signature-symbol">{ </span>data_encryption_key<span class="tsd-signature-symbol">: </span><a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a><span class="tsd-signature-symbol">; </span>key_encryption_key<span class="tsd-signature-symbol">: </span><a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a><span class="tsd-signature-symbol">; </span>keystore_access_token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>passphrase_derived_key<span class="tsd-signature-symbol">: </span><a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a><span class="tsd-signature-symbol">; </span>secret<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>vault_access_token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
+									<h5>config: <span class="tsd-signature-symbol">{ </span>item<span class="tsd-signature-symbol">: </span><a href="../globals.html#iitemrequestdata" class="tsd-signature-type">IItemRequestData</a><span class="tsd-signature-symbol">; </span>slots<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Slot</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>templateName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter">
-											<h5>data_<wbr>encryption_<wbr>key<span class="tsd-signature-symbol">: </span><a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a></h5>
+											<h5>item<span class="tsd-signature-symbol">: </span><a href="../globals.html#iitemrequestdata" class="tsd-signature-type">IItemRequestData</a></h5>
 										</li>
 										<li class="tsd-parameter">
-											<h5>key_<wbr>encryption_<wbr>key<span class="tsd-signature-symbol">: </span><a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a></h5>
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> slots<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Slot</span><span class="tsd-signature-symbol">[]</span></h5>
 										</li>
 										<li class="tsd-parameter">
-											<h5>keystore_<wbr>access_<wbr>token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>passphrase_<wbr>derived_<wbr>key<span class="tsd-signature-symbol">: </span><a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>secret<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>vault_<wbr>access_<wbr>token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+											<h5>template<wbr>Name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 										</li>
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="authdata.html" class="tsd-signature-type">AuthData</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="itemcreatedata.html" class="tsd-signature-type">ItemCreateData</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -155,62 +135,32 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="data_encryption_key" class="tsd-anchor"></a>
-					<h3>data_<wbr>encryption_<wbr>key</h3>
-					<div class="tsd-signature tsd-kind-icon">data_<wbr>encryption_<wbr>key<span class="tsd-signature-symbol">:</span> <a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a></div>
+					<a name="item" class="tsd-anchor"></a>
+					<h3>item</h3>
+					<div class="tsd-signature tsd-kind-icon">item<span class="tsd-signature-symbol">:</span> <a href="../globals.html#iitemrequestdata" class="tsd-signature-type">IItemRequestData</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/auth-data.ts#L9">src/models/auth-data.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/Meeco/cli/blob/a4d0e94/packages/sdk/src/models/item-create-data.ts#L7">src/models/item-create-data.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="key_encryption_key" class="tsd-anchor"></a>
-					<h3>key_<wbr>encryption_<wbr>key</h3>
-					<div class="tsd-signature tsd-kind-icon">key_<wbr>encryption_<wbr>key<span class="tsd-signature-symbol">:</span> <a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a></div>
+					<a name="slots" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> slots</h3>
+					<div class="tsd-signature tsd-kind-icon">slots<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Slot</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/auth-data.ts#L10">src/models/auth-data.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/Meeco/cli/blob/a4d0e94/packages/sdk/src/models/item-create-data.ts#L8">src/models/item-create-data.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="keystore_access_token" class="tsd-anchor"></a>
-					<h3>keystore_<wbr>access_<wbr>token</h3>
-					<div class="tsd-signature tsd-kind-icon">keystore_<wbr>access_<wbr>token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="templatename" class="tsd-anchor"></a>
+					<h3>template<wbr>Name</h3>
+					<div class="tsd-signature tsd-kind-icon">template<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/auth-data.ts#L11">src/models/auth-data.ts:11</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="passphrase_derived_key" class="tsd-anchor"></a>
-					<h3>passphrase_<wbr>derived_<wbr>key</h3>
-					<div class="tsd-signature tsd-kind-icon">passphrase_<wbr>derived_<wbr>key<span class="tsd-signature-symbol">:</span> <a href="encryptionkey.html" class="tsd-signature-type">EncryptionKey</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/auth-data.ts#L12">src/models/auth-data.ts:12</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="secret" class="tsd-anchor"></a>
-					<h3>secret</h3>
-					<div class="tsd-signature tsd-kind-icon">secret<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/auth-data.ts#L13">src/models/auth-data.ts:13</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="vault_access_token" class="tsd-anchor"></a>
-					<h3>vault_<wbr>access_<wbr>token</h3>
-					<div class="tsd-signature tsd-kind-icon">vault_<wbr>access_<wbr>token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/auth-data.ts#L14">src/models/auth-data.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/Meeco/cli/blob/a4d0e94/packages/sdk/src/models/item-create-data.ts#L6">src/models/item-create-data.ts:6</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -226,36 +176,9 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-class">
+					<li class=" tsd-kind-class">
 						<a href="authdata.html" class="tsd-kind-icon">Auth<wbr>Data</a>
-						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="authdata.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="authdata.html#data_encryption_key" class="tsd-kind-icon">data_<wbr>encryption_<wbr>key</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="authdata.html#key_encryption_key" class="tsd-kind-icon">key_<wbr>encryption_<wbr>key</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="authdata.html#keystore_access_token" class="tsd-kind-icon">keystore_<wbr>access_<wbr>token</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="authdata.html#passphrase_derived_key" class="tsd-kind-icon">passphrase_<wbr>derived_<wbr>key</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="authdata.html#secret" class="tsd-kind-icon">secret</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="authdata.html#vault_access_token" class="tsd-kind-icon">vault_<wbr>access_<wbr>token</a>
-							</li>
-						</ul>
 					</li>
-				</ul>
-				<ul class="after-current">
 					<li class=" tsd-kind-class">
 						<a href="connectionservice.html" class="tsd-kind-icon">Connection<wbr>Service</a>
 					</li>

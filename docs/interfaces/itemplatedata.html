@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Environment | Meeco SDK Documentation</title>
+	<title>ITemplateData | Meeco SDK Documentation</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,29 +56,21 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="environment.html">Environment</a>
+					<a href="itemplatedata.html">ITemplateData</a>
 				</li>
 			</ul>
-			<h1>Class Environment</h1>
+			<h1>Interface ITemplateData</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Environment configuration - used to point to the desired API host (e.g sandbox or production) and configure
-						your subscription keys for API access.</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">Environment</span>
+						<span class="target">ITemplateData</span>
 					</li>
 				</ul>
 			</section>
@@ -87,74 +79,45 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="environment.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="environment.html#keystore" class="tsd-kind-icon">keystore</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="environment.html#vault" class="tsd-kind-icon">vault</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="itemplatedata.html#classification_nodes" class="tsd-kind-icon">classification_<wbr>nodes</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="itemplatedata.html#slots" class="tsd-kind-icon">slots</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="itemplatedata.html#template" class="tsd-kind-icon">template</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Environment<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>keystore<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IAPIConfig</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>provider_api_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>vault<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IAPIConfig</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="environment.html" class="tsd-signature-type">Environment</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/environment.ts#L12">src/models/environment.ts:12</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>config: <span class="tsd-signature-symbol">{ </span>keystore<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IAPIConfig</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>provider_api_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>vault<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IAPIConfig</span><span class="tsd-signature-symbol"> }</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter">
-											<h5>keystore<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IAPIConfig</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>provider_api_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>vault<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IAPIConfig</span></h5>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="environment.html" class="tsd-signature-type">Environment</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="keystore" class="tsd-anchor"></a>
-					<h3>keystore</h3>
-					<div class="tsd-signature tsd-kind-icon">keystore<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">IAPIConfig</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="classification_nodes" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> classification_<wbr>nodes</h3>
+					<div class="tsd-signature tsd-kind-icon">classification_<wbr>nodes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ClassificationNode</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/environment.ts#L12">src/models/environment.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/Meeco/cli/blob/a4d0e94/packages/sdk/src/models/template-data.ts#L6">src/models/template-data.ts:6</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="vault" class="tsd-anchor"></a>
-					<h3>vault</h3>
-					<div class="tsd-signature tsd-kind-icon">vault<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">IAPIConfig</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="slots" class="tsd-anchor"></a>
+					<h3>slots</h3>
+					<div class="tsd-signature tsd-kind-icon">slots<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Slot</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/environment.ts#L11">src/models/environment.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/Meeco/cli/blob/a4d0e94/packages/sdk/src/models/template-data.ts#L5">src/models/template-data.ts:5</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="template" class="tsd-anchor"></a>
+					<h3>template</h3>
+					<div class="tsd-signature tsd-kind-icon">template<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ItemTemplateWithoutAssociations</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Required</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>label<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Meeco/cli/blob/a4d0e94/packages/sdk/src/models/template-data.ts#L4">src/models/template-data.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -171,46 +134,31 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class">
-						<a href="authdata.html" class="tsd-kind-icon">Auth<wbr>Data</a>
+						<a href="../classes/authdata.html" class="tsd-kind-icon">Auth<wbr>Data</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="connectionservice.html" class="tsd-kind-icon">Connection<wbr>Service</a>
+						<a href="../classes/connectionservice.html" class="tsd-kind-icon">Connection<wbr>Service</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="encryptionkey.html" class="tsd-kind-icon">Encryption<wbr>Key</a>
-					</li>
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-class">
-						<a href="environment.html" class="tsd-kind-icon">Environment</a>
-						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="environment.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="environment.html#keystore" class="tsd-kind-icon">keystore</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="environment.html#vault" class="tsd-kind-icon">vault</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="after-current">
-					<li class=" tsd-kind-class">
-						<a href="itemservice.html" class="tsd-kind-icon">Item<wbr>Service</a>
+						<a href="../classes/encryptionkey.html" class="tsd-kind-icon">Encryption<wbr>Key</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="secretservice.html" class="tsd-kind-icon">Secret<wbr>Service</a>
+						<a href="../classes/environment.html" class="tsd-kind-icon">Environment</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="shareservice.html" class="tsd-kind-icon">Share<wbr>Service</a>
+						<a href="../classes/itemservice.html" class="tsd-kind-icon">Item<wbr>Service</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="templatesservice.html" class="tsd-kind-icon">Templates<wbr>Service</a>
+						<a href="../classes/secretservice.html" class="tsd-kind-icon">Secret<wbr>Service</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="userservice.html" class="tsd-kind-icon">User<wbr>Service</a>
+						<a href="../classes/shareservice.html" class="tsd-kind-icon">Share<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="../classes/templatesservice.html" class="tsd-kind-icon">Templates<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="../classes/userservice.html" class="tsd-kind-icon">User<wbr>Service</a>
 					</li>
 				</ul>
 			</nav>

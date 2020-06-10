@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ITemplateData | Meeco SDK Documentation</title>
+	<title>IConnectionMetadata | Meeco SDK Documentation</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="itemplatedata.html">ITemplateData</a>
+					<a href="iconnectionmetadata.html">IConnectionMetadata</a>
 				</li>
 			</ul>
-			<h1>Interface ITemplateData</h1>
+			<h1>Interface IConnectionMetadata</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ITemplateData</span>
+						<span class="target">IConnectionMetadata</span>
 					</li>
 				</ul>
 			</section>
@@ -81,9 +81,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="itemplatedata.html#classification_nodes" class="tsd-kind-icon">classification_<wbr>nodes</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="itemplatedata.html#slots" class="tsd-kind-icon">slots</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="itemplatedata.html#template" class="tsd-kind-icon">template</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnectionmetadata.html#fromname" class="tsd-kind-icon">from<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnectionmetadata.html#toname" class="tsd-kind-icon">to<wbr>Name</a></li>
 							</ul>
 						</section>
 					</div>
@@ -92,32 +91,22 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="classification_nodes" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> classification_<wbr>nodes</h3>
-					<div class="tsd-signature tsd-kind-icon">classification_<wbr>nodes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ClassificationNode</span><span class="tsd-signature-symbol">[]</span></div>
+					<a name="fromname" class="tsd-anchor"></a>
+					<h3>from<wbr>Name</h3>
+					<div class="tsd-signature tsd-kind-icon">from<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/template-data.ts#L6">src/models/template-data.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/Meeco/cli/blob/a4d0e94/packages/sdk/src/models/connection-create-data.ts#L5">src/models/connection-create-data.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="slots" class="tsd-anchor"></a>
-					<h3>slots</h3>
-					<div class="tsd-signature tsd-kind-icon">slots<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Slot</span><span class="tsd-signature-symbol">[]</span></div>
+					<a name="toname" class="tsd-anchor"></a>
+					<h3>to<wbr>Name</h3>
+					<div class="tsd-signature tsd-kind-icon">to<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/template-data.ts#L5">src/models/template-data.ts:5</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="template" class="tsd-anchor"></a>
-					<h3>template</h3>
-					<div class="tsd-signature tsd-kind-icon">template<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ItemTemplateWithoutAssociations</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Required</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>label<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/Meeco/cli/blob/13976b6/packages/sdk/src/models/template-data.ts#L4">src/models/template-data.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/Meeco/cli/blob/a4d0e94/packages/sdk/src/models/connection-create-data.ts#L4">src/models/connection-create-data.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
