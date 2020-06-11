@@ -35,3 +35,9 @@ configureFetch(fetchPolyfill);
 
 // Continue to use the Meeco SDK as normal...
 ```
+
+## Development
+
+### Generating Documentation
+
+`npm run docs` to run TypeDoc. *Note* at time of writing we use the "library" `mode` for typedoc which requires the beta version (`npm i typedoc@next`)
