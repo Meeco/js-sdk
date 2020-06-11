@@ -68,22 +68,50 @@
 					<h1>Meeco TypeScript SDK</h1>
 				</a>
 				<img width="100px" src="https://uploads-ssl.webflow.com/5cd5168c6c861f4fc7cfe969/5ddcaba04d724676d8758927_Meeco-Logo-2019-Circle-RGB.svg">
-				<a href="#running-the-demo" id="running-the-demo" style="color: inherit; text-decoration: none;">
-					<h2>Running the demo</h2>
+				<a href="#api-docs" id="api-docs" style="color: inherit; text-decoration: none;">
+					<h3>API Docs</h3>
 				</a>
-				<p>Setup your environment file:</p>
-				<ol>
-					<li><code>cp demo/.environment.example.json demo/.environment.json</code></li>
-					<li>Update URLs and subscription keys as necessary</li>
-				</ol>
-				<p><code>npm install &amp;&amp; npm run demo</code></p>
+				<p>For SDK API Docs (TypeDoc docs) <a href="https://meeco.github.io/js-sdk/">See Here</a></p>
 				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
 					<h2>Installation</h2>
 				</a>
-				<pre><code class="language-sh">$ npm install @meeco/sdk</code></pre>
-				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
-					<h2>Configuration</h2>
+				<pre><code class="language-sh">$ npm install -S @meeco/sdk</code></pre>
+				<a href="#usage-basics" id="usage-basics" style="color: inherit; text-decoration: none;">
+					<h2>Usage Basics</h2>
 				</a>
+				<p>This is not an exhaustive list of functionatlity - just some basic use-cases. For full usage <a href="https://meeco.github.io/js-sdk/">see the API docs</a></p>
+				<p>All examples expect you have your environment configured.</p>
+				<p>An environment configuration looks something like this:</p>
+				<pre><code class="language-js">// Note this can also be an instance of Environment from `@meeco/sdk` for type safety
+const environment = {
+  vault: {
+    url: '&lt;target vault environment url&gt;',
+    subscription_key: '&lt;your Meeco subscription key&gt;
+  }
+  keystore: {
+    url: '&lt;target keystore environment url&gt;',
+    subscription_key: '&lt;your Meeco subscription key&gt;'
+  }
+}</code></pre>
+				<a href="#typescript--javascript" id="typescript--javascript" style="color: inherit; text-decoration: none;">
+					<h3>TypeScript / JavaScript</h3>
+				</a>
+				<p>All examples in this Readme use TypeScript. However, JavaScript should also work mostly the same, just replace any <code>import</code> statements with <code>require</code> statements depending on your module system.</p>
+				<p>e.g.</p>
+				<pre><code class="language-ts"><span class="hljs-comment">// TypeScript style imports</span>
+<span class="hljs-keyword">import</span> { UserService } <span class="hljs-keyword">from</span> <span class="hljs-string">'@meeco/sdk'</span>;
+<span class="hljs-keyword">const</span> service = <span class="hljs-keyword">new</span> UserService();</code></pre>
+				<pre><code class="language-js"><span class="hljs-comment">// Node/JavaScript style imports</span>
+<span class="hljs-keyword">const</span> Meeco = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@meeco/sdk'</span>);
+<span class="hljs-keyword">const</span> service = <span class="hljs-keyword">new</span> Meeco.UserService();
+
+<span class="hljs-comment">// or</span>
+<span class="hljs-keyword">const</span> UserService = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@meeco/sdk'</span>).UserService;
+<span class="hljs-keyword">const</span> service = <span class="hljs-keyword">new</span> Meeco.UserService();
+
+<span class="hljs-comment">// or</span>
+<span class="hljs-keyword">const</span> { UserService } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@meeco/sdk'</span>);
+<span class="hljs-keyword">const</span> service = <span class="hljs-keyword">new</span> Meeco.UserService();</code></pre>
 				<a href="#configuring-fetch" id="configuring-fetch" style="color: inherit; text-decoration: none;">
 					<h3>Configuring Fetch</h3>
 				</a>
@@ -96,6 +124,127 @@
 configureFetch(fetchPolyfill);
 
 <span class="hljs-comment">// Continue to use the Meeco SDK as normal...</span></code></pre>
+				<a href="#loggers" id="loggers" style="color: inherit; text-decoration: none;">
+					<h3>Loggers</h3>
+				</a>
+				<p>Most services allow a logger to be configured. The default for this is a no-op function (<code>() =&gt; {}</code>). If you would like to log message to the console, you can pass in <code>console.log</code> as the logger. You can pass in any function that takes strings as an argument (for exmaple, if you want to update a progress bar message).</p>
+				<a href="#creating-and-fetching-users" id="creating-and-fetching-users" style="color: inherit; text-decoration: none;">
+					<h3>Creating and Fetching Users</h3>
+				</a>
+				<p>To perform most actions with Meeco we need a User - either an existing one or a new one we create.</p>
+				<p>In order to create a user we need a username (requested from the Keystore API), a secret (derived from the username) and a passphrase/password (entered by the user for account creation).</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { UserService, SecretService } <span class="hljs-keyword">from</span> <span class="hljs-string">'@meeco/sdk'</span>;
+
+<span class="hljs-keyword">const</span> userService = <span class="hljs-keyword">new</span> UserService(environment);
+<span class="hljs-keyword">const</span> secretService = <span class="hljs-keyword">new</span> SecretService();
+
+<span class="hljs-keyword">const</span> username = <span class="hljs-keyword">await</span> userService.generateUsername();
+<span class="hljs-comment">// This secret should be retuned to the user for safe keeping</span>
+<span class="hljs-keyword">const</span> secret = <span class="hljs-keyword">await</span> secretService.generateSecret(username);
+<span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> userService.create(password, secret);
+<span class="hljs-comment">// We now have the Meeco user `AuthData` to use for future calls and encryption.</span></code></pre>
+				<p>In future, if we want to retrieve the user&#39;s <code>AuthData</code> we need them to provide their secret (which contains their username) and the passphrase.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { UserService } <span class="hljs-keyword">from</span> <span class="hljs-string">'@meeco/sdk'</span>;
+
+<span class="hljs-keyword">const</span> userService = <span class="hljs-keyword">new</span> UserService(environment);
+<span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> userService.get(password, secret);
+<span class="hljs-comment">// We have logged the user back in again and have the encryption keys we need</span></code></pre>
+				<a href="#dealing-with-items" id="dealing-with-items" style="color: inherit; text-decoration: none;">
+					<h3>Dealing with Items</h3>
+				</a>
+				<p>Items are typically created from a template (although you can create ones from a blank template as well). We can get a list of the available templates with the <code>TemplateService</code></p>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { TemplateService } <span class="hljs-keyword">from</span> <span class="hljs-string">'@meeco/sdk'</span>;
+
+<span class="hljs-comment">// Using a User we created or logged in with as above</span>
+<span class="hljs-keyword">const</span> templatesService = <span class="hljs-keyword">new</span> TemplatesService(environment, user.vault_access_token);
+<span class="hljs-keyword">const</span> availableTemplates = <span class="hljs-keyword">await</span> templatesService.listTemplates();
+
+<span class="hljs-comment">/**
+ * We now have a list of the available templates.
+ * We can also view more information about one of the templates (such
+ * as the slots that it provides)
+ */</span>
+
+<span class="hljs-keyword">const</span> templateDetails = <span class="hljs-keyword">await</span> service.getTemplate(availableTemplates.item_templates[<span class="hljs-number">0</span>].name);</code></pre>
+				<p>Once we&#39;ve selected a template we can create our first item.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { ItemService } <span class="hljs-keyword">from</span> <span class="hljs-string">'@meeco/sdk'</span>;
+
+<span class="hljs-keyword">const</span> service = <span class="hljs-keyword">new</span> ItemService(environment);
+<span class="hljs-keyword">const</span> item = <span class="hljs-keyword">await</span> service.create(user.vault_access_token, user.data_encryption_key, {
+  item: {
+    label: <span class="hljs-string">'My Car'</span>
+  },
+  templateName: availableTemplates.item_templates[<span class="hljs-number">0</span>].name,
+  slots: [
+    {
+      name: <span class="hljs-string">'make_model'</span>,
+      value: <span class="hljs-string">'Ford Focus'</span>
+    },
+    {
+      name: <span class="hljs-string">'year'</span>,
+      value: <span class="hljs-string">'2017'</span>
+    }
+  ]
+});</code></pre>
+				<p>We can also fetch a list of a user&#39;s items or get details about a specific item in a manner similar to templates:</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { ItemService } <span class="hljs-keyword">from</span> <span class="hljs-string">'@meeco/sdk'</span>;
+
+<span class="hljs-keyword">const</span> service = <span class="hljs-keyword">new</span> ItemService(environment);
+<span class="hljs-comment">// Get the user's items</span>
+<span class="hljs-keyword">const</span> items = <span class="hljs-keyword">await</span> service.list(user.vault_access_token);
+<span class="hljs-comment">// Get more details about a particular item</span>
+<span class="hljs-keyword">const</span> itemDetails = <span class="hljs-keyword">await</span> service.get(
+  items[<span class="hljs-number">0</span>].id,
+  user.vault_access_token,
+  user.data_encryption_key
+);</code></pre>
+				<a href="#connecting-users-and-sharing-data" id="connecting-users-and-sharing-data" style="color: inherit; text-decoration: none;">
+					<h3>Connecting Users and Sharing Data</h3>
+				</a>
+				<p>A big part of Meeco is securely sharing data. In order to share data the users sharing the data must first be Connected.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { ConnectionService } <span class="hljs-keyword">from</span> <span class="hljs-string">'@meeco/sdk'</span>;
+
+<span class="hljs-keyword">const</span> connectionService = <span class="hljs-keyword">new</span> ConnectionService(environment);
+
+<span class="hljs-comment">// Alice's Interaction, sending a connection invitation to Bob</span>
+<span class="hljs-keyword">const</span> invitation = <span class="hljs-keyword">await</span> connectionService.createInvitation(<span class="hljs-string">'Bob'</span>, aliceUser);
+<span class="hljs-comment">// It is up to Alice to share `invitation.token` with Bob so he can accept it (e.g. via Email or SMS)</span>
+
+<span class="hljs-comment">// Bob's interaction - accepting the invitation (providing the token he got from Alice)</span>
+<span class="hljs-keyword">const</span> connection = <span class="hljs-keyword">await</span> connectionService.acceptInvitation(<span class="hljs-string">'Alice'</span>, invitationToken, bobUser);</code></pre>
+				<p>Alice and Bob are now connected and can share data. Let&#39;s share one of Alice&#39;s items with Bob.</p>
+				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { ShareService } <span class="hljs-keyword">from</span> <span class="hljs-string">'@meeco/sdk'</span>;
+
+<span class="hljs-keyword">const</span> shareService = <span class="hljs-keyword">new</span> ShareService(environment);
+
+<span class="hljs-comment">/**
+ * Assuming we have connectionWithBob from ConnectionService.listConnections
+ * and an aliceItem from ItemService.list
+ */</span>
+<span class="hljs-keyword">const</span> share = <span class="hljs-keyword">await</span> shareService.shareItem(alice, connetionWithBob.id, aliceItem.id);
+
+<span class="hljs-comment">// Bob should now be able to fetch this item</span>
+<span class="hljs-keyword">const</span> item = <span class="hljs-keyword">await</span> shareService.getSharedItem(bob, sharedItem.id);</code></pre>
+				<a href="#sdk-development" id="sdk-development" style="color: inherit; text-decoration: none;">
+					<h2>SDK Development</h2>
+				</a>
+				<a href="#generating-documentation" id="generating-documentation" style="color: inherit; text-decoration: none;">
+					<h3>Generating Documentation</h3>
+				</a>
+				<p><code>npm run docs</code> to run TypeDoc. <em>Note</em> at time of writing we use the &quot;library&quot; <code>mode</code> for typedoc which requires the beta version (<code>npm i typedoc@next</code>)</p>
+				<a href="#running-the-demo" id="running-the-demo" style="color: inherit; text-decoration: none;">
+					<h3>Running the demo</h3>
+				</a>
+				<p>There is a sample website that uses cryppo to perform various functions.</p>
+				<p>Setup your environment file:</p>
+				<ol>
+					<li><code>cp demo/.environment.example.json demo/.environment.json</code></li>
+					<li>Update URLs and subscription keys as necessary</li>
+				</ol>
+				<p><code>npm install &amp;&amp; npm run demo</code></p>
+				<ol start="3">
+					<li>Visit <code>http://localhost:1234</code></li>
+				</ol>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

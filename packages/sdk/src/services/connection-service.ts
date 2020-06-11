@@ -68,6 +68,11 @@ export class ConnectionService {
       .then(res => res.connection);
   }
 
+  /**
+   * Note this only works if we have authentication data for both connecting users.
+   * For more typical use cases you should manually call {@link createInvitation}
+   * as one user and {@link acceptInvitation} as the other user.
+   */
   public async createConnection(config: ConnectionCreateData) {
     const { to, from, options } = config;
 
