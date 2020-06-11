@@ -14,7 +14,7 @@ export class TemplatesService {
     this.api = vaultAPIFactory(environment)(vaultAccessToken).ItemTemplateApi;
   }
 
-  public async listTemplates(classificationScheme: string, classificationName: string) {
+  public async listTemplates(classificationScheme?: string, classificationName?: string) {
     return await this.api.itemTemplatesGet(classificationScheme, classificationName);
   }
 

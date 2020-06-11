@@ -1,9 +1,9 @@
 import { TemplatesService } from '@meeco/sdk';
+import { flags as _flags } from '@oclif/command';
 import { cli } from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
 import { TemplateConfig } from '../../configs/template-config';
 import { authFlags } from '../../flags/auth-flags';
-import { DEFAULT_CLASSIFICATION_NAME, DEFAULT_CLASSIFICATION_SCHEME } from '../../util/constants';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class TemplatesList extends MeecoCommand {
@@ -11,21 +11,30 @@ export default class TemplatesList extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
+    classificationScheme: _flags.string({
+      char: 's',
+      default: undefined,
+      required: false,
+      description: 'Scope templates to a particular classification scheme'
+    }),
+    classificationName: _flags.string({
+      char: 'n',
+      default: undefined,
+      required: false,
+      description: 'Scope templates to a particular classification name'
+    })
   };
 
   async run() {
     try {
       const { flags } = this.parse(this.constructor as typeof TemplatesList);
-      const { auth } = flags;
+      const { auth, classificationName, classificationScheme } = flags;
       const environment = await this.readEnvironmentFile();
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
       const service = new TemplatesService(environment, authConfig!.vault_access_token);
       cli.action.start('Fetching available templates');
-      const templates = await service.listTemplates(
-        DEFAULT_CLASSIFICATION_SCHEME,
-        DEFAULT_CLASSIFICATION_NAME
-      );
+      const templates = await service.listTemplates(classificationScheme, classificationName);
       cli.action.stop();
       this.printYaml(TemplateConfig.encodeListFromJSON(templates));
     } catch (err) {

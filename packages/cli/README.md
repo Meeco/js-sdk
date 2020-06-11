@@ -488,10 +488,14 @@ USAGE
   $ meeco templates:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
+  -a, --auth=auth                                  (required) [default: .user.yaml] Authorization config file yaml file
+                                                   (if not using the default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config file
+  -e, --environment=environment                    [default: .environment.yaml] environment config file
+
+  -n, --classificationName=classificationName      Scope templates to a particular classification name
+
+  -s, --classificationScheme=classificationScheme  Scope templates to a particular classification scheme
 ```
 
 _See code: [src/commands/templates/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/templates/list.ts)_
