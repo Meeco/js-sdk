@@ -21,6 +21,14 @@ interface ISharedEncryptionSpace {
   shared_data_encryption_key?: EncryptionKey;
 }
 
+interface IShareOptions {
+  expires_at?: Date;
+  terms?: string;
+  note?: string;
+  distributable?: boolean;
+  tradeable?: boolean;
+}
+
 /**
  * Service for sharing data between two connected Meeco users.
  * Connections can be setup via the {@link ConnectionService}
@@ -42,7 +50,12 @@ export class ShareService {
     this.vaultApiFactory = vaultAPIFactory(environment);
   }
 
-  public async shareItem(fromUser: AuthData, connectionId: string, itemId: string) {
+  public async shareItem(
+    fromUser: AuthData,
+    connectionId: string,
+    itemId: string,
+    shareOptions: IShareOptions = {}
+  ) {
     const fromUserConnection = await fetchConnectionWithId(
       fromUser,
       connectionId,
@@ -61,7 +74,8 @@ export class ShareService {
       fromUserConnection,
       sharedEncryptionSpace,
       itemId,
-      fromUserConnection.user_id
+      fromUserConnection.user_id,
+      shareOptions
     );
 
     this.log('Sending shared data');
@@ -78,12 +92,14 @@ export class ShareService {
     return await this.vaultApiFactory(user).SharesApi.sharesIncomingGet();
   }
 
-  public async getSharedItem(user: AuthData, itemId: string) {
+  public async getSharedItem(user: AuthData, shareId: string) {
     const result = await this.vaultApiFactory(user)
-      .SharesApi.sharesIdGet(itemId)
+      .SharesApi.sharesIdGet(shareId)
       .catch(err => {
         if ((<Response>err).status === 404) {
-          throw new MeecoServiceError(`Share with id '${itemId}' not found for the specified user`);
+          throw new MeecoServiceError(
+            `Share with id '${shareId}' not found for the specified user`
+          );
         }
         throw err;
       });
@@ -104,7 +120,9 @@ export class ShareService {
 
     return {
       item,
-      slots: decryptedSlots
+      slots: decryptedSlots,
+      share,
+      connection
     };
   }
 
@@ -120,7 +138,8 @@ export class ShareService {
     connection: Connection,
     sharedEncryptionSpace: ISharedEncryptionSpace,
     itemId: string,
-    toUserId: string
+    toUserId: string,
+    shareOptions: IShareOptions
   ) {
     const item = await this.vaultApiFactory(fromUser).ItemApi.itemsIdGet(itemId);
 
@@ -146,6 +165,7 @@ export class ShareService {
       sharedEncryptionSpace.shared_data_encryption_key!
     );
     return {
+      ...shareOptions,
       shareable_id: itemId,
       shareable_type: 'Item',
       encrypted_values,
