@@ -81,6 +81,25 @@ configureFetch(fetchPolyfill);
 
 Most services allow a logger to be configured. The default for this is a no-op function (`() => {}`). If you would like to log message to the console, you can pass in `console.log` as the logger. You can pass in any function that takes strings as an argument (for exmaple, if you want to update a progress bar message).
 
+### API Factories
+
+The SDK offers wrappers around the Meeco Vault API SDK and Keystore API SDK. These attach on common required headers for convenience when making requests. To use them, simply call the API factory with your environment configuration. You can then create factory instances by calling the factory with a user's authentication data and, finally, get the desired Model API off the result:
+
+```ts
+import { vaultAPIFactory, keystoreAPIFactory } from '@meeco/sdk';
+
+const vaultFactory = vaultAPIFactory(environment);
+const keystoreFactory = keystoreAPIFactory(environment);
+const aliceVault = vaultFactory(aliceUser);
+const bobKeystore = keystoreFactory(bobUser);
+
+// Get api's off the factory instance
+const UserApi = bobKeystore.UserApi;
+
+// Alternatively, use object destructuring
+const { ItemApi } = aliceVault;
+```
+
 ### Creating and Fetching Users
 
 To perform most actions with Meeco we need a User - either an existing one or a new one we create.
@@ -94,7 +113,7 @@ const userService = new UserService(environment);
 const secretService = new SecretService();
 
 const username = await userService.generateUsername();
-// This secret should be retuned to the user for safe keeping
+// This secret should be returned to the user for safe keeping
 const secret = await secretService.generateSecret(username);
 const user = await userService.create(password, secret);
 // We now have the Meeco user `AuthData` to use for future calls and encryption.

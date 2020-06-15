@@ -215,7 +215,7 @@ export type KeystoreAPIFactory = (
   userAuth: UserAuth,
   headers?: IHeaders
 ) => KeystoreAPIFactoryInstance;
-type KeystoreAPIFactoryInstance = {
+export type KeystoreAPIFactoryInstance = {
   [key in KeystoreAPIName]: InstanceType<typeof Keystore[key]>;
 };
 
@@ -246,7 +246,7 @@ type KeystoreAPIFactoryInstance = {
  * ```
  */
 export type VaultAPIFactory = (userAuth: UserAuth, headers?: IHeaders) => VaultAPIFactoryInstance;
-type VaultAPIFactoryInstance = { [key in VaultAPIName]: InstanceType<typeof Vault[key]> };
+export type VaultAPIFactoryInstance = { [key in VaultAPIName]: InstanceType<typeof Vault[key]> };
 
 /**
  * Results in a factory function that can be passed user auth information and then get
