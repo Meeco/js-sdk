@@ -34,7 +34,7 @@ export default class TemplatesList extends MeecoCommand {
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
       const service = new TemplatesService(environment, authConfig!.vault_access_token);
       cli.action.start('Fetching available templates');
-      const templates = await service.listTemplates(classificationScheme, classificationName);
+      const templates = await service.listTemplates(classificationScheme!, classificationName!);
       cli.action.stop();
       this.printYaml(TemplateConfig.encodeListFromJSON(templates));
     } catch (err) {
