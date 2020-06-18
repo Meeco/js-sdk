@@ -14,6 +14,7 @@
     other_user_connection_encryption_space_id: null
     other_user_connection_key_store_keypair_id: null
     encrypted_recipient_name: Some Encrypted Name
+    integration_data: null
 - name: Some Other Encrypted Name[decrypted with my_generated_dek]
   connection:
     id: def456
@@ -30,3 +31,4 @@
     other_user_connection_encryption_space_id: null
     other_user_connection_key_store_keypair_id: null
     encrypted_recipient_name: Some Other Encrypted Name
+    integration_data: null

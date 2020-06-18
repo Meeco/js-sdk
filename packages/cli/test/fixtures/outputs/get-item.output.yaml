@@ -1,6 +1,7 @@
 kind: Item
 spec:
   id: null
+  own: null
   name: food
   label: My Fave Foods
   description: null
@@ -23,8 +24,12 @@ spec:
     - yoghurt
   me: null
   background_color: null
+  share_count: null
+  valid_share_count: null
   slots:
     - id: pizza
+      own: null
+      share_id: null
       name: pizza
       description: null
       encrypted: false
@@ -44,6 +49,8 @@ spec:
       label: Pizza
       value: Hawaiian[decrypted with my_generated_dek]
     - id: steak
+      own: null
+      share_id: null
       name: steak
       description: null
       encrypted: false
@@ -63,6 +70,8 @@ spec:
       label: Steak
       value: Rump[decrypted with my_generated_dek]
     - id: beer
+      own: null
+      share_id: null
       name: beer
       description: null
       encrypted: false

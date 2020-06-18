@@ -1,4 +1,4 @@
-import { Connection, Share, Slot } from '@meeco/vault-api-sdk';
+import { Connection, PostSharesEncryptedValues } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { EncryptionSpaceData } from '../models/encryption-space-data';
@@ -107,7 +107,7 @@ export class ShareService {
 
     const connection = await this.ensureClaimedKey(user, share.connection_id);
 
-    const slots = this.addShareValuesToSlots(share, result.slots);
+    const slots = result.slots;
     const space = await this.keystoreApiFactory(user).EncryptionSpaceApi.encryptionSpacesIdGet(
       connection.encryption_space_id!
     );
@@ -124,13 +124,6 @@ export class ShareService {
       share,
       connection
     };
-  }
-
-  private addShareValuesToSlots(share: Share, slots: Slot[]) {
-    slots.forEach(slot => {
-      slot.encrypted_value = (share?.encrypted_values || {})[slot.id];
-    });
-    return slots;
   }
 
   private async shareItemFromVaultItem(
@@ -368,9 +361,9 @@ export class ShareService {
   private async convertSlotsToEncryptedValuesForShare(
     slots: DecryptedSlot[],
     sharedDataEncryptionKey: EncryptionKey
-  ) {
+  ): Promise<PostSharesEncryptedValues[]> {
     const encryptions = slots.map(async slot => {
-      const encrypted =
+      const encrypted_value =
         typeof slot.value === 'string'
           ? await cryppo
               .encryptWithKey({
@@ -381,13 +374,10 @@ export class ShareService {
               .then(result => result.serialized)
           : slot.value;
       return {
-        [slot.id!]: encrypted
+        slot_id: slot.id,
+        encrypted_value
       };
     });
-    const encryptedSlots = await Promise.all(encryptions);
-    const encrypted_values = JSON.stringify(
-      encryptedSlots.reduce((prev, next) => ({ ...prev, ...next }), {})
-    );
-    return encrypted_values;
+    return Promise.all(encryptions);
   }
 }

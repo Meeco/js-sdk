@@ -43,10 +43,16 @@ function mockVault(api: nock.Scope) {
         connection_id: 'con_1',
         shareable_id: 'it_1',
         encryption_space_id: 'es_1',
-        encrypted_values: {
-          sl_1: 'encrypted_fluffy',
-          sl_2: 'encrypted_12'
-        }
+        encrypted_values: [
+          {
+            slot_id: 'sl_1',
+            encrypted_value: 'encrypted_fluffy'
+          },
+          {
+            slot_id: 'sl_2',
+            encrypted_value: 'encrypted_12'
+          }
+        ]
       },
       item: {
         created_at: new Date(0),

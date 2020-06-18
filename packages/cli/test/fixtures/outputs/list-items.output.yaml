@@ -1,6 +1,7 @@
 kind: Items
 spec:
   - id: a
+    own: null
     name: My Car
     label: null
     description: null
@@ -21,7 +22,10 @@ spec:
       - make_model
     me: null
     background_color: null
+    share_count: null
+    valid_share_count: null
   - id: b
+    own: null
     name: My House
     label: null
     description: null
@@ -42,3 +46,5 @@ spec:
       - add
     me: null
     background_color: null
+    share_count: null
+    valid_share_count: null
