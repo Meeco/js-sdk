@@ -18,6 +18,8 @@ spec:
   background_color: null
   slots:
     - id: yoghurt
+      own: null
+      share_id: null
       name: null
       description: null
       encrypted: null
@@ -36,6 +38,8 @@ spec:
       image: null
       label: null
     - id: water
+      own: null
+      share_id: null
       name: null
       description: null
       encrypted: null
@@ -54,6 +58,8 @@ spec:
       image: null
       label: null
     - id: beer
+      own: null
+      share_id: null
       name: null
       description: null
       encrypted: null

@@ -78,8 +78,18 @@ function stubVault(api: nock.Scope) {
           shareable_id: 'from_user_vault_item_to_share_id',
           shareable_type: 'Item',
           user_id: 'to_user_id',
-          encrypted_values:
-            '{"slot_a":"[serialized][encrypted]aes.slot_a[decrypted with from_user_data_encryption_key][with randomly_generated_key]","slot_b":"[serialized][encrypted]aes.slot_b[decrypted with from_user_data_encryption_key][with randomly_generated_key]"}'
+          encrypted_values: [
+            {
+              slot_id: 'slot_a',
+              encrypted_value:
+                '[serialized][encrypted]aes.slot_a[decrypted with from_user_data_encryption_key][with randomly_generated_key]'
+            },
+            {
+              slot_id: 'slot_b',
+              encrypted_value:
+                '[serialized][encrypted]aes.slot_b[decrypted with from_user_data_encryption_key][with randomly_generated_key]'
+            }
+          ]
         }
       ]
     })
