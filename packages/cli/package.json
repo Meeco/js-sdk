@@ -1,7 +1,7 @@
 {
   "name": "@meeco/cli",
   "description": "A CLI tool for interacting with the Meeco APIs",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "author": "Meeco",
   "private": true,
   "bin": {
@@ -9,7 +9,7 @@
   },
   "bugs": "https://github.com/Meeco/cli/issues",
   "dependencies": {
-    "@meeco/sdk": "0.0.9",
+    "@meeco/sdk": "0.0.10",
     "@meeco/cryppo": "^0.6.0",
     "@meeco/keystore-api-sdk": "0.13.0",
     "@meeco/vault-api-sdk": "^0.16.0",
