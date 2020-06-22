@@ -9,15 +9,15 @@ export default class SharesDelete extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags,
+    ...authFlags
   };
 
   static args = [
     {
       name: 'itemId',
       required: true,
-      description: 'ID of the shared item to fetch',
-    },
+      description: 'ID of the shared item to fetch'
+    }
   ];
 
   async run() {

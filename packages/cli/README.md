@@ -11,15 +11,16 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 # Table of Contents
 
 <!-- toc -->
-* [Meeco CLI](#meeco-cli)
-* [Table of Contents](#table-of-contents)
-* [Setup](#setup)
-* [Reporting Errors](#reporting-errors)
-* [Dev Set up](#dev-set-up)
-* [Usage](#usage)
-* [Commands](#commands)
-* [Config File Specifications](#config-file-specifications)
-<!-- tocstop -->
+
+- [Meeco CLI](#meeco-cli)
+- [Table of Contents](#table-of-contents)
+- [Setup](#setup)
+- [Reporting Errors](#reporting-errors)
+- [Dev Set up](#dev-set-up)
+- [Usage](#usage)
+- [Commands](#commands)
+- [Config File Specifications](#config-file-specifications)
+  <!-- tocstop -->
 
 # Setup
 
@@ -113,28 +114,29 @@ You can fetch the shared item as the second user with `meeco shares:list -a .use
 You can delete shared item as either first or second user with `meeco shares:delete -a .user_2.yaml <share_id>`
 
 <!-- commands -->
-* [`meeco connections:create`](#meeco-connectionscreate)
-* [`meeco connections:create-config`](#meeco-connectionscreate-config)
-* [`meeco connections:list`](#meeco-connectionslist)
-* [`meeco help [COMMAND]`](#meeco-help-command)
-* [`meeco items:attach-file`](#meeco-itemsattach-file)
-* [`meeco items:create`](#meeco-itemscreate)
-* [`meeco items:create-config TEMPLATENAME`](#meeco-itemscreate-config-templatename)
-* [`meeco items:get ITEMID`](#meeco-itemsget-itemid)
-* [`meeco items:get-attachment ATTACHMENTID`](#meeco-itemsget-attachment-attachmentid)
-* [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
-* [`meeco items:list`](#meeco-itemslist)
-* [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
-* [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
-* [`meeco shares:create-config`](#meeco-sharescreate-config)
-* [`meeco shares:delete ITEMID`](#meeco-sharesdelete-itemid)
-* [`meeco shares:get ITEMID`](#meeco-sharesget-itemid)
-* [`meeco shares:info [FILE]`](#meeco-sharesinfo-file)
-* [`meeco shares:list`](#meeco-shareslist)
-* [`meeco templates:info TEMPLATENAME`](#meeco-templatesinfo-templatename)
-* [`meeco templates:list`](#meeco-templateslist)
-* [`meeco users:create`](#meeco-userscreate)
-* [`meeco users:get`](#meeco-usersget)
+
+- [`meeco connections:create`](#meeco-connectionscreate)
+- [`meeco connections:create-config`](#meeco-connectionscreate-config)
+- [`meeco connections:list`](#meeco-connectionslist)
+- [`meeco help [COMMAND]`](#meeco-help-command)
+- [`meeco items:attach-file`](#meeco-itemsattach-file)
+- [`meeco items:create`](#meeco-itemscreate)
+- [`meeco items:create-config TEMPLATENAME`](#meeco-itemscreate-config-templatename)
+- [`meeco items:get ITEMID`](#meeco-itemsget-itemid)
+- [`meeco items:get-attachment ATTACHMENTID`](#meeco-itemsget-attachment-attachmentid)
+- [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
+- [`meeco items:list`](#meeco-itemslist)
+- [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
+- [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
+- [`meeco shares:create-config`](#meeco-sharescreate-config)
+- [`meeco shares:delete ITEMID`](#meeco-sharesdelete-itemid)
+- [`meeco shares:get ITEMID`](#meeco-sharesget-itemid)
+- [`meeco shares:info [FILE]`](#meeco-sharesinfo-file)
+- [`meeco shares:list`](#meeco-shareslist)
+- [`meeco templates:info TEMPLATENAME`](#meeco-templatesinfo-templatename)
+- [`meeco templates:list`](#meeco-templateslist)
+- [`meeco users:create`](#meeco-userscreate)
+- [`meeco users:get`](#meeco-usersget)
 
 ## `meeco connections:create`
 
@@ -561,6 +563,7 @@ EXAMPLES
 ```
 
 _See code: [src/commands/users/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/users/get.ts)_
+
 <!-- commandsstop -->
 
 # Config File Specifications
