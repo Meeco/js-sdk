@@ -9,7 +9,7 @@ import {
   KeystoreAPIFactory,
   keystoreAPIFactory,
   vaultAPIFactory,
-  VaultAPIFactory
+  VaultAPIFactory,
 } from '../util/api-factory';
 import { fetchConnectionWithId } from '../util/find-connection-between';
 import cryppo from './cryppo-service';
@@ -80,11 +80,11 @@ export class ShareService {
 
     this.log('Sending shared data');
     const shareResult = await this.vaultApiFactory(fromUser).SharesApi.sharesPost({
-      shares: [share]
+      shares: [share],
     });
     return {
       ...share,
-      share: shareResult
+      share: shareResult,
     };
   }
 
@@ -92,10 +92,25 @@ export class ShareService {
     return await this.vaultApiFactory(user).SharesApi.sharesIncomingGet();
   }
 
+  public async deleteSharedItem(user: AuthData, shareId: string) {
+    await this.vaultApiFactory(user)
+      .SharesApi.sharesIdDelete(shareId)
+      .catch((err) => {
+        if ((<Response>err).status === 404) {
+          throw new MeecoServiceError(
+            `Share with id '${shareId}' not found for the specified user`
+          );
+        }
+        throw err;
+      });
+
+    this.log('Share successfully deleted');
+  }
+
   public async getSharedItem(user: AuthData, shareId: string) {
     const result = await this.vaultApiFactory(user)
       .SharesApi.sharesIdGet(shareId)
-      .catch(err => {
+      .catch((err) => {
         if ((<Response>err).status === 404) {
           throw new MeecoServiceError(
             `Share with id '${shareId}' not found for the specified user`
@@ -113,7 +128,7 @@ export class ShareService {
     );
     const decryptedSharedDataEncryptionKey = await this.cryppo.decryptWithKey({
       serialized: space.encryption_space_data_encryption_key.serialized_data_encryption_key,
-      key: user.key_encryption_key.key
+      key: user.key_encryption_key.key,
     });
     const key = EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey);
     const decryptedSlots = await ItemService.decryptAllSlots(slots!, key);
@@ -122,7 +137,7 @@ export class ShareService {
       item,
       slots: decryptedSlots,
       share,
-      connection
+      connection,
     };
   }
 
@@ -146,7 +161,7 @@ export class ShareService {
       const encryptonSpace = await this.createSharedEncryptionSpace(fromUser, connection);
       sharedEncryptionSpace = {
         from_user_connection_id: connection.id,
-        shared_data_encryption_key: EncryptionKey.fromRaw(encryptonSpace.dataEncryptionKey)
+        shared_data_encryption_key: EncryptionKey.fromRaw(encryptonSpace.dataEncryptionKey),
       };
     }
 
@@ -165,7 +180,7 @@ export class ShareService {
       distributable: false,
       outgoing: true,
       // TODO - this should be the connection id but API does not support it yet
-      user_id: toUserId
+      user_id: toUserId,
     };
   }
 
@@ -176,7 +191,7 @@ export class ShareService {
     if (!connection.encryption_space_id) {
       // Users have no shared encryption space
       return new EncryptionSpaceData({
-        from_user_connection_id: connection.id
+        from_user_connection_id: connection.id,
       });
     }
 
@@ -188,12 +203,12 @@ export class ShareService {
     const decryptedSharedDataEncryptionKey = await this.cryppo.decryptWithKey({
       serialized: sharedDataEncryptionKey.encryption_space_data_encryption_key
         ?.serialized_data_encryption_key!,
-      key: user.key_encryption_key.key
+      key: user.key_encryption_key.key,
     });
 
     return new EncryptionSpaceData({
       from_user_connection_id: connection.id,
-      shared_data_encryption_key: EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey)
+      shared_data_encryption_key: EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey),
     });
   }
 
@@ -209,14 +224,14 @@ export class ShareService {
 
     const shareableDataEncryptionKey = await this.cryppo.encryptWithPublicKey({
       data: fromUserEncryptionSpace.dataEncryptionKey,
-      publicKeyPem: recipientPublicKey
+      publicKeyPem: recipientPublicKey,
     });
 
     this.log('Updating connection encryption space');
     await this.vaultApiFactory(fromUser).ConnectionApi.connectionsConnectionIdEncryptionSpacePost(
       connection.id!,
       {
-        encryption_space_id: encryptionSpaceId
+        encryption_space_id: encryptionSpaceId,
       }
     );
 
@@ -226,13 +241,13 @@ export class ShareService {
       external_id: encryptionSpaceId,
       public_key: recipientPublicKey,
       key_metadata: {
-        key_type: this.cryppo.CipherStrategy.AES_GCM
-      }
+        key_type: this.cryppo.CipherStrategy.AES_GCM,
+      },
     });
     return {
       connection,
       dataEncryptionKey: fromUserEncryptionSpace.dataEncryptionKey,
-      fromUserSharedKey: sharedKey.shared_key
+      fromUserSharedKey: sharedKey.shared_key,
     };
   }
 
@@ -251,11 +266,11 @@ export class ShareService {
     this.log('Fetching key pair');
     const keyPair = await this.keystoreApiFactory(toUser)
       .KeypairApi.keypairsIdGet(connection.key_store_keypair_id)
-      .then(res => res.keypair);
+      .then((res) => res.keypair);
 
     const privateKey = await this.cryppo.decryptWithKey({
       serialized: keyPair.encrypted_serialized_key,
-      key: toUser.key_encryption_key.key
+      key: toUser.key_encryption_key.key,
     });
     this.log('Claiming data encryption key');
     const reEncryptedDataEncryptionKey = await this.claimAndReEncryptSharedDataEncryptionKey(
@@ -263,7 +278,7 @@ export class ShareService {
       encryptionSpaceId,
       {
         publicKey: keyPair.public_key,
-        privateKey
+        privateKey,
       }
     );
 
@@ -271,7 +286,7 @@ export class ShareService {
     const encryptionSpace = await this.keystoreApiFactory(
       toUser
     ).EncryptionSpaceApi.encryptionSpacesPost({
-      encrypted_serialized_key: reEncryptedDataEncryptionKey.serialized
+      encrypted_serialized_key: reEncryptedDataEncryptionKey.serialized,
     });
     const { encryption_space_id } = encryptionSpace.encryption_space_data_encryption_key!;
 
@@ -279,7 +294,7 @@ export class ShareService {
     await this.vaultApiFactory(toUser).ConnectionApi.connectionsConnectionIdEncryptionSpacePost(
       connection.id,
       {
-        encryption_space_id
+        encryption_space_id,
       }
     );
 
@@ -293,17 +308,17 @@ export class ShareService {
     const encryptedDataEncryptionKey = await this.cryppo.encryptWithKey({
       data: dataEncryptionKey,
       key: user.key_encryption_key.key,
-      strategy: this.cryppo.CipherStrategy.AES_GCM
+      strategy: this.cryppo.CipherStrategy.AES_GCM,
     });
     const encryptionSpace = await this.keystoreApiFactory(user)
       .EncryptionSpaceApi.encryptionSpacesPost({
-        encrypted_serialized_key: encryptedDataEncryptionKey.serialized
+        encrypted_serialized_key: encryptedDataEncryptionKey.serialized,
       })
-      .then(result => result.encryption_space_data_encryption_key);
+      .then((result) => result.encryption_space_data_encryption_key);
 
     return {
       dataEncryptionKey,
-      encryptionSpace
+      encryptionSpace,
     };
   }
 
@@ -319,9 +334,9 @@ export class ShareService {
     const claimedKey = await this.keystoreApiFactory(user)
       .SharedKeyApi.sharedKeysExternalIdClaimKeyPost(encryptionSpaceId, {
         public_key: keyPair.publicKey,
-        request_signature: signature.serialized
+        request_signature: signature.serialized,
       })
-      .catch(async err => {
+      .catch(async (err) => {
         if (err?.status === 403 && typeof err?.json === 'function') {
           const json = await err.json();
           if (json?.errors[0].error === 'invalid_request_signature') {
@@ -334,12 +349,12 @@ export class ShareService {
       });
     const decryptedDataEncryptionKey = await this.cryppo.decryptSerializedWithPrivateKey({
       serialized: claimedKey.shared_key_claimed?.serialized_shared_key!,
-      privateKeyPem: keyPair.privateKey
+      privateKeyPem: keyPair.privateKey,
     });
     const reEncryptedDataEncryptionKey = await this.cryppo.encryptWithKey({
       key: user.key_encryption_key.key,
       data: decryptedDataEncryptionKey,
-      strategy: this.cryppo.CipherStrategy.AES_GCM
+      strategy: this.cryppo.CipherStrategy.AES_GCM,
     });
 
     return reEncryptedDataEncryptionKey;
@@ -362,20 +377,17 @@ export class ShareService {
     slots: DecryptedSlot[],
     sharedDataEncryptionKey: EncryptionKey
   ): Promise<PostSharesEncryptedValues[]> {
-    const encryptions = slots.map(async slot => {
-      const encrypted_value =
-        typeof slot.value === 'string'
-          ? await cryppo
-              .encryptWithKey({
-                data: slot.value || '',
-                key: sharedDataEncryptionKey.key,
-                strategy: this.cryppo.CipherStrategy.AES_GCM
-              })
-              .then(result => result.serialized)
-          : slot.value;
+    const encryptions = slots.map(async (slot) => {
+      const encrypted_value = await cryppo
+        .encryptWithKey({
+          data: slot.value || '',
+          key: sharedDataEncryptionKey.key,
+          strategy: this.cryppo.CipherStrategy.AES_GCM,
+        })
+        .then((result) => result.serialized);
       return {
         slot_id: slot.id,
-        encrypted_value
+        encrypted_value,
       };
     });
     return Promise.all(encryptions);

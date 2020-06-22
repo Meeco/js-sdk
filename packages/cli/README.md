@@ -11,16 +11,15 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 # Table of Contents
 
 <!-- toc -->
-
-- [Meeco CLI](#meeco-cli)
-- [Table of Contents](#table-of-contents)
-- [Setup](#setup)
-- [Reporting Errors](#reporting-errors)
-- [Dev Set up](#dev-set-up)
-- [Usage](#usage)
-- [Commands](#commands)
-- [Config File Specifications](#config-file-specifications)
-  <!-- tocstop -->
+* [Meeco CLI](#meeco-cli)
+* [Table of Contents](#table-of-contents)
+* [Setup](#setup)
+* [Reporting Errors](#reporting-errors)
+* [Dev Set up](#dev-set-up)
+* [Usage](#usage)
+* [Commands](#commands)
+* [Config File Specifications](#config-file-specifications)
+<!-- tocstop -->
 
 # Setup
 
@@ -111,30 +110,31 @@ If you would prefer to provide a configuration file with your credentials, suppl
 This will setup a private encryption space between the two users (if it does not exist already) and then share the item.
 
 You can fetch the shared item as the second user with `meeco shares:list -a .user_2.yaml` / `meeco shares:get -a .user_2.yaml <share_id>`
+You can delete shared item as either first or second user with `meeco shares:delete -a .user_2.yaml <share_id>`
 
 <!-- commands -->
-
-- [`meeco connections:create`](#meeco-connectionscreate)
-- [`meeco connections:create-config`](#meeco-connectionscreate-config)
-- [`meeco connections:list`](#meeco-connectionslist)
-- [`meeco help [COMMAND]`](#meeco-help-command)
-- [`meeco items:attach-file`](#meeco-itemsattach-file)
-- [`meeco items:create`](#meeco-itemscreate)
-- [`meeco items:create-config TEMPLATENAME`](#meeco-itemscreate-config-templatename)
-- [`meeco items:get ITEMID`](#meeco-itemsget-itemid)
-- [`meeco items:get-attachment ATTACHMENTID`](#meeco-itemsget-attachment-attachmentid)
-- [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
-- [`meeco items:list`](#meeco-itemslist)
-- [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
-- [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
-- [`meeco shares:create-config`](#meeco-sharescreate-config)
-- [`meeco shares:get ITEMID`](#meeco-sharesget-itemid)
-- [`meeco shares:info [FILE]`](#meeco-sharesinfo-file)
-- [`meeco shares:list`](#meeco-shareslist)
-- [`meeco templates:info TEMPLATENAME`](#meeco-templatesinfo-templatename)
-- [`meeco templates:list`](#meeco-templateslist)
-- [`meeco users:create`](#meeco-userscreate)
-- [`meeco users:get`](#meeco-usersget)
+* [`meeco connections:create`](#meeco-connectionscreate)
+* [`meeco connections:create-config`](#meeco-connectionscreate-config)
+* [`meeco connections:list`](#meeco-connectionslist)
+* [`meeco help [COMMAND]`](#meeco-help-command)
+* [`meeco items:attach-file`](#meeco-itemsattach-file)
+* [`meeco items:create`](#meeco-itemscreate)
+* [`meeco items:create-config TEMPLATENAME`](#meeco-itemscreate-config-templatename)
+* [`meeco items:get ITEMID`](#meeco-itemsget-itemid)
+* [`meeco items:get-attachment ATTACHMENTID`](#meeco-itemsget-attachment-attachmentid)
+* [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
+* [`meeco items:list`](#meeco-itemslist)
+* [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
+* [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
+* [`meeco shares:create-config`](#meeco-sharescreate-config)
+* [`meeco shares:delete ITEMID`](#meeco-sharesdelete-itemid)
+* [`meeco shares:get ITEMID`](#meeco-sharesget-itemid)
+* [`meeco shares:info [FILE]`](#meeco-sharesinfo-file)
+* [`meeco shares:list`](#meeco-shareslist)
+* [`meeco templates:info TEMPLATENAME`](#meeco-templatesinfo-templatename)
+* [`meeco templates:list`](#meeco-templateslist)
+* [`meeco users:create`](#meeco-userscreate)
+* [`meeco users:get`](#meeco-usersget)
 
 ## `meeco connections:create`
 
@@ -407,6 +407,26 @@ OPTIONS
 
 _See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create-config.ts)_
 
+## `meeco shares:delete ITEMID`
+
+Delete a share. Both the owner of the shared data and the recipient of the share can delete the share
+
+```
+USAGE
+  $ meeco shares:delete ITEMID
+
+ARGUMENTS
+  ITEMID  ID of the shared item to fetch
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/shares/delete.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/delete.ts)_
+
 ## `meeco shares:get ITEMID`
 
 Get the item associated with a share, along with the decrypted values
@@ -541,7 +561,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/users/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/users/get.ts)_
-
 <!-- commandsstop -->
 
 # Config File Specifications
