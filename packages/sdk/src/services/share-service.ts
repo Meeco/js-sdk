@@ -377,19 +377,21 @@ export class ShareService {
     slots: DecryptedSlot[],
     sharedDataEncryptionKey: EncryptionKey
   ): Promise<PostSharesEncryptedValues[]> {
-    const encryptions = slots.map(async slot => {
-      const encrypted_value = await cryppo
-        .encryptWithKey({
-          data: slot.value || '',
-          key: sharedDataEncryptionKey.key,
-          strategy: this.cryppo.CipherStrategy.AES_GCM
-        })
-        .then(result => result.serialized);
-      return {
-        slot_id: slot.id,
-        encrypted_value
-      };
-    });
+    const encryptions = slots
+      .filter(slot => slot.value)
+      .map(async slot => {
+        const encrypted_value = await cryppo
+          .encryptWithKey({
+            data: slot.value || '',
+            key: sharedDataEncryptionKey.key,
+            strategy: this.cryppo.CipherStrategy.AES_GCM
+          })
+          .then(result => result.serialized);
+        return {
+          slot_id: slot.id,
+          encrypted_value
+        };
+      });
     return Promise.all(encryptions);
   }
 }
