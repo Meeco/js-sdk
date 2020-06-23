@@ -82,6 +82,9 @@
       "items": {
         "description": "Commands related to a Meeco vault items"
       },
+      "organizations": {
+        "description": "Commands related to managing Organizations within Meeco"
+      },
       "shares": {
         "description": "Commands related to shared data between connected Meeco users"
       },

@@ -126,6 +126,7 @@ You can fetch the shared item as the second user with `meeco shares:list -a .use
 - [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
 - [`meeco items:list`](#meeco-itemslist)
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
+- [`meeco organizations:create`](#meeco-organizationscreate)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
 - [`meeco shares:get ITEMID`](#meeco-sharesget-itemid)
@@ -374,6 +375,28 @@ EXAMPLES
 ```
 
 _See code: [src/commands/items/remove-slot.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/remove-slot.ts)_
+
+## `meeco organizations:create`
+
+Request the creation of a new organization. The organization will remain in the 'requested' state until validated or rejected by meeco
+
+```
+USAGE
+  $ meeco organizations:create
+
+OPTIONS
+  -a, --auth=auth                              (required) [default: .user.yaml] Authorization config file yaml file (if
+                                               not using the default .user.yaml)
+
+  -c, --organizationConfig=organizationConfig  (required) organization config file
+
+  -e, --environment=environment                [default: .environment.yaml] environment config file
+
+EXAMPLE
+  meeco organizations:create -c path/to/organization-config.yaml -a path/to/auth.yaml
+```
+
+_See code: [src/commands/organizations/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/create.ts)_
 
 ## `meeco shares:create [FILE]`
 
@@ -631,6 +654,18 @@ spec:
     - label: 'My Custom Field'
       name: my_custom # Optional as the API will auto-generated based on 'label'
       value: 'Some Value'
+```
+
+## Organization
+
+```yaml
+kind: Organization
+metadata:
+spec:
+  name: SuperData Inc.
+  description: My super data handling organization
+  url: https://superdata.example.com
+  email: admin@superdata.example.com
 ```
 
 ## Share
