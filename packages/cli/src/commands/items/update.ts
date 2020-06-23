@@ -4,7 +4,6 @@ import { AuthConfig } from '../../configs/auth-config';
 import { ItemConfig } from '../../configs/item-config';
 import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
-import ItemsCreate from './create';
 
 export default class ItemsUpdate extends MeecoCommand {
   static description = `Update an item from the vault`;
@@ -16,7 +15,7 @@ export default class ItemsUpdate extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof ItemsCreate);
+    const { flags } = this.parse(this.constructor as typeof ItemsUpdate);
     const { item, auth } = flags;
     const environment = await this.readEnvironmentFile();
 
