@@ -92,6 +92,21 @@ export class ShareService {
     return await this.vaultApiFactory(user).SharesApi.sharesIncomingGet();
   }
 
+  public async deleteSharedItem(user: AuthData, shareId: string) {
+    await this.vaultApiFactory(user)
+      .SharesApi.sharesIdDelete(shareId)
+      .catch(err => {
+        if ((<Response>err).status === 404) {
+          throw new MeecoServiceError(
+            `Share with id '${shareId}' not found for the specified user`
+          );
+        }
+        throw err;
+      });
+
+    this.log('Share successfully deleted');
+  }
+
   public async getSharedItem(user: AuthData, shareId: string) {
     const result = await this.vaultApiFactory(user)
       .SharesApi.sharesIdGet(shareId)
@@ -362,22 +377,21 @@ export class ShareService {
     slots: DecryptedSlot[],
     sharedDataEncryptionKey: EncryptionKey
   ): Promise<PostSharesEncryptedValues[]> {
-    const encryptions = slots.map(async slot => {
-      const encrypted_value =
-        typeof slot.value === 'string'
-          ? await cryppo
-              .encryptWithKey({
-                data: slot.value || '',
-                key: sharedDataEncryptionKey.key,
-                strategy: this.cryppo.CipherStrategy.AES_GCM
-              })
-              .then(result => result.serialized)
-          : slot.value;
-      return {
-        slot_id: slot.id,
-        encrypted_value
-      };
-    });
+    const encryptions = slots
+      .filter(slot => slot.value)
+      .map(async slot => {
+        const encrypted_value = await cryppo
+          .encryptWithKey({
+            data: slot.value || '',
+            key: sharedDataEncryptionKey.key,
+            strategy: this.cryppo.CipherStrategy.AES_GCM
+          })
+          .then(result => result.serialized);
+        return {
+          slot_id: slot.id,
+          encrypted_value
+        };
+      });
     return Promise.all(encryptions);
   }
 }
