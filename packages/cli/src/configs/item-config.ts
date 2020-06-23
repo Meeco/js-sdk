@@ -5,6 +5,7 @@ import { ITEM_ASSOCIATIONS, SLOT_TYPE_BLACKLIST } from '../util/constants';
 import { ConfigReader, IYamlConfig } from './yaml-config';
 
 export interface IItemTemplate {
+  id?: string;
   label: string;
   slots: Slot[];
 }
@@ -18,7 +19,7 @@ export interface IItemMetadata {
 export class ItemConfig {
   static kind = 'Item';
 
-  constructor(public readonly templateName: string, public readonly itemConfig: IItemTemplate) {}
+  constructor(public readonly templateName?: string, public readonly itemConfig?: IItemTemplate) {}
 
   static fromYamlConfig(yamlConfigObj: IYamlConfig<IItemMetadata, IItemTemplate>): ItemConfig {
     if (yamlConfigObj.kind !== ItemConfig.kind) {
@@ -26,7 +27,7 @@ export class ItemConfig {
         `Config file of incorrect kind: ${yamlConfigObj.kind} (expected '${ItemConfig.kind}')`
       );
     }
-    return new ItemConfig(yamlConfigObj.metadata.template, yamlConfigObj.spec);
+    return new ItemConfig(yamlConfigObj.metadata?.template, yamlConfigObj.spec);
   }
 
   static encodeFromJSON(data: {
