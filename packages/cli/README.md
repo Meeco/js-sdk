@@ -112,8 +112,17 @@ This will setup a private encryption space between the two users (if it does not
 
 You can fetch the shared item as the second user with `meeco shares:list -a .user_2.yaml` / `meeco shares:get -a .user_2.yaml <share_id>`
 
+## 5. Review Client Task Queue - A ClientTask represents a task the client is supposed to perform
+
+1. Ensure users are connected and Item has already been shared between users
+2. Now update an Item Shared with user with new value, this will create a new ClientTask task in ClientTaskQueue.
+
+3. You can retrive all TODO tasks with `meeco client-task-queue:list`.
+4. You can also retrive different taks are in different state. e.g. Todo, InProgress, Done, Failed by providing STATE input. e.g `meeco client-task-queue:list InProgress`
+
 <!-- commands -->
 
+- [`meeco client-task-queue:list [STATE]`](#meeco-client-task-queuelist-state)
 - [`meeco connections:create`](#meeco-connectionscreate)
 - [`meeco connections:create-config`](#meeco-connectionscreate-config)
 - [`meeco connections:list`](#meeco-connectionslist)
@@ -135,6 +144,26 @@ You can fetch the shared item as the second user with `meeco shares:list -a .use
 - [`meeco templates:list`](#meeco-templateslist)
 - [`meeco users:create`](#meeco-userscreate)
 - [`meeco users:get`](#meeco-usersget)
+
+## `meeco client-task-queue:list [STATE]`
+
+Read the client task that client is supposed to perform
+
+```
+USAGE
+  $ meeco client-task-queue:list [STATE]
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLE
+  meeco client-task-queue:list -a path/to/auth.yaml
+```
+
+_See code: [src/commands/client-task-queue/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/list.ts)_
 
 ## `meeco connections:create`
 
