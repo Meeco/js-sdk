@@ -129,8 +129,8 @@ You can delete shared item as either first or second user with `meeco shares:del
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
-- [`meeco shares:delete ITEMID`](#meeco-sharesdelete-itemid)
-- [`meeco shares:get ITEMID`](#meeco-sharesget-itemid)
+- [`meeco shares:delete SHAREID`](#meeco-sharesdelete-shareid)
+- [`meeco shares:get SHAREID`](#meeco-sharesget-shareid)
 - [`meeco shares:info [FILE]`](#meeco-sharesinfo-file)
 - [`meeco shares:list`](#meeco-shareslist)
 - [`meeco templates:info TEMPLATENAME`](#meeco-templatesinfo-templatename)
@@ -409,16 +409,16 @@ OPTIONS
 
 _See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create-config.ts)_
 
-## `meeco shares:delete ITEMID`
+## `meeco shares:delete SHAREID`
 
 Delete a share. Both the owner of the shared data and the recipient of the share can delete the share
 
 ```
 USAGE
-  $ meeco shares:delete ITEMID
+  $ meeco shares:delete SHAREID
 
 ARGUMENTS
-  ITEMID  ID of the shared item to fetch
+  SHAREID  ID of the shared item to fetch
 
 OPTIONS
   -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
@@ -429,16 +429,16 @@ OPTIONS
 
 _See code: [src/commands/shares/delete.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/delete.ts)_
 
-## `meeco shares:get ITEMID`
+## `meeco shares:get SHAREID`
 
 Get the item associated with a share, along with the decrypted values
 
 ```
 USAGE
-  $ meeco shares:get ITEMID
+  $ meeco shares:get SHAREID
 
 ARGUMENTS
-  ITEMID  ID of the shared item to fetch
+  SHAREID  ID of the shared item to fetch
 
 OPTIONS
   -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the

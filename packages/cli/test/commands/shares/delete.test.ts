@@ -1,7 +1,7 @@
 import { expect } from '@oclif/test';
 import { customTest, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
-describe('items:delete-share', () => {
+describe('shares:delete', () => {
   customTest
     .nock('https://sandbox.meeco.me/vault', api =>
       api

@@ -14,7 +14,7 @@ export default class SharesDelete extends MeecoCommand {
 
   static args = [
     {
-      name: 'itemId',
+      name: 'shareId',
       required: true,
       description: 'ID of the shared item to fetch'
     }
@@ -24,7 +24,7 @@ export default class SharesDelete extends MeecoCommand {
     const { args, flags } = this.parse(this.constructor as typeof SharesDelete);
 
     const { auth } = flags;
-    const { itemId } = args;
+    const { shareId } = args;
     const environment = await this.readEnvironmentFile();
 
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
@@ -35,7 +35,7 @@ export default class SharesDelete extends MeecoCommand {
 
     const service = new ShareService(environment, this.updateStatus);
     try {
-      await service.deleteSharedItem(authConfig, itemId);
+      await service.deleteSharedItem(authConfig, shareId);
     } catch (err) {
       await this.handleException(err);
     }
