@@ -35,7 +35,7 @@ export class ShareConfig {
       from: AuthConfig.fromMetadata(yamlConfigObj.spec.from),
       connectionId: yamlConfigObj.spec.connection_id,
       itemId: yamlConfigObj.spec.item_id,
-      options: yamlConfigObj.metadata
+      options: yamlConfigObj.metadata!
     });
   }
 

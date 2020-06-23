@@ -2,6 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
+    "alias": "alias meeco=\"node --inspect --require tsconfig-paths/register ./packages/cli/bin/run\"",
     "bootstrap": "lerna bootstrap --hoist",
     "test": "lerna run test",
     "build": "lerna run build"

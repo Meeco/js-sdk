@@ -34,7 +34,7 @@ export class ConnectionConfig {
     return new ConnectionConfig({
       from: AuthConfig.fromMetadata(yamlConfigObj.spec.from),
       to: AuthConfig.fromMetadata(yamlConfigObj.spec.to),
-      options: yamlConfigObj.metadata
+      options: yamlConfigObj.metadata!
     });
   }
 
