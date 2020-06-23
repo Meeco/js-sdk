@@ -1,0 +1,49 @@
+kind: Item
+spec:
+  id: null
+  own: null
+  name: food
+  label: My Fave Foods
+  description: null
+  created_at: 1970-01-01
+  item_template_id: null
+  ordinal: null
+  visible: null
+  updated_at: 1970-01-01
+  item_template_label: null
+  shareable: null
+  image: null
+  item_image: null
+  item_image_background_colour: null
+  classification_node_ids: null
+  association_ids: null
+  associations_to_ids: null
+  slot_ids:
+    - pizza
+  me: null
+  background_color: null
+  share_count: null
+  valid_share_count: null
+  slots:
+    - id: pizza
+      own: null
+      share_id: null
+      name: pizza
+      description: null
+      encrypted: true
+      ordinal: null
+      visible: null
+      classification_node_ids: null
+      attachment_ids: null
+      slotable_id: null
+      slotable_type: null
+      required: null
+      updated_at: 1970-01-01
+      created_at: 1970-01-01
+      slot_type_name: key_value
+      creator: null
+      encrypted_value: Supreme
+      image: null
+      label: Pizza
+  thumbnails: []
+  attachments: []

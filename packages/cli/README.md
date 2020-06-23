@@ -19,6 +19,7 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 - [Dev Set up](#dev-set-up)
 - [Usage](#usage)
 - [Commands](#commands)
+- [Snippet of .my_item.yaml](#snippet-of-my_itemyaml)
 - [Config File Specifications](#config-file-specifications)
   <!-- tocstop -->
 
@@ -112,6 +113,50 @@ This will setup a private encryption space between the two users (if it does not
 
 You can fetch the shared item as the second user with `meeco shares:list -a .user_2.yaml` / `meeco shares:get -a .user_2.yaml <share_id>`
 
+## 5. Update an Item
+
+Items can be updated in a similar way they are created. The best way to get a starting template file
+is to fetch your existing item and pipe it to a file
+
+1. `meeco items:get <item_id> > .my_item.yaml`
+
+2. Next, we can edit that item file to, for example, change one of the slot values and remove a slot
+
+```yaml
+# Snippet of .my_item.yaml
+kind: Item
+spec:
+  id: 26a76712-4822-40c2-9172-8703228cdc6a # This is Required
+  slots:
+    # We only need to include the slots that we wish to change
+    # Existing slots and values will remain as they are.
+    - name: password
+      value: mySecretPassword1 # Updated Value
+    - name: my_custom
+      _destroy: true # Flag a slot for deletion
+```
+
+3. Now we can run the update:
+
+`meeco items:update -i .my_item.yaml`
+
+4. We can verify the slots contain the correct values by fetching the item again
+
+`meeco items:get -i .my_item.yaml`
+
+```yaml
+#...
+slots:
+  - id: 0ead9dcf-1750-463d-b92c-ba6d77085b45
+    #...
+    name: password
+    encrypted_value: Aes256Gcm.jGwjQHR8-O4H45z3n2s4-dE=.QUAAAAAFaXYADAAAAAAIYpy9UBbXkfoYLRkFYXQAEAAAAACtE9tB059YdBLAybmx6lmDAmFkAAUAAABub25lAAA=
+    value: mySecretPassword1 # We have the Updated value
+  #...
+```
+
+## All Commands
+
 <!-- commands -->
 
 - [`meeco connections:create`](#meeco-connectionscreate)
@@ -126,6 +171,7 @@ You can fetch the shared item as the second user with `meeco shares:list -a .use
 - [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
 - [`meeco items:list`](#meeco-itemslist)
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
+- [`meeco items:update`](#meeco-itemsupdate)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
 - [`meeco shares:get ITEMID`](#meeco-sharesget-itemid)
@@ -375,6 +421,25 @@ EXAMPLES
 
 _See code: [src/commands/items/remove-slot.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/remove-slot.ts)_
 
+## `meeco items:update`
+
+Update an item from the vault
+
+```
+USAGE
+  $ meeco items:update
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  -i, --item=item                (required) item yaml file
+```
+
+_See code: [src/commands/items/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/update.ts)_
+
 ## `meeco shares:create [FILE]`
 
 Share an item between two users
@@ -614,6 +679,8 @@ spec:
 
 ## Item
 
+### Create
+
 ```yaml
 kind: Item
 metadata:
@@ -631,6 +698,22 @@ spec:
     - label: 'My Custom Field'
       name: my_custom # Optional as the API will auto-generated based on 'label'
       value: 'Some Value'
+```
+
+### Edit / Update
+
+```yaml
+kind: Item
+spec:
+  id: aaaaaaaa-bbbb-cccc-dddd-000000000000
+  label: My Account
+  name: my_account
+  slots:
+    # We only need to include the slots that we wish to change
+    - name: password
+      value: mySecretPassword1
+    - name: my_custom
+      _destroy: true # Flag a slot for deletion
 ```
 
 ## Share

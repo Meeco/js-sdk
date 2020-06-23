@@ -44,15 +44,15 @@ export class AuthConfig {
       );
     }
     return new AuthConfig({
-      ...yamlConfigObj.metadata,
+      ...yamlConfigObj.metadata!,
       key_encryption_key: EncryptionKey.fromSerialized(
-        yamlConfigObj.metadata.key_encryption_key as string
+        yamlConfigObj.metadata!.key_encryption_key as string
       ),
       data_encryption_key: EncryptionKey.fromSerialized(
-        yamlConfigObj.metadata.data_encryption_key as string
+        yamlConfigObj.metadata!.data_encryption_key as string
       ),
       passphrase_derived_key: EncryptionKey.fromSerialized(
-        yamlConfigObj.metadata.passphrase_derived_key as string
+        yamlConfigObj.metadata!.passphrase_derived_key as string
       )
     });
   }

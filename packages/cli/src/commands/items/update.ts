@@ -1,13 +1,12 @@
-import { ItemCreateData, ItemService } from '@meeco/sdk';
+import { ItemService, ItemUpdateData } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { ItemConfig } from '../../configs/item-config';
 import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
-export default class ItemsCreate extends MeecoCommand {
-  static description = 'Create a new item for a user from a template';
-  static examples = [`meeco items:create -i path/to/item-config.yaml -a path/to/auth.yaml`];
+export default class ItemsUpdate extends MeecoCommand {
+  static description = `Update an item from the vault`;
 
   static flags = {
     ...MeecoCommand.flags,
@@ -16,7 +15,7 @@ export default class ItemsCreate extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof ItemsCreate);
+    const { flags } = this.parse(this.constructor as typeof ItemsUpdate);
     const { item, auth } = flags;
     const environment = await this.readEnvironmentFile();
 
@@ -34,19 +33,23 @@ export default class ItemsCreate extends MeecoCommand {
 
     const { itemConfig } = itemConfigFile;
 
-    const itemCreateData = new ItemCreateData({
-      template: itemConfigFile.templateName,
-      slots: itemConfig!.slots,
-      item: { label: itemConfig!.label }
+    if (!itemConfig?.id) {
+      this.error('Item update configuration must have an id (expected at spec.id)');
+    }
+
+    const updateData = new ItemUpdateData({
+      id: itemConfig?.id!,
+      label: itemConfig?.label,
+      slots: itemConfig?.slots
     });
 
     try {
-      const createdItem = await service.create(
+      const updatedItem = await service.update(
         authConfig.vault_access_token,
         authConfig.data_encryption_key,
-        itemCreateData
+        updateData
       );
-      this.printYaml(ItemConfig.encodeFromJSON(createdItem));
+      this.printYaml(ItemConfig.encodeFromJSON(updatedItem));
     } catch (err) {
       await this.handleException(err);
     }
