@@ -1,3 +1,4 @@
+import { ClientTaskQueueResponse } from '@meeco/vault-api-sdk';
 import { Environment } from '../models/environment';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 
@@ -15,13 +16,28 @@ export class ClientTaskQueueService {
     vaultAccessToken: string,
     supressChangingState: boolean = true,
     state: State = State.Todo
-  ) {
+  ): Promise<ClientTaskQueueResponse> {
     return this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi.clientTaskQueueGet(
       undefined,
       undefined,
       supressChangingState,
       state
     );
+  }
+
+  public async countOutstandingTasks(vaultAccessToken: string): Promise<IOutstandingClientTasks> {
+    const todoTasks = await this.vaultAPIFactory(
+      vaultAccessToken
+    ).ClientTaskQueueApi.clientTaskQueueGet(undefined, undefined, true, State.Todo);
+
+    const inProgressTasks = await this.vaultAPIFactory(
+      vaultAccessToken
+    ).ClientTaskQueueApi.clientTaskQueueGet(undefined, undefined, true, State.InProgress);
+
+    return {
+      todo: todoTasks.client_tasks.length,
+      in_progress: inProgressTasks.client_tasks.length
+    };
   }
 }
 
@@ -30,4 +46,9 @@ export enum State {
   InProgress = 'in_progress',
   Done = 'done',
   Failed = 'failed'
+}
+
+export interface IOutstandingClientTasks {
+  todo: number;
+  in_progress: number;
 }
