@@ -23,7 +23,7 @@ describe('items:update', () => {
     ])
     .it('Updates the item', ctx => {
       const expected = readFileSync(outputFixture('update-item.output.yaml'), 'utf-8');
-      expect(ctx.stdout).to.contain(expected.trim());
+      expect(ctx.stdout.trim()).to.equal(expected.trim());
     });
 });
 
@@ -57,6 +57,22 @@ const response = {
 };
 
 function mockVault(api) {
+  api
+    .get('/client_task_queue')
+    .query({ supress_changing_state: true, state: 'todo' })
+    .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+    .reply(200, {
+      client_tasks: [{}, {}]
+    });
+  api
+    .get('/client_task_queue')
+    .query({ supress_changing_state: true, state: 'in_progress' })
+    .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+    .reply(200, {
+      client_tasks: [{}, {}, {}]
+    });
   api
     .put('/items/my-item', {
       item: {

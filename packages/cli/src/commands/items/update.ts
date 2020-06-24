@@ -1,4 +1,4 @@
-import { ItemService, ItemUpdateData } from '@meeco/sdk';
+import { ClientTaskQueueService, ItemService, ItemUpdateData } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { ItemConfig } from '../../configs/item-config';
@@ -23,6 +23,7 @@ export default class ItemsUpdate extends MeecoCommand {
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
 
     const service = new ItemService(environment);
+    const clientTaskQueueService = new ClientTaskQueueService(environment);
 
     if (!itemConfigFile) {
       this.error('Valid item config file must be supplied');
@@ -49,7 +50,22 @@ export default class ItemsUpdate extends MeecoCommand {
         authConfig.data_encryption_key,
         updateData
       );
-      this.printYaml(ItemConfig.encodeFromJSON(updatedItem));
+      const result = ItemConfig.encodeFromJSON(updatedItem);
+
+      const outstandingTasks = await clientTaskQueueService.countOutstandingTasks(
+        authConfig.vault_access_token
+      );
+      const numberOfOutstandingTasks = outstandingTasks.todo + outstandingTasks.in_progress;
+      const str =
+        '# Item updated. There are ' +
+        numberOfOutstandingTasks +
+        ' outstanding client tasks. Todo: ' +
+        outstandingTasks.todo +
+        ' & InProgress: ' +
+        outstandingTasks.in_progress;
+
+      this.printYaml(result);
+      this.log(str);
     } catch (err) {
       await this.handleException(err);
     }

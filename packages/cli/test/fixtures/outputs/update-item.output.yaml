@@ -47,3 +47,6 @@ spec:
       label: Pizza
   thumbnails: []
   attachments: []
+  shares: []
+
+# Item updated. There are 5 outstanding client tasks. Todo: 2 & InProgress: 3

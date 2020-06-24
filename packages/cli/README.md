@@ -456,7 +456,24 @@ EXAMPLES
 
 _See code: [src/commands/items/remove-slot.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/remove-slot.ts)_
 
-<<<<<<< HEAD
+## `meeco items:update`
+
+Update an item from the vault
+
+```
+USAGE
+  $ meeco items:update
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  -i, --item=item                (required) item yaml file
+```
+
+_See code: [src/commands/items/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/update.ts)_
 
 ## `meeco organizations:create`
 
@@ -478,28 +495,7 @@ EXAMPLE
   meeco organizations:create -c path/to/organization-config.yaml -a path/to/auth.yaml
 ```
 
-# _See code: [src/commands/organizations/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/create.ts)_
-
-## `meeco items:update`
-
-Update an item from the vault
-
-```
-USAGE
-  $ meeco items:update
-
-OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
-
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-
-  -i, --item=item                (required) item yaml file
-```
-
-_See code: [src/commands/items/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/update.ts)_
-
-> > > > > > > master
+_See code: [src/commands/organizations/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/create.ts)_
 
 ## `meeco shares:create [FILE]`
 
