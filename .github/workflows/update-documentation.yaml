@@ -23,19 +23,22 @@ jobs:
       # library mode
       - run: cd packages/sdk && npm i -D typedoc@next && cd ../../
       - run: npm run docs
-      - name: Deploy SDK docs to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+      # Should run *before* the github pages deploy as that runs its own commit
       - name: Push OCLIF Generated CLI Readme
         uses: EndBug/add-and-commit@v4
         # https://github.com/marketplace/actions/add-commit
         with:
           add: 'packages/cli/README.md'
-          author_name: github-actions[bot]
-          author_email: noreply@github.com'
+          author_name: 'github-actions[bot]'
+          author_email: 'github-actions[bot]@users.noreply.github.com'
           message: 'Auto-update CLI documentation'
         env:
           # This is necessary in order to push a commit to the repo
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
+      - name: Deploy SDK docs to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
