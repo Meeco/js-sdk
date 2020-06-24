@@ -1,6 +1,42 @@
 <!-- index.html -->
 <html>
   <body>
+    <div class="title">
+      <h6>Meeco JavaScript SDK Demo</h6>
+      <a class="button secondary" href="https://meeco.github.io/js-sdk/">View Documentation</a>
+    </div>
+    <fieldset>
+      <legend>Environment Configuration</legend>
+      <label for="vaultUrl">Vault API URL ( 'https://sandbox.meeco.me/vault' ):</label>
+      <input
+        placeholder="Vault API URL ( 'https://sandbox.meeco.me/vault' )"
+        class="full"
+        value="https://sandbox.meeco.me/vault"
+        autocapitalize="off"
+        autocomplete="off"
+        id="vaultUrl"
+      />
+      <label for="keystoreUrl">Keystore API URL ( 'https://sandbox.meeco.me/keystore' ):</label>
+      <input
+        placeholder="Keystore API URL ( 'https://sandbox.meeco.me/keystore' )"
+        class="full"
+        value="https://sandbox.meeco.me/keystore"
+        autocapitalize="off"
+        autocomplete="off"
+        id="keystoreUrl"
+      />
+      <label for="subscriptionKey">Meeco Subscription Key ( 'aaaaa11111bbbbb22222' ):</label>
+      <input
+        placeholder="Meeco Subscription Key ( 'aaaaa11111bbbbb22222' )"
+        class="full"
+        autocapitalize="off"
+        autocomplete="off"
+        id="subscriptionKey"
+      />
+      <button id="updateEnvironment">Save</button>
+      <input value="Not set" class="full" disabled id="environmentStatus" />
+    </fieldset>
+
     <!-- <fieldset>
       <legend>Captcha</legend>
       <button id="getCaptcha">Get Captcha Token</button>
@@ -8,6 +44,7 @@
     </fieldset> -->
     <fieldset>
       <legend>Event Log</legend>
+      <sub>Any log events that the SDK output will appear here:</sub>
       <textarea disabled id="log" rows="5"></textarea>
     </fieldset>
 

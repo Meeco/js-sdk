@@ -2,17 +2,43 @@ import {
   AuthData,
   configureFetch,
   EncryptionKey,
+  Environment,
   ItemService,
   SecretService,
   UserService
 } from '../src/index';
 import cryppo from '../src/services/cryppo-service';
-import * as environment from './.environment.json';
 import './styles.scss';
 
 const $ = document.getElementById.bind(document);
 const $get = (id: string) => ($(id) as HTMLInputElement)!.value;
 const $set = (id: string, value: string) => (($(id) as HTMLInputElement)!.value = value);
+
+let environment: Environment;
+
+function updateEnvironment() {
+  const vaultUrl = $get('vaultUrl');
+  const keystoreUrl = $get('keystoreUrl');
+  const subscriptionKey = $get('subscriptionKey');
+
+  if (!vaultUrl || !keystoreUrl || !subscriptionKey) {
+    return $set('environmentStatus', 'Error: Please configure all environment fields');
+  }
+
+  environment = new Environment({
+    vault: {
+      url: vaultUrl,
+      subscription_key: subscriptionKey
+    },
+    keystore: {
+      url: keystoreUrl,
+      subscription_key: subscriptionKey,
+      provider_api_key: ''
+    }
+  });
+
+  $set('environmentStatus', 'Saved');
+}
 
 const STATE: {
   user?: AuthData;
@@ -54,13 +80,15 @@ $('getItems').addEventListener('click', getItems);
 $('attachFile').addEventListener('click', attachFile, false);
 $('downloadAttachment').addEventListener('click', downloadAttachment);
 $('downloadThumbnail').addEventListener('click', downloadThumbnail);
+$('updateEnvironment').addEventListener('click', updateEnvironment);
 
 async function getUsername() {
   try {
     const username = await new UserService(environment, log).generateUsername();
     $set('username', username);
   } catch (error) {
-    return alert(`Error: ${error.message}`);
+    $set('username', `Error (See Action Log for Details)`);
+    return handleException(error);
   }
 }
 
@@ -89,7 +117,8 @@ async function fetchUserData() {
     STATE.user = user;
     $set('userData', JSON.stringify(user, null, 2));
   } catch (error) {
-    $set('userData', `Error: ${error.message}`);
+    $set('userData', `Error (See Action Log for Details)`);
+    return handleException(error);
   }
 }
 
@@ -107,7 +136,8 @@ async function createUser() {
     STATE.user = user;
     $set('userData', JSON.stringify(user, null, 2));
   } catch (error) {
-    $set('userData', `Error: ${error.message}`);
+    $set('userData', `Error (See Action Log for Details)`);
+    return handleException(error);
   }
 }
 
@@ -121,7 +151,8 @@ async function getItems() {
     const items = await new ItemService(environment, log).list(STATE.user.vault_access_token);
     $set('items', JSON.stringify(items, null, 2));
   } catch (error) {
-    $set('items', `Error: ${error.message}`);
+    $set('items', `Error (See Action Log for Details)`);
+    return handleException(error);
   }
 }
 
@@ -154,7 +185,8 @@ async function attachFile() {
     );
     $set('attached', JSON.stringify(attached, null, 2));
   } catch (error) {
-    $set('attached', `Error: ${error.message}`);
+    $set('attached', `Error (See Action Log for Details)`);
+    return handleException(error);
   }
 }
 
@@ -179,7 +211,8 @@ async function downloadAttachment() {
     );
     openToDownload(attachment, 'attachment.png', 'image/png');
   } catch (error) {
-    $set('downloadAttachmentDetails', `Error ${error.message}`);
+    $set('downloadAttachmentDetails', `Error (See Action Log for Details)`);
+    return handleException(error);
   }
 }
 
@@ -203,7 +236,8 @@ async function downloadThumbnail() {
     );
     openToDownload(thumbnail, 'thumb.png', 'image/png');
   } catch (error) {
-    $set('downloadThumbnailDetails', `Error ${error.message}`);
+    $set('downloadThumbnailDetails', `Error (See Action Log for Details)`);
+    return handleException(error);
   }
 }
 
@@ -227,6 +261,19 @@ function openToDownload(decryptedFileContent: string, fileName: string, contentT
   a.download = fileName;
   a.click();
   window.URL.revokeObjectURL(url);
+}
+
+async function handleException(error) {
+  let errorMessage: string;
+  if (error && error.json && typeof error.json === 'function') {
+    error = await error.json();
+  }
+  if (error.message) {
+    errorMessage = error.message;
+  } else {
+    errorMessage = error;
+  }
+  log(errorMessage);
 }
 
 function log(message: string) {
