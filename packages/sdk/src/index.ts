@@ -12,6 +12,7 @@ export * from './models/local-slot';
 export * from './models/service-error';
 export * from './models/srp-session';
 export * from './models/template-data';
+export * from './services/client-task-queue-service';
 export * from './services/connection-service';
 export * from './services/item-service';
 export * from './services/secret-service';
