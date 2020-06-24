@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npx lerna bootstrap --hoist
+      # This step is required as long as we are using typedoc beta which we are to support
+      # library mode
+      - run: cd packages/sdk && npm i -D typedoc@next && cd ../../
       - run: npm run docs
       - name: Deploy SDK docs to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
