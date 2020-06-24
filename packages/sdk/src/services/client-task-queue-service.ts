@@ -11,11 +11,15 @@ export class ClientTaskQueueService {
     this.vaultAPIFactory = vaultAPIFactory(environment);
   }
 
-  public list(vaultAccessToken: string, state: State = State.Todo) {
+  public list(
+    vaultAccessToken: string,
+    supressChangingState: boolean = true,
+    state: State = State.Todo
+  ) {
     return this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi.clientTaskQueueGet(
       undefined,
       undefined,
-      true,
+      supressChangingState,
       state
     );
   }

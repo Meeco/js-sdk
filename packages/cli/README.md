@@ -156,19 +156,16 @@ slots:
   #...
 ```
 
+## 6. Review Client Task Queue - A ClientTask represents a task the client is supposed to perform
+
+1. You can retrive all TODO tasks with `meeco client-task-queue:list`.
+2. You can also retrive different taks are in different state. e.g. Todo, InProgress, Done, Failed by providing STATE input. e.g `meeco client-task-queue:list -s InProgress`
+
 ## All Commands
-
-## 5. Review Client Task Queue - A ClientTask represents a task the client is supposed to perform
-
-1. Ensure users are connected and Item has already been shared between users
-2. Now update an Item Shared with user with new value, this will create a new ClientTask task in ClientTaskQueue.
-
-3. You can retrive all TODO tasks with `meeco client-task-queue:list`.
-4. You can also retrive different taks are in different state. e.g. Todo, InProgress, Done, Failed by providing STATE input. e.g `meeco client-task-queue:list InProgress`
 
 <!-- commands -->
 
-- [`meeco client-task-queue:list [STATE]`](#meeco-client-task-queuelist-state)
+- [`meeco client-task-queue:list`](#meeco-client-task-queuelist)
 - [`meeco connections:create`](#meeco-connectionscreate)
 - [`meeco connections:create-config`](#meeco-connectionscreate-config)
 - [`meeco connections:list`](#meeco-connectionslist)
@@ -193,19 +190,25 @@ slots:
 - [`meeco users:create`](#meeco-userscreate)
 - [`meeco users:get`](#meeco-usersget)
 
-## `meeco client-task-queue:list [STATE]`
+## `meeco client-task-queue:list`
 
 Read the client task that client is supposed to perform
 
 ```
 USAGE
-  $ meeco client-task-queue:list [STATE]
+  $ meeco client-task-queue:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
+  -a, --auth=auth                              (required) [default: .user.yaml] Authorization config file yaml file (if
+                                               not using the default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config file
+  -e, --environment=environment                [default: .environment.yaml] environment config file
+
+  -s, --state=state                            [default: Todo] Client Task Queue avalible states:
+                                               Todo,InProgress,Done,Failed
+
+  --supressChangingState=supressChangingState  [default: true] suppress transitioning tasks in the response to
+                                               in_progress: true, false
 
 EXAMPLE
   meeco client-task-queue:list -a path/to/auth.yaml

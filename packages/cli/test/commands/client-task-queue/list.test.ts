@@ -36,7 +36,7 @@ describe('client-task-queue:list', () => {
         })
     )
     .stdout()
-    .run(['client-task-queue:list', 'Todo', ...testUserAuth, ...testEnvironmentFile])
+    .run(['client-task-queue:list', ...testUserAuth, ...testEnvironmentFile, '-s', 'Todo'])
     .it('list task that client suppose to perform', ctx => {
       const expected = readFileSync(outputFixture('list-client-task-queue.output.yaml'), 'utf-8');
       expect(ctx.stdout.trim()).to.equal(expected.trim());
