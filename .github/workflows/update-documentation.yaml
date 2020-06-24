@@ -1,0 +1,38 @@
+name: Update Documentation
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npx lerna bootstrap --hoist
+      - run: npm run docs
+      - name: Deploy SDK docs to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+      - name: Push OCLIF Generated CLI Readme
+        uses: EndBug/add-and-commit@v4
+        # https://github.com/marketplace/actions/add-commit
+        with:
+          add: 'packages/cli/README.md'
+          author_name: github-actions[bot]
+          author_email: noreply@github.com'
+          message: 'Auto-update CLI documentation'
+        env:
+          # This is necessary in order to push a commit to the repo
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
