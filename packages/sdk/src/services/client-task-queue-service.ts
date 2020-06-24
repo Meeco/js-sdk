@@ -1,4 +1,8 @@
-import { ClientTaskQueueResponse } from '@meeco/vault-api-sdk';
+import {
+  ClientTaskQueueResponse,
+  ClientTaskQueueResponse1,
+  PutTasksRequest
+} from '@meeco/vault-api-sdk';
 import { Environment } from '../models/environment';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 
@@ -22,6 +26,15 @@ export class ClientTaskQueueService {
       undefined,
       supressChangingState,
       state
+    );
+  }
+
+  public update(
+    vaultAccessToken: string,
+    updateClientParams: PutTasksRequest
+  ): Promise<ClientTaskQueueResponse1> {
+    return this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi.clientTaskQueuePut(
+      updateClientParams
     );
   }
 

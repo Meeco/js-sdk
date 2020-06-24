@@ -1,19 +1,21 @@
 kind: ClientTaskQueue
 spec:
   client_tasks:
-    - id: a
-      state: todo
+    - id: client_task_1
+      state: done
       work_type: update_share
-      target_id: share_item_id_a
+      target_id: share_id_1
       additional_options: {}
       last_state_transition_at: 1970-01-01
       report: {}
       created_at: 1970-01-01
-    - id: b
-      state: todo
+    - id: client_task_2
+      state: done
       work_type: update_share
-      target_id: share_item_id_b
+      target_id: share_id_2
       additional_options: {}
       last_state_transition_at: 1970-01-01
       report: {}
       created_at: 1970-01-01
+
+# Item updated. There are 5 outstanding client tasks. Todo: 2 & InProgress: 3

@@ -20,6 +20,7 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 - [Usage](#usage)
 - [Commands](#commands)
 - [Snippet of .my_item.yaml](#snippet-of-my_itemyaml)
+- [Snippet of .my_client_tasks.yaml](#snippet-of-my_client_tasksyaml)
 - [Config File Specifications](#config-file-specifications)
   <!-- tocstop -->
 
@@ -159,13 +160,41 @@ slots:
 ## 6. Review Client Task Queue - A ClientTask represents a task the client is supposed to perform
 
 1. You can retrive all TODO tasks with `meeco client-task-queue:list`.
-2. You can also retrive different taks are in different state. e.g. Todo, InProgress, Done, Failed by providing STATE input. e.g `meeco client-task-queue:list -s InProgress`
+2. You can also retrive taks in different state. e.g. Todo, InProgress, Done, Failed by providing STATE input. e.g `meeco client-task-queue:list -s InProgress`
+
+## 6. Update Client Task - Change the state of client tasks. Normally used to set tasks to done or failed.
+
+Tasks state can be updated using following command. The best way to get a starting template file
+is to fetch your existing tasks and pipe it to a file
+
+1. `client-task-queue:list > .my_client_tasks.yaml`
+
+2. Next, we can edit that tasks file to, for example, change one of the taks state to done
+
+```yaml
+# Snippet of .my_client_tasks.yaml
+kind: ClientTaskQueue
+spec:
+  client_tasks:
+    - id: 175883b9-415f-43c7-88e8-5c417ca63e0e
+      state: done
+      report: {}
+```
+
+3. Now we can run the update:
+
+`meeco client-task-queue:update -i .my_client_tasks.yaml`
+
+4. We can verify the tasks is in correct state by fetching the list again
+
+`meeco client-task-queue:list -s Failed`
 
 ## All Commands
 
 <!-- commands -->
 
 - [`meeco client-task-queue:list`](#meeco-client-task-queuelist)
+- [`meeco client-task-queue:update`](#meeco-client-task-queueupdate)
 - [`meeco connections:create`](#meeco-connectionscreate)
 - [`meeco connections:create-config`](#meeco-connectionscreate-config)
 - [`meeco connections:list`](#meeco-connectionslist)
@@ -216,6 +245,25 @@ EXAMPLE
 ```
 
 _See code: [src/commands/client-task-queue/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/list.ts)_
+
+## `meeco client-task-queue:update`
+
+Update a client tasks
+
+```
+USAGE
+  $ meeco client-task-queue:update
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  -i, --tasks=tasks              (required) client tasks yaml file
+```
+
+_See code: [src/commands/client-task-queue/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/update.ts)_
 
 ## `meeco connections:create`
 

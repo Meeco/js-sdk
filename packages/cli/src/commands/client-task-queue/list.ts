@@ -49,7 +49,7 @@ export default class ClientTaskQueueList extends MeecoCommand {
       );
       this.printYaml({
         kind: 'ClientTaskQueue',
-        spec: response.client_tasks
+        spec: { client_tasks: response.client_tasks }
       });
     } catch (err) {
       await this.handleException(err);

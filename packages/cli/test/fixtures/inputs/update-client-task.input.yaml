@@ -1,0 +1,9 @@
+kind: ClientTaskQueue
+spec:
+  client_tasks:
+    - id: client_task_1
+      state: done
+      report: {}
+    - id: client_task_2
+      state: done
+      report: {}
