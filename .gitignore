@@ -5,6 +5,7 @@ packages/**/dist
 packages/**/lib
 packages/**/tmp
 /coverage
+/docs
 /yarn.lock
 node_modules
 .npmrc
