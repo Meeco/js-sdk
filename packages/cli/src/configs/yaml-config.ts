@@ -4,7 +4,7 @@ interface IKeyValue {
 
 export interface IYamlConfig<M = IKeyValue, S = IKeyValue> {
   kind: string;
-  metadata: M;
+  metadata?: M;
   spec: S;
 }
 

@@ -27,6 +27,6 @@ export class FileAttachmentConfig {
   static fromYamlConfig(
     yamlConfigObj: IYamlConfig<IFileAttachmentConfigMetadata, IFileAttachmentConfigTemplate>
   ): FileAttachmentConfig {
-    return new FileAttachmentConfig(yamlConfigObj.metadata.item_id, yamlConfigObj.spec);
+    return new FileAttachmentConfig(yamlConfigObj.metadata!.item_id, yamlConfigObj.spec);
   }
 }

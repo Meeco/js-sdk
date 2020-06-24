@@ -5,6 +5,7 @@ import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { FileAttachmentData } from '../models/file-attachment-data';
 import { ItemCreateData } from '../models/item-create-data';
+import { ItemUpdateData } from '../models/item-update-data';
 import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import cryppo from '../services/cryppo-service';
@@ -53,9 +54,22 @@ export class ItemService {
     );
 
     return await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsPost({
-      template_name: config.templateName,
+      template_name: config.template,
       item: {
         label: config.item.label,
+        slots_attributes
+      }
+    });
+  }
+
+  public async update(vaultAccessToken: string, dek: EncryptionKey, config: ItemUpdateData) {
+    const slots_attributes = await Promise.all(
+      (config.slots || []).map(slot => this.encryptSlot(slot, dek))
+    );
+
+    return await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdPut(config.id, {
+      item: {
+        label: config.label,
         slots_attributes
       }
     });
