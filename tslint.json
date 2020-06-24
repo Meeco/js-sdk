@@ -26,6 +26,7 @@
       }
     ],
     "no-string-literal": false,
+    "no-empty-interface": false,
     "no-empty": [false],
     "quotemark": [true, "single"],
     "trailing-comma": [false],
