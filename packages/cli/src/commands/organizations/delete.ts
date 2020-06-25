@@ -5,7 +5,7 @@ import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationsDelete extends MeecoCommand {
   static description =
-    'Delete a requested organization. The user who requested the organization can use this endpoint to delete the requested organization.';
+    'Delete a requested organization. The user who requested the organization can use this command to delete the requested organization.';
 
   static flags = {
     ...MeecoCommand.flags,

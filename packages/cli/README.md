@@ -500,7 +500,7 @@ _See code: [src/commands/organizations/create.ts](https://github.com/Meeco/cli/b
 
 ## `meeco organizations:delete ID`
 
-Delete a requested organization. The user who requested the organization can use this endpoint to delete the requested organization.
+Delete a requested organization. The user who requested the organization can use this command to delete the requested organization.
 
 ```
 USAGE
