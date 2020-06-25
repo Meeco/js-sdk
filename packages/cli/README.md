@@ -180,6 +180,7 @@ slots:
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
 - [`meeco items:update`](#meeco-itemsupdate)
 - [`meeco organizations:create`](#meeco-organizationscreate)
+- [`meeco organizations:delete ID`](#meeco-organizationsdelete-id)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
 - [`meeco shares:delete SHAREID`](#meeco-sharesdelete-shareid)
@@ -496,6 +497,26 @@ EXAMPLE
 ```
 
 _See code: [src/commands/organizations/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/create.ts)_
+
+## `meeco organizations:delete ID`
+
+Delete a requested organization. The user who requested the organization can use this endpoint to delete the requested organization.
+
+```
+USAGE
+  $ meeco organizations:delete ID
+
+ARGUMENTS
+  ID  ID of the Organization
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/organizations/delete.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/delete.ts)_
 
 ## `meeco shares:create [FILE]`
 
