@@ -4,7 +4,9 @@ import { ConfigReader, IYamlConfig } from './yaml-config';
 
 export interface IOrganizationMetadata {}
 
-export interface IOrganizationTemplate extends PostOrganizationRequest {}
+export interface IOrganizationTemplate extends PostOrganizationRequest {
+  id?: string;
+}
 
 @ConfigReader<OrganizationConfig>()
 export class OrganizationConfig {
