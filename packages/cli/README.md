@@ -500,7 +500,7 @@ _See code: [src/commands/organizations/create.ts](https://github.com/Meeco/cli/b
 
 ## `meeco organizations:get ID`
 
-Retrieve a validated organization or requested organization by logged in user. This endpoint can be called by anyone. Only all validated organizations or requested organization requested by logged in user are accessible.
+Retrieve a validated organization or requested organization by logged in user. Only all validated organizations or requested organization requested by logged in user are accessible.
 
 ```
 USAGE

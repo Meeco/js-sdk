@@ -6,7 +6,7 @@ import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationsGet extends MeecoCommand {
   static description =
-    'Retrieve a validated organization or requested organization by logged in user. This endpoint can be called by anyone. Only all validated organizations or requested organization requested by logged in user are accessible.';
+    'Retrieve a validated organization or requested organization by logged in user. Only all validated organizations or requested organization requested by logged in user are accessible.';
 
   static flags = {
     ...MeecoCommand.flags,
