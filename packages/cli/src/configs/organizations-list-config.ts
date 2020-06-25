@@ -1,4 +1,4 @@
-import { ListOrganizationsResponse1 } from '@meeco/vault-api-sdk';
+import { Organization } from '@meeco/vault-api-sdk';
 import { OrganizationConfig } from './organization-config';
 
 export interface IOrganizationsListTemplate {
@@ -17,11 +17,11 @@ export class OrganizationsListConfig {
     public readonly itemList: IOrganizationsListTemplate
   ) {}
 
-  static encodeFromJSON(json: ListOrganizationsResponse1, metadata?: IOrganizationsListMetadata) {
+  static encodeFromJSON(json: Organization[], metadata?: IOrganizationsListMetadata) {
     return {
       kind: OrganizationsListConfig.kind,
       ...(metadata ? { metadata } : {}),
-      spec: json.organizations
+      spec: json
     };
   }
 }

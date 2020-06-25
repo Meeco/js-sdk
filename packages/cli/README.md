@@ -507,16 +507,16 @@ USAGE
   $ meeco organizations:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
+  -a, --auth=auth                        (required) [default: .user.yaml] Authorization config file yaml file (if not
+                                         using the default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config file
+  -e, --environment=environment          [default: .environment.yaml] environment config file
 
-  -m, --mode=mode                [default: validated] There are three modes: validated, requested and member
-                                 validated - return all validated organizations
-                                 requested - list organizations in the requested state that the current user has
-                                 requested
-                                 member - list organizations in which the current user is a member.
+  -m, --mode=validated|requested|member  [default: validated] There are three modes: validated, requested and member
+                                         validated - return all validated organizations
+                                         requested - list organizations in the requested state that the current user
+                                         has requested
+                                         member - list organizations in which the current user is a member.
 ```
 
 _See code: [src/commands/organizations/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/list.ts)_
