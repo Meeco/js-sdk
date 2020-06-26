@@ -1,0 +1,13 @@
+kind: Organization
+spec:
+  id: 00000000-0000-0000-0000-000000000001
+  name: xyz company
+  description: new description of company
+  url: https://xyzcompany.com
+  email: xyzcompany@abc.com
+  status: requested
+  requestor_id: 00000000-0000-0000-0000-000000000000
+  validated_by_id: null
+  agent_id: null
+  validated_at: null
+  created_at: 2020-06-23T08:38:32.915Z
