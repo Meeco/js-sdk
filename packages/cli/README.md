@@ -180,13 +180,10 @@ slots:
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
 - [`meeco items:update`](#meeco-itemsupdate)
 - [`meeco organizations:create`](#meeco-organizationscreate)
-<<<<<<< HEAD
 - [`meeco organizations:delete ID`](#meeco-organizationsdelete-id)
-=======
 - [`meeco organizations:get ID`](#meeco-organizationsget-id)
 - [`meeco organizations:list`](#meeco-organizationslist)
 - [`meeco organizations:update`](#meeco-organizationsupdate)
->>>>>>> master
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
 - [`meeco shares:delete SHAREID`](#meeco-sharesdelete-shareid)
@@ -504,7 +501,6 @@ EXAMPLE
 
 _See code: [src/commands/organizations/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/create.ts)_
 
-<<<<<<< HEAD
 ## `meeco organizations:delete ID`
 
 Delete a requested organization. The user who requested the organization can use this command to delete the requested organization.
@@ -515,7 +511,16 @@ USAGE
 
 ARGUMENTS
   ID  ID of the Organization
-=======
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/organizations/delete.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/delete.ts)_
+
 ## `meeco organizations:get ID`
 
 Retrieve a validated organization or requested organization by logged in user. Only all validated organizations or requested organization requested by logged in user are accessible.
@@ -563,24 +568,17 @@ Modify a requested organization. The user who requested the organization can use
 ```
 USAGE
   $ meeco organizations:update
->>>>>>> master
 
 OPTIONS
   -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
-<<<<<<< HEAD
-```
-
-_See code: [src/commands/organizations/delete.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/delete.ts)_
-=======
 
   -o, --org=org                  (required) organization yaml file
 ```
 
 _See code: [src/commands/organizations/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/update.ts)_
->>>>>>> master
 
 ## `meeco shares:create [FILE]`
 
