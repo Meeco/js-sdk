@@ -181,6 +181,7 @@ slots:
 - [`meeco items:update`](#meeco-itemsupdate)
 - [`meeco organizations:create`](#meeco-organizationscreate)
 - [`meeco organizations:get ID`](#meeco-organizationsget-id)
+- [`meeco organizations:list`](#meeco-organizationslist)
 - [`meeco organizations:update`](#meeco-organizationsupdate)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
@@ -515,6 +516,29 @@ OPTIONS
 ```
 
 _See code: [src/commands/organizations/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/get.ts)_
+
+## `meeco organizations:list`
+
+List organization. There are three modes: validated, requested and member
+
+```
+USAGE
+  $ meeco organizations:list
+
+OPTIONS
+  -a, --auth=auth                        (required) [default: .user.yaml] Authorization config file yaml file (if not
+                                         using the default .user.yaml)
+
+  -e, --environment=environment          [default: .environment.yaml] environment config file
+
+  -m, --mode=validated|requested|member  [default: validated] There are three modes: validated, requested and member
+                                         validated - return all validated organizations
+                                         requested - list organizations in the requested state that the current user
+                                         has requested
+                                         member - list organizations in which the current user is a member.
+```
+
+_See code: [src/commands/organizations/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/list.ts)_
 
 ## `meeco organizations:update`
 
