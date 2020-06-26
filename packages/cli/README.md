@@ -180,8 +180,8 @@ slots:
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
 - [`meeco items:update`](#meeco-itemsupdate)
 - [`meeco organizations:create`](#meeco-organizationscreate)
-- [`meeco organizations:list`](#meeco-organizationslist)
 - [`meeco organizations:get ID`](#meeco-organizationsget-id)
+- [`meeco organizations:list`](#meeco-organizationslist)
 - [`meeco organizations:update`](#meeco-organizationsupdate)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
@@ -500,6 +500,23 @@ EXAMPLE
 
 _See code: [src/commands/organizations/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/create.ts)_
 
+## `meeco organizations:get ID`
+
+Retrieve a validated organization or requested organization by logged in user. Only all validated organizations or requested organization requested by logged in user are accessible.
+
+```
+USAGE
+  $ meeco organizations:get ID
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/organizations/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/get.ts)_
+
 ## `meeco organizations:list`
 
 List organization. There are three modes: validated, requested and member
@@ -521,24 +538,7 @@ OPTIONS
                                          member - list organizations in which the current user is a member.
 ```
 
-# _See code: [src/commands/organizations/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/list.ts)_
-
-## `meeco organizations:get ID`
-
-Retrieve a validated organization or requested organization by logged in user. Only all validated organizations or requested organization requested by logged in user are accessible.
-
-```
-USAGE
-  $ meeco organizations:get ID
-
-OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
-
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-```
-
-_See code: [src/commands/organizations/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/get.ts)_
+_See code: [src/commands/organizations/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/list.ts)_
 
 ## `meeco organizations:update`
 
