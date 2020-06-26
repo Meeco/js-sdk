@@ -181,6 +181,8 @@ slots:
 - [`meeco items:update`](#meeco-itemsupdate)
 - [`meeco organizations:create`](#meeco-organizationscreate)
 - [`meeco organizations:list`](#meeco-organizationslist)
+- [`meeco organizations:get ID`](#meeco-organizationsget-id)
+- [`meeco organizations:update`](#meeco-organizationsupdate)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
 - [`meeco shares:delete SHAREID`](#meeco-sharesdelete-shareid)
@@ -519,7 +521,43 @@ OPTIONS
                                          member - list organizations in which the current user is a member.
 ```
 
-_See code: [src/commands/organizations/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/list.ts)_
+# _See code: [src/commands/organizations/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/list.ts)_
+
+## `meeco organizations:get ID`
+
+Retrieve a validated organization or requested organization by logged in user. Only all validated organizations or requested organization requested by logged in user are accessible.
+
+```
+USAGE
+  $ meeco organizations:get ID
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/organizations/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/get.ts)_
+
+## `meeco organizations:update`
+
+Modify a requested organization. The user who requested the organization can use this endpoint to modify the requested organization.
+
+```
+USAGE
+  $ meeco organizations:update
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  -o, --org=org                  (required) organization yaml file
+```
+
+_See code: [src/commands/organizations/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/update.ts)_
 
 ## `meeco shares:create [FILE]`
 
