@@ -5,7 +5,8 @@ import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationMembersList extends MeecoCommand {
-  static description = 'List organization members.';
+  static description =
+    'List all members of an organization. This command is only accessible to organization owners.';
 
   static flags = {
     ...MeecoCommand.flags,
