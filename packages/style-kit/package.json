@@ -1,0 +1,15 @@
+{
+  "name": "@meeco/style-kit",
+  "version": "1.0.0",
+  "description": "Meeco branded components and style mixins",
+  "main": "index.js",
+  "scripts": {
+    "build": "parcel build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Meeco",
+  "license": "MIT",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  }
+}

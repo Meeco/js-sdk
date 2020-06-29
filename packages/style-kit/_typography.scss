@@ -1,0 +1,20 @@
+@mixin fonts {
+  font-family: 'Euclid Circular B', 'Euclid', Verdana, Geneva, Tahoma, sans-serif;
+}
+
+@mixin headings {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @include fonts;
+  }
+
+  @for $i from 1 through 6 {
+    h#{$i} {
+      font-weight: map-get($headings, 'h' + #{$i});
+    }
+  }
+}

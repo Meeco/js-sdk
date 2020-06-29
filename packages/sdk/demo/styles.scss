@@ -1,3 +1,9 @@
+@import '~style-kit/variables';
+@import '~style-kit/mixins';
+@import '~style-kit/typography';
+
+@include headings;
+
 html,
 body {
   width: 100vw;
@@ -13,4 +19,8 @@ fieldset {
   input {
     width: 200px;
   }
+}
+
+button {
+  @include primary-button-small;
 }

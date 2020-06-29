@@ -1,0 +1,22 @@
+// Colors
+$meeco-red: #e61e3d !default;
+$meeco-blue: #43bfde !default;
+$meeco-orange: #ff6b33 !default;
+$meeco-yellow: #ffcc33 !default;
+$meeco-green: #7fc92b !default;
+$meeco-mint: #14cca7 !default;
+$meeco-dark-blue: #3e50d6 !default;
+$meeco-pink: #fa3253 !default;
+$meeco-charcoal: #555555 !default;
+$meeco-smoke: #dce1e4 !default;
+
+// Borders
+$border-radius-large: 100px !default;
+
+$colors: (
+  'primary': $meeco-red,
+  'secondary': $meeco-blue,
+  'success': $meeco-mint,
+  'warn': $meeco-orange,
+  'fail': $meeco-pink
+);
