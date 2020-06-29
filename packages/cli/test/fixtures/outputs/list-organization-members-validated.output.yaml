@@ -1,4 +1,4 @@
-kind: Organization-Members
+kind: OrganizationMembers
 spec:
   organization:
     id: c3fbac57-1eb8-41c3-a3de-3f946979945d

@@ -28,7 +28,7 @@ export default class OrganizationMembersList extends MeecoCommand {
       ).OrganizationsManagingMembersApi.organizationsOrganizationIdMembersGet(organization_id);
       cli.action.stop();
       this.printYaml({
-        kind: 'Organization-Members',
+        kind: 'OrganizationMembers',
         spec: { organization: result.organization, members: result.members }
       });
     } catch (err) {
