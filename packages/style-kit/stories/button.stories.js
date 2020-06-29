@@ -1,6 +1,6 @@
 export default { title: 'Button' };
 
-import './button.scss';
+import 'style-loader!./button.scss';
 
 const titleWord = word => word.slice(0, 1).toUpperCase() + word.slice(1);
 const titleWords = words =>

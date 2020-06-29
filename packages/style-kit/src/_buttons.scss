@@ -11,6 +11,7 @@
 @mixin button-base {
   border: none;
   border-radius: $border-radius-large;
+  // outline: none;
 }
 
 @mixin primary-button {

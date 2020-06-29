@@ -1,6 +1,6 @@
 export default { title: 'Typography' };
 
-import './typography.scss';
+import 'style-loader!./typography.scss';
 
 export const font = () => `
 <p><strong>Euclid Circular B</strong>, by the Swiss Typefaces foundry is the official
