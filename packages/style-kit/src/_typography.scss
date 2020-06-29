@@ -20,3 +20,10 @@
     }
   }
 }
+
+@mixin typography-main {
+  * {
+    @include fonts;
+  }
+  @include headings;
+}

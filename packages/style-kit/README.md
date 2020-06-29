@@ -43,6 +43,8 @@ button {
 }
 ```
 
+The exception being the `main` css file which is expected to be a complete css drop-in framework version of the style-kit (sort of lik Bootstrap) which could be imported into a page and used.
+
 ### Writing Stories
 
 All stories should have a default export of at least their title:

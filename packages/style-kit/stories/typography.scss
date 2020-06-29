@@ -1,7 +1,3 @@
 @import '../src/typography';
 
-* {
-  @include fonts;
-}
-
-@include headings;
+@include typography-main;
