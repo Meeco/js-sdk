@@ -179,6 +179,7 @@ slots:
 - [`meeco items:list`](#meeco-itemslist)
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
 - [`meeco items:update`](#meeco-itemsupdate)
+- [`meeco organization-members:list ORGANIZATION_ID`](#meeco-organization-memberslist-organization_id)
 - [`meeco organizations:create`](#meeco-organizationscreate)
 - [`meeco organizations:delete ID`](#meeco-organizationsdelete-id)
 - [`meeco organizations:get ID`](#meeco-organizationsget-id)
@@ -478,6 +479,23 @@ OPTIONS
 ```
 
 _See code: [src/commands/items/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/update.ts)_
+
+## `meeco organization-members:list ORGANIZATION_ID`
+
+List all members of an organization. This command is only accessible to organization owners.
+
+```
+USAGE
+  $ meeco organization-members:list ORGANIZATION_ID
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/organization-members/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/list.ts)_
 
 ## `meeco organizations:create`
 
