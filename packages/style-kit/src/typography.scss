@@ -1,0 +1,7 @@
+@import '../typography';
+
+* {
+  @include fonts;
+}
+
+@include headings;

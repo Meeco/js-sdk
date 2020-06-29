@@ -1,0 +1,22 @@
+@import '../mixins';
+
+button {
+  margin: 16px;
+
+  &.primary {
+    @include primary-button;
+  }
+  &.secondary {
+    @include secondary-button;
+  }
+  &.text {
+    @include text-button;
+  }
+
+  &.large {
+    @include button-spacing-large;
+  }
+  &.small {
+    @include button-spacing-small;
+  }
+}

@@ -5,11 +5,21 @@
   "main": "index.js",
   "scripts": {
     "build": "parcel build",
+    "start": "npm run storybook",
+    "storybook": "start-storybook",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Meeco",
   "license": "MIT",
   "devDependencies": {
-    "parcel-bundler": "^1.12.4"
+    "@babel/core": "^7.10.3",
+    "@storybook/html": "^5.3.19",
+    "@storybook/preset-scss": "^1.0.2",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^3.6.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "parcel-bundler": "^1.12.4",
+    "sass-loader": "^8.0.2",
+    "style-loader": "^1.2.1"
   }
 }
