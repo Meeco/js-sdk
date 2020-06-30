@@ -11,6 +11,9 @@ const titleWords = words =>
 
 export const catalog = () => {
   const container = document.createElement('div');
+  container.style.display = 'flex';
+  container.style.flexDirection = 'column';
+  container.style.width = '240px';
 
   const colors = ['primary', 'secondary', 'text'];
   const sizes = ['large', 'small'];

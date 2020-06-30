@@ -17,5 +17,16 @@ module.exports = (on, config) => {
 
   initPlugin(on, config);
 
+  // https://github.com/cypress-io/cypress/issues/2102#issuecomment-582829959
+  on('before:browser:launch', (browser = {}, launchOptions) => {
+    if (browser.name === 'chrome') {
+      launchOptions.args.push('--window-size=1440,900');
+      return launchOptions;
+    } else if (browser.name === 'electron') {
+      launchOptions.preferences['width'] = 1280;
+      launchOptions.preferences['height'] = 1024;
+      return launchOptions;
+    }
+  });
   return config;
 };
