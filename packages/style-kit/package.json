@@ -24,7 +24,7 @@
     "cypress-plugin-snapshots": "^1.4.3",
     "cypress-storybook": "^0.2.0",
     "extract-text-webpack-plugin": "^3.0.2",
-    "js-base64": "^2.5.1",
+    "js-base64": "2.5.1",
     "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.14.1",
     "parcel-bundler": "^1.12.4",
