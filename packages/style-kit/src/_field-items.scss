@@ -1,0 +1,70 @@
+@import './typography';
+@import './variables';
+
+@mixin input {
+  border-radius: $border-radius-tiny;
+  border: 1px solid $meeco-smoke;
+  padding: 10px;
+  background-color: transparentize(map-get($colors, 'light'), 0.9);
+}
+
+@mixin text-input {
+  @include input;
+  @include text-field-value;
+}
+
+@mixin input-label {
+  @include text-field-label;
+  margin-left: 16px;
+  margin-bottom: -8px;
+}
+
+@mixin search-input-container {
+  @include input;
+  padding: 0px 8px;
+  border-radius: $border-radius-large;
+  display: flex;
+  align-items: center;
+  max-width: 360px;
+}
+
+@mixin search-input {
+  @include body-text-medium;
+  width: 100%;
+  border: 0;
+  outline: none;
+  background-color: transparent;
+}
+
+@mixin inputs-main {
+  input {
+    margin: 16px;
+    display: block;
+    &[type='text'] {
+      @include text-input;
+    }
+    &[type='text']:focus {
+      outline-color: $meeco-smoke;
+    }
+    &::placeholder {
+      color: darken($meeco-charcoal, 10%);
+    }
+  }
+  label {
+    @include input-label;
+    display: block;
+  }
+  div {
+    &.search-bar {
+      margin: 16px;
+      @include search-input-container;
+      input[type='search'] {
+        @include search-input;
+        margin: 8px;
+        &::placeholder {
+          color: darken($meeco-smoke, 10%);
+        }
+      }
+    }
+  }
+}

@@ -22,9 +22,80 @@
   }
 }
 
+// body-fonts
+
+@mixin body-text {
+  @include fonts;
+  font-weight: 400;
+}
+
+@mixin body-text-large {
+  @include body-text;
+  font-size: 18px;
+}
+
+@mixin body-text-medium {
+  @include body-text;
+  font-size: 16px;
+}
+
+@mixin body-text-small {
+  @include body-text;
+  font-size: 14px;
+}
+
+// label-fonts
+
+@mixin card-label {
+  @include body-text-medium;
+  font-weight: 500;
+}
+
+@mixin text-field-label {
+  @include body-text-medium;
+  line-height: 22px;
+  color: $meeco-charcoal;
+}
+
+@mixin text-field-value {
+  @include body-text-large;
+  font-weight: 500;
+  color: darken($meeco-charcoal, 10%);
+}
+
+@mixin button-label-large {
+  @include body-text-medium;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+@mixin button-label-small {
+  @include body-text-small;
+  font-weight: 500;
+  line-height: 19px;
+}
+
 @mixin typography-main {
   * {
     @include fonts;
+    &.large {
+      @include body-text-large;
+    }
+    &.medium {
+      @include body-text-medium;
+    }
+    &.small {
+      @include body-text-small;
+    }
+    &.card-label {
+      @include card-label;
+    }
+    &.input-label {
+      @include text-field-label;
+    }
+    &.input-value {
+      @include text-field-value;
+    }
   }
   @include headings;
 }
