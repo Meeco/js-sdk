@@ -1,0 +1,86 @@
+@import './variables';
+
+@mixin button-spacing-large {
+  padding: 12px 36px 12px 36px;
+}
+
+@mixin button-spacing-small {
+  padding: 6px 20px 6px 20px;
+}
+
+@mixin button-base {
+  border: none;
+  border-radius: $border-radius-large;
+  // outline: none;
+}
+
+@mixin primary-button {
+  @include button-base;
+  background-color: map-get($colors, 'primary');
+  color: white;
+}
+
+@mixin text-button {
+  @include button-base;
+  background-color: transparent;
+  color: map-get($colors, 'primary');
+}
+
+@mixin secondary-button {
+  @include button-base;
+  background-color: transparentize(map-get($colors, 'primary'), 0.9);
+  color: map-get($colors, 'primary');
+}
+
+@mixin primary-button-large {
+  @include primary-button;
+  @include button-spacing-large;
+}
+
+@mixin primary-button-small {
+  @include primary-button;
+  @include button-spacing-small;
+}
+
+@mixin secondary-button-large {
+  @include secondary-button;
+  @include button-spacing-large;
+}
+
+@mixin secondary-button-small {
+  @include secondary-button;
+  @include button-spacing-small;
+}
+
+@mixin text-button-large {
+  @include text-button;
+  @include button-spacing-large;
+}
+
+@mixin text-button-small {
+  @include text-button;
+  @include button-spacing-small;
+}
+
+@mixin buttons-main {
+  button {
+    margin: 16px;
+
+    &.primary {
+      @include primary-button;
+    }
+    &.secondary {
+      @include secondary-button;
+    }
+    &.text {
+      @include text-button;
+    }
+
+    &.large {
+      @include button-spacing-large;
+    }
+    &.small {
+      @include button-spacing-small;
+    }
+  }
+}

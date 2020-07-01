@@ -9,3 +9,7 @@
 # SDK
 
 - [Documentation](./packages/sdk)
+
+# Style Kit
+
+- [Documentation](./packages/style-kit)
