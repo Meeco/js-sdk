@@ -90,12 +90,20 @@
 @mixin buttons-main {
   button {
     margin: 16px;
-
+    &:focus {
+      outline-color: darken($meeco-red, 5%);
+    }
     &.primary {
       @include primary-button;
+      &:hover {
+        background-color: darken($meeco-red, 5%);
+      }
     }
     &.secondary {
       @include secondary-button;
+      &:hover {
+        background-color: transparentize(map-get($colors, 'primary'), 0.85);
+      }
     }
     &.text {
       @include text-button;
