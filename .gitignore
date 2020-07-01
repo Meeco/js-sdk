@@ -4,6 +4,17 @@
 packages/**/dist
 packages/**/lib
 packages/**/tmp
+# Parcel bundle cache
+packages/**/.cache
+
+# Cypress failurs
+packages/**/cypress/screenshots
+packages/**/cypress/videos
+*.actual.png
+*.diff.png
+# Other cypress
+
+
 /coverage
 /docs
 /yarn.lock

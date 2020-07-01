@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x]
+        node-version: [10.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -20,4 +20,13 @@ jobs:
       - run: npx lerna run test
         env:
           CI: true
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Cypress Test Recording
+          path: packages/style-kit/cypress/videos/
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: Cypress Test Screenshots
+          path: packages/style-kit/cypress/screenshots/
       - run: npx lerna run build
