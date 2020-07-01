@@ -12,6 +12,7 @@ $meeco-smoke: #dce1e4 !default;
 
 // Borders
 $border-radius-large: 100px !default;
+$border-radius-tiny: 8px;
 
 $colors: (
   'primary': $meeco-red,
@@ -19,7 +20,8 @@ $colors: (
   'success': $meeco-mint,
   'warn': $meeco-orange,
   'fail': $meeco-pink,
-  'text': $meeco-charcoal
+  'dark': $meeco-charcoal,
+  'light': $meeco-smoke
 );
 
 $headings: (
@@ -30,3 +32,7 @@ $headings: (
   h5: 18px,
   h6: 16px
 );
+
+$body-text-large: 18px;
+$body-text-medium: 16px;
+$body-text-small: 14px;

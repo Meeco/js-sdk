@@ -1,10 +1,13 @@
 @import './variables';
+@import './typography';
 
 @mixin button-spacing-large {
+  @include button-label-large;
   padding: 12px 36px 12px 36px;
 }
 
 @mixin button-spacing-small {
+  @include button-label-small;
   padding: 6px 20px 6px 20px;
 }
 
@@ -75,7 +78,13 @@
 
 @mixin text-button-icon {
   @include text-button;
-  color: map-get($colors, 'text');
+  color: map-get($colors, 'dark');
+  font-size: 18px;
+  span {
+    padding-right: 0.5rem;
+    vertical-align: middle;
+    display: inline-block;
+  }
 }
 
 @mixin buttons-main {
@@ -99,6 +108,9 @@
       @include button-spacing-small;
     }
     &.icon {
+      @include text-button-icon;
+    }
+    &.icon-only {
       @include icon-button;
     }
   }

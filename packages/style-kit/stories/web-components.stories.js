@@ -5,4 +5,4 @@ import '../src/components/icons';
 
 export const helloWorld = () => `<hello-world></hello-world>`;
 
-export const meecoIcons = () => `<meeco-icon></meeco-icon>`;
+export const meecoIcons = () => `<meeco-icon icon="share"></meeco-icon>`;
