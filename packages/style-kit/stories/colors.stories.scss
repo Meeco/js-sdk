@@ -2,15 +2,10 @@
 
 $base-size: 120px;
 
-.colors {
-  display: flex;
-  flex-wrap: wrap;
-}
-
 .color-container {
   width: $base-size + ($base-size / 3);
-  height: $base-size;
-  margin: 16px;
+  margin: 0 16px;
+  display: inline-block;
 }
 
 p {
@@ -27,6 +22,10 @@ p {
   width: $base-size / 3;
   height: $base-size / 3;
   float: right;
+}
+
+h4 {
+  margin: 32px 16px 0 16px;
 }
 
 $palettes: (
