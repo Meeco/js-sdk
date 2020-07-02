@@ -30,7 +30,6 @@ export const catalog = () => {
   });
 
   const types = ['icon', 'icon-only'];
-  const icons = ['share', null];
   types.forEach(type => {
     const iconButton = document.createElement('button');
     iconButton.className = `${type}`;

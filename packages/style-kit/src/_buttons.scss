@@ -78,6 +78,7 @@
 
 @mixin text-button-icon {
   @include text-button;
+  @include button-spacing-small;
   color: map-get($colors, 'dark');
   font-size: 18px;
   span {
@@ -90,6 +91,10 @@
 @mixin buttons-main {
   button {
     margin: 16px;
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px transparentize(map-get($colors, 'primary'), 0.5);
+    }
     &.primary {
       @include primary-button;
       &:hover {
