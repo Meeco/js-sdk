@@ -1,18 +1,46 @@
-// Colors
+@import 'functions';
+
+// Primary Colors
 $meeco-red: #e61e3d !default;
 $meeco-blue: #43bfde !default;
-$meeco-orange: #ff6b33 !default;
-$meeco-yellow: #ffcc33 !default;
-$meeco-green: #7fc92b !default;
-$meeco-mint: #14cca7 !default;
-$meeco-dark-blue: #3e50d6 !default;
-$meeco-pink: #fa3253 !default;
 $meeco-charcoal: #555555 !default;
 $meeco-smoke: #dce1e4 !default;
 
+// Secondary Colours
+$meeco-orange: #ff6b33 !default;
+$meeco-yellow: #ffcc33 !default;
+$meeco-lime: #c1c928 !default;
+$meeco-green: #7fc92b !default;
+$meeco-mint: #14cca7 !default;
+$meeco-dark-blue: #3e50d6 !default;
+$meeco-purple: #883ad5 !default;
+$meeco-violet: #b03fd6 !default;
+$meeco-fuchsia: #db2c87 !default;
+$meeco-pink: #fa3253 !default;
+$meeco-ocean-blue: #00677f !default;
+$meeco-forest-green: #015147 !default;
+
+// Palettes
+$meeco-red-palette: create-palette($meeco-red);
+$meeco-blue-palette: create-palette($meeco-blue);
+$meeco-charcoal-palette: create-palette($meeco-charcoal);
+$meeco-smoke-palette: create-palette($meeco-smoke);
+$meeco-orange-palette: create-palette($meeco-orange);
+$meeco-yellow-palette: create-palette($meeco-yellow);
+$meeco-lime-palette: create-palette($meeco-lime);
+$meeco-green-palette: create-palette($meeco-green);
+$meeco-mint-palette: create-palette($meeco-mint);
+$meeco-dark-blue-palette: create-palette($meeco-dark-blue);
+$meeco-purple-palette: create-palette($meeco-purple);
+$meeco-violet-palette: create-palette($meeco-violet);
+$meeco-fuchsia-palette: create-palette($meeco-fuchsia);
+$meeco-pink-palette: create-palette($meeco-pink);
+$meeco-ocean-blue-palette: create-palette($meeco-ocean-blue);
+$meeco-forest-green-palette: create-palette($meeco-forest-green);
+
 // Borders
+$border-radius-standard: 8px;
 $border-radius-large: 100px !default;
-$border-radius-tiny: 8px;
 
 $colors: (
   'primary': $meeco-red,

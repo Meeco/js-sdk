@@ -1,16 +1,11 @@
 export default { title: 'Button' };
 
-import 'style-loader!./button.scss';
+import 'style-loader!./button.stories.scss';
 import '../src/components/icons';
 
-const meecoIcons = icon => `<meeco-icon icon=${icon}></meeco-icon>`;
+import { titleWords } from './helpers';
 
-const titleWord = word => word.slice(0, 1).toUpperCase() + word.slice(1);
-const titleWords = words =>
-  words
-    .split(' ')
-    .map(titleWord)
-    .join(' ');
+const meecoIcons = icon => `<meeco-icon icon=${icon}></meeco-icon>`;
 
 export const catalog = () => {
   const container = document.createElement('div');

@@ -2,10 +2,11 @@
 @import './variables';
 
 @mixin input {
-  border-radius: $border-radius-tiny;
+  border-radius: $border-radius-standard;
   border: 1px solid $meeco-smoke;
   padding: 10px;
   background-color: transparentize(map-get($colors, 'light'), 0.9);
+  color: darken(map-get($colors, 'dark'), 10%);
 }
 
 @mixin text-input {
@@ -46,7 +47,7 @@
     &[type='text']:focus {
       outline-color: $meeco-smoke;
     }
-    &::placeholder {
+    &:placeholder {
       color: darken($meeco-charcoal, 10%);
     }
   }
@@ -61,7 +62,7 @@
       input[type='search'] {
         @include search-input;
         margin: 8px;
-        &::placeholder {
+        &:placeholder {
           color: darken($meeco-smoke, 10%);
         }
       }

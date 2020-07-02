@@ -1,0 +1,64 @@
+@import '../src/variables';
+
+$base-size: 120px;
+
+.colors {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.color-container {
+  width: $base-size + ($base-size / 3);
+  height: $base-size;
+  margin: 16px;
+}
+
+p {
+  margin: 8px;
+}
+
+.base {
+  width: $base-size;
+  height: $base-size;
+  float: left;
+}
+
+.variant {
+  width: $base-size / 3;
+  height: $base-size / 3;
+  float: right;
+}
+
+$palettes: (
+  'red': $meeco-red-palette,
+  'blue': $meeco-blue-palette,
+  'charcoal': $meeco-charcoal-palette,
+  'smoke': $meeco-smoke-palette,
+  'orange': $meeco-orange-palette,
+  'yellow': $meeco-yellow-palette,
+  'lime': $meeco-lime-palette,
+  'green': $meeco-green-palette,
+  'mint': $meeco-mint-palette,
+  'dark-blue': $meeco-dark-blue-palette,
+  'purple': $meeco-purple-palette,
+  'violet': $meeco-violet-palette,
+  'fuchsia': $meeco-fuchsia-palette,
+  'pink': $meeco-pink-palette,
+  'ocean-blue': $meeco-ocean-blue-palette,
+  'forest-green': $meeco-forest-green-palette
+);
+
+@each $name, $palette in $palettes {
+  .#{$name} {
+    background-color: map-get($palette, 'base');
+  }
+  .#{$name}_shade {
+    background-color: map-get($palette, 'shade');
+  }
+  .#{$name}_tint50 {
+    background-color: map-get($palette, 'tint50');
+  }
+  .#{$name}_tint10 {
+    background-color: map-get($palette, 'tint10');
+  }
+}
