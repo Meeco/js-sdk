@@ -90,13 +90,10 @@
 @mixin buttons-main {
   button {
     margin: 16px;
-    &:focus {
-      outline-color: darken($meeco-red, 5%);
-    }
     &.primary {
       @include primary-button;
       &:hover {
-        background-color: darken($meeco-red, 5%);
+        background: darken($meeco-red, 5%);
       }
     }
     &.secondary {
@@ -107,6 +104,11 @@
     }
     &.text {
       @include text-button;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        color: darken($meeco-red, 10%);
+        transform: scale(1.1);
+      }
     }
 
     &.large {
@@ -117,9 +119,17 @@
     }
     &.icon {
       @include text-button-icon;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        transform: scale(1.1);
+      }
     }
     &.icon-only {
       @include icon-button;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        transform: scale(1.1);
+      }
     }
   }
 }
