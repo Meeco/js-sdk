@@ -161,6 +161,30 @@ slots:
 1. You can retrive all TODO tasks with `meeco client-task-queue:list`.
 2. You can also retrive different taks are in different state. e.g. Todo, InProgress, Done, Failed by providing STATE input. e.g `meeco client-task-queue:list -s InProgress`
 
+## Organization Flow
+
+### 1. Organization Creation
+
+Create your first organization:
+
+Provide a configuration file with your credentials, supply a [Organization Config](#Organization) file i.e.
+
+- `meeco organizations:create -c .my_org.yaml`
+
+you can check organization was created and in requested state waiting for approval
+
+- `meeco organizations:list -m requested`
+
+once approved it can be access with follwoing command
+
+- `meeco organizations:list`
+
+### 2. Retrive organization agent credential
+
+1. Ensure organization is created and validated first (see above)
+2. You can retrive organization credential using follwoing command
+   `organizations:login <organization_id> > .org_agent_user.yaml`
+
 ## All Commands
 
 <!-- commands -->
@@ -184,6 +208,7 @@ slots:
 - [`meeco organizations:delete ID`](#meeco-organizationsdelete-id)
 - [`meeco organizations:get ID`](#meeco-organizationsget-id)
 - [`meeco organizations:list`](#meeco-organizationslist)
+- [`meeco organizations:login ID`](#meeco-organizationslogin-id)
 - [`meeco organizations:update`](#meeco-organizationsupdate)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
@@ -578,6 +603,23 @@ OPTIONS
 ```
 
 _See code: [src/commands/organizations/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/list.ts)_
+
+## `meeco organizations:login ID`
+
+Login as an organization agent. An organization agent is a non-human Vault user account acting on behalf of the organization. An organization owner can use this command to obtain a session token for the organization agent.
+
+```
+USAGE
+  $ meeco organizations:login ID
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/organizations/login.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/login.ts)_
 
 ## `meeco organizations:update`
 

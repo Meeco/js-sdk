@@ -25,6 +25,7 @@ package-lock.json
 # local environment
 .environment.yaml
 .user.yaml
+.org_agent_user.yaml
 /.*.yaml
 
 # Incremental build file
