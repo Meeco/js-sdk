@@ -208,6 +208,7 @@ once approved it can be access with follwoing command
 - [`meeco organizations:delete ID`](#meeco-organizationsdelete-id)
 - [`meeco organizations:get ID`](#meeco-organizationsget-id)
 - [`meeco organizations:list`](#meeco-organizationslist)
+- [`meeco organizations:login ID`](#meeco-organizationslogin-id)
 - [`meeco organizations:update`](#meeco-organizationsupdate)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
@@ -602,6 +603,23 @@ OPTIONS
 ```
 
 _See code: [src/commands/organizations/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/list.ts)_
+
+## `meeco organizations:login ID`
+
+Login as an organization agent. An organization agent is a non-human Vault user account acting on behalf of the organization. An organization owner can use this command to obtain a session token for the organization agent.
+
+```
+USAGE
+  $ meeco organizations:login ID
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/organizations/login.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/login.ts)_
 
 ## `meeco organizations:update`
 
