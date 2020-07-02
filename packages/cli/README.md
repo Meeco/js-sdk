@@ -204,6 +204,7 @@ once approved it can be access with follwoing command
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
 - [`meeco items:update`](#meeco-itemsupdate)
 - [`meeco organization-members:list ORGANIZATION_ID`](#meeco-organization-memberslist-organization_id)
+- [`meeco organization-services:create ORGANIZATION_ID`](#meeco-organization-servicescreate-organization_id)
 - [`meeco organizations:create`](#meeco-organizationscreate)
 - [`meeco organizations:delete ID`](#meeco-organizationsdelete-id)
 - [`meeco organizations:get ID`](#meeco-organizationsget-id)
@@ -521,6 +522,28 @@ OPTIONS
 ```
 
 _See code: [src/commands/organization-members/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/list.ts)_
+
+## `meeco organization-services:create ORGANIZATION_ID`
+
+Request the creation of a new organization service. The organization service will remain in the 'requested' state until validated or rejected by meeco
+
+```
+USAGE
+  $ meeco organization-services:create ORGANIZATION_ID
+
+OPTIONS
+  -a, --auth=auth                                            (required) [default: .user.yaml] Authorization config file
+                                                             yaml file (if not using the default .user.yaml)
+
+  -c, --organizationServiceConfig=organizationServiceConfig  (required) organization service config file
+
+  -e, --environment=environment                              [default: .environment.yaml] environment config file
+
+EXAMPLE
+  meeco organization-services:create <organization_id> -c path/to/organization-service-config.yaml -a path/to/auth.yaml
+```
+
+_See code: [src/commands/organization-services/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/create.ts)_
 
 ## `meeco organizations:create`
 
