@@ -4,11 +4,9 @@ import 'style-loader!./colors.stories.scss';
 
 import { titleWords } from './helpers';
 
-const colors = [
-  'red',
-  'blue',
-  'charcoal',
-  'smoke',
+const primary = ['red', 'blue', 'charcoal', 'smoke'];
+
+const secondary = [
   'orange',
   'yellow',
   'lime',
@@ -28,7 +26,7 @@ const variants = ['shade', 'tint50', 'tint10'];
 export const colorPalette = () => {
   const allColors = document.createElement('div');
   allColors.className = 'colors';
-  colors.forEach(color => {
+  const buildPalette = color => {
     const container = document.createElement('div');
     container.className = 'color-container';
     const label = document.createElement('p');
@@ -45,6 +43,19 @@ export const colorPalette = () => {
     });
 
     allColors.appendChild(container);
-  });
+  };
+
+  const addHeading = heading => {
+    const subHeading = document.createElement('h4');
+    subHeading.innerHTML = heading;
+    allColors.appendChild(subHeading);
+  };
+
+  addHeading('Primary Colors');
+  primary.forEach(buildPalette);
+
+  addHeading('Secondary Colors');
+  secondary.forEach(buildPalette);
+
   return allColors;
 };
