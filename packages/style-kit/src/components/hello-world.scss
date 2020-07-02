@@ -1,7 +1,0 @@
-@import '../../src/typography';
-@import '../../src/variables';
-
-p {
-  @include fonts;
-  color: $meeco-red;
-}

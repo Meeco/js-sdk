@@ -1,6 +1,6 @@
 export default { title: 'Field Elements' };
 
-import 'style-loader!./field-elements.scss';
+import 'style-loader!./field-elements.stories.scss';
 import '../src/components/icons';
 
 const meecoIcons = icon => `<meeco-icon icon=${icon}></meeco-icon>`;

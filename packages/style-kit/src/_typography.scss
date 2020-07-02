@@ -1,46 +1,34 @@
 @import 'variables';
 
-@mixin fonts {
+@mixin font-base {
   font-family: 'Euclid Circular B', 'Euclid', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Helvetica, 'Apple Color Emoji', Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
+  color: map-get($meeco-charcoal-palette, 'base');
 }
 
 @mixin headings {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @include fonts;
-  }
-
-  @for $i from 1 through 6 {
+  @for $i from 1 through 5 {
     h#{$i} {
-      font-weight: map-get($headings, 'h' + #{$i});
+      font-weight: 500;
+      font-size: map-get($headings, h#{$i});
+    }
+
+    h6 {
+      font-size: map-get($headings, 'h6');
+      font-weight: bold;
     }
   }
 }
 
-// body-fonts
-
-@mixin body-text {
-  @include fonts;
-  font-weight: 400;
-}
-
 @mixin body-text-large {
-  @include body-text;
   font-size: 18px;
 }
 
 @mixin body-text-medium {
-  @include body-text;
   font-size: 16px;
 }
 
 @mixin body-text-small {
-  @include body-text;
   font-size: 14px;
 }
 
@@ -54,13 +42,11 @@
 @mixin text-field-label {
   @include body-text-medium;
   line-height: 22px;
-  color: $meeco-charcoal;
 }
 
 @mixin text-field-value {
   @include body-text-large;
   font-weight: 500;
-  color: darken($meeco-charcoal, 10%);
 }
 
 @mixin button-label-large {
@@ -76,26 +62,26 @@
 }
 
 @mixin typography-main {
-  * {
-    @include fonts;
-    &.large {
-      @include body-text-large;
-    }
-    &.medium {
-      @include body-text-medium;
-    }
-    &.small {
-      @include body-text-small;
-    }
-    &.card-label {
-      @include card-label;
-    }
-    &.input-label {
-      @include text-field-label;
-    }
-    &.input-value {
-      @include text-field-value;
-    }
-  }
   @include headings;
+  html {
+    @include font-base;
+  }
+  .large {
+    @include body-text-large;
+  }
+  .medium {
+    @include body-text-medium;
+  }
+  .small {
+    @include body-text-small;
+  }
+  .card-label {
+    @include card-label;
+  }
+  label {
+    @include text-field-label;
+  }
+  input {
+    @include text-field-value;
+  }
 }

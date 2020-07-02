@@ -1,0 +1,16 @@
+@function _tint($color, $percentage) {
+  @return mix(white, $color, $percentage);
+}
+
+@function _shade($color, $percentage) {
+  @return mix(black, $color, $percentage);
+}
+
+@function create-palette($base) {
+  @return (
+    base: $base,
+    shade: _shade($base, 20%),
+    tint50: _tint($base, 50%),
+    tint10: _tint($base, 90%)
+  );
+}
