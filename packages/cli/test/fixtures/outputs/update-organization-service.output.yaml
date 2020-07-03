@@ -1,8 +1,8 @@
 kind: OrganizationService
 spec:
   id: f71272a3-d26b-4b85-9b0b-b3fd24c4ea0a
-  name: Twitter Service
-  description: Fetch all twitter data
+  name: Sample Service
+  description: Sample service description
   contract:
     name: sample contract
   status: requested

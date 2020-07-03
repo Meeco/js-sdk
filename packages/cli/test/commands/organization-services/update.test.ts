@@ -1,4 +1,4 @@
-import { expect } from '@oclif/test';
+import { expect } from 'chai';
 import { readFileSync } from 'fs';
 import {
   customTest,
@@ -8,39 +8,47 @@ import {
   testUserAuth
 } from '../../test-helpers';
 
-describe('organization-services:create', () => {
+describe('organization-services:update', () => {
   customTest
     .stdout()
     .stderr()
-    .nock('https://sandbox.meeco.me/vault', api => {
-      api
-        .post('/organizations/organization_id/services')
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(201, response);
-    })
+    .nock('https://sandbox.meeco.me/vault', mockVault)
     .run([
-      'organization-services:create',
-      'organization_id',
+      'organization-services:update',
       ...testUserAuth,
       ...testEnvironmentFile,
-      '-c',
-      inputFixture('create-organization-service.input.yaml')
+      'organization_id',
+      '-s',
+      inputFixture('update-organization-service.input.yaml')
     ])
-    .it('Requests the creation of a new organization service', ctx => {
+    .it('Updates the organization', ctx => {
       const expected = readFileSync(
-        outputFixture('create-organization-services.output.yaml'),
+        outputFixture('update-organization-service.output.yaml'),
         'utf-8'
       );
       expect(ctx.stdout.trim()).to.equal(expected.trim());
     });
 });
 
+function mockVault(api) {
+  api
+    .put('/organizations/organization_id/services/f71272a3-d26b-4b85-9b0b-b3fd24c4ea0a', {
+      service: {
+        name: 'Sample Service',
+        description: 'Sample service description',
+        contract: { name: 'sample contract' }
+      }
+    })
+    .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+    .reply(200, response);
+}
+
 const response = {
   service: {
     id: 'f71272a3-d26b-4b85-9b0b-b3fd24c4ea0a',
-    name: 'Twitter Service',
-    description: 'Fetch all twitter data',
+    name: 'Sample Service',
+    description: 'Sample service description',
     contract: { name: 'sample contract' },
     organization_id: 'e2fed464-878b-4d4b-9017-99abc50504ed',
     validated_by_id: null,
