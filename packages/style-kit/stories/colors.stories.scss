@@ -1,6 +1,6 @@
 @import '../src/variables';
 
-$base-size: 120px;
+$base-size: 180px;
 
 .color-container {
   width: $base-size + ($base-size / 3);
@@ -47,17 +47,44 @@ $palettes: (
   'forest-green': $meeco-forest-green-palette
 );
 
+// https://codepen.io/davidhalford/pen/wlDxL
+@function text-contrast($n) {
+  $color-brightness: round((red($n) * 299) + (green($n) * 587) + (blue($n) * 114) / 1000);
+  $light-color: round((red(#ffffff) * 299) + (green(#ffffff) * 587) + (blue(#ffffff) * 114) / 1000);
+
+  @if abs($color-brightness) < ($light-color/2) {
+    @return white;
+  } @else {
+    @return black;
+  }
+}
+
+@mixin hex-preview($color) {
+  &:before {
+    display: block;
+    font-size: $base-size * 0.06;
+    content: '' + $color;
+    color: text-contrast($color);
+    z-index: 100;
+    margin: 4px;
+  }
+}
+
 @each $name, $palette in $palettes {
   .#{$name} {
     background-color: map-get($palette, 'base');
+    @include hex-preview(map-get($palette, 'base'));
   }
   .#{$name}_shade {
     background-color: map-get($palette, 'shade');
+    @include hex-preview(map-get($palette, 'shade'));
   }
   .#{$name}_tint50 {
     background-color: map-get($palette, 'tint50');
+    @include hex-preview(map-get($palette, 'tint50'));
   }
   .#{$name}_tint10 {
     background-color: map-get($palette, 'tint10');
+    @include hex-preview(map-get($palette, 'tint10'));
   }
 }
