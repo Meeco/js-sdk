@@ -1,16 +1,16 @@
 @import './typography';
 @import './variables';
 
-@mixin input {
+@mixin input($theme) {
   border-radius: $border-radius-standard;
-  border: 1px solid $meeco-smoke;
+  border: 1px solid map-get($theme, 'light');
   padding: 10px;
-  background-color: transparentize(map-get($colors, 'light'), 0.9);
-  color: darken(map-get($colors, 'dark'), 10%);
+  background-color: transparentize(map-get($theme, 'light'), 0.5);
+  color: map-get($theme, 'dark');
 }
 
-@mixin text-input {
-  @include input;
+@mixin text-input($theme) {
+  @include input($theme);
   @include text-field-value;
 }
 
@@ -21,7 +21,6 @@
 }
 
 @mixin search-input-container {
-  @include input;
   padding: 0px 8px;
   border-radius: $border-radius-large;
   display: flex;
@@ -37,18 +36,18 @@
   background-color: transparent;
 }
 
-@mixin inputs-main {
+@mixin inputs-main($theme) {
   input {
     margin: 16px;
     display: block;
     &[type='text'] {
-      @include text-input;
+      @include text-input($theme);
     }
     &[type='text']:focus {
-      outline-color: $meeco-smoke;
+      outline-color: map-get($theme, 'light');
     }
     &:placeholder {
-      color: darken($meeco-charcoal, 10%);
+      color: map-get($theme, 'placeholder');
     }
   }
   label {
@@ -62,9 +61,6 @@
       input[type='search'] {
         @include search-input;
         margin: 8px;
-        &:placeholder {
-          color: darken($meeco-smoke, 10%);
-        }
       }
     }
   }

@@ -42,14 +42,13 @@ $meeco-forest-green-palette: create-palette($meeco-forest-green);
 $border-radius-standard: 8px;
 $border-radius-large: 100px !default;
 
-$colors: (
-  'primary': $meeco-red,
-  'secondary': $meeco-blue,
-  'success': $meeco-mint,
-  'warn': $meeco-orange,
-  'fail': $meeco-pink,
-  'dark': $meeco-charcoal,
-  'light': $meeco-smoke
+$meeco-theme: (
+  primary: map-get($meeco-red-palette, 'base'),
+  secondary: map-get($meeco-red-palette, 'tint10'),
+  placeholder: map-get($meeco-smoke-palette, 'shade'),
+  dark: map-get($meeco-charcoal-palette, 'base'),
+  light: map-get($meeco-smoke-palette, 'base'),
+  text: map-get($meeco-charcoal-palette, 'base')
 );
 
 $headings: (
