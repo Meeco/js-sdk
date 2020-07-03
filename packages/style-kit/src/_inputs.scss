@@ -5,8 +5,8 @@
   border-radius: $border-radius-standard;
   border: 1px solid map-get($theme, 'light');
   padding: 10px;
-  background-color: transparentize(map-get($theme, 'light'), 0.5);
-  color: map-get($theme, 'dark');
+  background-color: map-get($theme, 'bgShade');
+  color: map-get($theme, 'text');
 }
 
 @mixin text-input($theme) {
@@ -20,9 +20,11 @@
   margin-bottom: -8px;
 }
 
-@mixin search-input-container {
+@mixin search-input-container($theme) {
   padding: 0px 8px;
   border-radius: $border-radius-large;
+  border: 1px solid map-get($theme, 'light');
+  background-color: map-get($theme, 'bgShade');
   display: flex;
   align-items: center;
   max-width: 360px;
@@ -40,10 +42,8 @@
   input {
     margin: 16px;
     display: block;
-    &[type='text'] {
-      @include text-input($theme);
-    }
-    &[type='text']:focus {
+    @include text-input($theme);
+    &:focus {
       outline-color: map-get($theme, 'light');
     }
     &:placeholder {
@@ -54,14 +54,12 @@
     @include input-label;
     display: block;
   }
-  div {
-    &.search-bar {
-      margin: 16px;
-      @include search-input-container;
-      input[type='search'] {
-        @include search-input;
-        margin: 8px;
-      }
+  .search-bar {
+    margin: 16px;
+    @include search-input-container($theme);
+    input[type='search'] {
+      @include search-input;
+      margin: 8px;
     }
   }
 }

@@ -1,6 +1,6 @@
 export default { title: 'Button' };
 
-import 'style-loader!./button.stories.scss';
+import { story } from 'style-loader!./button.stories.scss';
 import '../src/components/icons';
 
 import { titleWords } from './helpers';
@@ -9,9 +9,7 @@ const meecoIcons = icon => `<meeco-icon icon=${icon}></meeco-icon>`;
 
 export const catalog = () => {
   const container = document.createElement('div');
-  container.style.display = 'flex';
-  container.style.flexDirection = 'column';
-  container.style.width = '240px';
+  container.className = story;
 
   const colors = ['primary', 'secondary', 'text'];
   const sizes = ['large', 'small'];

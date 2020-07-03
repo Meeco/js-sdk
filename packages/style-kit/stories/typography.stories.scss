@@ -1,1 +1,9 @@
-@import '../main';
+@import '../index';
+
+:local(.story) {
+  @include typography-main($meeco-theme, true);
+  @include inputs-main($meeco-theme);
+  input {
+    display: block;
+  }
+}

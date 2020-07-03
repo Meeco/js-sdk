@@ -25,7 +25,7 @@ const variants = ['shade', 'tint50', 'tint10'];
 
 export const colorPalette = () => {
   const allColors = document.createElement('div');
-  allColors.className = 'colors ' + story;
+  allColors.className = story;
   const buildPalette = color => {
     const container = document.createElement('div');
     container.className = 'color-container';

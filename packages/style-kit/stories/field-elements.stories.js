@@ -1,12 +1,13 @@
 export default { title: 'Field Elements' };
 
-import 'style-loader!./field-elements.stories.scss';
+import { story } from 'style-loader!./field-elements.stories.scss';
 import '../src/components/icons';
 
 const meecoIcons = icon => `<meeco-icon icon=${icon}></meeco-icon>`;
 
 export const inputs = () => {
   const container = document.createElement('div');
+  container.className = story;
 
   const types = ['', 'Text Value', 'With Label'];
 
@@ -32,7 +33,7 @@ export const inputs = () => {
   searchBar.innerHTML = meecoIcons('search');
   const input = document.createElement('input');
   input.type = 'search';
-  input.placeholder = 'search';
+  input.placeholder = 'Search';
   searchBar.appendChild(input);
   container.appendChild(searchBar);
 
