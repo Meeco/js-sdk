@@ -56,10 +56,7 @@ describe('Buttons', () => {
       it(`${button.label} matches snapshot`, () => {
         cy.get('button')
           .contains(button.label)
-          .toMatchImageSnapshot({
-            name: `Buttons: ${button.label}`,
-            separator: ''
-          });
+          .matchImageSnapshot(`Buttons: ${button.label}`);
       });
     });
   });
