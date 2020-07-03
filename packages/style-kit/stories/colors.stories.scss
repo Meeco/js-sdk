@@ -2,89 +2,93 @@
 
 $base-size: 180px;
 
-.color-container {
-  width: $base-size + ($base-size / 3);
-  margin: 0 16px;
-  display: inline-block;
-}
-
-p {
-  margin: 8px;
-}
-
-.base {
-  width: $base-size;
-  height: $base-size;
-  float: left;
-}
-
-.variant {
-  width: $base-size / 3;
-  height: $base-size / 3;
-  float: right;
-}
-
-h4 {
-  margin: 32px 16px 0 16px;
-}
-
-$palettes: (
-  'red': $meeco-red-palette,
-  'blue': $meeco-blue-palette,
-  'charcoal': $meeco-charcoal-palette,
-  'smoke': $meeco-smoke-palette,
-  'orange': $meeco-orange-palette,
-  'yellow': $meeco-yellow-palette,
-  'lime': $meeco-lime-palette,
-  'green': $meeco-green-palette,
-  'mint': $meeco-mint-palette,
-  'dark-blue': $meeco-dark-blue-palette,
-  'purple': $meeco-purple-palette,
-  'violet': $meeco-violet-palette,
-  'fuchsia': $meeco-fuchsia-palette,
-  'pink': $meeco-pink-palette,
-  'ocean-blue': $meeco-ocean-blue-palette,
-  'forest-green': $meeco-forest-green-palette
-);
-
-// https://codepen.io/davidhalford/pen/wlDxL
-@function text-contrast($n) {
-  $color-brightness: round((red($n) * 299) + (green($n) * 587) + (blue($n) * 114) / 1000);
-  $light-color: round((red(#ffffff) * 299) + (green(#ffffff) * 587) + (blue(#ffffff) * 114) / 1000);
-
-  @if abs($color-brightness) < ($light-color/2) {
-    @return white;
-  } @else {
-    @return black;
+:local(.story) {
+  .color-container {
+    width: $base-size + ($base-size / 3);
+    margin: 0 16px;
+    display: inline-block;
   }
-}
 
-@mixin hex-preview($color) {
-  &:before {
-    display: block;
-    font-size: $base-size * 0.06;
-    content: '' + $color;
-    color: text-contrast($color);
-    z-index: 100;
-    margin: 4px;
+  p {
+    margin: 8px;
   }
-}
 
-@each $name, $palette in $palettes {
-  .#{$name} {
-    background-color: map-get($palette, 'base');
-    @include hex-preview(map-get($palette, 'base'));
+  .base {
+    width: $base-size;
+    height: $base-size;
+    float: left;
   }
-  .#{$name}_shade {
-    background-color: map-get($palette, 'shade');
-    @include hex-preview(map-get($palette, 'shade'));
+
+  .variant {
+    width: $base-size / 3;
+    height: $base-size / 3;
+    float: right;
   }
-  .#{$name}_tint50 {
-    background-color: map-get($palette, 'tint50');
-    @include hex-preview(map-get($palette, 'tint50'));
+
+  h4 {
+    margin: 32px 16px 0 16px;
   }
-  .#{$name}_tint10 {
-    background-color: map-get($palette, 'tint10');
-    @include hex-preview(map-get($palette, 'tint10'));
+
+  $palettes: (
+    'red': $meeco-red-palette,
+    'blue': $meeco-blue-palette,
+    'charcoal': $meeco-charcoal-palette,
+    'smoke': $meeco-smoke-palette,
+    'orange': $meeco-orange-palette,
+    'yellow': $meeco-yellow-palette,
+    'lime': $meeco-lime-palette,
+    'green': $meeco-green-palette,
+    'mint': $meeco-mint-palette,
+    'dark-blue': $meeco-dark-blue-palette,
+    'purple': $meeco-purple-palette,
+    'violet': $meeco-violet-palette,
+    'fuchsia': $meeco-fuchsia-palette,
+    'pink': $meeco-pink-palette,
+    'ocean-blue': $meeco-ocean-blue-palette,
+    'forest-green': $meeco-forest-green-palette
+  );
+
+  // https://codepen.io/davidhalford/pen/wlDxL
+  @function text-contrast($n) {
+    $color-brightness: round((red($n) * 299) + (green($n) * 587) + (blue($n) * 114) / 1000);
+    $light-color: round(
+      (red(#ffffff) * 299) + (green(#ffffff) * 587) + (blue(#ffffff) * 114) / 1000
+    );
+
+    @if abs($color-brightness) < ($light-color/2) {
+      @return white;
+    } @else {
+      @return black;
+    }
+  }
+
+  @mixin hex-preview($color) {
+    &:before {
+      display: block;
+      font-size: $base-size * 0.06;
+      content: '' + $color;
+      color: text-contrast($color);
+      z-index: 100;
+      margin: 4px;
+    }
+  }
+
+  @each $name, $palette in $palettes {
+    .#{$name} {
+      background-color: map-get($palette, 'base');
+      @include hex-preview(map-get($palette, 'base'));
+    }
+    .#{$name}_shade {
+      background-color: map-get($palette, 'shade');
+      @include hex-preview(map-get($palette, 'shade'));
+    }
+    .#{$name}_tint50 {
+      background-color: map-get($palette, 'tint50');
+      @include hex-preview(map-get($palette, 'tint50'));
+    }
+    .#{$name}_tint10 {
+      background-color: map-get($palette, 'tint10');
+      @include hex-preview(map-get($palette, 'tint10'));
+    }
   }
 }

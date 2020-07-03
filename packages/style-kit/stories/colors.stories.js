@@ -1,6 +1,6 @@
 export default { title: 'Colors' };
 
-import 'style-loader!./colors.stories.scss';
+import { story } from 'style-loader!./colors.stories.scss';
 
 import { titleWords } from './helpers';
 
@@ -25,7 +25,7 @@ const variants = ['shade', 'tint50', 'tint10'];
 
 export const colorPalette = () => {
   const allColors = document.createElement('div');
-  allColors.className = 'colors';
+  allColors.className = 'colors ' + story;
   const buildPalette = color => {
     const container = document.createElement('div');
     container.className = 'color-container';

@@ -13,7 +13,19 @@ module.exports = {
     // Make whatever fine-grained changes you need
     config.module.rules.push({
       test: /\.scss$/,
-      use: ['css-loader', 'sass-loader'],
+      use: [
+        {
+          loader: 'css-loader',
+
+          options: {
+            modules: {
+              mode: 'global',
+              auto: /\.stories\.\w+$/i
+            }
+          }
+        },
+        'sass-loader'
+      ],
       include: path.resolve(__dirname, '../')
     });
 
