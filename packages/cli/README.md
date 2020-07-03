@@ -205,6 +205,7 @@ once approved it can be access with follwoing command
 - [`meeco items:update`](#meeco-itemsupdate)
 - [`meeco organization-members:list ORGANIZATION_ID`](#meeco-organization-memberslist-organization_id)
 - [`meeco organization-services:create ORGANIZATION_ID`](#meeco-organization-servicescreate-organization_id)
+- [`meeco organization-services:update ORGANIZATION_ID`](#meeco-organization-servicesupdate-organization_id)
 - [`meeco organizations:create`](#meeco-organizationscreate)
 - [`meeco organizations:delete ID`](#meeco-organizationsdelete-id)
 - [`meeco organizations:get ID`](#meeco-organizationsget-id)
@@ -544,6 +545,28 @@ EXAMPLE
 ```
 
 _See code: [src/commands/organization-services/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/create.ts)_
+
+## `meeco organization-services:update ORGANIZATION_ID`
+
+Modify a requested organization service. Members of the organization with roles owner and admin can use this command to modify the requested service.
+
+```
+USAGE
+  $ meeco organization-services:update ORGANIZATION_ID
+
+OPTIONS
+  -a, --auth=auth                                            (required) [default: .user.yaml] Authorization config file
+                                                             yaml file (if not using the default .user.yaml)
+
+  -e, --environment=environment                              [default: .environment.yaml] environment config file
+
+  -s, --organizationServiceConfig=organizationServiceConfig  (required) service yaml file
+
+EXAMPLE
+  meeco organization-services:update <organization_id> -c path/to/organization-service-config.yaml -a path/to/auth.yaml
+```
+
+_See code: [src/commands/organization-services/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/update.ts)_
 
 ## `meeco organizations:create`
 
