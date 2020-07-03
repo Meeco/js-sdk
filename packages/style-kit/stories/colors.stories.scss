@@ -4,6 +4,15 @@ $base-size: 180px;
 
 :local(.story) {
   @include font-base($meeco-theme);
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  &.main {
+    width: 1270px;
+  }
 
   .color-container {
     width: $base-size + ($base-size / 3);
