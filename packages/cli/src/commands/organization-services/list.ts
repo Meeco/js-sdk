@@ -6,8 +6,7 @@ import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationServicesList extends MeecoCommand {
-  static description =
-    'List requested services for a given organization. Members of the organization with roles owner and admin can use this command to list the requested services for this organization.';
+  static description = `List requested services for a given organization. Members of the organization with roles owner and admin can use this command to list the requested services for this organization.`;
 
   static examples = [`meeco organization-services:list <organization_id> -a path/to/auth.yaml`];
 
