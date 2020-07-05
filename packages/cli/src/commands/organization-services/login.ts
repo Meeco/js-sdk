@@ -4,8 +4,7 @@ import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationServicesLogin extends MeecoCommand {
-  static description =
-    'Login as a service agent. An service agent is a non-human Vault user account acting on behalf of the service. An organization owner or admin can use this command to obtain a session token for the service agent.';
+  static description = `Login as a service agent. An organization owner or admin can use this command to obtain a session token for the service agent.`;
 
   static examples = [
     `meeco organization-services:login <organization_id> <service_id> -a path/to/auth.yaml`
