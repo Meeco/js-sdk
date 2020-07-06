@@ -205,6 +205,9 @@ once approved it can be access with follwoing command
 - [`meeco items:update`](#meeco-itemsupdate)
 - [`meeco organization-members:list ORGANIZATION_ID`](#meeco-organization-memberslist-organization_id)
 - [`meeco organization-services:create ORGANIZATION_ID`](#meeco-organization-servicescreate-organization_id)
+- [`meeco organization-services:get ORGANIZATION_ID SERVICE_ID`](#meeco-organization-servicesget-organization_id-service_id)
+- [`meeco organization-services:list ORGANIZATION_ID`](#meeco-organization-serviceslist-organization_id)
+- [`meeco organization-services:login ORGANIZATION_ID SERVICE_ID`](#meeco-organization-serviceslogin-organization_id-service_id)
 - [`meeco organization-services:update ORGANIZATION_ID`](#meeco-organization-servicesupdate-organization_id)
 - [`meeco organizations:create`](#meeco-organizationscreate)
 - [`meeco organizations:delete ID`](#meeco-organizationsdelete-id)
@@ -545,6 +548,66 @@ EXAMPLE
 ```
 
 _See code: [src/commands/organization-services/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/create.ts)_
+
+## `meeco organization-services:get ORGANIZATION_ID SERVICE_ID`
+
+Retrieve a validated organization service. Only validated services are accessible.
+
+```
+USAGE
+  $ meeco organization-services:get ORGANIZATION_ID SERVICE_ID
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLE
+  meeco organization-services:get <organization_id> <service_id> -a path/to/auth.yaml
+```
+
+_See code: [src/commands/organization-services/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/get.ts)_
+
+## `meeco organization-services:list ORGANIZATION_ID`
+
+List requested services for a given organization. Members of the organization with roles owner and admin can use this command to list the requested services for this organization.
+
+```
+USAGE
+  $ meeco organization-services:list ORGANIZATION_ID
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLE
+  meeco organization-services:list <organization_id> -a path/to/auth.yaml
+```
+
+_See code: [src/commands/organization-services/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/list.ts)_
+
+## `meeco organization-services:login ORGANIZATION_ID SERVICE_ID`
+
+Login as a service agent. An organization owner or admin can use this command to obtain a session token for the service agent.
+
+```
+USAGE
+  $ meeco organization-services:login ORGANIZATION_ID SERVICE_ID
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLE
+  meeco organization-services:login <organization_id> <service_id> -a path/to/auth.yaml
+```
+
+_See code: [src/commands/organization-services/login.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/login.ts)_
 
 ## `meeco organization-services:update ORGANIZATION_ID`
 
