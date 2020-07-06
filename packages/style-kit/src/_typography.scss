@@ -1,9 +1,9 @@
 @import 'variables';
 
-@mixin font-base {
+@mixin font-base($theme) {
   font-family: 'Euclid Circular B', 'Euclid', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Helvetica, 'Apple Color Emoji', Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
-  color: map-get($meeco-charcoal-palette, 'base');
+  color: map-get($theme, 'text');
 }
 
 @mixin headings {
@@ -61,11 +61,15 @@
   line-height: 19px;
 }
 
-@mixin typography-main {
+@mixin typography-main($theme, $nested: null) {
   @include headings;
   html {
-    @include font-base;
+    @include font-base($theme);
   }
+  @if $nested == true {
+    @include font-base($theme);
+  }
+
   .large {
     @include body-text-large;
   }

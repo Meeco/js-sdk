@@ -1,1 +1,12 @@
-@import '../main';
+@import '../index';
+
+:local(.story) {
+  @include typography-main($meeco-theme, true);
+  @include buttons-main($meeco-theme);
+  button {
+    display: block;
+    &:not(.icon-only) {
+      width: 200px;
+    }
+  }
+}

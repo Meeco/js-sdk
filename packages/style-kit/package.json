@@ -9,7 +9,8 @@
     "docs": "build-storybook -c .storybook -o ../../docs/style-kit",
     "start": "npm run storybook",
     "storybook": "start-storybook -p 8085 --ci",
-    "test": "start-server-and-test 8085 'cypress run'"
+    "test": "start-server-and-test 8085 'cypress run'",
+    "update-snapshots": "start-server-and-test 8085 'cypress run --env updateSnapshots=true'"
   },
   "author": "Meeco",
   "license": "MIT",
@@ -25,7 +26,7 @@
     "color": "^3.1.2",
     "css-loader": "^3.6.0",
     "cypress": "^4.9.0",
-    "cypress-plugin-snapshots": "^1.4.3",
+    "cypress-image-snapshot": "^3.1.1",
     "cypress-storybook": "^0.2.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "js-base64": "2.5.1",

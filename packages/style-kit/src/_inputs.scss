@@ -1,0 +1,65 @@
+@import './typography';
+@import './variables';
+
+@mixin input($theme) {
+  border-radius: $border-radius-standard;
+  border: 1px solid map-get($theme, 'light');
+  padding: 10px;
+  background-color: map-get($theme, 'bgShade');
+  color: map-get($theme, 'text');
+}
+
+@mixin text-input($theme) {
+  @include input($theme);
+  @include text-field-value;
+}
+
+@mixin input-label {
+  @include text-field-label;
+  margin-left: 16px;
+  margin-bottom: -8px;
+}
+
+@mixin search-input-container($theme) {
+  padding: 0px 8px;
+  border-radius: $border-radius-large;
+  border: 1px solid map-get($theme, 'light');
+  background-color: map-get($theme, 'bgShade');
+  display: flex;
+  align-items: center;
+  max-width: 360px;
+}
+
+@mixin search-input {
+  @include body-text-medium;
+  width: 100%;
+  border: 0;
+  outline: none;
+  background-color: transparent;
+}
+
+@mixin inputs-main($theme) {
+  input {
+    margin: 16px;
+    display: block;
+    @include text-input($theme);
+    &:focus {
+      outline-color: map-get($theme, 'light');
+    }
+    &:placeholder {
+      color: map-get($theme, 'placeholder');
+    }
+  }
+  label {
+    @include input-label;
+    display: block;
+  }
+  .search-bar {
+    margin: 16px;
+    @include search-input-container($theme);
+    input[type='search'] {
+      @include search-input;
+      margin: 8px;
+    }
+  }
+}

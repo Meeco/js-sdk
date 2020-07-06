@@ -1,3 +1,6 @@
-@import '../src/field-items';
+@import '../index';
 
-@include inputs-main;
+:local(.story) {
+  @include typography-main($meeco-theme, true);
+  @include inputs-main($meeco-theme);
+}

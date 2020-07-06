@@ -7,7 +7,7 @@
 // You can read more here:
 // https://on.cypress.io/plugins-guide
 // ***********************************************************
-const { initPlugin } = require('cypress-plugin-snapshots/plugin');
+const { addMatchImageSnapshotPlugin } = require('cypress-image-snapshot/plugin');
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
@@ -15,7 +15,7 @@ module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
 
-  initPlugin(on, config);
+  addMatchImageSnapshotPlugin(on, config);
 
   // https://github.com/cypress-io/cypress/issues/2102#issuecomment-582829959
   on('before:browser:launch', (browser = {}, launchOptions) => {
