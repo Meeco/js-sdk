@@ -1,4 +1,3 @@
-import { meecoRed, meecoPink, meecoTransparent, meecoWhite } from '../fixtures/colors';
 import { onlyOn } from '@cypress/skip-test';
 
 describe('Colors', () => {

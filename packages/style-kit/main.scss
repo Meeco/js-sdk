@@ -2,3 +2,9 @@
 @import './index';
 
 @include create-meeco-theme($meeco-theme);
+
+html {
+  * {
+    box-sizing: border-box;
+  }
+}

@@ -1,0 +1,35 @@
+@import '../index';
+
+:local(.story) {
+  @include typography-main($meeco-theme, true);
+  @include cards-main($meeco-theme);
+
+  margin: $grid * 2;
+
+  .card {
+    margin: $grid * 2;
+    .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: $border-radius-standard;
+      background-color: map-get($meeco-theme, 'light');
+    }
+  }
+
+  .fixed-width {
+    width: 360px;
+  }
+
+  &.shadows {
+    .card {
+      min-width: $grid * 16;
+      min-height: $grid * 16;
+    }
+  }
+
+  &.advanced {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

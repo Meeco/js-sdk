@@ -5,7 +5,7 @@ on:
     tags:
       - releases/sdk/*
 jobs:
-  build:
+  create_sdk_release:
     runs-on: ubuntu-latest
 
     strategy:

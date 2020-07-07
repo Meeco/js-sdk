@@ -10,7 +10,10 @@
     "start": "npm run storybook",
     "storybook": "start-storybook -p 8085 --ci",
     "test": "start-server-and-test 8085 'cypress run'",
-    "update-snapshots": "start-server-and-test 8085 'cypress run --env updateSnapshots=true'"
+    "update-snapshots": "start-server-and-test 8085 'cypress run --env updateSnapshots=true'",
+    "posttest": "npm run format:check",
+    "format:check": "prettier -c \"{stories,cypress,src}/**/*.{ts,html,scss,js}\"",
+    "format:write": "prettier --write \"{stories,cypress,src}/**/*.{ts,html,scss,js}\" *.{json,scss} README.md"
   },
   "author": "Meeco",
   "license": "MIT",
