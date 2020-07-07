@@ -26,10 +26,13 @@
 
 @mixin body-text-medium {
   font-size: 16px;
+  line-height: 25px;
 }
 
 @mixin body-text-small {
   font-size: 14px;
+  margin: 0;
+  padding: 0;
 }
 
 // label-fonts
@@ -66,8 +69,14 @@
   html {
     @include font-base($theme);
   }
+
   @if $nested == true {
     @include font-base($theme);
+  }
+
+  p {
+    margin: 0;
+    padding: 0;
   }
 
   .large {
@@ -81,6 +90,10 @@
   }
   .card-label {
     @include card-label;
+  }
+  .subtitle {
+    @include body-text-small;
+    color: map-get($theme, 'lightText');
   }
   label {
     @include text-field-label;

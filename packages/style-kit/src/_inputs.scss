@@ -16,12 +16,12 @@
 
 @mixin input-label {
   @include text-field-label;
-  margin-left: 16px;
-  margin-bottom: -8px;
+  margin-left: $grid * 2;
+  margin-bottom: -$grid;
 }
 
 @mixin search-input-container($theme) {
-  padding: 0px 8px;
+  padding: 0px $grid;
   border-radius: $border-radius-large;
   border: 1px solid map-get($theme, 'light');
   background-color: map-get($theme, 'bgShade');
@@ -40,7 +40,7 @@
 
 @mixin inputs-main($theme) {
   input {
-    margin: 16px;
+    margin: $grid * 2;
     display: block;
     @include text-input($theme);
     &:focus {
@@ -55,11 +55,11 @@
     display: block;
   }
   .search-bar {
-    margin: 16px;
+    margin: $grid * 2;
     @include search-input-container($theme);
     input[type='search'] {
       @include search-input;
-      margin: 8px;
+      margin: $grid;
     }
   }
 }

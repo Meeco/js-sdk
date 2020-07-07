@@ -1,9 +1,11 @@
 @import './buttons';
 @import './inputs';
 @import './typography';
+@import './cards';
 
 @mixin create-meeco-theme($theme-config) {
   @include buttons-main($theme-config);
   @include inputs-main($theme-config);
   @include typography-main($theme-config);
+  @include cards-main($theme-config);
 }

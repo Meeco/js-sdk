@@ -1,0 +1,68 @@
+@import './variables';
+
+@mixin item-spacing($spacing: $grid) {
+  > * {
+    margin: 0 $spacing 0 $spacing;
+    &:first-child {
+      margin-left: 0;
+    }
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+@mixin card($theme) {
+  box-shadow: $shadow-soft;
+  border-radius: $border-radius-medium;
+  display: inline-flex;
+  flex-direction: column;
+
+  .content {
+    padding: $grid * 2;
+    display: flex;
+    align-items: center;
+    @include item-spacing();
+
+    .icon {
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid map-get($theme, 'light');
+
+    padding: ($grid * 1.5) ($grid * 2) ($grid * 1.5) ($grid * 2);
+
+    @include item-spacing();
+
+    > * {
+      display: flex;
+      align-items: center;
+      @include item-spacing();
+    }
+  }
+}
+
+@mixin shadows {
+  &.hard {
+    box-shadow: $shadow-hard;
+  }
+  &.dark {
+    box-shadow: $shadow-dark;
+  }
+}
+
+@mixin cards-main($theme) {
+  * {
+    box-sizing: border-box;
+  }
+  .card {
+    @include card($theme);
+    @include shadows;
+  }
+}
