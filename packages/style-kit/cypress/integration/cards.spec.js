@@ -27,15 +27,36 @@ describe('Cards and Shadows', () => {
     });
     onlyOn('Headless', () => {
       it('Basic card matches the snapshot', () => {
-        cy.get('.basic').matchImageSnapshot('Basic Card');
+        cy.get('.basic').matchImageSnapshot('Basic Card', {
+          clip: {
+            x: 0,
+            y: 0,
+            width: 216,
+            height: 76
+          }
+        });
       });
 
       it('Complex footer card matches the snapshot', () => {
-        cy.get('.complex-footer').matchImageSnapshot('Complex Footer Card');
+        cy.get('.complex-footer').matchImageSnapshot('Complex Footer Card', {
+          clip: {
+            x: 0,
+            y: 0,
+            width: 268,
+            height: 145
+          }
+        });
       });
 
       it('Bounded card matches the snapshot', () => {
-        cy.get('.fixed-width').matchImageSnapshot('Bounded Card');
+        cy.get('.fixed-width .card').matchImageSnapshot('Bounded Card', {
+          clip: {
+            x: 0,
+            y: 0,
+            width: 328,
+            height: 169
+          }
+        });
       });
     });
   });
