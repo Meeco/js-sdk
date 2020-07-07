@@ -50,6 +50,10 @@ describe('Cards and Shadows', () => {
 
       it('Bounded card matches the snapshot', () => {
         cy.get('.fixed-width .card').matchImageSnapshot('Bounded Card', {
+          // Because of font rendering differences in headless docker
+          // we bump this up a bit
+          failureThreshold: 0.15,
+          failureThresholdType: 'percent',
           clip: {
             x: 0,
             y: 0,
