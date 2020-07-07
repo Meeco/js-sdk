@@ -29,4 +29,9 @@ jobs:
         with:
           name: Cypress Test Screenshots
           path: packages/style-kit/cypress/screenshots/
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: Cypress Failure Diffs
+          path: packages/style-kit/cypress/snapshots/
       - run: npx lerna run build
