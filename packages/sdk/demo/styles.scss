@@ -1,6 +1,4 @@
-@import '~style-kit';
-
-@include headings;
+@import '~style-kit/main';
 
 html,
 body {
@@ -17,8 +15,4 @@ fieldset {
   input {
     width: 200px;
   }
-}
-
-button {
-  @include primary-button-small;
 }

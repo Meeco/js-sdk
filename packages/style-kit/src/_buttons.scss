@@ -59,6 +59,10 @@
 @mixin buttons-main($theme) {
   button {
     margin: 16px;
+
+    @include primary-button($theme);
+    @include button-spacing-small;
+
     &:focus {
       outline: none;
       box-shadow: 0 0 0 3px transparentize(map-get($theme, 'primary'), 0.5);
