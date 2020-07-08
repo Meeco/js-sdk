@@ -233,11 +233,8 @@ const item = await shareService.getSharedItem(bob, sharedItem.id);
 
 There is a sample website that uses cryppo to perform various functions.
 
-Setup your environment file:
-
-1. `cp demo/.environment.example.json demo/.environment.json`
-2. Update URLs and subscription keys as necessary
-
-`npm install && npm run demo`
-
+1. Bootstrap the root project (`npm run bootstrap` in project root)
+2. `npm run demo`
 3. Visit `http://localhost:1234`
+
+Note environment settings are saved to local storage for convenience
