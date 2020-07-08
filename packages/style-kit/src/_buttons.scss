@@ -57,7 +57,8 @@
 }
 
 @mixin buttons-main($theme) {
-  button {
+  button,
+  a.button {
     margin: 16px;
 
     @include primary-button($theme);

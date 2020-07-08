@@ -1,18 +1,58 @@
 <!-- index.html -->
 <html>
   <body>
-    <!-- <fieldset>
-      <legend>Captcha</legend>
+    <div class="title">
+      <h6>Meeco JavaScript SDK Demo</h6>
+      <a class="button secondary" href="https://meeco.github.io/js-sdk/">View Documentation</a>
+    </div>
+    <div class="card">
+      <h4>Environment Configuration</h4>
+      <hr />
+      <label for="vaultUrl">Vault API URL:</label>
+      <input
+        placeholder="e.g. https://sandbox.meeco.me/vault"
+        class="full"
+        value="https://sandbox.meeco.me/vault"
+        autocapitalize="off"
+        autocomplete="off"
+        id="vaultUrl"
+      />
+      <label for="keystoreUrl">Keystore API URL:</label>
+      <input
+        placeholder="e.g. https://sandbox.meeco.me/keystore"
+        class="full"
+        value="https://sandbox.meeco.me/keystore"
+        autocapitalize="off"
+        autocomplete="off"
+        id="keystoreUrl"
+      />
+      <label for="subscriptionKey">Meeco Subscription Key:</label>
+      <input
+        placeholder="e.g. aaaaa11111bbbbb22222"
+        class="full"
+        autocapitalize="off"
+        autocomplete="off"
+        id="subscriptionKey"
+      />
+      <button id="updateEnvironment">Save</button>
+      <input value="Not set" class="full" disabled id="environmentStatus" />
+    </div>
+
+    <!-- <div>
+      <h4>Captcha</h4>
       <button id="getCaptcha">Get Captcha Token</button>
       <input placeholder="captcha" id="captcha" />
-    </fieldset> -->
-    <fieldset>
-      <legend>Event Log</legend>
+    </div> -->
+    <div class="card">
+      <h4>Event Log</h4>
+      <hr />
+      <sub>Any log events that the SDK output will appear here:</sub>
       <textarea disabled id="log" rows="5"></textarea>
-    </fieldset>
+    </div>
 
-    <fieldset>
-      <legend>Username</legend>
+    <div class="card">
+      <h4>Username</h4>
+      <hr />
       <input
         placeholder="Enter or Generate Username"
         autocapitalize="off"
@@ -20,10 +60,11 @@
         id="username"
       />
       <button id="getUsername">Get Username</button>
-    </fieldset>
+    </div>
 
-    <fieldset>
-      <legend>Secrets</legend>
+    <div class="card">
+      <h4>Secrets</h4>
+      <hr />
       <input
         placeholder="Enter or Generate User Secret"
         autocapitalize="off"
@@ -38,31 +79,35 @@
         autocomplete="off"
         id="passphrase"
       />
-    </fieldset>
+    </div>
 
-    <fieldset>
-      <legend>Get User</legend>
+    <div class="card">
+      <h4>Get User</h4>
+      <hr />
       <button id="fetchUserData">Fetch User Data</button>
       <button id="createUser">Create New User</button>
       <textarea disabled id="userData" rows="10"></textarea>
-    </fieldset>
+    </div>
 
-    <fieldset>
-      <legend>Get Items</legend>
+    <div class="card">
+      <h4>Get Items</h4>
+      <hr />
       <button id="getItems">Get Items</button>
       <textarea disabled id="items" rows="10"></textarea>
-    </fieldset>
+    </div>
 
-    <fieldset>
-      <legend>Add Attachment (PNG)</legend>
+    <div class="card">
+      <h4>Add Attachment (PNG)</h4>
+      <hr />
       <input id="attachment" type="file" accept="image/x-png,image/png" />
       <input id="itemId" placeholder="itemId" type="text" autocapitalize="off" autocomplete="off" />
       <button type="button" id="attachFile">Attach</button>
       <textarea disabled id="attached" rows="10"></textarea>
-    </fieldset>
+    </div>
 
-    <fieldset>
-      <legend>Download Attachment</legend>
+    <div class="card">
+      <h4>Download Attachment</h4>
+      <hr />
       <input
         id="attachmentId"
         placeholder="attachmentId"
@@ -72,10 +117,11 @@
       />
       <button type="button" id="downloadAttachment">Download</button>
       <textarea disabled id="downloadAttachmentDetails" rows="3"></textarea>
-    </fieldset>
+    </div>
 
-    <fieldset>
-      <legend>Download Thumbnail</legend>
+    <div class="card">
+      <h4>Download Thumbnail</h4>
+      <hr />
       <input
         id="thumbnailId"
         placeholder="thumbnailId"
@@ -85,7 +131,7 @@
       />
       <button type="button" id="downloadThumbnail">Download</button>
       <textarea disabled id="downloadThumbnailDetails" rows="3"></textarea>
-    </fieldset>
+    </div>
 
     <script src="./index.ts"></script>
   </body>
