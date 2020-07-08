@@ -20,6 +20,8 @@ jobs:
       - run: npx lerna run test
         env:
           CI: true
+      # We want to ensure there are no issues the demo builds as well
+      - run: npx lerna run docs
       - uses: actions/upload-artifact@v2
         with:
           name: Cypress Test Recording
