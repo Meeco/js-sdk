@@ -5,21 +5,21 @@ import {
   Environment,
   ItemService,
   SecretService,
-  UserService,
+  UserService
 } from '../src/index';
 import cryppo from '../src/services/cryppo-service';
 import './styles.scss';
 
-const $ = document.getElementById.bind(document);
-const $get = (id: string) => ($(id) as HTMLInputElement)!.value;
-const $set = (id: string, value: string) => (($(id) as HTMLInputElement)!.value = value);
+const $ = id => document.getElementById(id)!;
+const $get = (id: string) => ($(id) as HTMLInputElement)?.value;
+const $set = (id: string, value: string) => (($(id) as HTMLInputElement).value = value);
 
 let environment: Environment;
 loadEnvironmentFromStorage();
 
 function loadEnvironmentFromStorage() {
-  const loadKey = (key) =>
-    localStorage.getItem(key) ? $set(key, localStorage.getItem(key)) : void 0;
+  const loadKey = (key: string) =>
+    localStorage.getItem(key) ? $set(key, localStorage.getItem(key)!) : void 0;
 
   loadKey('vaultUrl');
   loadKey('keystoreUrl');
@@ -44,13 +44,13 @@ function updateEnvironment() {
   environment = new Environment({
     vault: {
       url: vaultUrl,
-      subscription_key: subscriptionKey,
+      subscription_key: subscriptionKey
     },
     keystore: {
       url: keystoreUrl,
       subscription_key: subscriptionKey,
-      provider_api_key: '',
-    },
+      provider_api_key: ''
+    }
   });
 
   $set('environmentStatus', 'Saved');
@@ -72,8 +72,8 @@ const STATE: {
       'qvufd1GAJmiBEKE2FTSksbLbMTBYwh3kucmd78onqoo='
     ),
     secret: '1.bBq6Qp.6ztGfS-hKUdWN-PhnCqi-Fpd4k2-1UMXJz-dWGpGV-yZSzTQ-N',
-    vault_access_token: 'bwmDcZsQFBx1S2w4f9wv',
-  },
+    vault_access_token: 'bwmDcZsQFBx1S2w4f9wv'
+  }
 };
 
 // Assumes modern browser with fetch
@@ -177,7 +177,7 @@ async function attachFile() {
     return alert('Please fetch user data above first');
   }
 
-  const [blob] = $('attachment').files;
+  const [blob] = ($('attachment') as any).files;
   if (!blob) {
     return alert('Please attach file first');
   }
@@ -195,7 +195,7 @@ async function attachFile() {
         fileName: 'myfile.png',
         fileType: 'image/png',
         itemId,
-        label: 'My File',
+        label: 'My File'
       },
       STATE.user
     );
@@ -261,10 +261,10 @@ async function downloadThumbnail() {
 function fileAsBinaryString(file: Blob): Promise<ArrayBuffer> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = ev => {
       resolve(<any>reader.result);
     };
-    reader.onerror = (err) => reject(err);
+    reader.onerror = err => reject(err);
     reader.readAsArrayBuffer(file);
   });
 }
