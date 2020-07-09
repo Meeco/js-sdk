@@ -6,6 +6,8 @@ import { vaultAPIFactory } from '../util/api-factory';
 
 /**
  * List and fetch available templates for Meeco Items from the API.
+ *
+ * @deprecated Use [vaultApiFactory] ItemTemplateApi list instead.
  */
 export class TemplatesService {
   private api: ItemTemplateApi;
@@ -18,6 +20,9 @@ export class TemplatesService {
     return await this.api.itemTemplatesGet(classificationScheme, classificationName);
   }
 
+  /**
+   * @deprecated Use [vaultApiFactory] ItemTemplateApi list or get by id instead.
+   */
   public async getTemplate(
     classificationScheme: string,
     classificationName: string,
@@ -31,8 +36,8 @@ export class TemplatesService {
       );
     }
     const slots = result.slots?.filter(slot => template.slot_ids?.includes(slot.id!));
-    const classification_nodes = result.classification_nodes.filter(classifcationNode =>
-      template.classification_node_ids.includes(classifcationNode.id)
+    const classification_nodes = result.classification_nodes.filter(classificationNode =>
+      template.classification_node_ids.includes(classificationNode.id)
     );
 
     return {

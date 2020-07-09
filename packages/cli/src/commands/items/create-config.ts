@@ -1,8 +1,9 @@
-import { TemplatesService } from '@meeco/sdk';
+import { vaultAPIFactory } from '@meeco/sdk';
+import { flags as _flags } from '@oclif/command';
+import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
 import { ItemConfig } from '../../configs/item-config';
 import { authFlags } from '../../flags/auth-flags';
-import { DEFAULT_CLASSIFICATION_NAME, DEFAULT_CLASSIFICATION_SCHEME } from '../../util/constants';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ItemsCreateConfig extends MeecoCommand {
@@ -12,7 +13,19 @@ export default class ItemsCreateConfig extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
+    classificationScheme: _flags.string({
+      char: 's',
+      default: undefined,
+      required: false,
+      description: 'Scope templates to a particular classification scheme'
+    }),
+    classificationName: _flags.string({
+      char: 'n',
+      default: undefined,
+      required: false,
+      description: 'Scope templates to a particular classification name'
+    })
   };
 
   static args = [
@@ -27,18 +40,26 @@ export default class ItemsCreateConfig extends MeecoCommand {
     const { args, flags } = this.parse(this.constructor as typeof ItemsCreateConfig);
     const environment = await this.readEnvironmentFile();
     const { templateName } = args;
-    const { auth } = flags;
+    const { auth, classificationName, classificationScheme } = flags;
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
 
     if (!authConfig) {
       this.error('Must specify a valid auth config file');
     }
-    const service = new TemplatesService(environment, authConfig.vault_access_token);
-    const template = await service.getTemplate(
-      DEFAULT_CLASSIFICATION_SCHEME,
-      DEFAULT_CLASSIFICATION_NAME,
-      templateName
+
+    const service = vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
+    const templates = await service.itemTemplatesGet(classificationScheme, classificationName);
+    const template = templates.item_templates.find(_template => _template.name === templateName);
+
+    if (!template) {
+      throw new CLIError(`Template with name '${templateName}' not found`);
+    }
+
+    this.printYaml(
+      ItemConfig.encodeFromTemplate({
+        template,
+        slots: templates.slots.filter(slot => template.slot_ids.includes(slot.id))
+      })
     );
-    this.printYaml(ItemConfig.encodeFromTemplate(template));
   }
 }

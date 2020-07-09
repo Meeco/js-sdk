@@ -1,9 +1,5 @@
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
-import {
-  DEFAULT_CLASSIFICATION_NAME,
-  DEFAULT_CLASSIFICATION_SCHEME
-} from '../../../src/util/constants';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 describe('items:create-config', () => {
@@ -59,10 +55,6 @@ const response = {
 function mockVault(api) {
   api
     .get('/item_templates')
-    .query({
-      'by_classification[scheme]': DEFAULT_CLASSIFICATION_SCHEME,
-      'by_classification[name]': DEFAULT_CLASSIFICATION_NAME
-    })
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, response);
