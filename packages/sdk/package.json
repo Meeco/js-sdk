@@ -46,7 +46,7 @@
     "mocha": "~7.0.0",
     "nock": "~11.7.2",
     "nyc": "~15.0.0",
-    "parcel": "^2.0.0-beta.1",
+    "parcel": "^2.0.0-nightly.328",
     "prettier": "~1.19.1",
     "rollup-plugin-typescript2": "^0.27.1",
     "sass": "^1.26.8",
