@@ -27,13 +27,17 @@ export default class ItemsGet extends MeecoCommand {
       this.error('Valid auth config file must be supplied');
     }
 
-    this.updateStatus('Fetching item details');
-    const result = await service.get(
-      itemId,
-      authConfig.vault_access_token,
-      authConfig.data_encryption_key
-    );
+    try {
+      this.updateStatus('Fetching item details');
+      const result = await service.get(
+        itemId,
+        authConfig.vault_access_token,
+        authConfig.data_encryption_key
+      );
 
-    this.printYaml(ItemConfig.encodeFromJSON(result));
+      this.printYaml(ItemConfig.encodeFromJSON(result));
+    } catch (error) {
+      await this.handleException(error);
+    }
   }
 }
