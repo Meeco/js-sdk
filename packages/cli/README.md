@@ -373,10 +373,14 @@ ARGUMENTS
   TEMPLATENAME  Name of the template to use for the item
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
+  -a, --auth=auth                                  (required) [default: .user.yaml] Authorization config file yaml file
+                                                   (if not using the default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config file
+  -e, --environment=environment                    [default: .environment.yaml] environment config file
+
+  -n, --classificationName=classificationName      Scope templates to a particular classification name
+
+  -s, --classificationScheme=classificationScheme  Scope templates to a particular classification scheme
 
 EXAMPLES
   meeco items:create-config password
