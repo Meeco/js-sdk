@@ -4,3 +4,4 @@ spec:
   name: Twitter Service
   description: Fetch all twitter data
   contract:
+  public_key: --PUBLIC_KEY--ABCD

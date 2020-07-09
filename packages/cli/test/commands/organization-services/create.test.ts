@@ -12,6 +12,7 @@ describe('organization-services:create', () => {
   customTest
     .stdout()
     .stderr()
+    .mockCryppo()
     .nock('https://sandbox.meeco.me/vault', api => {
       api
         .post('/organizations/organization_id/services')

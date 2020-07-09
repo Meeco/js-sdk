@@ -2,7 +2,9 @@ import { Organization, PostOrganizationRequest } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { ConfigReader, IYamlConfig } from './yaml-config';
 
-export interface IOrganizationMetadata {}
+export interface IOrganizationMetadata {
+  privateKey: string;
+}
 
 export interface IOrganizationTemplate extends PostOrganizationRequest {
   id?: string;
@@ -12,7 +14,10 @@ export interface IOrganizationTemplate extends PostOrganizationRequest {
 export class OrganizationConfig {
   static kind = 'Organization';
 
-  constructor(public readonly organization: IOrganizationTemplate) {}
+  constructor(
+    public readonly organization: IOrganizationTemplate,
+    public readonly metadata?: IOrganizationMetadata
+  ) {}
 
   static fromYamlConfig(
     yamlConfigObj: IYamlConfig<IOrganizationMetadata, IOrganizationTemplate>
@@ -23,12 +28,13 @@ export class OrganizationConfig {
       );
     }
 
-    return new OrganizationConfig(yamlConfigObj.spec);
+    return new OrganizationConfig(yamlConfigObj.spec, yamlConfigObj.metadata);
   }
 
-  static encodeFromJSON(json: Organization) {
+  static encodeFromJSON(json: Organization, metadata?: {}) {
     return {
       kind: OrganizationConfig.kind,
+      ...(metadata ? { metadata } : {}),
       spec: json
     };
   }

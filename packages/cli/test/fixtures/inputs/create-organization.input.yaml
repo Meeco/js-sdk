@@ -7,3 +7,4 @@ spec:
   email: admin@superdata.example.com
   contract:
     name: 'sample contract'
+  public_key:

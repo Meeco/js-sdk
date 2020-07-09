@@ -1,4 +1,4 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { OrganizationsService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationConfig } from '../../configs/organization-config';
@@ -42,12 +42,12 @@ or rejected by meeco`;
       this.error('Valid organization config file must be supplied');
     }
     try {
-      const result = await vaultAPIFactory(environment)(
-        authConfig
-      ).OrganizationsManagingOrganizationsApi.organizationsPost(
-        organizationConfigFile.organization
+      const service = new OrganizationsService(environment, authConfig!.vault_access_token);
+      this.updateStatus('Creating organization');
+      const result = await service.create(organizationConfigFile.organization);
+      this.printYaml(
+        OrganizationConfig.encodeFromJSON(result.organization, { privateKey: result.privateKey })
       );
-      this.printYaml(OrganizationConfig.encodeFromJSON(result.organization));
     } catch (err) {
       await this.handleException(err);
     }

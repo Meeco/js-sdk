@@ -265,7 +265,7 @@ export class ShareService {
     const encryptionSpaceId = connection.other_user_connection_encryption_space_id!;
     this.log('Fetching key pair');
     const keyPair = await this.keystoreApiFactory(toUser)
-      .KeypairApi.keypairsIdGet(connection.key_store_keypair_id)
+      .KeypairApi.keypairsIdGet(connection.keypair_external_id)
       .then(res => res.keypair);
 
     const privateKey = await this.cryppo.decryptWithKey({

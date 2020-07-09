@@ -1,5 +1,7 @@
 import { OrganizationsService } from '@meeco/sdk';
+import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
+import { OrganizationConfig } from '../../configs/organization-config';
 import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
@@ -9,26 +11,40 @@ export default class OrganizationsLogin extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
+    org: _flags.string({ char: 'o', required: true, description: 'organization yaml file' })
   };
 
-  static args = [{ name: 'id', required: true }];
-
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof OrganizationsLogin);
-    const { auth } = flags;
-    const { id } = args;
+    const { flags } = this.parse(this.constructor as typeof OrganizationsLogin);
+    const { org, auth } = flags;
     const environment = await this.readEnvironmentFile();
+    const organizationConfigFile = await this.readConfigFromFile(OrganizationConfig, org);
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
 
     if (!authConfig) {
       this.error('Valid auth config file must be supplied');
     }
+    if (!organizationConfigFile) {
+      this.error('Valid organization config file must be supplied');
+    }
+
+    const { organization, metadata } = organizationConfigFile;
+
+    if (!organization?.id) {
+      this.error('Organization configuration must have an id (expected at spec.id)');
+    }
+
+    if (!metadata?.privateKey) {
+      this.error(
+        'Organization configuration must have an private key (expected at metadata.privateKey)'
+      );
+    }
 
     try {
       const service = new OrganizationsService(environment, authConfig!.vault_access_token);
       this.updateStatus('Fetching organization agent credentials');
-      const result = await service.getLogin(id);
+      const result = await service.getLogin(organization.id, metadata.privateKey);
       this.printYaml(AuthConfig.encodeFromAuthData(result));
     } catch (err) {
       await this.handleException(err);
