@@ -6,6 +6,7 @@ packages/**/lib
 packages/**/tmp
 # Parcel bundle cache
 packages/**/.cache
+packages/**/.parcel-cache
 
 # Cypress failurs
 packages/**/cypress/screenshots

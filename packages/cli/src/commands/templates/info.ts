@@ -1,9 +1,11 @@
-import { TemplatesService } from '@meeco/sdk';
+import { vaultAPIFactory } from '@meeco/sdk';
+import { Slot } from '@meeco/vault-api-sdk';
+import { flags as _flags } from '@oclif/command';
+import { CLIError } from '@oclif/errors';
 import { cli } from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
 import { TemplateConfig } from '../../configs/template-config';
 import { authFlags } from '../../flags/auth-flags';
-import { DEFAULT_CLASSIFICATION_NAME, DEFAULT_CLASSIFICATION_SCHEME } from '../../util/constants';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class TemplatesInfo extends MeecoCommand {
@@ -13,27 +15,59 @@ export default class TemplatesInfo extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
+    classificationScheme: _flags.string({
+      char: 's',
+      default: undefined,
+      required: false,
+      description: 'Scope templates to a particular classification scheme'
+    }),
+    classificationName: _flags.string({
+      char: 'n',
+      default: undefined,
+      required: false,
+      description: 'Scope templates to a particular classification name'
+    })
   };
 
-  static args = [{ name: 'templateName', required: true }];
+  static args = [
+    {
+      name: 'templateName',
+      required: true
+    }
+  ];
 
   async run() {
     try {
       const { flags, args } = this.parse(this.constructor as typeof TemplatesInfo);
-      const { auth } = flags;
+      const { auth, classificationName, classificationScheme } = flags;
       const { templateName } = args;
       const environment = await this.readEnvironmentFile();
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-      const service = new TemplatesService(environment, authConfig!.vault_access_token);
+      const service = vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
       cli.action.start(`Fetching template '${templateName}'`);
-      const result = await service.getTemplate(
-        DEFAULT_CLASSIFICATION_SCHEME,
-        DEFAULT_CLASSIFICATION_NAME,
-        templateName
+      const result = await service.itemTemplatesGet(classificationScheme, classificationName);
+      const matchingTemplates = result.item_templates.filter(
+        template => template.name === templateName
       );
+      if (matchingTemplates.length === 0) {
+        throw new CLIError(`Template '${templateName}' not found`);
+      }
+      const keyedSlots = result.slots.reduce(
+        (prev, slot) => ({
+          ...prev,
+          [slot.id]: slot
+        }),
+        {}
+      );
+
+      const mappedTemplates = matchingTemplates.map(template => ({
+        template,
+        slots: template.slot_ids.map(slot => keyedSlots[slot]) as Slot[]
+      }));
+
       cli.action.stop();
-      this.printYaml(TemplateConfig.encodeFromJSON(result));
+      this.printYaml(TemplateConfig.encodeFromJSON(mappedTemplates));
     } catch (err) {
       await this.handleException(err);
     }
