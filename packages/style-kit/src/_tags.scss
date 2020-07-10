@@ -29,10 +29,8 @@
 }
 
 @mixin tags-main($theme) {
-  * {
-    &.tag {
-      @include tag-base($theme);
-    }
+  .tag {
+    @include tag-base($theme);
     .tag-edit {
       @include tag-edit;
     }
