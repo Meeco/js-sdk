@@ -54,12 +54,14 @@ $grid: 8px;
 $meeco-theme: (
   primary: map-get($meeco-red-palette, 'base'),
   secondary: map-get($meeco-red-palette, 'tint10'),
+  highlight: map-get($meeco-blue-palette, 'base'),
   placeholder: map-get($meeco-smoke-palette, 'shade'),
   dark: map-get($meeco-charcoal-palette, 'base'),
   light: map-get($meeco-smoke-palette, 'base'),
   bgShade: map-get($meeco-smoke-palette, 'tint10'),
   text: map-get($meeco-charcoal-palette, 'base'),
-  lightText: map-get($meeco-charcoal-palette, 'tint50')
+  lightText: map-get($meeco-charcoal-palette, 'tint50'),
+  darkText: map-get($meeco-charcoal-palette, 'shade')
 );
 
 $headings: (

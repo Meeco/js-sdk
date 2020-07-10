@@ -6,7 +6,7 @@
   border: 1px solid map-get($theme, 'light');
   padding: 10px;
   background-color: map-get($theme, 'bgShade');
-  color: map-get($theme, 'text');
+  color: map-get($theme, 'darkText');
 }
 
 @mixin text-input($theme) {
@@ -44,7 +44,7 @@
     display: block;
     @include text-input($theme);
     &:focus {
-      outline-color: map-get($theme, 'light');
+      outline-color: map-get($theme, 'highlight');
     }
     &:placeholder {
       color: map-get($theme, 'placeholder');
