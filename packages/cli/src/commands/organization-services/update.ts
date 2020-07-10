@@ -9,7 +9,7 @@ export default class OrganizationServicesUpdate extends MeecoCommand {
   static description = `Modify a requested organization service. Members of the organization with roles owner and admin can use this command to modify the requested service.`;
 
   static examples = [
-    `meeco organization-services:update <organization_id> -c path/to/organization-service-config.yaml -a path/to/auth.yaml`
+    `meeco organization-services:update <organization_id> -s .my-created-service.yaml`
   ];
 
   static flags = {

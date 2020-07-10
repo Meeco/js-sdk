@@ -11,7 +11,7 @@ The organization will remain in the 'requested' state until validated \
 or rejected by meeco`;
 
   static examples = [
-    `meeco organizations:create -c path/to/organization-config.yaml -a path/to/auth.yaml`
+    `meeco organizations:create -c .my-organization-config.yaml > .my-created-organization.yaml`
   ];
 
   static flags = {
@@ -43,8 +43,9 @@ or rejected by meeco`;
     }
     try {
       const service = new OrganizationsService(environment, authConfig!.vault_access_token);
-      this.updateStatus('Creating organization');
+      this.updateStatus('Creating Organization');
       const result = await service.create(organizationConfigFile.organization);
+      this.finish();
       this.printYaml(
         OrganizationConfig.encodeFromJSON(result.organization, { privateKey: result.privateKey })
       );

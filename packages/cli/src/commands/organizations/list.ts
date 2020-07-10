@@ -1,6 +1,5 @@
 import { vaultAPIFactory } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
-import { cli } from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationsListConfig } from '../../configs/organizations-list-config';
 import { authFlags } from '../../flags/auth-flags';
@@ -8,6 +7,8 @@ import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationsList extends MeecoCommand {
   static description = 'List organization. There are three modes: validated, requested and member';
+
+  static examples = [`meeco organizations:list -m requested`];
 
   static flags = {
     ...MeecoCommand.flags,
@@ -28,11 +29,11 @@ export default class OrganizationsList extends MeecoCommand {
       const { auth, mode } = flags;
       const environment = await this.readEnvironmentFile();
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-      cli.action.start('Fetching ' + mode + ' organizations');
+      this.updateStatus('Fetching ' + mode + ' organizations');
       const result = await vaultAPIFactory(environment)(
         authConfig
       ).OrganizationsForVaultUsersApi.organizationsGet(mode === 'validated' ? undefined : mode);
-      cli.action.stop();
+      this.finish();
       this.printYaml(OrganizationsListConfig.encodeFromJSON(result.organizations));
     } catch (err) {
       await this.handleException(err);

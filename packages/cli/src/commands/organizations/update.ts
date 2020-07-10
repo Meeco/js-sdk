@@ -8,6 +8,8 @@ import MeecoCommand from '../../util/meeco-command';
 export default class OrganizationsUpdate extends MeecoCommand {
   static description = `Modify a requested organization. The user who requested the organization can use this endpoint to modify the requested organization.`;
 
+  static examples = [`meeco organizations:update -o .my-updated-organization`];
+
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,

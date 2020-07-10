@@ -8,9 +8,7 @@ import MeecoCommand from '../../util/meeco-command';
 export default class OrganizationServicesLogin extends MeecoCommand {
   static description = `Login as a service agent. An organization owner or admin can use this command to obtain a session token for the service agent.`;
 
-  static examples = [
-    `meeco organization-services:login -s path/to/.my_org_service.yaml -a path/to/auth.yaml`
-  ];
+  static examples = [`meeco organization-services:login -s .my-created-service.yaml`];
 
   static flags = {
     ...MeecoCommand.flags,
@@ -68,6 +66,7 @@ export default class OrganizationServicesLogin extends MeecoCommand {
         service.id,
         metadata.privateKey
       );
+      this.finish();
       this.printYaml(AuthConfig.encodeFromAuthData(result));
     } catch (err) {
       await this.handleException(err);

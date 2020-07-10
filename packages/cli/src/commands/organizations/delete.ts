@@ -7,6 +7,8 @@ export default class OrganizationsDelete extends MeecoCommand {
   static description =
     'Delete a requested organization. The user who requested the organization can use this command to delete the requested organization.';
 
+  static examples = [`meeco organizations:delete <organization_id>`];
+
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags
@@ -36,7 +38,6 @@ export default class OrganizationsDelete extends MeecoCommand {
       await vaultAPIFactory(environment)(
         authConfig
       ).OrganizationsManagingOrganizationsApi.organizationsIdDelete(id);
-
       this.log('Organization successfully deleted');
     } catch (err) {
       await this.handleException(err);
