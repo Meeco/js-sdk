@@ -1,5 +1,4 @@
 import { vaultAPIFactory } from '@meeco/sdk';
-import { cli } from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationServiceListConfig } from '../../configs/organization-services-list-config';
 import { authFlags } from '../../flags/auth-flags';
@@ -8,7 +7,7 @@ import MeecoCommand from '../../util/meeco-command';
 export default class OrganizationServicesList extends MeecoCommand {
   static description = `List requested services for a given organization. Members of the organization with roles owner and admin can use this command to list the requested services for this organization.`;
 
-  static examples = [`meeco organization-services:list <organization_id> -a path/to/auth.yaml`];
+  static examples = [`meeco organization-services:list <organization_id>`];
 
   static flags = {
     ...MeecoCommand.flags,
@@ -28,12 +27,13 @@ export default class OrganizationServicesList extends MeecoCommand {
       this.error('Valid auth config file must be supplied');
     }
     try {
+      this.updateStatus('Fetching services');
       const result = await vaultAPIFactory(environment)(
         authConfig
       ).OrganizationsManagingServicesApi.organizationsOrganizationIdRequestedServicesGet(
         organization_id
       );
-      cli.action.stop();
+      this.finish();
       this.printYaml(OrganizationServiceListConfig.encodeFromJSON(result.services));
     } catch (err) {
       await this.handleException(err);

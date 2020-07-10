@@ -169,7 +169,7 @@ Create your first organization:
 
 Provide a configuration file with your credentials, supply a [Organization Config](#Organization) file i.e.
 
-- `meeco organizations:create -c .my_org.yaml`
+- `meeco organizations:create -c .my-organization-config.yaml > .my-created-organization.yaml`
 
 you can check organization was created and in requested state waiting for approval
 
@@ -183,7 +183,7 @@ once approved it can be access with follwoing command
 
 1. Ensure organization is created and validated first (see above)
 2. You can retrive organization credential using follwoing command
-   `organizations:login <organization_id> > .org_agent_user.yaml`
+   `meeco organizations:login -o .my-created-organization.yaml > .my-org-agent-user.yaml`
 
 ## All Commands
 
@@ -207,13 +207,13 @@ once approved it can be access with follwoing command
 - [`meeco organization-services:create ORGANIZATION_ID`](#meeco-organization-servicescreate-organization_id)
 - [`meeco organization-services:get ORGANIZATION_ID SERVICE_ID`](#meeco-organization-servicesget-organization_id-service_id)
 - [`meeco organization-services:list ORGANIZATION_ID`](#meeco-organization-serviceslist-organization_id)
-- [`meeco organization-services:login ORGANIZATION_ID SERVICE_ID`](#meeco-organization-serviceslogin-organization_id-service_id)
+- [`meeco organization-services:login`](#meeco-organization-serviceslogin)
 - [`meeco organization-services:update ORGANIZATION_ID`](#meeco-organization-servicesupdate-organization_id)
 - [`meeco organizations:create`](#meeco-organizationscreate)
 - [`meeco organizations:delete ID`](#meeco-organizationsdelete-id)
 - [`meeco organizations:get ID`](#meeco-organizationsget-id)
 - [`meeco organizations:list`](#meeco-organizationslist)
-- [`meeco organizations:login ID`](#meeco-organizationslogin-id)
+- [`meeco organizations:login`](#meeco-organizationslogin)
 - [`meeco organizations:update`](#meeco-organizationsupdate)
 - [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
@@ -527,6 +527,9 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLE
+  meeco organization-members:list <organization_id>
 ```
 
 _See code: [src/commands/organization-members/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/list.ts)_
@@ -548,7 +551,7 @@ OPTIONS
   -e, --environment=environment                              [default: .environment.yaml] environment config file
 
 EXAMPLE
-  meeco organization-services:create <organization_id> -c path/to/organization-service-config.yaml -a path/to/auth.yaml
+  meeco organization-services:create <organization_id> -c .my-service-config.yaml > .my-created-service.yaml
 ```
 
 _See code: [src/commands/organization-services/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/create.ts)_
@@ -568,7 +571,7 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLE
-  meeco organization-services:get <organization_id> <service_id> -a path/to/auth.yaml
+  meeco organization-services:get <organization_id> <service_id> > .my-created-service.yaml
 ```
 
 _See code: [src/commands/organization-services/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/get.ts)_
@@ -588,27 +591,29 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLE
-  meeco organization-services:list <organization_id> -a path/to/auth.yaml
+  meeco organization-services:list <organization_id>
 ```
 
 _See code: [src/commands/organization-services/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/list.ts)_
 
-## `meeco organization-services:login ORGANIZATION_ID SERVICE_ID`
+## `meeco organization-services:login`
 
 Login as a service agent. An organization owner or admin can use this command to obtain a session token for the service agent.
 
 ```
 USAGE
-  $ meeco organization-services:login ORGANIZATION_ID SERVICE_ID
+  $ meeco organization-services:login
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
+  -a, --auth=auth                                            (required) [default: .user.yaml] Authorization config file
+                                                             yaml file (if not using the default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config file
+  -e, --environment=environment                              [default: .environment.yaml] environment config file
+
+  -s, --organizationServiceConfig=organizationServiceConfig  (required) service yaml file
 
 EXAMPLE
-  meeco organization-services:login <organization_id> <service_id> -a path/to/auth.yaml
+  meeco organization-services:login -s .my-created-service.yaml
 ```
 
 _See code: [src/commands/organization-services/login.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/login.ts)_
@@ -630,7 +635,7 @@ OPTIONS
   -s, --organizationServiceConfig=organizationServiceConfig  (required) service yaml file
 
 EXAMPLE
-  meeco organization-services:update <organization_id> -c path/to/organization-service-config.yaml -a path/to/auth.yaml
+  meeco organization-services:update <organization_id> -s .my-created-service.yaml
 ```
 
 _See code: [src/commands/organization-services/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/update.ts)_
@@ -652,7 +657,7 @@ OPTIONS
   -e, --environment=environment                [default: .environment.yaml] environment config file
 
 EXAMPLE
-  meeco organizations:create -c path/to/organization-config.yaml -a path/to/auth.yaml
+  meeco organizations:create -c .my-organization-config.yaml > .my-created-organization.yaml
 ```
 
 _See code: [src/commands/organizations/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/create.ts)_
@@ -673,6 +678,9 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLE
+  meeco organizations:delete <organization_id>
 ```
 
 _See code: [src/commands/organizations/delete.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/delete.ts)_
@@ -690,6 +698,9 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLE
+  meeco organizations:get <organization_id>
 ```
 
 _See code: [src/commands/organizations/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/get.ts)_
@@ -713,23 +724,31 @@ OPTIONS
                                          requested - list organizations in the requested state that the current user
                                          has requested
                                          member - list organizations in which the current user is a member.
+
+EXAMPLE
+  meeco organizations:list -m requested
 ```
 
 _See code: [src/commands/organizations/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/list.ts)_
 
-## `meeco organizations:login ID`
+## `meeco organizations:login`
 
 Login as an organization agent. An organization agent is a non-human Vault user account acting on behalf of the organization. An organization owner can use this command to obtain a session token for the organization agent.
 
 ```
 USAGE
-  $ meeco organizations:login ID
+  $ meeco organizations:login
 
 OPTIONS
   -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  -o, --org=org                  (required) organization yaml file
+
+EXAMPLE
+  meeco organizations:login -o .my-created-organization.yaml > .my-org-agent-user.yaml
 ```
 
 _See code: [src/commands/organizations/login.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/login.ts)_
@@ -749,6 +768,9 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -o, --org=org                  (required) organization yaml file
+
+EXAMPLE
+  meeco organizations:update -o .my-updated-organization
 ```
 
 _See code: [src/commands/organizations/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/update.ts)_

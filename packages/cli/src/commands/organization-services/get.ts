@@ -9,7 +9,7 @@ export default class OrganizationServicesGet extends MeecoCommand {
     'Retrieve a validated organization service. Only validated services are accessible.';
 
   static examples = [
-    `meeco organization-services:get <organization_id> <service_id> -a path/to/auth.yaml`
+    `meeco organization-services:get <organization_id> <service_id> > .my-created-service.yaml`
   ];
 
   static flags = {
@@ -41,6 +41,7 @@ export default class OrganizationServicesGet extends MeecoCommand {
         organization_id,
         service_id
       );
+      this.finish();
       this.printYaml(OrganizationServiceConfig.encodeFromJSON(result.service));
     } catch (err) {
       await this.handleException(err);

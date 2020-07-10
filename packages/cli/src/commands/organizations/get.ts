@@ -8,6 +8,8 @@ export default class OrganizationsGet extends MeecoCommand {
   static description =
     'Retrieve a validated organization or requested organization by logged in user. Only all validated organizations or requested organization requested by logged in user are accessible.';
 
+  static examples = [`meeco organizations:get <organization_id>`];
+
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags
@@ -27,10 +29,11 @@ export default class OrganizationsGet extends MeecoCommand {
     }
 
     try {
-      this.updateStatus('Fetching item details');
+      this.updateStatus('Fetching organizations');
       const result = await vaultAPIFactory(environment)(
         authConfig
       ).OrganizationsForVaultUsersApi.organizationsIdGet(id);
+      this.finish();
       this.printYaml(OrganizationConfig.encodeFromJSON(result.organization));
     } catch (err) {
       await this.handleException(err);

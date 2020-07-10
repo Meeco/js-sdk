@@ -3,11 +3,13 @@
 
 @mixin button-spacing-large {
   @include button-label-large;
-  padding: 12px 36px 12px 36px;
+  height: 44px;
+  padding: 12px 24px 12px 24px;
 }
 
 @mixin button-spacing-small {
   @include button-label-small;
+  height: 30px;
   padding: 6px 20px 6px 20px;
 }
 
@@ -41,6 +43,7 @@
 
 @mixin icon-button($theme) {
   @include secondary-button($theme);
+  @include button-round;
   padding: 10px;
 }
 
@@ -61,31 +64,36 @@
   a.button {
     margin: 16px;
 
+    cursor: pointer;
+
     @include primary-button($theme);
     @include button-spacing-small;
 
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px transparentize(map-get($theme, 'primary'), 0.5);
-    }
     &.primary {
       @include primary-button($theme);
       &:hover {
-        background: darken($meeco-red, 5%);
+        background: darken(map-get($theme, 'primary'), 10%);
+      }
+      &:active {
+        background: darken(map-get($theme, 'primary'), 5%);
       }
     }
     &.secondary {
       @include secondary-button($theme);
       &:hover {
-        background-color: transparentize(map-get($theme, 'primary'), 0.85);
+        background: darken(map-get($theme, 'secondary'), 10%);
+      }
+      &:active {
+        background: darken(map-get($theme, 'secondary'), 5%);
       }
     }
     &.text {
       @include text-button($theme);
-      transition: all 0.2s ease-in-out;
       &:hover {
         color: darken(map-get($theme, 'primary'), 10%);
-        transform: scale(1.1);
+      }
+      &:active {
+        color: darken(map-get($theme, 'primary'), 5%);
       }
     }
 
@@ -97,16 +105,20 @@
     }
     &.icon {
       @include text-button-icon($theme);
-      transition: all 0.2s ease-in-out;
       &:hover {
-        transform: scale(1.1);
+        color: darken(map-get($theme, 'dark'), 10%);
+      }
+      &:active {
+        color: darken(map-get($theme, 'dark'), 5%);
       }
     }
     &.icon-only {
       @include icon-button($theme);
-      transition: all 0.2s ease-in-out;
       &:hover {
-        transform: scale(1.1);
+        background: darken(map-get($theme, 'secondary'), 10%);
+      }
+      &:active {
+        background: darken(map-get($theme, 'secondary'), 5%);
       }
     }
   }

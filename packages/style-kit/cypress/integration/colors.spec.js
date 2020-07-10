@@ -10,7 +10,14 @@ describe('Colors', () => {
   // https://github.com/cypress-io/cypress/issues/2102
   onlyOn('headless', () => {
     it('has the correct color palette', () => {
-      cy.get('.main').matchImageSnapshot('Color Palette');
+      cy.get('.main').matchImageSnapshot('Color Palette', {
+        clip: {
+          x: 0,
+          y: 0,
+          width: 1270,
+          height: 924
+        }
+      });
     });
   });
 });
