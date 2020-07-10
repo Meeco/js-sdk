@@ -4,6 +4,7 @@ import { ConfigReader, IYamlConfig } from './yaml-config';
 
 export interface IOrganizationServiceMetadata {
   privateKey: string;
+  publicKey: string;
 }
 
 export interface IOrganizationServiceTemplate extends PostServiceRequest {

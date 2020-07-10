@@ -48,7 +48,8 @@ export class OrganizationServicesService {
     });
     return {
       service: result.service,
-      privateKey: rsaKeyPair.privateKey
+      privateKey: rsaKeyPair.privateKey,
+      publicKey: rsaKeyPair.publicKey
     };
   }
 }

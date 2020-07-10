@@ -50,7 +50,10 @@ or rejected by meeco`;
       const result = await service.create(organization_id, organizationServiceConfigFile.service);
       this.finish();
       this.printYaml(
-        OrganizationServiceConfig.encodeFromJSON(result.service, { privateKey: result.privateKey })
+        OrganizationServiceConfig.encodeFromJSON(result.service, {
+          privateKey: result.privateKey,
+          publicKey: result.publicKey
+        })
       );
     } catch (err) {
       await this.handleException(err);

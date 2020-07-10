@@ -43,7 +43,8 @@ export class OrganizationsService {
     const result = await this.api.organizationsPost(organization);
     return {
       organization: result.organization,
-      privateKey: rsaKeyPair.privateKey
+      privateKey: rsaKeyPair.privateKey,
+      publicKey: rsaKeyPair.publicKey
     };
   }
 }
