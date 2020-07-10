@@ -1,0 +1,36 @@
+@mixin pill-active($theme) {
+  color: map-get($theme, 'text');
+  box-shadow: $shadow-soft;
+  border-radius: $border-radius-large;
+  background-color: map-get(map-get($theme, 'tabs'), 'foreground');
+  font-size: 14px;
+  padding: 6px 24px;
+}
+
+@mixin pill-inactive($theme) {
+  color: map-get($theme, 'lightText');
+  font-size: 14px;
+  padding: 6px 24px;
+}
+
+@mixin tab-bar($theme) {
+  background-color: map-get(map-get($theme, 'tabs'), 'background');
+  border-radius: $border-radius-large;
+  display: inline-flex;
+}
+
+@mixin pills-main($theme) {
+  .pill {
+    @include pill-active($theme);
+  }
+
+  .tabs {
+    @include tab-bar($theme);
+    .tab {
+      @include pill-inactive($theme);
+      &.selected {
+        @include pill-active($theme);
+      }
+    }
+  }
+}
