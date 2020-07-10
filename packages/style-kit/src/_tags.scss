@@ -10,7 +10,7 @@
   text-align: center;
 }
 
-@mixin edit {
+@mixin tag-edit {
   meeco-icon,
   svg {
     vertical-align: middle;
@@ -19,7 +19,7 @@
   }
 }
 
-@mixin icon {
+@mixin tag-icon {
   meeco-icon,
   svg {
     vertical-align: middle;
@@ -33,11 +33,11 @@
     &.tag {
       @include tag-base($theme);
     }
-    &.edit {
-      @include edit;
+    .tag-edit {
+      @include tag-edit;
     }
-    &.icon {
-      @include icon;
+    .tag-icon {
+      @include tag-icon;
     }
   }
 }

@@ -11,13 +11,18 @@ export const tags = () =>
     </div>
 
     <p>Edit Mode Tag</p>
-    <div class="tag edit">
-      <span>Tag edit mode</span><meeco-icon icon="close"></meeco-icon>
+    <div class="tag">
+      <span class="tag-edit">
+        Tag edit mode<meeco-icon icon="close"></meeco-icon>
+      </span>
     </div>
 
     <p>Tag with Icon</p>
-    <div class="tag icon">
-      <meeco-icon icon="contactNew"></meeco-icon><span>Tag with Icon</span>
+    <div class="tag">
+      <span class="tag-icon">
+        <meeco-icon icon="contactNew"></meeco-icon>
+        Tag with Icon
+      </span>
     </div>
 
   </div>`;

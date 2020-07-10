@@ -25,10 +25,10 @@ class MeecoIcons extends HTMLElement {
   <path d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="#A3B0B8" stroke-width="2" stroke-linecap="round"/>
   <path d="M21 21L17 17" stroke="#A3B0B8" stroke-width="2" stroke-linecap="round"/>
   </svg>`,
-    close: `<svg width="13" height="13" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+    close: `<svg width="16" height="16" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M20 7.99997L8.00003 19.9999M8.00003 7.99997L20 19.9999" stroke="#00677F" stroke-width="2" stroke-linecap="round"/>
   </svg>`,
-    contactNew: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    contactNew: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M14 9C14 11.2091 12.2091 13 10 13C7.79086 13 6 11.2091 6 9C6 6.79086 7.79086 5 10 5C12.2091 5 14 6.79086 14 9Z" stroke="#00677F" stroke-width="2" stroke-linecap="round"/>
     <path d="M18 11V17M15 14H21" stroke="#00677F" stroke-width="2" stroke-linecap="round"/>
     <path d="M3 19C3.72533 17.2823 6.58399 16 10 16C11.286 16 12.493 16.1817 13.5369 16.5" stroke="#00677F" stroke-width="2" stroke-linecap="round"/>
