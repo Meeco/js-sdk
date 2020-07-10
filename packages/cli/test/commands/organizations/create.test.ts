@@ -49,7 +49,8 @@ function mockVault(api) {
       name: 'SuperData Inc.',
       description: 'My super data handling organization',
       url: 'https://superdata.example.com',
-      email: 'admin@superdata.example.com'
+      email: 'admin@superdata.example.com',
+      public_key: '--PUBLIC_KEY--ABCD'
     })
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')

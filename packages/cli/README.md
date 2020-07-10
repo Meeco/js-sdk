@@ -169,7 +169,7 @@ Create your first organization:
 
 Provide a configuration file with your credentials, supply a [Organization Config](#Organization) file i.e.
 
-- `meeco organizations:create -c .my_org.yaml`
+- `meeco organizations:create -c .my-organization-config.yaml > .my-created-organization.yaml`
 
 you can check organization was created and in requested state waiting for approval
 
@@ -183,7 +183,7 @@ once approved it can be access with follwoing command
 
 1. Ensure organization is created and validated first (see above)
 2. You can retrive organization credential using follwoing command
-   `organizations:login <organization_id> > .org_agent_user.yaml`
+   `meeco organizations:login -o .my-created-organization.yaml > .my-org-agent-user.yaml`
 
 ## All Commands
 

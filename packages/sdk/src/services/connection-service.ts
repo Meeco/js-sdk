@@ -34,9 +34,8 @@ export class ConnectionService {
     return await this.vaultApiFactory(auth)
       .InvitationApi.invitationsPost({
         public_key: {
-          key_store_id: keyPair.keystoreStoredKeyPair.id,
-          public_key: keyPair.keystoreStoredKeyPair.public_key,
-          encryption_strategy: 'Rsa4096'
+          keypair_external_id: keyPair.keystoreStoredKeyPair.id,
+          public_key: keyPair.keystoreStoredKeyPair.public_key
         },
         invitation: {
           encrypted_recipient_name: encryptedName
@@ -56,9 +55,8 @@ export class ConnectionService {
     return await this.vaultApiFactory(auth)
       .ConnectionApi.connectionsPost({
         public_key: {
-          key_store_id: keyPair.keystoreStoredKeyPair.id,
-          public_key: keyPair.keystoreStoredKeyPair.public_key,
-          encryption_strategy: 'Rsa4096'
+          keypair_external_id: keyPair.keystoreStoredKeyPair.id,
+          public_key: keyPair.keystoreStoredKeyPair.public_key
         },
         connection: {
           encrypted_recipient_name: encryptedName,

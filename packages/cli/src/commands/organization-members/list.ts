@@ -1,5 +1,4 @@
 import { vaultAPIFactory } from '@meeco/sdk';
-import { cli } from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
 import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
@@ -7,6 +6,8 @@ import MeecoCommand from '../../util/meeco-command';
 export default class OrganizationMembersList extends MeecoCommand {
   static description =
     'List all members of an organization. This command is only accessible to organization owners.';
+
+  static examples = [`meeco organization-members:list <organization_id>`];
 
   static flags = {
     ...MeecoCommand.flags,
@@ -22,11 +23,11 @@ export default class OrganizationMembersList extends MeecoCommand {
       const { organization_id } = args;
       const environment = await this.readEnvironmentFile();
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-      cli.action.start('Fetching organization members');
+      this.updateStatus('Fetching organization members');
       const result = await vaultAPIFactory(environment)(
         authConfig
       ).OrganizationsManagingMembersApi.organizationsOrganizationIdMembersGet(organization_id);
-      cli.action.stop();
+      this.finish();
       this.printYaml({
         kind: 'OrganizationMembers',
         spec: { organization: result.organization, members: result.members }

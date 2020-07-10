@@ -1,4 +1,4 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { OrganizationsService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationConfig } from '../../configs/organization-config';
@@ -11,7 +11,7 @@ The organization will remain in the 'requested' state until validated \
 or rejected by meeco`;
 
   static examples = [
-    `meeco organizations:create -c path/to/organization-config.yaml -a path/to/auth.yaml`
+    `meeco organizations:create -c .my-organization-config.yaml > .my-created-organization.yaml`
   ];
 
   static flags = {
@@ -42,12 +42,16 @@ or rejected by meeco`;
       this.error('Valid organization config file must be supplied');
     }
     try {
-      const result = await vaultAPIFactory(environment)(
-        authConfig
-      ).OrganizationsManagingOrganizationsApi.organizationsPost(
-        organizationConfigFile.organization
+      const service = new OrganizationsService(environment, authConfig!.vault_access_token);
+      this.updateStatus('Creating Organization');
+      const result = await service.create(organizationConfigFile.organization);
+      this.finish();
+      this.printYaml(
+        OrganizationConfig.encodeFromJSON(result.organization, {
+          privateKey: result.privateKey,
+          publicKey: result.publicKey
+        })
       );
-      this.printYaml(OrganizationConfig.encodeFromJSON(result.organization));
     } catch (err) {
       await this.handleException(err);
     }
