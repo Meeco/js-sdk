@@ -10,6 +10,9 @@ export const editMode = () => /*html*/ `
   <p>Field elements in edit mode</p>
   <div class="container">
     <input type="text" value="Input field with text"/>
+    <input type="text" placeholder="Placeholder text"/>
+    <label for="label">Label</label>
+    <input name="label" type="text" value="Field value"/>
   </div>
 </div>
 `;

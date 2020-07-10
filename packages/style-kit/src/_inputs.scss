@@ -46,7 +46,8 @@
     &:focus {
       outline-color: map-get($theme, 'highlight');
     }
-    &:placeholder {
+    &::placeholder {
+      @include body-text-medium;
       color: map-get($theme, 'placeholder');
     }
   }
