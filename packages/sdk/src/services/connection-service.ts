@@ -35,7 +35,7 @@ export class ConnectionService {
       .InvitationApi.invitationsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,
-          public_key: keyPair.keystoreStoredKeyPair.public_key
+          public_key: keyPair.keyPair.publicKey
         },
         invitation: {
           encrypted_recipient_name: encryptedName
@@ -56,7 +56,7 @@ export class ConnectionService {
       .ConnectionApi.connectionsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,
-          public_key: keyPair.keystoreStoredKeyPair.public_key
+          public_key: keyPair.keyPair.publicKey
         },
         connection: {
           encrypted_recipient_name: encryptedName,

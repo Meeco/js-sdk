@@ -4,9 +4,7 @@ import * as nock from 'nock';
 import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('connections:create', () => {
-  // skip this for now until shares v2 is done
   customTest
-    .skip()
     .stdout()
     .stderr()
     .mockCryppo()
@@ -27,7 +25,10 @@ describe('connections:create', () => {
 function stubVault(api: nock.Scope) {
   api
     .post('/invitations', {
-      public_key: { key_store_id: 'from_stored_keypair_id', encryption_strategy: 'Rsa4096' },
+      public_key: {
+        keypair_external_id: 'from_stored_keypair_id',
+        public_key: '--PUBLIC_KEY--ABCD'
+      },
       invitation: {
         encrypted_recipient_name: '[serialized][encrypted]TestTo[with from_data_encryption_key]'
       }
@@ -55,7 +56,8 @@ function stubVault(api: nock.Scope) {
       connections: [
         {
           id: 'connection_id',
-          other_user_public_key: 'to_user_public'
+          other_user_connection_public_key: 'to_user_public',
+          public_key: 'from_user_public'
         }
       ]
     });
@@ -68,14 +70,15 @@ function stubVault(api: nock.Scope) {
       connections: [
         {
           id: 'connection_id',
-          other_user_public_key: 'from_user_public'
+          other_user_connection_public_key: 'from_user_public',
+          public_key: 'to_user_public'
         }
       ]
     });
 
   api
     .post('/connections', {
-      public_key: { key_store_id: 'to_stored_keypair_id', encryption_strategy: 'Rsa4096' },
+      public_key: { keypair_external_id: 'to_stored_keypair_id', public_key: '--PUBLIC_KEY--ABCD' },
       connection: {
         encrypted_recipient_name:
           '[serialized][encrypted]TestFrom[with to_data_encryption_key\u0000\u0000]',
