@@ -1,6 +1,6 @@
 kind: Item
 metadata:
-  template: password
+  template_name: password
 spec:
   label: My Account
   slots:

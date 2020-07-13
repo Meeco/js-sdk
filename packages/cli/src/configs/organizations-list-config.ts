@@ -6,7 +6,7 @@ export interface IOrganizationsListTemplate {
 }
 
 export interface IOrganizationsListMetadata {
-  template: string;
+  template_name: string;
 }
 
 export class OrganizationsListConfig {

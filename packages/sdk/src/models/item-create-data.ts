@@ -1,14 +1,17 @@
-import { PostFastItemsRequestItem, Slot } from '@meeco/vault-api-sdk';
+import { NestedSlotAttributes } from '@meeco/vault-api-sdk';
 
-export type IItemRequestData = Partial<PostFastItemsRequestItem> & Required<{ label: string }>;
+export interface IItemRequestData {
+  label: string;
+}
+export type ItemSlot = Omit<NestedSlotAttributes, 'encrypted_value'>;
 
 export class ItemCreateData {
-  public template?: string;
+  public template_name?: string;
   public item: IItemRequestData;
-  public slots?: Slot[];
+  public slots?: ItemSlot[]; // needs to be partials.
 
-  constructor(config: { template?: string; slots?: Slot[]; item: IItemRequestData }) {
-    this.template = config.template;
+  constructor(config: { template_name?: string; slots?: ItemSlot[]; item: IItemRequestData }) {
+    this.template_name = config.template_name;
     this.item = config.item;
     this.slots = config.slots || [];
   }

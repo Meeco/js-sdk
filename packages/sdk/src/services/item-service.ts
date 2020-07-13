@@ -54,7 +54,7 @@ export class ItemService {
     );
 
     return await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsPost({
-      template_name: config.template,
+      template_name: config.template_name,
       item: {
         label: config.item.label,
         slots_attributes

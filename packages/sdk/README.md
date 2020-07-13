@@ -23,7 +23,7 @@ Since Angular 6, the following polyfills are required to be added to your `polyf
 const buffer = require('buffer');
 (window as any).Buffer = buffer;
 (window as any).process = {
-  browser: true,
+  browser: true
 };
 ```
 
@@ -184,10 +184,10 @@ import { ItemService } from '@meeco/sdk';
 
 const service = new ItemService(environment);
 const item = await service.create(user.vault_access_token, user.data_encryption_key, {
+  template_name: availableTemplates.item_templates[0].name,
   item: {
     label: 'My Car'
   },
-  templateName: availableTemplates.item_templates[0].name,
   slots: [
     {
       name: 'make_model',

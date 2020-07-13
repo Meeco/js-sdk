@@ -6,7 +6,7 @@ export interface IItemListTemplate {
 }
 
 export interface IItemListMetadata {
-  template: string;
+  template_name: string;
 }
 
 export class ItemListConfig {
