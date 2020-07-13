@@ -62,6 +62,11 @@
   line-height: 19px;
 }
 
+@mixin tag-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
 @mixin typography-main($theme, $nested: null) {
   @include headings;
   html {

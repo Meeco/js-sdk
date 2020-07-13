@@ -1,0 +1,43 @@
+@import './variables';
+
+@mixin tag-base($theme) {
+  @include tag-label;
+  display: inline-block;
+  padding: 6px 16px 6px 16px;
+  border-radius: $border-radius-large;
+  background: transparentize(map-get($theme, 'highlight'), 0.9);
+  color: map-get($theme, 'highlightText');
+  text-align: center;
+}
+
+@mixin tag-edit($theme) {
+  @include tag-base($theme);
+  meeco-icon,
+  svg {
+    vertical-align: middle;
+    display: inline-block;
+    padding-left: 0.5rem;
+  }
+}
+
+@mixin tag-icon($theme) {
+  @include tag-base($theme);
+  meeco-icon,
+  svg {
+    vertical-align: middle;
+    display: inline-block;
+    padding-right: 0.5rem;
+  }
+}
+
+@mixin tags-main($theme) {
+  .tag {
+    @include tag-base($theme);
+  }
+  .tag-edit {
+    @include tag-edit($theme);
+  }
+  .tag-icon {
+    @include tag-icon($theme);
+  }
+}
