@@ -4,20 +4,19 @@ import { story } from 'style-loader!./field-elements.stories.scss';
 import '../src/components/icons';
 import placeholder from '../assets/image-placeholder.png';
 
-const dateField = () => {
-  const today = new Date(Date.now());
-  const dd = today.getDate();
-  const mmm = today.toDateString().substring(4, 7);
-  const yyyy = today.getFullYear();
-  let hours = today.getHours();
-  let minutes = today.getMinutes();
-  const format = hours >= 12 ? 'pm' : 'am';
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-  minutes = minutes < 10 ? '0' + minutes : minutes;
+// Getting today's date in correct format
+const today = new Date(Date.now());
+const dd = today.getDate();
+const mmm = today.toDateString().substring(4, 7);
+const yyyy = today.getFullYear();
+let hours = today.getHours();
+let minutes = today.getMinutes();
+const format = hours >= 12 ? 'pm' : 'am';
+hours = hours % 12;
+hours = hours ? hours : 12;
+minutes = minutes < 10 ? '0' + minutes : minutes;
 
-  return `${dd} ${mmm} ${yyyy}, ${hours}:${minutes}${format}`;
-};
+const dateValue = `${dd} ${mmm} ${yyyy}, ${hours}:${minutes}${format}`;
 
 export const editMode = () => /*html*/ `
 <div class=${story}>
@@ -55,8 +54,8 @@ export const viewMode = () => /*html*/ `
     </div>
 
     <div class="container">
-      <p class="label">Date field label</p>
-      <p class="date-value">${dateField()}</p>
+      <label>Date field label</label>
+      <input type="date" value="2020-07-13" disabled="true" />
     </div>
 
     <div class="container">

@@ -4,16 +4,13 @@
   @include typography-main($meeco-theme, true);
   @include inputs-main($meeco-theme);
 
-  margin: $grid * 2;
-
   max-width: 600px;
 
   .container {
-    margin-top: $grid * 2;
+    margin: $grid * 2;
   }
 
   .attachment {
-    margin-top: $grid * 2;
     .icon {
       border-radius: $border-radius-standard;
       width: 54px;
