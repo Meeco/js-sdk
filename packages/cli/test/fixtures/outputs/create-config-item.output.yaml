@@ -1,6 +1,6 @@
 kind: Item
 metadata:
-  template: food
+  template_name: food
 spec:
   label: ""
   slots:

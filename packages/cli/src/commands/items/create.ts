@@ -35,7 +35,7 @@ export default class ItemsCreate extends MeecoCommand {
     const { itemConfig } = itemConfigFile;
 
     const itemCreateData = new ItemCreateData({
-      template: itemConfigFile.templateName,
+      template_name: itemConfigFile.templateName,
       slots: itemConfig!.slots,
       item: { label: itemConfig!.label }
     });

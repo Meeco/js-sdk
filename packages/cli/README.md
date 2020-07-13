@@ -1043,7 +1043,7 @@ spec:
 ```yaml
 kind: Item
 metadata:
-  template: <template name>
+  template_name: <template name>
 spec:
   label: My Account
   name: my_account # Optional as the API will auto-generate based on 'label'
