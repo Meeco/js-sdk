@@ -93,10 +93,12 @@
     @include body-text-small;
     color: map-get($theme, 'lightText');
   }
-  label {
+  label,
+  .label {
     @include text-field-label;
   }
-  input {
+  input,
+  .text-value {
     @include text-field-value;
   }
 }
