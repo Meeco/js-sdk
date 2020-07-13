@@ -179,11 +179,11 @@ once approved it can be access with follwoing command
 
 - `meeco organizations:list`
 
-### 2. Retrive organization agent credential
+### 2. Retrive organization credential
 
 1. Ensure organization is created and validated first (see above)
 2. You can retrive organization credential using follwoing command
-   `meeco organizations:login -o .my-created-organization.yaml > .my-org-agent-user.yaml`
+   `meeco organizations:login -o .my-created-organization.yaml > .my-org-login.yaml`
 
 ## All Commands
 

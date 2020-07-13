@@ -48,3 +48,8 @@ export class OrganizationsService {
     };
   }
 }
+
+export enum MemberRoles {
+  Admin = 'admin',
+  Owner = 'owner'
+}
