@@ -47,6 +47,8 @@ $border-radius-large: 100px !default;
 $shadow-soft: 0px 2px 8px rgba(0, 0, 0, 0.16) !default;
 $shadow-hard: 0px 4px 16px rgba(0, 0, 0, 0.24) !default;
 $shadow-dark: 0px 4px 16px #000000;
+$shadow-complex: 0px 3px 1px rgba(0, 0, 0, 0.03), 0px 1px 1px rgba(0, 0, 0, 0.01),
+  0px 3px 8px rgba(0, 0, 0, 0.1);
 
 // Meeco UI elements use an 8px grid and conform to spacing in increments of 8px
 $grid: 8px;
