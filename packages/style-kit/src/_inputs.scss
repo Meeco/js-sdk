@@ -19,6 +19,7 @@
   padding: 10px;
   background-color: map-get($theme, 'bgShade');
   color: map-get($theme, 'darkText');
+  width: 100%;
 }
 
 @mixin text-input($theme) {
@@ -38,8 +39,7 @@
   border-width: 1.5px;
   display: inline-flex;
   flex-direction: column;
-  width: 60%;
-  padding: ($grid / 2) ($grid * 8) ($grid / 2) ($grid / 2);
+  padding: ($grid / 2) ($grid * 2) ($grid / 2) ($grid / 2);
   .content {
     display: flex;
     align-items: center;
@@ -53,8 +53,7 @@
 
 @mixin date-value($theme) {
   @include input($theme);
-  width: 60%;
-  padding-right: $grid * 8;
+  padding-right: $grid * 2;
   background-image: url($calendar-svg);
   background-repeat: no-repeat, repeat;
   background-position: right 0.7em top 50%, 0 0;
@@ -62,8 +61,6 @@
 
 @mixin search-input {
   border-radius: $border-radius-large;
-  min-width: 60%;
-  max-width: fit-content;
   background-image: url($search-svg);
   background-repeat: no-repeat, repeat;
   background-position: left 0.7em top 50%, 0 0;
@@ -72,13 +69,13 @@
 
 @mixin dropdown-input($theme) {
   @include text-input($theme);
-  min-width: 210px;
+  padding: $grid ($grid * 4) $grid $grid;
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
   background-image: url($down-arrow-svg);
   background-repeat: no-repeat, repeat;
-  background-position: right 0.7em top 50%, 0 0;
+  background-position: right 0.2em top 50%, 0 0;
 }
 
 @mixin inputs-main($theme) {
@@ -103,6 +100,9 @@
     }
     &[type='date'] {
       @include date-value($theme);
+      &::-webkit-calendar-picker-indicator {
+        opacity: 0;
+      }
     }
   }
   label {

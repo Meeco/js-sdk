@@ -3,8 +3,9 @@
 :local(.story) {
   @include typography-main($meeco-theme, true);
   @include inputs-main($meeco-theme);
+  @include buttons-main($meeco-theme);
 
-  max-width: 600px;
+  max-width: 400px;
 
   .container {
     margin: $grid * 2;
