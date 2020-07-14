@@ -1,0 +1,122 @@
+@import './variables';
+
+@mixin hide-input {
+  position: absolute;
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+@mixin switch-input($theme) {
+  // This creates a custom toggle switch
+  position: relative;
+  display: inline-block;
+  width: 51px;
+  height: 30px;
+  // Hiding the browsers default checkbox
+  input {
+    @include hide-input;
+  }
+  .slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: map-get($theme, 'light');
+    border-radius: 30px;
+    transition: 0.4s;
+  }
+  .slider:before {
+    position: absolute;
+    top: 10%;
+    left: 4%;
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: $shadow-complex;
+    transition: 0.4s;
+  }
+  input:checked + .slider {
+    background-color: map-get($theme, 'highlight');
+  }
+  input:checked + .slider:before {
+    transform: translateX(23px);
+  }
+}
+
+@mixin checkbox-input($theme) {
+  position: relative;
+  display: inline-block;
+  padding: 0px 0px $grid $grid * 3;
+  cursor: pointer;
+  input {
+    @include hide-input;
+    cursor: pointer;
+  }
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #fff;
+    border: 1px solid map-get($theme, 'placeholder');
+    border-radius: 6px;
+  }
+  input:checked ~ .checkmark {
+    background-color: map-get($theme, 'highlight');
+    border-color: map-get($theme, 'highlight');
+  }
+  .checkmark:after {
+    position: absolute;
+    display: none;
+    content: '';
+  }
+  input:checked ~ .checkmark:after {
+    display: block;
+  }
+  .checkmark:after {
+    left: 6px;
+    top: 3px;
+    height: 9px;
+    width: 4px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    box-shadow: $shadow-complex;
+    transform: rotate(45deg);
+  }
+}
+
+@mixin radio-button($theme) {
+  @include checkbox-input($theme);
+  .checkmark {
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+  .checkmark:after {
+    top: 4px;
+    left: 4px;
+    width: 10px;
+    height: 10px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: #fff;
+  }
+}
+
+@mixin controls-main($theme) {
+  .switch-input {
+    margin: $grid * 2;
+    @include switch-input($theme);
+  }
+  .checkbox-input {
+    margin: $grid * 2;
+    @include checkbox-input($theme);
+  }
+  .radio-button {
+    @include radio-button($theme);
+  }
+}

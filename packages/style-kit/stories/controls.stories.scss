@@ -1,5 +1,7 @@
 @import '../index';
 
 :local(.story) {
+  @include controls-main($meeco-theme);
+  @include typography-main($meeco-theme, true);
   margin: $grid * 2;
 }

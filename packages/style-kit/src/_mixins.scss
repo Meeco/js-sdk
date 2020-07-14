@@ -3,6 +3,7 @@
 @import './typography';
 @import './cards';
 @import './tags';
+@import './controls';
 
 @mixin create-meeco-theme($theme-config) {
   @include buttons-main($theme-config);
@@ -10,4 +11,5 @@
   @include typography-main($theme-config);
   @include cards-main($theme-config);
   @include tags-main($theme-config);
+  @include controls-main;
 }
