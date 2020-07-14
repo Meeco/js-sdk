@@ -1,0 +1,26 @@
+@import '../index';
+
+:local(.story) {
+  padding-top: 32px;
+
+  @include typography-main($meeco-theme, true);
+  @include pills-main($meeco-theme);
+
+  .tab-background-samples {
+    .sample {
+      padding: 20px;
+    }
+    .red {
+      background-color: $meeco-red;
+    }
+    .blue {
+      background-color: $meeco-dark-blue;
+    }
+    .green {
+      background-color: $meeco-lime;
+    }
+    .grey {
+      background-color: $meeco-charcoal;
+    }
+  }
+}
