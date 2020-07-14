@@ -1,12 +1,25 @@
-@import './typography';
 @import './variables';
+@import './icons';
+
+@mixin item-spacing($spacing: $grid) {
+  > * {
+    margin: 0 $spacing 0 $spacing;
+    &:first-child {
+      margin-left: 0;
+    }
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
 
 @mixin input($theme) {
   border-radius: $border-radius-standard;
   border: 1px solid map-get($theme, 'light');
   padding: 10px;
   background-color: map-get($theme, 'bgShade');
-  color: map-get($theme, 'text');
+  color: map-get($theme, 'darkText');
+  width: 100%;
 }
 
 @mixin text-input($theme) {
@@ -20,22 +33,49 @@
   margin-bottom: -$grid;
 }
 
-@mixin search-input-container($theme) {
-  padding: 0px $grid;
-  border-radius: $border-radius-large;
-  border: 1px solid map-get($theme, 'light');
-  background-color: map-get($theme, 'bgShade');
-  display: flex;
-  align-items: center;
-  max-width: 360px;
+@mixin attachment($theme) {
+  @include input($theme);
+  background-color: transparent;
+  border-width: 1.5px;
+  display: inline-flex;
+  flex-direction: column;
+  padding: ($grid / 2) ($grid * 2) ($grid / 2) ($grid / 2);
+  .content {
+    display: flex;
+    align-items: center;
+    @include item-spacing();
+    .icon {
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+  }
+}
+
+@mixin date-value($theme) {
+  @include input($theme);
+  padding-right: $grid * 2;
+  background-image: url($calendar-svg);
+  background-repeat: no-repeat, repeat;
+  background-position: right 0.7em top 50%, 0 0;
 }
 
 @mixin search-input {
-  @include body-text-medium;
-  width: 100%;
-  border: 0;
-  outline: none;
-  background-color: transparent;
+  border-radius: $border-radius-large;
+  background-image: url($search-svg);
+  background-repeat: no-repeat, repeat;
+  background-position: left 0.7em top 50%, 0 0;
+  text-indent: $grid * 4;
+}
+
+@mixin dropdown-input($theme) {
+  @include text-input($theme);
+  padding: $grid ($grid * 4) $grid $grid;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url($down-arrow-svg);
+  background-repeat: no-repeat, repeat;
+  background-position: right 0.2em top 50%, 0 0;
 }
 
 @mixin inputs-main($theme) {
@@ -44,22 +84,40 @@
     display: block;
     @include text-input($theme);
     &:focus {
-      outline-color: map-get($theme, 'light');
+      outline-color: map-get($theme, 'highlight');
     }
-    &:placeholder {
+    &::placeholder {
+      @include body-text-medium;
       color: map-get($theme, 'placeholder');
+    }
+    &[type='search'] {
+      @include search-input;
+      &:focus {
+        background-size: 5%;
+        outline: none;
+        border: 1.5px solid map-get($theme, 'highlight');
+      }
+    }
+    &[type='date'] {
+      @include date-value($theme);
+      &::-webkit-calendar-picker-indicator {
+        opacity: 0;
+      }
     }
   }
   label {
     @include input-label;
     display: block;
   }
-  .search-bar {
+  .dropdown-input {
     margin: $grid * 2;
-    @include search-input-container($theme);
-    input[type='search'] {
-      @include search-input;
-      margin: $grid;
+    @include dropdown-input($theme);
+    &:focus {
+      outline-color: map-get($theme, 'highlight');
     }
+  }
+  .attachment {
+    margin: $grid * 2;
+    @include attachment($theme);
   }
 }

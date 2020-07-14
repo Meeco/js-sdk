@@ -2,40 +2,51 @@ export default { title: 'Field Elements' };
 
 import { story } from 'style-loader!./field-elements.stories.scss';
 import '../src/components/icons';
+import placeholder from '../assets/image-placeholder.png';
 
-const meecoIcons = icon => `<meeco-icon icon=${icon}></meeco-icon>`;
+export const editMode = () => /*html*/ `
+<div class=${story}>
+  <p>Field elements in edit mode</p>
+  <div class="container">
+    <input type="text" value="Input field with text"/>
 
-export const inputs = () => {
-  const container = document.createElement('div');
-  container.className = story;
+    <input type="text" placeholder="Placeholder text"/>
 
-  const types = ['', 'Text Value', 'With Label'];
+    <label for="label">Label</label>
+    <input name="label" type="text" value="Field value"/>
 
-  types.forEach(type => {
-    const inputField = document.createElement('input');
-    inputField.type = 'text';
-    inputField.placeholder = type;
+    <select class="dropdown-input">
+      <option>Option 1</option>
+      <option>Option 2</option>
+      <option>Option 3</option>
+    </select>
 
-    if (inputField.placeholder === 'With Label') {
-      const inputLabel = document.createElement('div');
-      const label = document.createElement('label');
-      label.innerHTML = 'Label';
-      inputLabel.appendChild(label);
-      inputLabel.appendChild(inputField);
-      container.appendChild(inputLabel);
-    } else {
-      container.appendChild(inputField);
-    }
-  });
+    <label>Date field label</label>
+    <input type="date" value="2020-07-13" />
 
-  const searchBar = document.createElement('div');
-  searchBar.className = 'search-bar';
-  searchBar.innerHTML = meecoIcons('search');
-  const input = document.createElement('input');
-  input.type = 'search';
-  input.placeholder = 'Search';
-  searchBar.appendChild(input);
-  container.appendChild(searchBar);
+    <input type="search" placeholder="Search placeholder"/>
+  </div>
 
-  return container;
-};
+</div>
+`;
+
+export const viewMode = () => /*html*/ `
+<div class=${story}>
+  <p>Field elements in View Mode</p>
+
+    <div class="container">
+      <p class="label">Text Field Label</p>
+      <p class="text-value">Text Value</p>
+    </div>
+
+    <div class="attachment">
+      <div class="content">
+        <div class="icon">
+          <img src=${placeholder} />
+        </div>
+        <p> Attachment Label </p>
+      </div>
+    </div>
+
+
+</div>`;
