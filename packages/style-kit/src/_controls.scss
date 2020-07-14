@@ -117,6 +117,7 @@
     @include checkbox-input($theme);
   }
   .radio-button {
+    margin: $grid * 2;
     @include radio-button($theme);
   }
 }
