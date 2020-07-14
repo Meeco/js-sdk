@@ -1,13 +1,14 @@
 @import './buttons';
-@import './inputs';
-@import './typography';
 @import './cards';
+@import './inputs';
+@import './pills';
 @import './tags';
-
+@import './typography';
 @mixin create-meeco-theme($theme-config) {
   @include buttons-main($theme-config);
-  @include inputs-main($theme-config);
-  @include typography-main($theme-config);
   @include cards-main($theme-config);
+  @include inputs-main($theme-config);
+  @include pills-main($theme-config);
   @include tags-main($theme-config);
+  @include typography-main($theme-config);
 }
