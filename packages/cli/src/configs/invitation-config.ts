@@ -1,12 +1,10 @@
-import { Invitation, PostInvitationsRequest } from '@meeco/vault-api-sdk';
+import { Invitation } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { ConfigReader, IYamlConfig } from './yaml-config';
 
 export interface IInvitationMetadata {}
 
-export interface IInvitationTemplate extends PostInvitationsRequest {
-  id?: string;
-}
+export interface IInvitationTemplate extends Invitation {}
 
 @ConfigReader<InvitationConfig>()
 export class InvitationConfig {

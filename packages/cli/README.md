@@ -185,6 +185,18 @@ once approved it can be access with follwoing command
 2. You can retrive organization credential using follwoing command
    `meeco organizations:login -o .my-created-organization.yaml > .my-org-login.yaml`
 
+### 3. Invite members to organization
+
+1. Ensure organization is created and validated first (see above)
+2. First create an invitation to invite new member to organization. you need to provide created organization yml & organization credential as input.
+   `meeco organization-members:create-invitation -o .my-created-organization.yaml -a .my-org-login.yaml > .my-org-member-invitation.yaml`
+
+### 4. Accept membership invitation and become member
+
+1. Ensure organization invitation is created and saved in ymal file. `.my-org-member-invitation.yaml` (see above)
+2. Accept invitation. you need to provide created invitation yml & accept invitation as existing vault user.
+   `meeco organization-members:accept-invitation -i .my-org-member-invitation.yaml -a .user_who_accepting_invite.yaml > .my-org-membership.yaml`
+
 ## All Commands
 
 <!-- commands -->

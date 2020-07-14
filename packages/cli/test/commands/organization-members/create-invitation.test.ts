@@ -41,8 +41,8 @@ const response = {
     user_name: 'Anonymous User',
     user_image: 'http://localhost:3000/images/69074548-24cb-403d-828c-09af6002e1c3',
     user_email: '',
-    keypair_external_id: '00000000-0000-0000-0000-000000000000',
-    encrypted_recipient_name: '[serialized][rsa_encrypted][with --PUBLIC_KEY--ABCD]',
+    keypair_external_id: null,
+    encrypted_recipient_name: null,
     integration_data: {
       intent: 'member',
       organization_id: '00000000-0000-0000-0000-000000000000',
@@ -55,11 +55,9 @@ function mockVault(api) {
   api
     .post('/invitations', {
       public_key: {
-        keypair_external_id: '00000000-0000-0000-0000-000000000000',
         public_key: '--PUBLIC_KEY--ABCD'
       },
       invitation: {
-        encrypted_recipient_name: '[serialized][rsa_encrypted][with --PUBLIC_KEY--ABCD]',
         organization_member_role: 'admin'
       }
     })
