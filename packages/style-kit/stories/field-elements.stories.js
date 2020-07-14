@@ -3,7 +3,6 @@ export default { title: 'Field Elements' };
 import { story } from 'style-loader!./field-elements.stories.scss';
 import '../src/components/icons';
 import placeholder from '../assets/image-placeholder.png';
-import { useEffect } from '@storybook/client-api';
 
 export const editMode = () => /*html*/ `
 <div class=${story}>
