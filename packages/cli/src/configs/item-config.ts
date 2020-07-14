@@ -11,7 +11,7 @@ export interface IItemTemplate {
 }
 
 export interface IItemMetadata {
-  template: string;
+  template_name: string;
   shareId?: string;
 }
 
@@ -27,7 +27,12 @@ export class ItemConfig {
         `Config file of incorrect kind: ${yamlConfigObj.kind} (expected '${ItemConfig.kind}')`
       );
     }
-    return new ItemConfig(yamlConfigObj.metadata?.template, yamlConfigObj.spec);
+    if ((<any>yamlConfigObj.metadata)?.template) {
+      throw new CLIError(
+        `Metadata value 'template' in item config is no longer supported - please use 'template_name' instead.')`
+      );
+    }
+    return new ItemConfig(yamlConfigObj.metadata?.template_name, yamlConfigObj.spec);
   }
 
   static encodeFromJSON(data: {
@@ -62,7 +67,7 @@ export class ItemConfig {
     return {
       kind: ItemConfig.kind,
       metadata: {
-        template: template.template.name
+        template_name: template.template.name
       },
       spec: {
         label: '',

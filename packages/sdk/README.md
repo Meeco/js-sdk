@@ -12,6 +12,34 @@ For SDK API Docs (TypeDoc docs) [See Here](https://meeco.github.io/js-sdk/)
 $ npm install -S @meeco/sdk
 ```
 
+### Usage in Angular
+
+Since Angular 6, the following polyfills are required to be added to your `polyfills.ts` (in order)
+
+```ts
+// required for bson library
+(window as any).global = window;
+// Required for JSRP
+const buffer = require('buffer');
+(window as any).Buffer = buffer;
+(window as any).process = {
+  browser: true
+};
+```
+
+You will also need to configure your `compilerOptions` in your `tsconfig.base.json` as follows:
+
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "stream": ["./node_modules/readable-stream"]
+    }
+    // ...
+  }
+}
+```
+
 ## Usage Basics
 
 This is not an exhaustive list of functionatlity - just some basic use-cases. For full usage [see the API docs](https://meeco.github.io/js-sdk/)
@@ -156,10 +184,10 @@ import { ItemService } from '@meeco/sdk';
 
 const service = new ItemService(environment);
 const item = await service.create(user.vault_access_token, user.data_encryption_key, {
+  template_name: availableTemplates.item_templates[0].name,
   item: {
     label: 'My Car'
   },
-  templateName: availableTemplates.item_templates[0].name,
   slots: [
     {
       name: 'make_model',

@@ -1,5 +1,5 @@
 kind: Item
 metadata:
-  template: vehicle
+  template_name: vehicle
 spec:
   label: DMC DeLorean

@@ -6,7 +6,7 @@ export interface IOrganizationServiceListTemplate {
 }
 
 export interface IOrganizationServiceListMetadata {
-  template: string;
+  template_name: string;
 }
 
 export class OrganizationServiceListConfig {

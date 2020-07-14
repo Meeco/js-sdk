@@ -1,10 +1,9 @@
-name: Release SDK
+name: Release Beta SDK
 
 on:
   push:
     tags:
-      - 'releases/sdl/**'
-      - '!releases/sdl/**-beta'
+      - 'releases/sdk/**-beta'
 
 jobs:
   create_sdk_release:
@@ -29,7 +28,7 @@ jobs:
         run: |
           npx lerna exec --scope @meeco/sdk -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
           npx lerna exec --scope @meeco/sdk -- npm config set scope "@meeco"
-          npx lerna exec --scope @meeco/sdk -- npm publish --access public
+          npx lerna exec --scope @meeco/sdk -- npm publish --access public --tag beta
         env:
           CI: true
           NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
