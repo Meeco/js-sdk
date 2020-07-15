@@ -1,0 +1,15 @@
+@import '../index';
+
+:local(.story) {
+  @include typography-main($meeco-theme, true);
+  @include avatar-main($meeco-theme);
+
+  margin: $grid * 2;
+
+  // The border of the avatar for the avatar stack should take the background colour
+  .avatar-stack {
+    .avatar {
+      border-color: #fff;
+    }
+  }
+}
