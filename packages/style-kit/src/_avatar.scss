@@ -1,0 +1,74 @@
+@import './variables';
+
+@mixin avatar-base($theme) {
+  position: relative;
+  display: inline-block;
+  background-color: map-get(map-get($theme, 'avatar'), 'background');
+  border-radius: $border-radius-large;
+  border-width: 3px;
+  border-style: solid;
+  border-color: map-get(map-get($theme, 'avatar'), 'background');
+  text-align: center;
+  color: map-get(map-get($theme, 'avatar'), 'color');
+  overflow: hidden;
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+@mixin avatar-standard($theme) {
+  @include avatar-base($theme);
+  @include avatar-label-standard;
+  height: 48px;
+  width: 48px;
+  margin: $grid;
+}
+
+@mixin avatar-large {
+  @include avatar-label-large;
+  height: 80px;
+  width: 80px;
+}
+
+@mixin avatar-small {
+  @include avatar-label-small;
+  height: 32px;
+  width: 32px;
+}
+
+@mixin avatar-stack {
+  display: flex;
+  flex-direction: row;
+  .avatar {
+    margin-left: -1.5rem;
+    &.small {
+      margin-left: -1.4rem;
+    }
+    &.large {
+      margin-left: -2rem;
+    }
+    &:first-child {
+      margin-left: 0px;
+    }
+  }
+}
+
+@mixin avatar-main($theme) {
+  .avatar {
+    @include avatar-standard($theme);
+    &.large {
+      @include avatar-large;
+    }
+    &.small {
+      @include avatar-small;
+    }
+  }
+  .avatar-stack {
+    @include avatar-stack;
+  }
+}
