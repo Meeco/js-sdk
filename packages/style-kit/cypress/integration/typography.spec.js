@@ -1,4 +1,4 @@
-import { meecoCharcoal } from '../fixtures/colors';
+import { meecoCharcoal, meecoCharcoalShade } from '../fixtures/colors';
 
 describe('Typography', () => {
   before(() => {
@@ -56,6 +56,6 @@ describe('Typography', () => {
 
     cy.get('input').should('have.css', 'font-size', '18px');
     cy.get('input').should('have.css', 'font-weight', medium);
-    cy.get('input').should('have.css', 'color', meecoCharcoal);
+    cy.get('input').should('have.css', 'color', meecoCharcoalShade);
   });
 });
