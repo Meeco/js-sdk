@@ -10,7 +10,7 @@ export default class OrganizationsLogin extends MeecoCommand {
     'Login as an organization agent. An organization agent is a non-human Vault user account acting on behalf of the organization. An organization owner can use this command to obtain a session token for the organization agent.';
 
   static examples = [
-    `meeco organizations:login -o .my-created-organization.yaml > .my-org-agent-user.yaml`
+    `meeco organizations:login -o .my-created-organization.yaml > .my-org-login.yaml`
   ];
 
   static flags = {
