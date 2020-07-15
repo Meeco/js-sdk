@@ -1,0 +1,40 @@
+@import '../index';
+
+html {
+  * {
+    box-sizing: border-box;
+  }
+}
+
+$my-custom-theme: (
+  primary: map-get($meeco-mint-palette, 'base'),
+  secondary: map-get($meeco-purple-palette, 'tint10'),
+  highlight: map-get($meeco-fuchsia-palette, 'base'),
+  placeholder: map-get($meeco-smoke-palette, 'shade'),
+  dark: map-get($meeco-charcoal-palette, 'base'),
+  light: map-get($meeco-smoke-palette, 'base'),
+  bgShade: map-get($meeco-smoke-palette, 'tint10'),
+  text: map-get($meeco-charcoal-palette, 'base'),
+  lightText: map-get($meeco-charcoal-palette, 'tint50'),
+  highlightText: map-get($meeco-violet-palette, 'base'),
+  darkText: map-get($meeco-charcoal-palette, 'shade'),
+  tabs: (
+    background: transparentize(map-get($meeco-smoke-palette, 'base'), 0.5),
+    foreground: white
+  ),
+  avatar: (
+    background: map-get($meeco-ocean-blue-palette, 'tint10'),
+    color: map-get($meeco-ocean-blue-palette, 'base')
+  )
+);
+
+.story {
+  * {
+    // Only required because `.story` does not contain our html tags etc.
+    @include font-base($my-custom-theme);
+
+    // Put everything on an ew line
+    display: block;
+  }
+  @include create-meeco-theme($my-custom-theme);
+}
