@@ -4,6 +4,7 @@
 @import './pills';
 @import './tags';
 @import './typography';
+@import './avatar';
 @import './controls';
 @mixin create-meeco-theme($theme-config) {
   @include buttons-main($theme-config);
@@ -12,5 +13,6 @@
   @include pills-main($theme-config);
   @include tags-main($theme-config);
   @include typography-main($theme-config);
+  @include avatar-main($theme-config);
   @include controls-main($theme-config);
 }

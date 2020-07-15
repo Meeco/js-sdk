@@ -12,12 +12,20 @@
   }
 }
 
+@mixin item-spacing-column($spacing: $grid) {
+  > * {
+    margin: $spacing 0 $spacing 0;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
 @mixin card($theme) {
   box-shadow: $shadow-soft;
   border-radius: $border-radius-medium;
   display: inline-flex;
   flex-direction: column;
-
   .content {
     padding: $grid * 2;
     display: flex;
@@ -48,6 +56,23 @@
   }
 }
 
+@mixin tile($theme) {
+  @include card($theme);
+  padding: $grid * 2;
+  align-items: center;
+  justify-content: center;
+  .content {
+    flex-direction: column;
+    max-width: 12rem;
+    padding: $grid $grid * 2 0px $grid * 2;
+    text-align: center;
+    @include item-spacing-column();
+  }
+  .icon {
+    align-self: center;
+  }
+}
+
 @mixin shadows {
   &.hard {
     box-shadow: $shadow-hard;
@@ -63,6 +88,10 @@
   }
   .card {
     @include card($theme);
+    @include shadows;
+  }
+  .tile {
+    @include tile($theme);
     @include shadows;
   }
 }

@@ -68,6 +68,10 @@ $meeco-theme: (
   tabs: (
     background: transparentize(map-get($meeco-smoke-palette, 'base'), 0.5),
     foreground: white
+  ),
+  avatar: (
+    background: map-get($meeco-blue-palette, 'tint10'),
+    color: map-get($meeco-ocean-blue-palette, 'base')
   )
 );
 
