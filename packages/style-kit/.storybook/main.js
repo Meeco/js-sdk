@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   // this dirname is because we run tests from project root
   stories: ['../stories/*.stories.*'],
-  addons: ['@storybook/addon-storysource'],
+  addons: ['@storybook/addon-storysource', '@storybook/addon-knobs'],
   logLevel: 'debug',
   webpackFinal: async (config, { configType }) => {
     // `configType` has a value of 'DEVELOPMENT' or 'PRODUCTION'
