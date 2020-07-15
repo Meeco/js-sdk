@@ -9,18 +9,7 @@
   .tab-background-samples {
     .sample {
       padding: 20px;
-    }
-    .red {
-      background-color: $meeco-red;
-    }
-    .blue {
-      background-color: $meeco-dark-blue;
-    }
-    .green {
-      background-color: $meeco-lime;
-    }
-    .grey {
-      background-color: $meeco-charcoal;
+      transition: color 0.2s ease-out;
     }
   }
 }
