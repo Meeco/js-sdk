@@ -215,6 +215,8 @@ once approved it can be access with follwoing command
 - [`meeco items:list`](#meeco-itemslist)
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
 - [`meeco items:update`](#meeco-itemsupdate)
+- [`meeco organization-members:accept-invitation`](#meeco-organization-membersaccept-invitation)
+- [`meeco organization-members:create-invitation [MEMBER_ROLE]`](#meeco-organization-memberscreate-invitation-member_role)
 - [`meeco organization-members:list ORGANIZATION_ID`](#meeco-organization-memberslist-organization_id)
 - [`meeco organization-services:create ORGANIZATION_ID`](#meeco-organization-servicescreate-organization_id)
 - [`meeco organization-services:get ORGANIZATION_ID SERVICE_ID`](#meeco-organization-servicesget-organization_id-service_id)
@@ -526,6 +528,55 @@ OPTIONS
 
 _See code: [src/commands/items/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/update.ts)_
 
+## `meeco organization-members:accept-invitation`
+
+Accept Invitation to become organization member.
+
+```
+USAGE
+  $ meeco organization-members:accept-invitation
+
+OPTIONS
+  -a, --auth=auth                          (required) [default: .user.yaml] Authorization config file yaml file (if not
+                                           using the default .user.yaml)
+
+  -e, --environment=environment            [default: .environment.yaml] environment config file
+
+  -i, --invitationConfig=invitationConfig  (required) member invitation yaml file
+
+EXAMPLE
+  meeco organization-members:accpet-invitation -i .my-member-invitation.yaml -a .user_2.yaml >
+  .my-org-member-connection.yaml
+```
+
+_See code: [src/commands/organization-members/accept-invitation.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/accept-invitation.ts)_
+
+## `meeco organization-members:create-invitation [MEMBER_ROLE]`
+
+Create Invitation to invite other vault users as member of organization. This command is only accessible to organization agent.
+
+```
+USAGE
+  $ meeco organization-members:create-invitation [MEMBER_ROLE]
+
+ARGUMENTS
+  MEMBER_ROLE  [default: admin] Organization member avalible roles: Admin,Owner
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  -o, --org=org                  (required) organization yaml file
+
+EXAMPLE
+  meeco organization-members:crate-invitation -o .my-created-organization.yaml -a .my-org-login.yaml >
+  .my-org-member-invitation.yaml
+```
+
+_See code: [src/commands/organization-members/create-invitation.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/create-invitation.ts)_
+
 ## `meeco organization-members:list ORGANIZATION_ID`
 
 List all members of an organization. This command is only accessible to organization owners.
@@ -760,7 +811,7 @@ OPTIONS
   -o, --org=org                  (required) organization yaml file
 
 EXAMPLE
-  meeco organizations:login -o .my-created-organization.yaml > .my-org-agent-user.yaml
+  meeco organizations:login -o .my-created-organization.yaml > .my-org-login.yaml
 ```
 
 _See code: [src/commands/organizations/login.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/login.ts)_
