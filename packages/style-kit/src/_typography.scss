@@ -109,7 +109,8 @@
   .small {
     @include body-text-small;
   }
-  .card-label {
+  .card-label,
+  .tile-label {
     @include card-label;
   }
   .subtitle {
