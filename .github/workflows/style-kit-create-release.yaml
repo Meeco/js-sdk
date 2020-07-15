@@ -3,11 +3,11 @@ name: Release SDK
 on:
   push:
     tags:
-      - 'releases/sdk/**'
-      - '!releases/sdk/**-beta'
+      - 'releases/style-kit/**'
+      - '!releases/style-kit/**-beta'
 
 jobs:
-  create_sdk_release:
+  create_style_kit_release:
     runs-on: ubuntu-latest
 
     strategy:
@@ -24,12 +24,12 @@ jobs:
       - run: npx lerna run test
         env:
           CI: true
-      - run: npx lerna run build --scope @meeco/sdk
+      - run: npx lerna run build --scope @meeco/style-kit
       - name: Publish NPM
         run: |
-          npx lerna exec --scope @meeco/sdk -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
-          npx lerna exec --scope @meeco/sdk -- npm config set scope "@meeco"
-          npx lerna exec --scope @meeco/sdk -- npm publish --access public
+          npx lerna exec --scope @meeco/style-kit -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
+          npx lerna exec --scope @meeco/style-kit -- npm config set scope "@meeco"
+          npx lerna exec --scope @meeco/style-kit -- npm publish --access public
         env:
           CI: true
           NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
