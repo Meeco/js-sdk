@@ -80,3 +80,17 @@ const largeCard = () => /*html*/ `
   </div>
 </div>
 `;
+
+export const tile = () => /*html*/ `
+<div class=${story}>
+  <p>Tile</p>
+  <p class="small">Tiles are similiar to cards, except they are either square or taller than they are wide</p>
+  <div class="tile">
+    <div class="icon"></div>
+    <div class="content">
+      <p class="tile-label">Tile label</p>
+      <span class="tag">Optional Tag</span>
+    </div>
+  </div>
+</div>
+`;

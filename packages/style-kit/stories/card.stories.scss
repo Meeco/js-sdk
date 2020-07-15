@@ -3,6 +3,7 @@
 :local(.story) {
   @include typography-main($meeco-theme, true);
   @include cards-main($meeco-theme);
+  @include tags-main($meeco-theme);
 
   margin: $grid * 2;
 
@@ -11,6 +12,16 @@
     .icon {
       width: 44px;
       height: 44px;
+      border-radius: $border-radius-standard;
+      background-color: map-get($meeco-theme, 'light');
+    }
+  }
+
+  .tile {
+    margin: $grid * 2;
+    .icon {
+      width: 64px;
+      height: 64px;
       border-radius: $border-radius-standard;
       background-color: map-get($meeco-theme, 'light');
     }
