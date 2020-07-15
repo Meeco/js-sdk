@@ -70,19 +70,19 @@
 @mixin avatar-label-standard {
   font-size: 17px;
   font-weight: 500;
-  line-height: 48px;
+  line-height: 51px;
 }
 
 @mixin avatar-label-large {
   font-size: 30px;
   font-weight: 500;
-  line-height: 80px;
+  line-height: 83px;
 }
 
 @mixin avatar-label-small {
   font-size: 12px;
   font-weight: 500;
-  line-height: 32px;
+  line-height: 35px;
 }
 
 @mixin typography-main($theme, $nested: null) {
