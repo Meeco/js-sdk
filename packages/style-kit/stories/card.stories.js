@@ -16,7 +16,7 @@ export const shadows = () => /*html*/ `
 
 export const cards = () => {
   const basicTitle = text('Basic Card Title', 'Basic Card');
-  const basicSubtitle = text('Basic Card Label', 'Sub-label (optional)');
+  const basicSubtitle = text('Basic Card Label', 'Sub-label (Optional)');
   const footerText = text('Card Footer Text', 'Some Footer Text');
 
   return /*html*/ `
