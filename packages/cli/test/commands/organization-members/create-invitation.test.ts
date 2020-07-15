@@ -18,7 +18,7 @@ describe('organization-members:create-invitation', () => {
       ...testUserAuth,
       ...testEnvironmentFile,
       '-o',
-      inputFixture('create-organization-members-inviataion.input.yaml')
+      inputFixture('create-organization-members-invitation.input.yaml')
     ])
     .it('Requests the creation of a new organization member invitation', ctx => {
       const expected = readFileSync(
