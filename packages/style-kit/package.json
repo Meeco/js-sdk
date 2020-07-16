@@ -5,15 +5,18 @@
   "main": "dist/index.css",
   "scripts": {
     "build": "parcel build main.scss",
+    "demo": "webpack-dev-server demo",
     "cypress": "cypress open",
     "docs": "build-storybook -c .storybook -o ../../docs/style-kit",
     "start": "npm run storybook",
+    "start-demo": "npm run demo",
     "storybook": "start-storybook -p 8085 --ci",
     "test": "start-server-and-test 8085 'cypress run'",
     "update-snapshots": "start-server-and-test 8085 'cypress run --env updateSnapshots=true'",
     "posttest": "npm run format:check",
     "format:check": "prettier -c \"{stories,cypress,src}/**/*.{ts,html,scss,js}\"",
-    "format:write": "prettier --write \"{stories,cypress,src}/**/*.{ts,html,scss,js}\" *.{json,scss} README.md"
+    "format:write": "prettier --write \"{stories,cypress,src}/**/*.{ts,html,scss,js}\" *.{json,scss} README.md",
+    "build:demo": "webpack --config webpack.config.prod.js"
   },
   "author": "Meeco",
   "license": "MIT",
@@ -28,12 +31,14 @@
     "@storybook/preset-scss": "^1.0.2",
     "@storybook/theming": "^5.3.19",
     "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
     "color": "^3.1.2",
     "css-loader": "^3.6.0",
     "cypress": "^4.9.0",
     "cypress-image-snapshot": "^3.1.1",
     "cypress-storybook": "^0.2.0",
     "extract-text-webpack-plugin": "^3.0.2",
+    "html-webpack-plugin": "^4.3.0",
     "js-base64": "2.5.1",
     "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.14.1",
@@ -43,6 +48,12 @@
     "start-server-and-test": "^1.11.0",
     "style-loader": "^1.2.1",
     "svg-inline-loader": "^0.8.2",
-    "to-string-loader": "^1.1.6"
+    "terser-webpack-plugin": "^3.0.6",
+    "to-string-loader": "^1.1.6",
+    "ts-loader": "^8.0.1",
+    "typescript": "^3.9.6",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   }
 }
