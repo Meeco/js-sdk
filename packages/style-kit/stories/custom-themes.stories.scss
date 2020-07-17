@@ -8,7 +8,7 @@ html {
 
 $my-custom-theme: (
   primary: map-get($meeco-mint-palette, 'base'),
-  secondary: map-get($meeco-purple-palette, 'tint10'),
+  secondary: map-get($meeco-purple-palette, 'base'),
   highlight: map-get($meeco-fuchsia-palette, 'base'),
   placeholder: map-get($meeco-smoke-palette, 'shade'),
   dark: map-get($meeco-charcoal-palette, 'base'),

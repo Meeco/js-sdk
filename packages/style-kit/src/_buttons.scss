@@ -37,8 +37,8 @@
 
 @mixin secondary-button($theme) {
   @include button-base;
-  background-color: map-get($theme, 'secondary');
-  color: map-get($theme, 'primary');
+  background-color: _tint(map-get($theme, 'secondary'), 90%);
+  color: map-get($theme, 'secondary');
 }
 
 @mixin icon-button($theme) {
