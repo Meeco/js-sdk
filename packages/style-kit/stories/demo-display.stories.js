@@ -21,7 +21,7 @@ export const mobileScreens = () => {
     });
   });
   return /*html*/ `
-  <div class=${story}>
+  <div class="${story} mobile">
 
     <h1>Explore Meeco UI Components</h1>
 
@@ -220,6 +220,87 @@ export const mobileScreens = () => {
         <div class="tabs">
           <span class="tab selected" id="tab">First Tab</span>
           <span class="tab" id="tab2">Second Tab</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+};
+
+export const webView = () => {
+  return /*html*/ `
+  <div class="${story} dashboard">
+    <div class="sidebar">
+      <ul>
+        <li>Vault</li>
+        <li>Activity Feed</li>
+        <li>Contacts</li>
+        <li>Integrations</li>
+        <li>Settings</li>
+        <li>Notifications</li>
+      </ul>
+    </div>
+
+    <div class="vault">
+      <div class="toolbar">
+        <h3>Vault</h3>
+        <button class="icon-only">+</button>
+      </div>
+      <div class="tabs">
+        <span class="tab selected">My items</span>
+        <span class="tab">Sharing with</span>
+        <span class="tab">Shared</span>
+      </div>
+      <input type="search" placeholder="Search items"/>
+      <div class="card-list">
+        <div class="card">
+          <div class="content">
+            <div class="icon"></div>
+            <p class="card-label">Wifi Password</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="content">
+            <div class="icon"></div>
+            <p class="card-label">Wifi Password</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="content">
+            <div class="icon"></div>
+            <p class="card-label">Wifi Password</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="main">
+      <div class="toolbar">
+        <div class="inline">
+          <div class="avatar-stack">
+            <div class="avatar">KD</div>
+            <div class="avatar">ME</div>
+            <div class="avatar">+3</div>
+          </div>
+          <button class="icon-only smoke"></button>
+        </div>
+        <div class="inline">
+          <button class="icon-only smoke"></button>
+          <button class="icon-only smoke"></button>
+        </div>
+      </div>
+
+      <div class="display">
+        <div class="card-detail">
+          <div class="card no-shadow">
+            <div class="content">
+              <div class="icon"></div>
+              <p class="card-label">Spotify Family Account</p>
+            </div>
+          </div>
+          <div>
+            <span class="tag">Family</span>
+            <span class="tag">Passwords</span>
+          </div>
         </div>
       </div>
     </div>
