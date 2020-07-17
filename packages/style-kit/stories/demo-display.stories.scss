@@ -1,0 +1,173 @@
+@import '../index';
+
+:local(.story) {
+  @include buttons-main($meeco-theme);
+  @include cards-main($meeco-theme);
+  @include inputs-main($meeco-theme);
+  @include pills-main($meeco-theme);
+  @include tags-main($meeco-theme);
+  @include typography-main($meeco-theme, true);
+  @include avatar-main($meeco-theme);
+  @include controls-main($meeco-theme);
+
+  @mixin icon-base {
+    width: 48px;
+    height: 48px;
+    border-radius: $border-radius-standard;
+    background-color: $meeco-dark-blue;
+  }
+
+  width: 100%;
+  height: auto;
+  padding: $grid;
+  background-color: map-get($meeco-theme, 'secondary');
+  border-radius: $border-radius-standard;
+
+  // color variables
+  .white {
+    color: #fff;
+  }
+
+  .red {
+    color: $meeco-red;
+  }
+
+  // margin variables
+
+  .container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    .column {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+  }
+
+  .component {
+    background-color: #fff;
+    margin: $grid * 2;
+    height: fit-content;
+    border-radius: $border-radius-standard;
+    box-shadow: $shadow-soft;
+    &.card-list {
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      padding: $grid;
+      background: map-get($meeco-theme, 'bgShade');
+      h4 {
+        align-self: center;
+      }
+      .card {
+        margin: $grid 0px;
+        .icon {
+          @include icon-base;
+        }
+      }
+    }
+    &.card-detail {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      background: transparentize(map-get($meeco-theme, 'dark'), 0.5);
+      .popup {
+        width: 320px;
+        margin: $grid 0px 0px 0px;
+        background: #fff;
+        border-radius: ($grid * 3) ($grid * 3) 0px 0px;
+        .header {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+          padding: $grid;
+          .card {
+            width: 100%;
+            box-shadow: none;
+          }
+          .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: $border-radius-standard;
+            background: $meeco-green;
+          }
+        }
+        .popup-body {
+          width: 320px;
+          padding: $grid * 2;
+          .item {
+            margin: ($grid * 2) 0px;
+          }
+          .attachment,
+          input,
+          label {
+            margin-left: 0px;
+            margin-right: 0px;
+            padding-right: 0px;
+          }
+        }
+        .contact-body {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          padding: $grid * 2;
+          border-top: 1px solid map-get($meeco-theme, 'light');
+          .contact {
+            margin: $grid;
+          }
+        }
+      }
+      .toolbar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        border-top: 1px solid map-get($meeco-theme, 'light');
+      }
+    }
+    &.tile-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      width: 320px;
+      padding: $grid;
+      h4 {
+        margin: $grid * 2 $grid * 2;
+      }
+      .tile {
+        padding: $grid * 2 0px;
+        margin: $grid 0px;
+        .icon {
+          @include icon-base;
+        }
+        span {
+          margin-top: 0px;
+        }
+      }
+    }
+    &.pillbar {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 320px;
+      padding: $grid * 2;
+      .tab {
+        cursor: pointer;
+      }
+    }
+  }
+
+  // overriding default styles
+  .avatar.small {
+    border-color: #fff;
+    line-height: 28px;
+  }
+  .avatar-stack {
+    .avatar.small {
+      margin-left: -1.2rem;
+    }
+  }
+}
