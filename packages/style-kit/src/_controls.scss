@@ -109,15 +109,18 @@
 
 @mixin controls-main($theme) {
   .switch-input {
-    margin: $grid * 2;
+    margin: $grid * 2 0px;
     @include switch-input($theme);
   }
   .checkbox-input {
-    margin: $grid * 2;
+    margin: $grid * 2 0px;
     @include checkbox-input($theme);
   }
   .radio-button {
-    margin: $grid * 2;
+    margin: $grid * 2 0px;
     @include radio-button($theme);
+    label {
+      margin-left: $grid;
+    }
   }
 }

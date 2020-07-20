@@ -14,8 +14,8 @@
 }
 
 @mixin button-round {
-  width: 44px;
   height: 44px;
+  width: 44px;
 }
 
 @mixin button-base {
@@ -53,16 +53,16 @@
   color: map-get($theme, 'dark');
   font-size: 18px;
   span {
-    padding-right: 0.5rem;
-    vertical-align: middle;
     display: inline-block;
+    vertical-align: middle;
+    padding-right: 0.5rem;
   }
 }
 
 @mixin buttons-main($theme) {
   button,
   a.button {
-    margin: 16px;
+    margin: $grid * 2;
 
     cursor: pointer;
 

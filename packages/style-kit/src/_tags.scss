@@ -3,29 +3,38 @@
 @mixin tag-base($theme) {
   @include tag-label;
   display: inline-block;
-  padding: 6px 16px 6px 16px;
+  padding: 6px ($grid * 2) 6px ($grid * 2);
   border-radius: $border-radius-large;
-  background: transparentize(map-get($theme, 'highlight'), 0.9);
+  background: _tint(map-get($theme, 'highlight'), 90%);
   color: map-get($theme, 'highlightText');
   text-align: center;
 }
 
+@mixin icon-align {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+// meeco-icon will need to be removed once icon fonts are added
 @mixin tag-edit($theme) {
   @include tag-base($theme);
+  img,
   meeco-icon,
+  span,
   svg {
-    vertical-align: middle;
-    display: inline-block;
+    @include icon-align;
     padding-left: 0.5rem;
   }
 }
 
+// meeco-icon will need to be removed once icon fonts are added
 @mixin tag-icon($theme) {
   @include tag-base($theme);
+  img,
   meeco-icon,
+  span,
   svg {
-    vertical-align: middle;
-    display: inline-block;
+    @include icon-align;
     padding-right: 0.5rem;
   }
 }

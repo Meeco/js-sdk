@@ -14,12 +14,13 @@
 }
 
 @mixin input($theme) {
-  border-radius: $border-radius-standard;
-  border: 1px solid map-get($theme, 'light');
+  box-sizing: border-box;
+  width: 100%;
   padding: 10px;
   background-color: map-get($theme, 'bgShade');
+  border-radius: $border-radius-standard;
+  border: 1px solid map-get($theme, 'light');
   color: map-get($theme, 'darkText');
-  width: 100%;
 }
 
 @mixin text-input($theme) {
@@ -29,17 +30,16 @@
 
 @mixin input-label {
   @include text-field-label;
-  margin-left: $grid * 2;
   margin-bottom: -$grid;
 }
 
 @mixin attachment($theme) {
   @include input($theme);
-  background-color: transparent;
-  border-width: 1.5px;
   display: inline-flex;
   flex-direction: column;
-  padding: ($grid / 2) ($grid * 2) ($grid / 2) ($grid / 2);
+  padding: $grid / 4;
+  background-color: transparent;
+  border-width: 1.5px;
   .content {
     display: flex;
     align-items: center;
@@ -80,7 +80,7 @@
 
 @mixin inputs-main($theme) {
   input {
-    margin: $grid * 2;
+    margin: $grid * 2 0px;
     display: block;
     @include text-input($theme);
     &:focus {
@@ -110,14 +110,13 @@
     display: block;
   }
   .dropdown-input {
-    margin: $grid * 2;
+    margin: $grid * 2 0px;
     @include dropdown-input($theme);
     &:focus {
       outline-color: map-get($theme, 'highlight');
     }
   }
   .attachment {
-    margin: $grid * 2;
     @include attachment($theme);
   }
 }
