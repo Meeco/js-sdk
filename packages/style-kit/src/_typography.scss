@@ -35,19 +35,22 @@
 
 // label-fonts
 
-@mixin card-label {
-  @include body-text-medium;
+@mixin avatar-label-standard {
+  font-size: 17px;
   font-weight: 500;
+  line-height: 45px;
 }
 
-@mixin text-field-label {
-  @include body-text-medium;
-  line-height: 22px;
+@mixin avatar-label-large {
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 77px;
 }
 
-@mixin text-field-value {
-  @include body-text-large;
+@mixin avatar-label-small {
+  font-size: 12px;
   font-weight: 500;
+  line-height: 29px;
 }
 
 @mixin button-label-large {
@@ -62,27 +65,34 @@
   line-height: 19px;
 }
 
+@mixin card-label {
+  @include body-text-medium;
+  font-weight: 500;
+}
+
 @mixin tag-label {
   font-size: 13px;
   font-weight: 500;
 }
 
-@mixin avatar-label-standard {
-  font-size: 17px;
-  font-weight: 500;
-  line-height: 48px;
+@mixin text-field-label {
+  @include body-text-medium;
+  line-height: 22px;
 }
 
-@mixin avatar-label-large {
-  font-size: 30px;
+@mixin text-field-value {
+  @include body-text-large;
   font-weight: 500;
-  line-height: 80px;
 }
 
-@mixin avatar-label-small {
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 32px;
+@mixin table-styles {
+  padding: $grid * 2;
+  border: 1px solid map-get($meeco-theme, 'light');
+  border-collapse: collapse;
+  text-align: center;
+  th {
+    border-bottom: 2px solid map-get($meeco-theme, 'light');
+  }
 }
 
 @mixin typography-main($theme, $nested: null) {
@@ -124,5 +134,16 @@
   input,
   .text-value {
     @include text-field-value;
+  }
+  ul,
+  ol {
+    li {
+      margin-bottom: $grid;
+    }
+  }
+  table,
+  th,
+  td {
+    @include table-styles;
   }
 }

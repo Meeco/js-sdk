@@ -39,7 +39,7 @@ export const avatar = () =>
       </div>
 
       <p class="small">For now the avatar stack has a default colour which can be set in the theme, to override add custom background color and font color</p>
-      
+
       <div class="avatar-stack">
         <div class="avatar small" style="background-color:#F2FAEA; color:#7FC92B">ME</div>
         <div class="avatar small">JV<img class="avatar-img" src=${avatarImg}/></div>

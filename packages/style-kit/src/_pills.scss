@@ -27,6 +27,7 @@
   .tabs {
     @include tab-bar($theme);
     .tab {
+      cursor: pointer;
       @include pill-inactive($theme);
       &.selected {
         @include pill-active($theme);
