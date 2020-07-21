@@ -48,6 +48,7 @@
 @mixin text-field-value {
   @include body-text-large;
   font-weight: 500;
+  line-height: 24.3px;
 }
 
 @mixin button-label-large {

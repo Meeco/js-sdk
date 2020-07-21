@@ -3,10 +3,15 @@
 :local(.story) {
   @include typography-main($meeco-theme, true);
   @include tags-main($meeco-theme);
+  @include icons-main($meeco-theme);
 
   margin: $grid * 2;
 
   span {
     margin: $grid * 2;
+  }
+
+  i {
+    font-size: 16px;
   }
 }

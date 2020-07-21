@@ -1,12 +1,12 @@
 export default { title: 'Field Elements' };
 
 import { story } from 'style-loader!./field-elements.stories.scss';
-import '../src/components/icons';
 import placeholder from '../assets/image-placeholder.png';
 
 export const editMode = () => /*html*/ `
 <div class=${story}>
   <p>Field elements in edit mode</p>
+  
   <div class="container">
     <input type="text" value="Input field with text"/>
 
@@ -22,7 +22,7 @@ export const editMode = () => /*html*/ `
     </select>
 
     <label>Date field label</label>
-    <input type="date" value="2020-07-13" />
+    <input type="date" placeholder="yyyy-mm-dd" />
 
     <input type="search" placeholder="Search placeholder"/>
   </div>
@@ -41,7 +41,7 @@ export const viewMode = () => /*html*/ `
 
     <div class="attachment">
       <div class="content">
-        <div class="icon">
+        <div class="temp-icon">
           <img src=${placeholder} />
         </div>
         <p> Attachment Label </p>

@@ -1,11 +1,8 @@
 export default { title: 'Button' };
 
 import { story } from 'style-loader!./button.stories.scss';
-import '../src/components/icons';
 
 import { titleWords } from './helpers';
-
-const meecoIcons = icon => `<meeco-icon icon=${icon}></meeco-icon>`;
 
 export const catalog = () => {
   const container = document.createElement('div');
@@ -22,14 +19,11 @@ export const catalog = () => {
     });
   });
 
-  const types = ['icon', 'icon-only'];
+  const types = ['icon-text', 'icon-only'];
   types.forEach(type => {
     const iconButton = document.createElement('button');
     iconButton.className = `${type}`;
-    iconButton.innerHTML =
-      type === 'icon-only'
-        ? meecoIcons('share')
-        : `<span>${meecoIcons('share')}</span> text with icon `;
+    iconButton.innerHTML = type === 'icon-only' ? '<i>add</i>' : `<i>share</i> text with icon `;
     container.appendChild(iconButton);
   });
 

@@ -12,21 +12,20 @@
 
 @mixin tag-edit($theme) {
   @include tag-base($theme);
-  meeco-icon,
-  svg {
+  i,
+  .icon {
     vertical-align: middle;
     display: inline-block;
-    padding-left: 0.5rem;
+    padding-left: 8px;
   }
 }
 
 @mixin tag-icon($theme) {
   @include tag-base($theme);
-  meeco-icon,
-  svg {
+  i,
+  .icon {
     vertical-align: middle;
     display: inline-block;
-    padding-right: 0.5rem;
   }
 }
 
