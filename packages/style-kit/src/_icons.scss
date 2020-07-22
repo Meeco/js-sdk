@@ -1,5 +1,358 @@
-$calendar-svg: "data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M6.47767 3.15537C6.64515 3.13285 6.81922 3.11359 7 3.09713V3C7 2.44772 7.44772 2 8 2C8.55229 2 9 2.44772 9 3V3.00849C9.59271 2.99998 10.2342 2.99999 10.9268 3H13.0732C13.7657 2.99999 14.4073 2.99998 15 3.00849V3C15 2.44772 15.4477 2 16 2C16.5523 2 17 2.44772 17 3V3.09713C17.1808 3.11359 17.3549 3.13285 17.5223 3.15537C18.7225 3.31672 19.733 3.66191 20.5355 4.46447C21.3381 5.26702 21.6833 6.27752 21.8446 7.47767C22.0001 8.63363 22 10.1034 22 11.9269V13.0731C22 14.8966 22.0001 16.3664 21.8446 17.5223C21.6833 18.7225 21.3381 19.733 20.5355 20.5355C19.733 21.3381 18.7225 21.6833 17.5223 21.8446C16.3664 22.0001 14.8966 22 13.0731 22H10.9269C9.1034 22 7.63363 22.0001 6.47767 21.8446C5.27752 21.6833 4.26702 21.3381 3.46447 20.5355C2.66191 19.733 2.31672 18.7225 2.15537 17.5223C1.99995 16.3664 1.99997 14.8966 2 13.0732V11.9268C1.99997 10.1034 1.99995 8.63362 2.15537 7.47767C2.31672 6.27752 2.66191 5.26702 3.46447 4.46447C4.26702 3.66191 5.27752 3.31672 6.47767 3.15537ZM15 6C15 6.55228 15.4477 7 16 7C16.5523 7 17 6.55228 17 6V5.10669C17.0876 5.11612 17.1728 5.12637 17.2558 5.13753C18.2342 5.26907 18.7523 5.50966 19.1213 5.87868C19.4903 6.2477 19.7309 6.76579 19.8625 7.74416C19.9122 8.11434 19.944 8.5288 19.9643 9L4.03573 9C4.056 8.5288 4.08776 8.11434 4.13753 7.74416C4.26907 6.76579 4.50966 6.2477 4.87868 5.87868C5.2477 5.50966 5.7658 5.26907 6.74416 5.13753C6.82717 5.12637 6.9124 5.11612 7 5.10669V6C7 6.55228 7.44772 7 8 7C8.55229 7 9 6.55228 9 6V5.0089C9.58769 5.00033 10.2493 5 11 5H13C13.7507 5 14.4123 5.00033 15 5.0089V6ZM4.00104 11C4.00007 11.3147 4 11.6476 4 12V13C4 14.9139 4.00213 16.2487 4.13753 17.2558C4.26907 18.2342 4.50966 18.7523 4.87868 19.1213C5.2477 19.4903 5.76579 19.7309 6.74416 19.8625C7.7513 19.9979 9.08611 20 11 20H13C14.9139 20 16.2487 19.9979 17.2558 19.8625C18.2342 19.7309 18.7523 19.4903 19.1213 19.1213C19.4903 18.7523 19.7309 18.2342 19.8625 17.2558C19.9979 16.2487 20 14.9139 20 13V12C20 11.6476 19.9999 11.3147 19.999 11L4.00104 11Z' fill='%23A3B0B8'/%3E%3C/svg%3E";
+@import './variables';
 
-$down-arrow-svg: "data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M13.5011 16.6235C12.7048 17.5281 11.2952 17.5281 10.4988 16.6235L5.24944 10.6608C4.8845 10.2463 4.9247 9.61438 5.33924 9.24944C5.75377 8.8845 6.38565 8.9247 6.7506 9.33923L12 15.302L17.2494 9.33925C17.6144 8.92472 18.2462 8.88453 18.6608 9.24947C19.0753 9.61441 19.1155 10.2463 18.7506 10.6608L13.5011 16.6235Z' fill='%23555555'/%3E%3C/svg%3E";
+@font-face {
+  font-family: 'meeco-icons';
+  src: url('/src/static/icon-font/meeco-icons.eot?ohofse');
+  src: url('/src/static/icon-font/meeco-icons.eot?ohofse#iefix') format('embedded-opentype'),
+    url('/src/static/icon-font/meeco-icons.ttf?ohofse') format('truetype'),
+    url('/src/static/icon-font/meeco-icons.woff?ohofse') format('woff'),
+    url('/src/static/icon-font/meeco-icons.svg?ohofse#meeco-icons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
 
-$search-svg: "data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078 19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976 20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2ZM4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866 14.866 18 11 18C7.13401 18 4 14.866 4 11Z' fill='%23555555'/%3E%3C/svg%3E";
+@mixin icons-main($theme) {
+  i,
+  .icon,
+  [class^='icon-'],
+  [class*=' icon-'] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'meeco-icons' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    font-size: 24px;
+
+    /* Enable Ligatures ================ */
+    letter-spacing: 0;
+    -webkit-font-feature-settings: 'liga';
+    -moz-font-feature-settings: 'liga=1';
+    -moz-font-feature-settings: 'liga';
+    -ms-font-feature-settings: 'liga' 1;
+    font-feature-settings: 'liga';
+    -webkit-font-variant-ligatures: discretionary-ligatures;
+    font-variant-ligatures: discretionary-ligatures;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    &.sm {
+      font-size: 16px;
+    }
+    &.md {
+      font-size: 24px;
+    }
+    &.lg {
+      font-size: 32px;
+    }
+    &.xl {
+      font-size: 48px;
+    }
+  }
+
+  .icon-add-circled-reverse:before {
+    content: '\e900';
+  }
+  .icon-add-circled:before {
+    content: '\e901';
+  }
+  .icon-add:before {
+    content: '\e902';
+  }
+  .icon-alert-circled-reverse:before {
+    content: '\e903';
+  }
+  .icon-alert-circled:before {
+    content: '\e904';
+  }
+  .icon-alert-octagon-reverse:before {
+    content: '\e905';
+  }
+  .icon-alert-octagon:before {
+    content: '\e906';
+  }
+  .icon-alert-triangle-reverse:before {
+    content: '\e907';
+  }
+  .icon-alert-triangle:before {
+    content: '\e908';
+  }
+  .icon-arrow-down:before {
+    content: '\e909';
+  }
+  .icon-arrow-left:before {
+    content: '\e90a';
+  }
+  .icon-arrow-right:before {
+    content: '\e90b';
+  }
+  .icon-arrow-up:before {
+    content: '\e90c';
+  }
+  .icon-attachment:before {
+    content: '\e90d';
+  }
+  .icon-badge:before {
+    content: '\e90e';
+  }
+  .icon-calendar:before {
+    content: '\e90f';
+  }
+  .icon-camera:before {
+    content: '\e910';
+  }
+  .icon-card-stack:before {
+    content: '\e911';
+  }
+  .icon-chevron-down-circled-reverse:before {
+    content: '\e912';
+  }
+  .icon-chevron-down-circled:before {
+    content: '\e913';
+  }
+  .icon-chevron-down:before {
+    content: '\e914';
+  }
+  .icon-chevron-left-circled-reverse:before {
+    content: '\e915';
+  }
+  .icon-chevron-left-circled:before {
+    content: '\e916';
+  }
+  .icon-chevron-left:before {
+    content: '\e917';
+  }
+  .icon-chevron-right-circled-reverse:before {
+    content: '\e918';
+  }
+  .icon-chevron-right-circled:before {
+    content: '\e919';
+  }
+  .icon-chevron-right:before {
+    content: '\e91a';
+  }
+  .icon-chevron-up-circled-reverse:before {
+    content: '\e91b';
+  }
+  .icon-chevron-up-circled:before {
+    content: '\e91c';
+  }
+  .icon-chevron-up:before {
+    content: '\e91d';
+  }
+  .icon-clipboard:before {
+    content: '\e91e';
+  }
+  .icon-contact-new:before {
+    content: '\e91f';
+  }
+  .icon-contact:before {
+    content: '\e920';
+  }
+  .icon-contacts:before {
+    content: '\e921';
+  }
+  .icon-credit-card:before {
+    content: '\e922';
+  }
+  .icon-cross-circled-reverse:before {
+    content: '\e923';
+  }
+  .icon-cross-circled:before {
+    content: '\e924';
+  }
+  .icon-cross:before {
+    content: '\e925';
+  }
+  .icon-delete:before {
+    content: '\e926';
+  }
+  .icon-download:before {
+    content: '\e927';
+  }
+  .icon-duplicate:before {
+    content: '\e928';
+  }
+  .icon-edit:before {
+    content: '\e929';
+  }
+  .icon-feed:before {
+    content: '\e92a';
+  }
+  .icon-field:before {
+    content: '\e92b';
+  }
+  .icon-file-text:before {
+    content: '\e92c';
+  }
+  .icon-file:before {
+    content: '\e92d';
+  }
+  .icon-filter:before {
+    content: '\e92e';
+  }
+  .icon-hamburger-menu:before {
+    content: '\e92f';
+  }
+  .icon-home:before {
+    content: '\e930';
+  }
+  .icon-id:before {
+    content: '\e931';
+  }
+  .icon-image:before {
+    content: '\e932';
+  }
+  .icon-info-circled-reverse:before {
+    content: '\e933';
+  }
+  .icon-info-circled:before {
+    content: '\e934';
+  }
+  .icon-integrations:before {
+    content: '\e935';
+  }
+  .icon-item:before {
+    content: '\e936';
+  }
+  .icon-kebab-circled-reverse:before {
+    content: '\e937';
+  }
+  .icon-kebab-circled:before {
+    content: '\e938';
+  }
+  .icon-kebab:before {
+    content: '\e939';
+  }
+  .icon-list:before {
+    content: '\e93a';
+  }
+  .icon-login:before {
+    content: '\e93b';
+  }
+  .icon-logout:before {
+    content: '\e93c';
+  }
+  .icon-me-filled:before {
+    content: '\e93d';
+  }
+  .icon-me-outlined:before {
+    content: '\e93e';
+  }
+  .icon-me:before {
+    content: '\e93f';
+  }
+  .icon-meatballs-circled-reverse:before {
+    content: '\e940';
+  }
+  .icon-meatballs-circled:before {
+    content: '\e941';
+  }
+  .icon-meatballs:before {
+    content: '\e942';
+  }
+  .icon-meeco-free:before {
+    content: '\e943';
+  }
+  .icon-meeco:before {
+    content: '\e944';
+  }
+  .icon-notes:before {
+    content: '\e945';
+  }
+  .icon-notification:before {
+    content: '\e946';
+  }
+  .icon-qr-code:before {
+    content: '\e947';
+  }
+  .icon-question-circled-reverse:before {
+    content: '\e948';
+  }
+  .icon-question-circled:before {
+    content: '\e949';
+  }
+  .icon-redo:before {
+    content: '\e94a';
+  }
+  .icon-refresh:before {
+    content: '\e94b';
+  }
+  .icon-reminder:before {
+    content: '\e94c';
+  }
+  .icon-remove-circled-reverse:before {
+    content: '\e94d';
+  }
+  .icon-remove-circled:before {
+    content: '\e94e';
+  }
+  .icon-remove:before {
+    content: '\e94f';
+  }
+  .icon-reorder:before {
+    content: '\e950';
+  }
+  .icon-scan:before {
+    content: '\e951';
+  }
+  .icon-search:before {
+    content: '\e952';
+  }
+  .icon-settings:before {
+    content: '\e953';
+  }
+  .icon-share:before {
+    content: '\e954';
+  }
+  .icon-shared:before {
+    content: '\e955';
+  }
+  .icon-sharing:before {
+    content: '\e956';
+  }
+  .icon-tag:before {
+    content: '\e957';
+  }
+  .icon-template:before {
+    content: '\e958';
+  }
+  .icon-tick-circled-reverse:before {
+    content: '\e959';
+  }
+  .icon-tick-circled:before {
+    content: '\e95a';
+  }
+  .icon-tick:before {
+    content: '\e95b';
+  }
+  .icon-undo:before {
+    content: '\e95c';
+  }
+  .icon-vault:before {
+    content: '\e95d';
+  }
+  .icon-vault2:before {
+    content: '\e95e';
+  }
+  .icon-verified-outline:before {
+    content: '\e95f';
+  }
+  .icon-verified-reverse:before {
+    content: '\e960';
+  }
+  .icon-wallet:before {
+    content: '\e961';
+  }
+  .icon-website:before {
+    content: '\e962';
+  }
+  .icon-zoom:before {
+    content: '\e963';
+  }
+}

@@ -4,6 +4,7 @@
   @include typography-main($meeco-theme, true);
   @include inputs-main($meeco-theme);
   @include buttons-main($meeco-theme);
+  @include icons-main($meeco-theme);
 
   max-width: 400px;
 
@@ -12,7 +13,7 @@
   }
 
   .attachment {
-    .icon {
+    .temp-icon {
       border-radius: $border-radius-standard;
       width: 54px;
       height: 54px;

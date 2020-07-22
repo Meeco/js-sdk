@@ -1,7 +1,6 @@
 export default { title: 'Custom Themes' };
 
 import { story } from 'style-loader!./custom-themes.stories.scss';
-import '../src/components/icons';
 
 export const customTheme = () => {
   return /*html*/ `

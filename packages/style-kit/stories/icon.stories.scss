@@ -1,0 +1,57 @@
+@import '../index';
+
+:local(.story) {
+  @include typography-main($meeco-theme, true);
+  @include icons-main($meeco-theme);
+
+  padding: 32px;
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 40px;
+  }
+  .col {
+    position: relative;
+  }
+  .fixed {
+    position: sticky;
+    top: -4px;
+  }
+
+  i,
+  .icon {
+    font-size: 24px;
+  }
+
+  pre {
+    margin: 8px 0;
+    padding: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f7f7f7;
+  }
+
+  .copy {
+    display: inline-block;
+  }
+
+  table {
+    width: 100%;
+    border: none;
+  }
+
+  th {
+    padding: 8px;
+    background-color: #f7f7f7;
+    border-bottom: 2px solid #999;
+  }
+
+  td {
+    padding: 8px;
+    border-bottom: 1px solid #999;
+  }
+  td:first-child {
+    text-align: center;
+  }
+}

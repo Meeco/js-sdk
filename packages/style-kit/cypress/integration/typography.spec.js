@@ -56,6 +56,6 @@ describe('Typography', () => {
 
     cy.get('input').should('have.css', 'font-size', '18px');
     cy.get('input').should('have.css', 'font-weight', medium);
-    cy.get('input').should('have.css', 'color', meecoCharcoalShade);
+    cy.get('input').should('have.css', 'color', meecoCharcoal);
   });
 });

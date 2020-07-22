@@ -7,10 +7,10 @@ export const tags = () =>
   `<div class="${story}">
     <span class="tag">Tag name</span>
       <span class="tag-edit">
-        Tag edit mode<meeco-icon icon="close"></meeco-icon>
+        Tag edit mode <i>cross</i>
       </span>
       <span class="tag-icon">
-        <meeco-icon icon="contactNew"></meeco-icon>
+        <i>verified-reverse</i>
         Tag with Icon
       </span>
   </div>`;

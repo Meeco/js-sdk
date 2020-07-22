@@ -18,24 +18,23 @@
 // meeco-icon will need to be removed once icon fonts are added
 @mixin tag-edit($theme) {
   @include tag-base($theme);
-  img,
-  meeco-icon,
-  span,
-  svg {
-    @include icon-align;
-    padding-left: 0.5rem;
+
+  i,
+  .icon {
+    vertical-align: middle;
+    display: inline-block;
+    padding-left: 8px;
   }
 }
 
 // meeco-icon will need to be removed once icon fonts are added
 @mixin tag-icon($theme) {
   @include tag-base($theme);
-  img,
-  meeco-icon,
-  span,
-  svg {
-    @include icon-align;
-    padding-right: 0.5rem;
+
+  i,
+  .icon {
+    vertical-align: middle;
+    display: inline-block;
   }
 }
 

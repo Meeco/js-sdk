@@ -21,6 +21,13 @@
   border-radius: $border-radius-standard;
   border: 1px solid map-get($theme, 'light');
   color: map-get($theme, 'darkText');
+  width: 100%;
+
+  &:focus {
+    outline: none;
+    border-color: map-get($theme, 'highlight');
+    border-width: 2px;
+  }
 }
 
 @mixin text-input($theme) {
@@ -54,28 +61,33 @@
 @mixin date-value($theme) {
   @include input($theme);
   padding-right: $grid * 2;
-  background-image: url($calendar-svg);
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M6.47767 3.15537C6.64515 3.13285 6.81922 3.11359 7 3.09713V3C7 2.44772 7.44772 2 8 2C8.55229 2 9 2.44772 9 3V3.00849C9.59271 2.99998 10.2342 2.99999 10.9268 3H13.0732C13.7657 2.99999 14.4073 2.99998 15 3.00849V3C15 2.44772 15.4477 2 16 2C16.5523 2 17 2.44772 17 3V3.09713C17.1808 3.11359 17.3549 3.13285 17.5223 3.15537C18.7225 3.31672 19.733 3.66191 20.5355 4.46447C21.3381 5.26702 21.6833 6.27752 21.8446 7.47767C22.0001 8.63363 22 10.1034 22 11.9269V13.0731C22 14.8966 22.0001 16.3664 21.8446 17.5223C21.6833 18.7225 21.3381 19.733 20.5355 20.5355C19.733 21.3381 18.7225 21.6833 17.5223 21.8446C16.3664 22.0001 14.8966 22 13.0731 22H10.9269C9.1034 22 7.63363 22.0001 6.47767 21.8446C5.27752 21.6833 4.26702 21.3381 3.46447 20.5355C2.66191 19.733 2.31672 18.7225 2.15537 17.5223C1.99995 16.3664 1.99997 14.8966 2 13.0732V11.9268C1.99997 10.1034 1.99995 8.63362 2.15537 7.47767C2.31672 6.27752 2.66191 5.26702 3.46447 4.46447C4.26702 3.66191 5.27752 3.31672 6.47767 3.15537ZM15 6C15 6.55228 15.4477 7 16 7C16.5523 7 17 6.55228 17 6V5.10669C17.0876 5.11612 17.1728 5.12637 17.2558 5.13753C18.2342 5.26907 18.7523 5.50966 19.1213 5.87868C19.4903 6.2477 19.7309 6.76579 19.8625 7.74416C19.9122 8.11434 19.944 8.5288 19.9643 9L4.03573 9C4.056 8.5288 4.08776 8.11434 4.13753 7.74416C4.26907 6.76579 4.50966 6.2477 4.87868 5.87868C5.2477 5.50966 5.7658 5.26907 6.74416 5.13753C6.82717 5.12637 6.9124 5.11612 7 5.10669V6C7 6.55228 7.44772 7 8 7C8.55229 7 9 6.55228 9 6V5.0089C9.58769 5.00033 10.2493 5 11 5H13C13.7507 5 14.4123 5.00033 15 5.0089V6ZM4.00104 11C4.00007 11.3147 4 11.6476 4 12V13C4 14.9139 4.00213 16.2487 4.13753 17.2558C4.26907 18.2342 4.50966 18.7523 4.87868 19.1213C5.2477 19.4903 5.76579 19.7309 6.74416 19.8625C7.7513 19.9979 9.08611 20 11 20H13C14.9139 20 16.2487 19.9979 17.2558 19.8625C18.2342 19.7309 18.7523 19.4903 19.1213 19.1213C19.4903 18.7523 19.7309 18.2342 19.8625 17.2558C19.9979 16.2487 20 14.9139 20 13V12C20 11.6476 19.9999 11.3147 19.999 11L4.00104 11Z' fill='%23A3B0B8'/%3E%3C/svg%3E%0A");
   background-repeat: no-repeat, repeat;
   background-position: right 0.7em top 50%, 0 0;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 @mixin search-input {
   border-radius: $border-radius-large;
-  background-image: url($search-svg);
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078 19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976 20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2ZM4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866 14.866 18 11 18C7.13401 18 4 14.866 4 11Z' fill='%23A3B0B8'/%3E%3C/svg%3E%0A");
   background-repeat: no-repeat, repeat;
   background-position: left 0.7em top 50%, 0 0;
   text-indent: $grid * 4;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 @mixin dropdown-input($theme) {
   @include text-input($theme);
-  padding: $grid ($grid * 4) $grid $grid;
+  background-image: url("data:image/svg+xml,%3Csvg fill='none' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath clip-rule='evenodd' d='m5.33923 8.24944c.41453-.36494 1.04642-.32474 1.41136.08979l5.24941 5.96277 5.2494-5.96275c.365-.41452.9968-.45472 1.4114-.08978.4145.36494.4547.99683.0898 1.41136l-5.2495 5.96267c-.7963.9046-2.2059.9046-3.0023 0l-5.24936-5.9627c-.36494-.41454-.32474-1.04642.08979-1.41136z' fill='%23A3B0B8' fill-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7em top 50%, 0 0;
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
-  background-image: url($down-arrow-svg);
-  background-repeat: no-repeat, repeat;
-  background-position: right 0.2em top 50%, 0 0;
 }
 
 @mixin inputs-main($theme) {

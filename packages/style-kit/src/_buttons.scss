@@ -52,10 +52,13 @@
   @include button-spacing-small;
   color: map-get($theme, 'dark');
   font-size: 18px;
-  span {
-    display: inline-block;
-    vertical-align: middle;
+
+  i,
+  .icon {
     padding-right: 0.5rem;
+    vertical-align: middle;
+    display: inline-block;
+    color: map-get($theme, 'primary');
   }
 }
 
@@ -103,7 +106,7 @@
     &.small {
       @include button-spacing-small;
     }
-    &.icon {
+    &.icon-text {
       @include text-button-icon($theme);
       &:hover {
         color: darken(map-get($theme, 'dark'), 10%);
