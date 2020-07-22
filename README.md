@@ -9,7 +9,10 @@
 # SDK
 
 - [Documentation](./packages/sdk)
+- [TypeDoc docs](https://meeco.github.io/js-sdk/)
+- [SDK Demo page](https://meeco.github.io/js-sdk/sdk-demo/)
 
 # Style Kit
 
 - [Documentation](./packages/style-kit)
+- [Storybook online](https://meeco.github.io/js-sdk/style-kit/)
