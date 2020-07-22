@@ -5,6 +5,7 @@
   "main": "dist/index.css",
   "scripts": {
     "build": "parcel build main.scss",
+    "demo": "webpack-dev-server demo",
     "cypress": "cypress open",
     "docs": "build-storybook -c .storybook -o ../../docs/style-kit",
     "start": "npm run storybook",
@@ -29,7 +30,6 @@
     "@storybook/theming": "^5.3.19",
     "babel-loader": "^8.1.0",
     "color": "^3.1.2",
-    "css-loader": "^3.6.0",
     "cypress": "^4.9.0",
     "cypress-image-snapshot": "^3.1.1",
     "cypress-storybook": "^0.2.0",
@@ -38,11 +38,7 @@
     "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.14.1",
     "parcel": "^1.12.4",
-    "raw-loader": "^4.0.1",
-    "sass-loader": "^8.0.2",
     "start-server-and-test": "^1.11.0",
-    "style-loader": "^1.2.1",
-    "svg-inline-loader": "^0.8.2",
-    "to-string-loader": "^1.1.6"
+    "style-loader": "^1.2.1"
   }
 }

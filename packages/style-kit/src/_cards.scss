@@ -14,7 +14,7 @@
 
 @mixin item-spacing-column($spacing: $grid) {
   > * {
-    margin: $spacing 0 $spacing 0;
+    margin: $spacing 0 ($spacing / 2) 0;
     &:last-child {
       margin-bottom: 0;
     }
@@ -22,14 +22,14 @@
 }
 
 @mixin card($theme) {
-  box-shadow: $shadow-soft;
-  border-radius: $border-radius-medium;
   display: inline-flex;
   flex-direction: column;
+  box-shadow: $shadow-soft;
+  border-radius: $border-radius-medium;
   .content {
-    padding: $grid * 2;
     display: flex;
     align-items: center;
+    padding: $grid * 2;
     @include item-spacing();
 
     .icon {
@@ -42,10 +42,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-top: 1px solid map-get($theme, 'light');
-
     padding: ($grid * 1.5) ($grid * 2) ($grid * 1.5) ($grid * 2);
-
+    border-top: 1px solid map-get($theme, 'light');
     @include item-spacing();
 
     > * {
@@ -58,18 +56,16 @@
 
 @mixin tile($theme) {
   @include card($theme);
-  padding: $grid * 2;
-  align-items: center;
-  justify-content: center;
   .content {
+    display: inline-flex;
     flex-direction: column;
-    max-width: 12rem;
-    padding: $grid $grid * 2 0px $grid * 2;
-    text-align: center;
+    justify-content: center;
+    align-items: center;
+    padding: $grid * 2;
     @include item-spacing-column();
-  }
-  .icon {
-    align-self: center;
+    .icon {
+      align-self: center;
+    }
   }
 }
 

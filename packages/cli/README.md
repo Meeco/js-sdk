@@ -217,7 +217,9 @@ once approved it can be access with follwoing command
 - [`meeco items:update`](#meeco-itemsupdate)
 - [`meeco organization-members:accept-invitation`](#meeco-organization-membersaccept-invitation)
 - [`meeco organization-members:create-invitation [MEMBER_ROLE]`](#meeco-organization-memberscreate-invitation-member_role)
+- [`meeco organization-members:delete ORGANIZATION_ID ID`](#meeco-organization-membersdelete-organization_id-id)
 - [`meeco organization-members:list ORGANIZATION_ID`](#meeco-organization-memberslist-organization_id)
+- [`meeco organization-members:update`](#meeco-organization-membersupdate)
 - [`meeco organization-services:create ORGANIZATION_ID`](#meeco-organization-servicescreate-organization_id)
 - [`meeco organization-services:get ORGANIZATION_ID SERVICE_ID`](#meeco-organization-servicesget-organization_id-service_id)
 - [`meeco organization-services:list ORGANIZATION_ID`](#meeco-organization-serviceslist-organization_id)
@@ -577,6 +579,30 @@ EXAMPLE
 
 _See code: [src/commands/organization-members/create-invitation.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/create-invitation.ts)_
 
+## `meeco organization-members:delete ORGANIZATION_ID ID`
+
+Delete a member of an organization. This command is only accessible to organization owners. The system will not allow to delete the last owner of the organization.
+
+```
+USAGE
+  $ meeco organization-members:delete ORGANIZATION_ID ID
+
+ARGUMENTS
+  ORGANIZATION_ID  ID of the Organization
+  ID               user ID of the Member
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLE
+  meeco organization-members:delete <organization_id> <id>
+```
+
+_See code: [src/commands/organization-members/delete.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/delete.ts)_
+
 ## `meeco organization-members:list ORGANIZATION_ID`
 
 List all members of an organization. This command is only accessible to organization owners.
@@ -596,6 +622,28 @@ EXAMPLE
 ```
 
 _See code: [src/commands/organization-members/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/list.ts)_
+
+## `meeco organization-members:update`
+
+Change the role of a member. This command is only accessible to organization owners. The system will not allow to demote the last owner of the organization.
+
+```
+USAGE
+  $ meeco organization-members:update
+
+OPTIONS
+  -a, --auth=auth                                          (required) [default: .user.yaml] Authorization config file
+                                                           yaml file (if not using the default .user.yaml)
+
+  -e, --environment=environment                            [default: .environment.yaml] environment config file
+
+  -m, --organizationMemberConfig=organizationMemberConfig  (required) org member yaml file
+
+EXAMPLE
+  meeco organization-members:update -m .my-created-org-member.yaml
+```
+
+_See code: [src/commands/organization-members/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/update.ts)_
 
 ## `meeco organization-services:create ORGANIZATION_ID`
 

@@ -20,8 +20,8 @@ export const toggle = () => /*html*/ `
   <p>Radio button</p>
 
   <label class="radio-button">
-    <input type="radio">
+    <input type="radio" value="select-me">
     <span class="checkmark"></span>
+    <label for="select-me">Select Me</label>
   </label>
-
 </div>`;

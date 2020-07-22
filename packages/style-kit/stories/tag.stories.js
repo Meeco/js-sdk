@@ -2,6 +2,7 @@ export default { title: 'Tags' };
 import { story } from 'style-loader!./tag.stories.scss';
 
 export const tags = () =>
+  // Replace meeco-icon with icon font
   /*html*/
   `<div class="${story}">
     <span class="tag">Tag name</span>
