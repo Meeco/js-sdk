@@ -21,7 +21,7 @@ export const mobileScreens = () => {
     });
   });
   return /*html*/ `
-  <div class=${story}>
+  <div class="${story} mobile">
 
     <h1>Explore Meeco UI Components</h1>
 
@@ -225,4 +225,162 @@ export const mobileScreens = () => {
     </div>
   </div>
   `;
+};
+
+export const dashboardDemo = () => {
+  return /*html*/ `
+  <div class="${story} dashboard">
+    <div class="sidebar">
+      <ul>
+        <li>Vault</li>
+        <li>Activity Feed</li>
+        <li>Contacts</li>
+        <li>Integrations</li>
+        <li>Settings</li>
+        <li>Notifications</li>
+      </ul>
+    </div>
+
+    <div class="vault">
+      <div class="toolbar">
+        <h3>Vault</h3>
+        <button class="icon-only">+</button>
+      </div>
+      <div class="tabs">
+        <span class="tab selected">My items</span>
+        <span class="tab">Sharing with</span>
+        <span class="tab">Shared</span>
+      </div>
+      <input type="search" placeholder="Search items"/>
+      <div class="card-list">
+        <div class="card">
+          <div class="content">
+            <div class="icon"></div>
+            <p class="card-label">Wifi Password</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="content">
+            <div class="icon"></div>
+            <p class="card-label">Wifi Password</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="content">
+            <div class="icon"></div>
+            <p class="card-label">Wifi Password</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="main">
+      <div class="toolbar">
+        <div class="inline">
+          <div class="avatar-stack">
+            <div class="avatar">KD</div>
+            <div class="avatar">ME</div>
+            <div class="avatar">+3</div>
+          </div>
+          <button class="icon-only smoke"></button>
+        </div>
+        <div class="inline">
+          <button class="icon-only smoke"></button>
+          <button class="icon-only smoke"></button>
+        </div>
+      </div>
+
+      <div class="display">
+        <div class="card-detail">
+          <div class="card no-shadow">
+            <div class="content">
+              <div class="icon"></div>
+              <p class="card-label">Spotify Family Account</p>
+            </div>
+          </div>
+          <div class="subline">
+            <span class="tag">Family</span>
+            <span class="tag">Passwords</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+};
+
+export const kitchenSink = () => {
+  return /*html*/ `
+  <div class="${story} sink-container">
+    <div class="table-example">
+      <h4>Table Example</h4>
+      <table>
+        <tr>
+          <th>Application No.</th>
+          <th>Name</th>
+          <th>Status</th>
+        </tr>
+        <tr>
+          <td>21</td>
+          <td>Jane</td>
+          <td>Approved</td>
+        </tr>
+        <tr>
+          <td>22</td>
+          <td>John</td>
+          <td>Approved</td>
+        </tr>
+        <tr>
+          <td>23</td>
+          <td>Jill</td>
+          <td>Pending</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="list-example">
+      <h4>List Examples</h4>
+        <ol>
+          <li>Download the app</li>
+          <li>Scan QR code</li>
+          <li>Consent to sharing</li>
+        </ol>
+        <ul>
+          <li>Apply now with app</li>
+          <li>Apply later with app</li>
+          <li>Apply manually</li>
+        </ul>
+    </div>
+
+    <div class="body-text-example">
+      <h4> Paragraph </h4>
+        <p><b>Normal</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sit amet mattis vulputate enim nulla aliquet.</p><br/>
+        <p class="small"><b class="small">Small</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sit amet mattis vulputate enim nulla aliquet.</p>
+    </div>
+
+    <div class="form-example">
+      <h4>Form example</h4>
+      <form>
+        <label for="name">Full Name</label>
+        <input type="text" name="name" placeholder="Full Name"/>
+        <label for="occupation">Occupation</label>
+        <input type="text" name="occuptation" placeholder="Occuptation"/>
+        <label class="radio-button">
+          <input type="radio" name="gender" value="male">
+          <span class="checkmark"></span>
+          <label for="male">Male</label>
+        </label><br/>
+        <label class="radio-button">
+          <input type="radio" name="gender" value="female">
+          <span class="checkmark"></span>
+          <label for="female">Female</label>
+        </label><br/>
+        <label class="radio-button">
+          <input type="radio" name="gender" value="non-binary">
+          <span class="checkmark"></span>
+          <label for="non-binary">Non-binary</label>
+        </label><br/>
+        <button class="primary large">Submit</button>
+      </form>
+    </div>
+  </div>`;
 };

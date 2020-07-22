@@ -10,29 +10,32 @@
   @include avatar-main($meeco-theme);
   @include controls-main($meeco-theme);
 
+  // variables
+  $border: 1px solid map-get($meeco-theme, 'light');
+
+  // mixins
   @mixin icon-base {
     width: 48px;
     height: 48px;
     border-radius: $border-radius-standard;
     background-color: $meeco-dark-blue;
   }
-
-  width: 100%;
-  height: auto;
-  padding: $grid;
-  background-color: map-get($meeco-theme, 'secondary');
-  border-radius: $border-radius-standard;
-
-  // color variables
+  // color add on classes
   .white {
     color: #fff;
   }
-
   .red {
     color: $meeco-red;
   }
 
-  // margin variables
+  // Mobile Screen Styles
+  &.mobile {
+    width: 100%;
+    height: auto;
+    padding: $grid;
+    background-color: _tint(map-get($meeco-theme, 'light'), 90%);
+    border-radius: $border-radius-standard;
+  }
 
   .container {
     display: grid;
@@ -44,7 +47,6 @@
       align-items: center;
     }
   }
-
   .component {
     background-color: #fff;
     margin: $grid * 2;
@@ -52,9 +54,9 @@
     border-radius: $border-radius-standard;
     box-shadow: $shadow-soft;
     &.card-list {
-      width: 320px;
       display: flex;
       flex-direction: column;
+      width: 320px;
       padding: $grid;
       background: map-get($meeco-theme, 'bgShade');
       h4 {
@@ -89,14 +91,11 @@
             box-shadow: none;
           }
           .icon {
-            width: 48px;
-            height: 48px;
-            border-radius: $border-radius-standard;
+            @include icon-base;
             background: $meeco-green;
           }
         }
         .popup-body {
-          width: 320px;
           padding: $grid * 2;
           .item {
             margin: ($grid * 2) 0px;
@@ -114,7 +113,7 @@
           flex-wrap: wrap;
           justify-content: space-between;
           padding: $grid * 2;
-          border-top: 1px solid map-get($meeco-theme, 'light');
+          border-top: $border;
           .contact {
             margin: $grid;
           }
@@ -124,7 +123,7 @@
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        border-top: 1px solid map-get($meeco-theme, 'light');
+        border-top: $border;
       }
     }
     &.tile-list {
@@ -161,6 +160,9 @@
   }
 
   // overriding default styles
+  .avatar {
+    border-color: #fff;
+  }
   .avatar.small {
     border-color: #fff;
     line-height: 28px;
@@ -168,6 +170,88 @@
   .avatar-stack {
     .avatar.small {
       margin-left: -1.2rem;
+    }
+  }
+
+  // Webview Styles
+  &.dashboard {
+    display: grid;
+    grid-template-columns: 0.15fr 0.3fr 0.55fr;
+    width: 95vw;
+    // height: 90vh;
+    margin: $grid * 2;
+    border: $border;
+    border-radius: $border-radius-standard;
+    box-shadow: $shadow-hard;
+    .sidebar {
+      background: map-get($meeco-theme, 'light');
+      ul {
+        list-style-type: none;
+        li {
+          margin-bottom: $grid * 2;
+        }
+      }
+    }
+    .vault {
+      box-shadow: $shadow-soft;
+      .tabs {
+        margin: $grid * 2 $grid;
+      }
+      input {
+        width: 90%;
+      }
+      .card-list {
+        margin: $grid * 2;
+      }
+    }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $grid $grid * 2;
+      border-bottom: $border;
+      .inline {
+        display: flex;
+      }
+      .icon-only.smoke {
+        background: map-get($meeco-theme, 'light');
+      }
+    }
+    .card {
+      width: 100%;
+      margin-bottom: $grid;
+      &.no-shadow {
+        box-shadow: none;
+      }
+      .icon {
+        @include icon-base;
+      }
+    }
+  }
+  .subline {
+    margin-left: $grid * 10;
+  }
+
+  // Kitchen sink styles
+  &.sink-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: $grid * 2;
+    > div {
+      margin: $grid $grid * 2;
+    }
+    .table-example {
+      table,
+      th,
+      td {
+        padding: $grid * 2;
+        border: 1px solid map-get($meeco-theme, 'light');
+        border-collapse: collapse;
+        text-align: center;
+      }
+    }
+    .body-text-example {
+      width: 360px;
     }
   }
 }
