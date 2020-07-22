@@ -1,7 +1,6 @@
 import {
   AuthData,
   configureFetch,
-  EncryptionKey,
   Environment,
   ItemService,
   SecretService,
@@ -58,23 +57,7 @@ function updateEnvironment() {
 
 const STATE: {
   user?: AuthData;
-} = {
-  user: {
-    data_encryption_key: EncryptionKey.fromSerialized(
-      '8n4gBhblWtYRLk3rTH1rRGXtKHikTVtJbyTowVtpy1s='
-    ),
-    key_encryption_key: EncryptionKey.fromSerialized(
-      '_jGrW02X_dNw4cSvZZq7XF5ICC1_mHm_f3LIdqtaGno='
-    ),
-    keystore_access_token:
-      'dERNLspexZsg3dspiEXqrSc1Z1QRuiVUlZB6AfU2gA4=.i7J8jYqPwaiwJM67ew_kWiQryVBsK271JmnbqjBg6h4=',
-    passphrase_derived_key: EncryptionKey.fromSerialized(
-      'qvufd1GAJmiBEKE2FTSksbLbMTBYwh3kucmd78onqoo='
-    ),
-    secret: '1.bBq6Qp.6ztGfS-hKUdWN-PhnCqi-Fpd4k2-1UMXJz-dWGpGV-yZSzTQ-N',
-    vault_access_token: 'bwmDcZsQFBx1S2w4f9wv'
-  }
-};
+} = {};
 
 // Assumes modern browser with fetch
 configureFetch(window.fetch);
