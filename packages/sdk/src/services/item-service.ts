@@ -1,4 +1,5 @@
 import { AttachmentResponse, Slot, ThumbnailResponse } from '@meeco/vault-api-sdk';
+import { Buffer as _buffer } from 'buffer';
 import * as Jimp from 'jimp';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
@@ -102,7 +103,7 @@ export class ItemService {
       const blob =
         typeof Blob === 'function'
           ? new Blob([encryptedThumbnail.serialized])
-          : Buffer.from(encryptedThumbnail.serialized, 'binary');
+          : _buffer.from(encryptedThumbnail.serialized, 'binary');
       response = await this.vaultAPIFactory(auth).ThumbnailApi.thumbnailsPost(
         blob as any,
         binaryId,
@@ -144,7 +145,7 @@ export class ItemService {
       const blob =
         typeof Blob === 'function'
           ? new Blob([encryptedFile.serialized])
-          : Buffer.from(encryptedFile.serialized, 'binary');
+          : _buffer.from(encryptedFile.serialized, 'binary');
       uploadedBinary = await this.vaultAPIFactory(
         auth.vault_access_token
       ).AttachmentApi.attachmentsPost(blob as any, fileName, fileType);

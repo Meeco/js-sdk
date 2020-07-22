@@ -8,7 +8,7 @@ run users:create -p supersecretpassword > .Alice.yaml
 echo "Fetch template list"
 run templates:list -a .Alice.yaml
 echo "Create a 'Vehicle' card template for 'Alice'"
-run items:create-config ng_vehicle -a .Alice.yaml > .template_vehicle.yaml
+run items:create-config vehicle -a .Alice.yaml > .template_vehicle.yaml
 sed '5,6 s/label: ""/label: "My Vehicle"/' .template_vehicle.yaml > .my_vehicle.yaml
 echo "Create a 'Vehicle' card for 'Alice'"
 run items:create -i .my_vehicle.yaml -a .Alice.yaml

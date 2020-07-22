@@ -1,5 +1,6 @@
 // tslint:disable-next-line: no-var-requires
 const baseX = require('base-x');
+import { Buffer as _buffer } from 'buffer';
 import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import cryppo from './cryppo-service';
 
@@ -54,7 +55,7 @@ export class SecretService {
   public encodeBase58(val: string | Buffer) {
     // https://tools.ietf.org/html/draft-msporny-base58-01
     const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-    const input = val instanceof Buffer ? val : Buffer.from(val, 'binary');
+    const input = val instanceof Buffer ? val : _buffer.from(val, 'binary');
     return baseX(ALPHABET).encode(input);
   }
 
