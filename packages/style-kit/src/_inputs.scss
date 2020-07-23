@@ -105,7 +105,6 @@
     &[type='search'] {
       @include search-input;
       &:focus {
-        background-size: 5%;
         outline: none;
         border: 1.5px solid map-get($theme, 'highlight');
       }

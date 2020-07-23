@@ -9,16 +9,21 @@
   @include typography-main($meeco-theme, true);
   @include avatar-main($meeco-theme);
   @include controls-main($meeco-theme);
+  @include icons-main($meeco-theme);
 
   // variables
   $border: 1px solid map-get($meeco-theme, 'light');
 
   // mixins
   @mixin icon-base {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 48px;
     height: 48px;
     border-radius: $border-radius-standard;
     background-color: $meeco-dark-blue;
+    color: #fff;
   }
   // color add on classes
   .white {
@@ -199,6 +204,7 @@
       }
       input {
         width: 90%;
+        margin-left: $grid;
       }
       .card-list {
         margin: $grid * 2;
@@ -215,6 +221,7 @@
       }
       .icon-only.smoke {
         background: map-get($meeco-theme, 'light');
+        color: map-get($meeco-theme, 'dark');
       }
     }
     .card {

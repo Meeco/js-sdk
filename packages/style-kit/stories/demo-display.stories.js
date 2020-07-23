@@ -31,17 +31,17 @@ export const mobileScreens = () => {
             <h4>Card List Example</h4>
             <div class="card">
               <div class="content">
-                <div class="icon"></div>
+                <div class="icon"><i>file-text</i></div>
                 <p class="card-label">Travel details</p>
               </div>
             </div>
             <div class="card complex-footer">
               <div class="content">
-                <div class="icon"></div>
+                <div class="icon"><i>website</i></div>
                 <p class="card-label">Wifi Password</p>
               </div>
               <div class="footer">
-                <span class="tag-icon">sharing with</span>
+                <span class="tag-icon">sharing with <i class="sm">sharing</i></span>
                 <div class="avatar-stack">
                   <div class="avatar small">ME</div>
                   <div class="avatar small">KD</div>
@@ -51,11 +51,11 @@ export const mobileScreens = () => {
             </div>
             <div class="card complex-footer">
               <div class="content">
-                <div class="icon"></div>
+                <div class="icon"><i>id</i></div>
                 <p class="card-label">Spotify family account</p>
               </div>
               <div class="footer">
-                <span class="tag-icon">shared from</span>
+                <span class="tag-icon">shared from<i class="sm">shared</i></span>
                 <div>
                   <p class="small">Evelyn Wu</p>
                   <div class="avatar small">EW</div>
@@ -70,7 +70,7 @@ export const mobileScreens = () => {
               <div class="header">
                 <div class="card no-shadow">
                   <div class="content">
-                    <div class="icon"></div>
+                    <div class="icon"><i>website</i></div>
                     <p class="card-label">Wifi Password</p>
                   </div>
                 </div>
@@ -96,7 +96,7 @@ export const mobileScreens = () => {
                 </form>
               </div>
               <div class="toolbar">
-                <button class="icon-only">X</button>
+                <button class="icon-only"><i>cross</i></button>
                 <button class="primary large">Save</button>
               </div>
             </div>
@@ -111,7 +111,7 @@ export const mobileScreens = () => {
           <div class="header">
             <div class="card no-shadow">
               <div class="content">
-                <div class="icon"></div>
+                <div class="icon"><i>website</i></div>
                 <p class="card-label">Wifi Password</p>
               </div>
             </div>
@@ -135,7 +135,7 @@ export const mobileScreens = () => {
             </div>
             <div class="attachment">
               <div class="content">
-                <div class="icon"><img src=${imagePlaceholder}/></div>
+                <div class="icon"><img src="https://picsum.photos/48"/></div>
                 <p>Photo of wifi card</p>
               </div>
             </div>
@@ -146,29 +146,29 @@ export const mobileScreens = () => {
       <div class="component tile-list">
         <h4>Tile List Example</h4>
         <div class="tile">
-         <div class="icon"></div>
          <div class="content">
+          <div class="icon"><i>integrations</i></div>
            <p class="tile-label">Twitter</p>
            <span class="tag">connected</span>
          </div>
         </div>
         <div class="tile">
-          <div class="icon"></div>
           <div class="content">
+            <div class="icon"><i>integrations</i></div>
             <p class="tile-label">Twitter</p>
             <span class="tag">connected</span>
           </div>
         </div>
         <div class="tile">
-          <div class="icon"></div>
           <div class="content">
+            <div class="icon"><i>integrations</i></div>
             <p class="tile-label">Twitter</p>
             <span class="tag">connected</span>
           </div>
         </div>
         <div class="tile">
-          <div class="icon"></div>
           <div class="content">
+            <div class="icon"><i>integrations</i></div>
             <p class="tile-label">Twitter</p>
             <span class="tag">connected</span>
           </div>
@@ -244,7 +244,7 @@ export const dashboardDemo = () => {
     <div class="vault">
       <div class="toolbar">
         <h3>Vault</h3>
-        <button class="icon-only">+</button>
+        <button class="icon-only"><i>add</i></button>
       </div>
       <div class="tabs">
         <span class="tab selected">My items</span>
@@ -255,19 +255,19 @@ export const dashboardDemo = () => {
       <div class="card-list">
         <div class="card">
           <div class="content">
-            <div class="icon"></div>
+            <div class="icon"><i>website</i></div>
             <p class="card-label">Wifi Password</p>
           </div>
         </div>
         <div class="card">
           <div class="content">
-            <div class="icon"></div>
+            <div class="icon"><i>website</i></div>
             <p class="card-label">Wifi Password</p>
           </div>
         </div>
         <div class="card">
           <div class="content">
-            <div class="icon"></div>
+            <div class="icon"><i>website</i></div>
             <p class="card-label">Wifi Password</p>
           </div>
         </div>
@@ -281,11 +281,11 @@ export const dashboardDemo = () => {
             <div class="avatar">ME</div>
             <div class="avatar">+3</div>
           </div>
-          <button class="icon-only smoke"></button>
+          <button class="icon-only smoke"><i>share</i></button>
         </div>
         <div class="inline">
-          <button class="icon-only smoke"></button>
-          <button class="icon-only smoke"></button>
+          <button class="icon-only smoke"><i>edit</i></button>
+          <button class="icon-only smoke"><i>duplicate</i></button>
         </div>
       </div>
 
@@ -293,7 +293,7 @@ export const dashboardDemo = () => {
         <div class="card-detail">
           <div class="card no-shadow">
             <div class="content">
-              <div class="icon"></div>
+              <div class="icon"><i>id</i></div>
               <p class="card-label">Spotify Family Account</p>
             </div>
           </div>
