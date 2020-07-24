@@ -1,0 +1,64 @@
+@import './variables';
+@import './typography';
+
+@mixin item-spacing($spacing: $grid) {
+  > * {
+    margin: 0 $spacing 0 $spacing;
+    &:first-child {
+      margin-left: 0;
+    }
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+@mixin notification($theme) {
+  display: inline-block;
+  box-shadow: $shadow-soft;
+  border-radius: $border-radius-standard;
+  color: map-get(map-get($theme, 'notification'), 'foreground');
+  background-color: map-get(map-get($theme, 'notification'), 'background');
+
+  .content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $grid $grid * 2;
+    @include item-spacing($grid);
+
+    @include notification-text;
+
+    span {
+      flex-grow: 1;
+    }
+
+    i,
+    .icon {
+      flex-shrink: 0;
+      flex-grow: 0;
+    }
+
+    button {
+      margin: 0 $grid;
+      border: none;
+      background: none;
+      color: map-get(map-get($theme, 'notification'), 'foreground');
+      @include notification-text;
+      font-size: 13px;
+      text-transform: uppercase;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+  }
+}
+
+@mixin notifications-main($theme) {
+  * {
+    box-sizing: border-box;
+  }
+  .notification {
+    @include notification($theme);
+    @include shadows;
+  }
+}

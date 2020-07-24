@@ -70,6 +70,12 @@
   font-weight: 500;
 }
 
+@mixin notification-text {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20.8px;
+}
+
 @mixin tag-label {
   font-size: 13px;
   font-weight: 500;
@@ -126,6 +132,9 @@
   .subtitle {
     @include body-text-small;
     color: map-get($theme, 'lightText');
+  }
+  .notification-text {
+    @include notification-text;
   }
   label,
   .label {

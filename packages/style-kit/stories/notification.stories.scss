@@ -1,0 +1,9 @@
+@import '../index';
+
+:local(.story) {
+  @include typography-main($meeco-theme, true);
+  @include icons-main($meeco-theme);
+  @include notifications-main($meeco-theme);
+
+  margin: $grid * 2;
+}
