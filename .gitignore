@@ -1,6 +1,7 @@
 *-debug.log
 *-error.log
 .nyc_output
+packages/**/build
 packages/**/dist
 packages/**/lib
 packages/**/tmp

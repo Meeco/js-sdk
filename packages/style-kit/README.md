@@ -8,6 +8,21 @@ Styled building blocks for Meeco web applications.
 
 As with all projects in this repo, be sure to run `npm install` in the project root first.
 
+### Assets
+
+If you use the Meeco icon font, the files are located in the `assets` folder. You can copy them to your server or use a bundler to do it automatically. The following formats should be included:
+
+```
+node_modules/
+  @meeco/
+    style-kit/
+      assets/
+        meeco-icons.eot
+        meeco-icons.svg
+        meeco-icons.ttf
+        meeco-icons.woff
+```
+
 ### Development
 
 If you run `npm start` in this directory, it will start the [storybook](https://storybook.js.org/) project which should open itself in your default browser;

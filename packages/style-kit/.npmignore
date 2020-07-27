@@ -1,8 +1,10 @@
 .cache
 .storybook
-assets
 cypress
 node_modules
 stories
 cypress.json
 package-lock.json
+webpack.config.js
+# Webpack generates but we only want the css
+build/bundle.js
