@@ -28,3 +28,5 @@ echo "Fetch shared cards as 'Bob'"
 shareId=`run shares:list -a .Bob.yaml | awk '/^  - share_id: / {print $3}'`
 echo "Fetch one shard card as Bob"
 run shares:get $shareId -a .Bob.yaml
+echo "Fetch same shared card as 'Alice'"
+run shares:get $shareId -a .Alice.yaml
