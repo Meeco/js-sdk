@@ -108,7 +108,7 @@ export class ShareService {
   }
 
   public async getSharedItem(user: AuthData, shareId: string) {
-    const result = await this.vaultApiFactory(user)
+    const { item, share, slots } = await this.vaultApiFactory(user)
       .SharesApi.sharesIdGet(shareId)
       .catch(err => {
         if ((<Response>err).status === 404) {
@@ -118,19 +118,24 @@ export class ShareService {
         }
         throw err;
       });
-    const { item, share } = result;
 
     const connection = await this.ensureClaimedKey(user, share.connection_id);
 
-    const slots = result.slots;
-    const space = await this.keystoreApiFactory(user).EncryptionSpaceApi.encryptionSpacesIdGet(
-      connection.encryption_space_id!
-    );
-    const decryptedSharedDataEncryptionKey = await this.cryppo.decryptWithKey({
-      serialized: space.encryption_space_data_encryption_key.serialized_data_encryption_key,
-      key: user.key_encryption_key.key
-    });
-    const key = EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey);
+    let key: EncryptionKey;
+
+    if (item.own) {
+      key = user.data_encryption_key;
+    } else {
+      const space = await this.keystoreApiFactory(user).EncryptionSpaceApi.encryptionSpacesIdGet(
+        connection.encryption_space_id!
+      );
+      const decryptedSharedDataEncryptionKey = await this.cryppo.decryptWithKey({
+        serialized: space.encryption_space_data_encryption_key.serialized_data_encryption_key,
+        key: user.key_encryption_key.key
+      });
+      key = EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey);
+    }
+
     const decryptedSlots = await ItemService.decryptAllSlots(slots!, key);
 
     return {
