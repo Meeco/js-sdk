@@ -55,17 +55,17 @@
 }
 
 @mixin tile($theme) {
-  @include card($theme);
+  display: inline-flex;
+  align-items: center;
+  box-shadow: $shadow-soft;
+  border-radius: $border-radius-medium;
   .content {
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: $grid * 2;
+    padding: ($grid * 2) ($grid * 4);
     @include item-spacing-column();
-    .icon {
-      align-self: center;
-    }
   }
 }
 

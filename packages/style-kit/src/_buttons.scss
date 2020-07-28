@@ -33,6 +33,12 @@
   @include button-base;
   background-color: transparent;
   color: map-get($theme, 'primary');
+  i {
+    padding-right: 0.5rem;
+    vertical-align: middle;
+    display: inline-block;
+    color: map-get($theme, 'primary');
+  }
 }
 
 @mixin secondary-button($theme) {
@@ -45,12 +51,12 @@
   @include secondary-button($theme);
   @include button-round;
   padding: 10px;
+  text-align: center;
 }
 
 @mixin text-button-icon($theme) {
   @include text-button($theme);
-  @include button-spacing-small;
-  color: map-get($theme, 'dark');
+  color: map-get($theme, 'primary');
   font-size: 18px;
 
   i,

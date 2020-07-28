@@ -19,13 +19,11 @@ export const catalog = () => {
     });
   });
 
-  const types = ['icon-text', 'icon-only'];
-  types.forEach(type => {
-    const iconButton = document.createElement('button');
-    iconButton.className = `${type}`;
-    iconButton.innerHTML = type === 'icon-only' ? '<i>add</i>' : `<i>share</i> text with icon `;
-    container.appendChild(iconButton);
-  });
+  const iconButtons = document.createElement('div');
+  iconButtons.innerHTML = `
+  <button class="text"><i>share</i>text with icon</button>
+  <button class="icon-only"><i>add</i></button>`;
+  container.appendChild(iconButtons);
 
   return container;
 };
