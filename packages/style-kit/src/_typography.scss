@@ -1,7 +1,7 @@
 @import 'variables';
 
 @mixin font-base($theme) {
-  font-family: 'Euclid Circular B', 'Euclid', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+  font-family: 'Euclid Circular B', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Helvetica, 'Apple Color Emoji', Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
   color: map-get($theme, 'text');
   font-synthesis: none;
@@ -14,26 +14,30 @@
     h#{$i} {
       font-weight: 500;
       font-size: map-get($headings, h#{$i});
+      line-height: $line-height-default;
     }
 
     h6 {
       font-size: map-get($headings, 'h6');
       font-weight: bold;
+      line-height: $line-height-default;
     }
   }
 }
 
 @mixin body-text-large {
   font-size: 18px;
+  line-height: $line-height-default;
 }
 
 @mixin body-text-medium {
   font-size: 16px;
-  line-height: 25px;
+  line-height: $line-height-default;
 }
 
 @mixin body-text-small {
   font-size: 14px;
+  line-height: $line-height-default;
 }
 
 // label-fonts
@@ -41,31 +45,29 @@
 @mixin avatar-label-standard {
   font-size: 17px;
   font-weight: 500;
-  line-height: 45px;
+  line-height: $line-height-default;
 }
 
 @mixin avatar-label-large {
   font-size: 30px;
   font-weight: 500;
-  line-height: 77px;
+  line-height: $line-height-default;
 }
 
 @mixin avatar-label-small {
   font-size: 12px;
   font-weight: 500;
-  line-height: 24.3px;
+  line-height: $line-height-default;
 }
 
 @mixin button-label-large {
   @include body-text-medium;
   font-weight: 500;
-  line-height: 22px;
 }
 
 @mixin button-label-small {
   @include body-text-small;
   font-weight: 500;
-  line-height: 19px;
 }
 
 @mixin card-label {
@@ -76,11 +78,11 @@
 @mixin tag-label {
   font-size: 13px;
   font-weight: 500;
+  line-height: $line-height-default;
 }
 
 @mixin text-field-label {
   @include body-text-medium;
-  line-height: 22px;
 }
 
 @mixin text-field-value {
@@ -109,6 +111,7 @@
   }
 
   p {
+    @include body-text-medium();
     margin: 0;
     padding: 0;
   }
