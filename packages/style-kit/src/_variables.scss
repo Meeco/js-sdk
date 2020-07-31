@@ -20,6 +20,10 @@ $meeco-pink: #fa3253 !default;
 $meeco-ocean-blue: #00677f !default;
 $meeco-forest-green: #015147 !default;
 
+// Dark Mode Shades
+$meeco-dark-mode-background: #1d2129 !default;
+$meeco-dark-mode-item: #32333c !default;
+
 // Palettes
 $meeco-red-palette: create-palette($meeco-red);
 $meeco-blue-palette: create-palette($meeco-blue);
@@ -72,6 +76,10 @@ $meeco-theme: (
   avatar: (
     background: map-get($meeco-blue-palette, 'tint10'),
     color: map-get($meeco-ocean-blue-palette, 'base')
+  ),
+  notification: (
+    background: $meeco-dark-mode-item,
+    foreground: white
   )
 );
 

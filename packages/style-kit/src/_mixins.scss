@@ -7,6 +7,7 @@
 @import './avatar';
 @import './controls';
 @import './icons';
+@import './notifications';
 @mixin create-meeco-theme($theme-config) {
   @include buttons-main($theme-config);
   @include cards-main($theme-config);
@@ -17,4 +18,5 @@
   @include avatar-main($theme-config);
   @include controls-main($theme-config);
   @include icons-main($theme-config);
+  @include notifications-main($theme-config);
 }
