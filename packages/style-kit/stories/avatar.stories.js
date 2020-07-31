@@ -1,6 +1,15 @@
-export default { title: 'Avatar' };
+import mdx from './avatar.mdx';
 import { story } from 'style-loader!./avatar.stories.scss';
 import avatarImg from '../assets/avatar-img.png';
+
+export default {
+  title: 'Avatar',
+  parameters: {
+    docs: {
+      page: mdx
+    }
+  }
+};
 
 export const avatar = () =>
   /*html*/
