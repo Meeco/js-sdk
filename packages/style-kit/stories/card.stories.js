@@ -97,7 +97,7 @@ export const tile = () => /*html*/ `
   <div class="tile">
     <div class="content">
       <div class="icon"></div>
-      <p class="tile-label">Tile Label</p>
+      <p class="tile-label">Tile label</p>
       <span class="tag">Optional Tag</span>
     </div>
   </div>
