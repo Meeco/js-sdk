@@ -80,7 +80,13 @@ describe('Buttons', () => {
       it(`${button.label} matches snapshot`, () => {
         cy.get('button')
           .contains(button.label)
-          .matchImageSnapshot(`Buttons: ${button.label}`);
+          .matchImageSnapshot(`Buttons: ${button.label}`, {
+            clip: {
+              x: 0,
+              y: 0,
+              ...button.size
+            }
+          });
       });
     });
   });
