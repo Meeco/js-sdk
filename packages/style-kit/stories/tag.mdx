@@ -1,0 +1,57 @@
+import { Story, Preview } from '@storybook/addon-docs/blocks';
+
+# Tags
+
+1. [Usage](#usage)
+2. [Options](#options)
+3. [CSS options](#css-options)
+2. [Code Examples](#code-examples)
+
+## Usage
+
+Tags are a UI Component to represent a label or "tag" for another element such as a `card` or `tile`.
+There are three types of tag classnames that you can add to a `span` tag
+
+| value | details |
+| --- | --- |
+| `tag` | Classname for a basic span that has a 90% tint of tag font color set |
+| `tag-edit` | Takes the `tag` styles and can handle an icon to the `right` of the inner text |
+| `tag-icon` | Takes the `tag` styles and can handle an icon to the `left` of the inner text |
+
+## Options
+
+You can either use the Meeco icons or external icon fonts in the `<i>` tags
+
+## CSS Options
+
+The `tag` elements takes the variable `highlight` value for its background color and the variable `highlightText` value for its font color from the theme array. To change this create a custom-theme.
+Else override the styles in your own stylesheet.
+
+```css
+.tag {
+  background-color: grey;
+  color: black;
+}
+```
+
+## Code Examples
+
+### Basic tag
+
+<Preview style={{height:'140px'}}>
+  <Story id="tags--tag" />
+</Preview>
+
+```html
+<span class="tag">Category</span>
+```
+
+### Tag with icon
+
+<Preview style={{height:'140px'}}>
+  <Story id="tags--tag-icon" />
+</Preview>
+
+```html
+  <span class="tag-icon"><i>verified-reverse</i>Verified</span>
+```
