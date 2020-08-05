@@ -5,12 +5,6 @@
   @include buttons-main($meeco-theme);
   @include icons-main($meeco-theme);
 
-  button {
-    display: block;
-    &:not(.icon-only) {
-      width: 200px;
-    }
-  }
 
   button.icon-text {
     color: black;

@@ -20,13 +20,13 @@ export default create({
   // fontCode: 'monospace',
 
   // Text colors
-  textColor: 'black',
+  textColor: '#555555',
   textInverseColor: 'rgba(255,255,255,0.9)',
 
   // Toolbar default and active colors
-  barTextColor: 'white',
-  barSelectedColor: 'black',
-  barBg: '#e61e3d',
+  barTextColor: '#555555',
+  barSelectedColor: '#e61e3d',
+  barBg: '#FDE9EC',
 
   // Form colors
   inputBg: 'white',
