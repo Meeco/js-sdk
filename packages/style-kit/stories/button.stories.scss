@@ -5,6 +5,7 @@
   @include buttons-main($meeco-theme);
   @include icons-main($meeco-theme);
 
+  height: auto;
 
   button.icon-text {
     color: black;
