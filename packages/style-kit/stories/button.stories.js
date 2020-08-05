@@ -13,7 +13,7 @@ export default {
 };
 
 export const primaryButton = () => /*html*/ `
-  <div class=${story}>
+  <div class=${story} style='height:140px;'>
     <button class="primary large">Primary Large</button>
     <button class="primary small">Primary Small</button>
   </div>`;
