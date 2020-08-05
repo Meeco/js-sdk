@@ -23,21 +23,29 @@ export const shadows = () => /*html*/ `
 </div>
 `;
 
-export const basicCard = () => /*html*/ `
+export const basicCard = () => {
+  const basicTitle = text('Basic Card Title', 'Basic Card');
+  const basicSubtitle = text('Basic Card Label', 'Sub-label (Optional)');
+
+  return /*html*/ `
+
   <div class="${story} advanced">
     <p>Basic Card</p>
     <div class="card basic">
       <div class="content">
         <div class="icon"></div>
         <div>
-          <p class="card-label">Basic Card Label</p>
-          <p class="subtitle">card subtitle</p>
+          <p class="card-label">${basicTitle}</p>
+          ${basicSubtitle ? `<p class="subtitle">${basicSubtitle}</p>` : ''}
         </div>
       </div>
     </div>
   </div>`;
+};
 
-export const cardWithFooter = () => /*html*/ `
+export const cardWithFooter = () => {
+  const footerText = text('Card Footer Text', 'Some Footer Text');
+  return /*html*/ `
     <div class="${story} advanced">
       <p>Card with a Footer</p>
       <div class="card">
@@ -46,10 +54,11 @@ export const cardWithFooter = () => /*html*/ `
           <p class="card-label">Default Card Label</p>
         </div>
         <div class="footer">
-          <p class="subtitle">Footer subtitle</p>
+          <p class="subtitle">${footerText}</p>
         </div>
       </div>
     </div>`;
+};
 
 export const cardWithComplexFooter = () => /*html*/ `
     <div class="${story} advanced">

@@ -1,0 +1,74 @@
+import { Story, Preview } from '@storybook/addon-docs/blocks';
+
+# Notifications
+
+1. [Usage](#usage)
+2. [Options](#options)
+3. [CSS options](#css-options)
+2. [Code Examples](#code-examples)
+
+## Usage
+
+Notifications are a UI element to inform the user of an action that was undertaken or the status of an action i.e. success or failure. It can also be used to alert of a request or notification.
+
+| value | details |
+| --- | --- |
+| `notification` | Classname for the div element that acts as a wrapper for the notification content |
+| `content` | Sits within the `notification` div and groups the icons, text and button of the notification |
+
+## Options
+
+The `content` of the notifications accepts the following
+
+| value | details |
+| --- | --- |
+| `<i>` | An icon to represent the type of notification ( refer to the icon docs) |
+| `<button>` | This button can either accept text or an icon |
+
+*Give the `<button>` an id of `close-notification` or a custom id to add js functionality*
+
+## CSS Options
+
+The `notification` element takes the variables `background` and `foreground` of the custom-theme array to sets its background-color and font color.
+Change these colors by creating a custom theme or override manually using css
+
+```css
+.notification {
+  background-color: green;
+  color: white;
+}
+```
+
+## Code Examples
+
+### Notification with icon button
+
+<Preview style={{height:'140px'}}>
+  <Story id="notifications--notification-with-icon" />
+</Preview>
+
+```html
+<div class="notification">
+  <div class="content">
+      <i>tick-circled-reverse</i>
+      <span>Default notification text</span>
+      <button id="close-notification"><i>cross</i></button>
+  </div>
+</div>
+```
+
+### Notification with text button
+
+<Preview style={{height:'140px'}}>
+  <Story id="notifications--notification-with-text" />
+</Preview>
+
+```html
+<div class="notification">
+  <div class="content">
+      <i>tick-circled-reverse</i>
+        Default notification text
+      <button id="close-notification">CANCEL</button>
+  </div>
+</div>
+```
