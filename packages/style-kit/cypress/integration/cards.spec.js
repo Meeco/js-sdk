@@ -3,7 +3,7 @@ import { onlyOn } from '@cypress/skip-test';
 describe('Cards and Shadows', () => {
   describe('Cards', () => {
     before(() => {
-      cy.visit('/iframe.html?id=cards-and-shadows--shadows');
+      cy.visit('/iframe.html?id=cards--shadows');
     });
 
     it('has a soft shadow card', () => {
@@ -23,8 +23,9 @@ describe('Cards and Shadows', () => {
 
   describe('Cards', () => {
     before(() => {
-      cy.visit('/iframe.html?id=cards-and-shadows--cards');
+      cy.visit('/iframe.html?id=cards--basic-card');
     });
+
     onlyOn('Headless', () => {
       it('Basic card matches the snapshot', () => {
         cy.get('.basic').matchImageSnapshot('Basic Card', {
@@ -36,29 +37,21 @@ describe('Cards and Shadows', () => {
           }
         });
       });
+    });
+  });
 
-      it('Complex footer card matches the snapshot', () => {
-        cy.get('.complex-footer').matchImageSnapshot('Complex Footer Card', {
+  describe('Cards', () => {
+    before(() => {
+      cy.visit('/iframe.html?id=cards--card-with-footer');
+    });
+    onlyOn('Headless', () => {
+      it('Card with footer matches the snapshot', () => {
+        cy.get('.card').matchImageSnapshot('Card with footer', {
           clip: {
             x: 0,
             y: 0,
-            width: 268,
-            height: 145
-          }
-        });
-      });
-
-      it('Bounded card matches the snapshot', () => {
-        cy.get('.fixed-width .card').matchImageSnapshot('Bounded Card', {
-          // Because of font rendering differences in headless docker
-          // we bump this up a bit
-          failureThreshold: 0.15,
-          failureThresholdType: 'percent',
-          clip: {
-            x: 0,
-            y: 0,
-            width: 328,
-            height: 169
+            width: 216,
+            height: 76
           }
         });
       });
