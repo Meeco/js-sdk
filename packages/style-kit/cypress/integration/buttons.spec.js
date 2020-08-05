@@ -10,32 +10,56 @@ describe('Buttons', () => {
     {
       label: 'Primary Large',
       background: meecoRed,
-      foreground: meecoWhite
+      foreground: meecoWhite,
+      size: {
+        width: 200,
+        height: 44
+      }
     },
     {
       label: 'Primary Small',
       background: meecoRed,
-      foreground: meecoWhite
+      foreground: meecoWhite,
+      size: {
+        width: 200,
+        height: 30
+      }
     },
     {
       label: 'Secondary Large',
       background: meecoPink,
-      foreground: meecoRed
+      foreground: meecoRed,
+      size: {
+        width: 200,
+        height: 44
+      }
     },
     {
       label: 'Secondary Small',
       background: meecoPink,
-      foreground: meecoRed
+      foreground: meecoRed,
+      size: {
+        width: 200,
+        height: 30
+      }
     },
     {
       label: 'Text Large',
       background: meecoTransparent,
-      foreground: meecoRed
+      foreground: meecoRed,
+      size: {
+        width: 200,
+        height: 44
+      }
     },
     {
       label: 'Text Small',
       background: meecoTransparent,
-      foreground: meecoRed
+      foreground: meecoRed,
+      size: {
+        width: 200,
+        height: 30
+      }
     }
   ];
 
