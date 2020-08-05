@@ -12,7 +12,7 @@ describe('Buttons', () => {
       background: meecoRed,
       foreground: meecoWhite,
       size: {
-        width: 200,
+        width: 146,
         height: 44
       }
     },
@@ -21,7 +21,7 @@ describe('Buttons', () => {
       background: meecoRed,
       foreground: meecoWhite,
       size: {
-        width: 200,
+        width: 126,
         height: 30
       }
     },
@@ -30,7 +30,7 @@ describe('Buttons', () => {
       background: meecoPink,
       foreground: meecoRed,
       size: {
-        width: 200,
+        width: 168,
         height: 44
       }
     },
@@ -39,7 +39,7 @@ describe('Buttons', () => {
       background: meecoPink,
       foreground: meecoRed,
       size: {
-        width: 200,
+        width: 145,
         height: 30
       }
     },
@@ -48,7 +48,7 @@ describe('Buttons', () => {
       background: meecoTransparent,
       foreground: meecoRed,
       size: {
-        width: 200,
+        width: 121,
         height: 44
       }
     },
@@ -57,7 +57,7 @@ describe('Buttons', () => {
       background: meecoTransparent,
       foreground: meecoRed,
       size: {
-        width: 200,
+        width: 104,
         height: 30
       }
     }
