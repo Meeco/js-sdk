@@ -1,6 +1,6 @@
 {
   "name": "@meeco/style-kit",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Meeco branded components and style mixins",
   "main": "dist/index.css",
   "scripts": {
