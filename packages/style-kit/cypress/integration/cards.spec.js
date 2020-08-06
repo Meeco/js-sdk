@@ -46,7 +46,7 @@ describe('Cards and Shadows', () => {
           'Basic Card',
           includeShadow({
             clip: {
-              width: 221,
+              width: 217,
               height: 76
             }
           })
@@ -66,7 +66,7 @@ describe('Cards and Shadows', () => {
           'Card with Basic Footer',
           includeShadow({
             clip: {
-              width: 230,
+              width: 225,
               height: 119
             }
           })
@@ -86,7 +86,7 @@ describe('Cards and Shadows', () => {
           'Card with Complex Footer',
           includeShadow({
             clip: {
-              width: 279,
+              width: 273,
               height: 145
             }
           })
