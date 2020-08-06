@@ -1,4 +1,67 @@
+import { Story, Preview } from '@storybook/addon-docs/blocks';
 
-# Avatar
+# Avatars
 
-This is an example docs page
+1. [Usage](#use)
+2. [Size](#size)
+3. [Avatar stack](#avatar-stack)
+4. [Code Examples](#code-examples)
+
+## Usage
+
+An avatar is a circular component used to wrap an image, icon or initials. They are often used to represent a contact or user. An image will take priority over inner text.
+To create an avatar give a `div` or `span` tag a class name of `avatar`
+
+| value    | details                                                                                                             |
+| -------- | ------------------------------------------------------------------------------------------------------------------- |
+| `avatar` | Creates a circular element with a bg of 90% tint of the color set in the theme and font color as per theme variable |
+
+## Size
+
+There are three sizes for the avatar element (the default size is standard and does not need a classname)
+
+| value   | details                                        |
+| ------- | ---------------------------------------------- |
+| `large` | Adds the large padding variables to the avatar |
+| `small` | Adds the small padding variables to the avatar |
+
+## Avatar stack
+
+An avatar stack is used to represent a group or collection of people or contacts. It is a wrapper to go around 2 or more `avatar` components
+
+| value          | details                                             |
+| -------------- | --------------------------------------------------- |
+| `avatar-stack` | A wrapper class to group and align avatars together |
+
+## Code Examples
+
+### Avatar
+
+<Preview style={{height:'280px'}}>
+  <Story id="avatar--avatar" />
+</Preview>
+
+```html
+<span class="avatar">ME</span>
+```
+```html
+<span class="avatar large">ME</span>
+```
+```html
+<span class="avatar small">ME</span>
+```
+
+### Avatar stack
+
+<Preview style={{height:'200px'}}>
+  <Story id="avatar--avatar-stack" />
+</Preview>
+
+```html
+<div class="avatar-stack">
+  <div class="avatar small">ME</div>
+  <div class="avatar small">JV<img class="avatar-img" src=(url-of-image)></div>
+  <div class="avatar small">KD</div>
+</div>
+```
+

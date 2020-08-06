@@ -1,0 +1,73 @@
+import { Story, Preview } from '@storybook/addon-docs/blocks';
+
+# Controls
+
+1. [Usage](#usage)
+2. [Code Examples](#code-examples)
+
+## Usage
+
+Controls are html input elements often used in forms. The styles for the controls override the default input elements.
+
+The three controls used are
+
+1. Toggle
+2. Checkbox
+3. Radio
+
+All three of the controls follow the same html format:
+
+```html
+<label class="<name-of-control">
+  <input type="<type-of-input>" />
+  <span class="<name-of-overriding-icon>"></span>
+</label>
+```
+
+| Label            | Input      | Span        | Details                              |
+| ---------------- | ---------- | ----------- | ------------------------------------ |
+| `switch-input`   | `checkbox` | `slider`    | To create a toggle control           |
+| `checkbox-input` | `checkbox` | `checkmark` | To create a checkbox style input     |
+| `radio-button`   | `radio`    | `checkmark` | To create a radio button style input |
+
+## Code Examples
+
+### Toggle / Switch input
+
+<Preview style={{height:'140px'}}>
+  <Story id="controls--toggle" />
+</Preview>
+
+```html
+<label class="switch-input">
+  <input type="checkbox" />
+  <span class="slider"></span>
+</label>
+```
+
+### Checkbox
+
+<Preview style={{height:'140px'}}>
+  <Story id="controls--checkbox" />
+</Preview>
+
+```html
+<label class="checkbox-input">
+  <input type="checkbox" />
+  <span class="checkmark"></span>
+</label>
+```
+
+### Radio button
+
+<Preview style={{height:'140px'}}>
+  <Story id="controls--radio-button" />
+</Preview>
+
+```html
+<label class="radio-button">
+  <input type="radio" value="select-me" />
+  <span class="checkmark"></span>
+  <label for="select-me">Select Me</label>
+</label>
+```

@@ -11,6 +11,9 @@ describe('Colors', () => {
   onlyOn('headless', () => {
     it('has the correct color palette', () => {
       cy.get('.main').matchImageSnapshot('Color Palette', {
+        // Sizing may be off but would take a whole color to be wrong to break.
+        failureThreshold: 0.2,
+        failureThresholdType: 'percent',
         clip: {
           x: 0,
           y: 0,

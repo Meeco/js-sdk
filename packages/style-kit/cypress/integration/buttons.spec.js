@@ -10,32 +10,56 @@ describe('Buttons', () => {
     {
       label: 'Primary Large',
       background: meecoRed,
-      foreground: meecoWhite
+      foreground: meecoWhite,
+      size: {
+        width: 146,
+        height: 44
+      }
     },
     {
       label: 'Primary Small',
       background: meecoRed,
-      foreground: meecoWhite
+      foreground: meecoWhite,
+      size: {
+        width: 126,
+        height: 30
+      }
     },
     {
       label: 'Secondary Large',
       background: meecoPink,
-      foreground: meecoRed
+      foreground: meecoRed,
+      size: {
+        width: 168,
+        height: 44
+      }
     },
     {
       label: 'Secondary Small',
       background: meecoPink,
-      foreground: meecoRed
+      foreground: meecoRed,
+      size: {
+        width: 145,
+        height: 30
+      }
     },
     {
       label: 'Text Large',
       background: meecoTransparent,
-      foreground: meecoRed
+      foreground: meecoRed,
+      size: {
+        width: 121,
+        height: 44
+      }
     },
     {
       label: 'Text Small',
       background: meecoTransparent,
-      foreground: meecoRed
+      foreground: meecoRed,
+      size: {
+        width: 104,
+        height: 30
+      }
     }
   ];
 
@@ -56,7 +80,13 @@ describe('Buttons', () => {
       it(`${button.label} matches snapshot`, () => {
         cy.get('button')
           .contains(button.label)
-          .matchImageSnapshot(`Buttons: ${button.label}`);
+          .matchImageSnapshot(`Buttons: ${button.label}`, {
+            clip: {
+              x: 0,
+              y: 0,
+              ...button.size
+            }
+          });
       });
     });
   });

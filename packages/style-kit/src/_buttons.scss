@@ -90,10 +90,10 @@
     &.secondary {
       @include secondary-button($theme);
       &:hover {
-        background: darken(map-get($theme, 'secondary'), 10%);
+        background: _tint(map-get($theme, 'secondary'), 80%);
       }
       &:active {
-        background: darken(map-get($theme, 'secondary'), 5%);
+        background: _tint(map-get($theme, 'secondary'), 85%);
       }
     }
     &.text {

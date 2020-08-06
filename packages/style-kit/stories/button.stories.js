@@ -1,8 +1,40 @@
-export default { title: 'Button' };
-
+import mdx from './button.mdx';
 import { story } from 'style-loader!./button.stories.scss';
 
 import { titleWords } from './helpers';
+
+export default {
+  title: 'Button',
+  parameters: {
+    docs: {
+      page: mdx
+    }
+  }
+};
+
+export const primaryButton = () => /*html*/ `
+  <div class=${story} style='height:140px;'>
+    <button class="primary large">Primary Large</button>
+    <button class="primary small">Primary Small</button>
+  </div>`;
+
+export const secondaryButton = () => /*html*/ `
+  <div class=${story}>
+    <button class="secondary large">Secondary Large</button>
+    <button class="secondary small">Secondary Small</button>
+  </div>`;
+
+export const textButton = () => /*html*/ `
+  <div class=${story}>
+    <button class="text large">Text Large</button>
+    <button class="text small">Text Small</button>
+  </div>`;
+
+export const iconButton = () => /*html*/ `
+<div class=${story}>
+  <button class="text"><i>duplicate</i>Text with icon</button>
+  <button class="icon-only"><i>share</i></button>
+</div>`;
 
 export const catalog = () => {
   const container = document.createElement('div');

@@ -1,0 +1,69 @@
+import { Story, Preview } from '@storybook/addon-docs/blocks';
+
+# Tabs and Pills
+
+1. [Usage](#usage)
+2. [Options](#options)
+3. [CSS options](#css-options)
+2. [Code Examples](#code-examples)
+
+## Usage
+
+Tabs are a UI component used for navigation.
+
+A pill is a single "tab" that can be used outside of navigation
+
+| value | details |
+| --- | --- |
+| `tabs` | A classname for a wrapper div to group the multiple single `tab` within it  |
+| `tab` | A classname for a single element that sits within the `tabs` wrapper|
+| `pill` | A single UI element used to add extra information |
+
+## Options
+
+Additional classnames to add to the `tab`
+
+| value | details |
+| --- | --- |
+| `selected` | An additional classname to give styles to the single tab to show is it the selected option or active option  |
+
+
+## CSS Options
+
+The `tabs` wrapper element takes the `background` value from the `tabs` key in the theme array. To change this create a custom theme or override in own stylesheet.
+
+The `tab` element takes the `foreground` value from the `tabs` key in the theme array. To change this create a custom theme or override in own stylesheet.
+
+```css
+.tabs {
+  background-color: black;
+},
+.tab.selected {
+  background-color: white;
+}
+```
+
+## Code Examples
+
+### Pill
+
+<Preview style={{height:'140px'}}>
+  <Story id="pills-and-tabs--pill" />
+</Preview>
+
+```html
+<span class="pill">A Simple Pill</span>
+```
+
+### Tabs
+
+<Preview style={{height:'140px'}}>
+  <Story id="pills-and-tabs--tabs"/>
+</Preview>
+
+```html
+<div class="tabs">
+  <span class="tab selected">Selected Tab</span>
+  <span class="tab">Un-selected Tab</span>
+</div>
+```

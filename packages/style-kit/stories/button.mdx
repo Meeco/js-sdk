@@ -1,0 +1,76 @@
+import { Story, Preview } from '@storybook/addon-docs/blocks';
+
+# Buttons
+
+1. [Type](#type)
+2. [Size](#size)
+3. [Options](#options)
+4. [Code Examples](#code-examples)
+
+## Type
+
+There are four types of buttons in the Meeco style kit. To use just add a value below to the class name of the `button` tag.
+
+| value       | details                                                          |
+| ----------- | ---------------------------------------------------------------- |
+| `primary`   | gives the button a bg of the theme's primary colour              |
+| `secondary` | gives the button a bg that is 90% transparency of primary        |
+| `text`      | removes bg of button and leaves just text                        |
+| `icon-only` | creates a round button for an icon to be displayed in the middle |
+
+## Size
+
+There are two sizes for the buttons (except for `icon-only` where there is only a default size).
+
+| value   | details                                                            |
+| ------- | ------------------------------------------------------------------ |
+| `large` | Adds the large padding variables & larger font size to the button  |
+| `small` | Adds the small padding variables & smaller font size to the button |
+
+## Options
+
+The `text` button can handle an icon being included in the inner text along with text. See below for examples.
+
+## Code Examples
+
+### Primary
+
+<Preview style={{height:'140px'}}>
+  <Story id="button--primary-button" />
+</Preview>
+
+```html
+<button class="primary large">Click Me</button>
+<button class="primary small">Click Me</button>
+```
+
+### Secondary
+
+<Preview style={{height:'140px'}}>
+  <Story id="button--secondary-button" />
+</Preview>
+
+```html
+<button class="secondary large">Click Me</button> <button class="secondary small">Click Me</button>
+```
+
+### Text
+
+<Preview style={{height:'140px'}}>
+  <Story id="button--text-button" />
+</Preview>
+
+```html
+<button class="text large">Click Me</button> <button class="text small">Click Me</button>
+```
+
+### Icon
+
+<Preview style={{height:'140px'}}>
+  <Story id="button--icon-button" />
+</Preview>
+
+```html
+<button class="text large"><i>duplicate</i> Click Me</button>
+<button class="icon-only"><i>share</i></button>
+```

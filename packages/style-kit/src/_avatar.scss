@@ -2,7 +2,9 @@
 
 @mixin avatar-base($theme) {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   background-color: map-get(map-get($theme, 'avatar'), 'background');
   border-radius: $border-radius-large;
   border-width: 3px;

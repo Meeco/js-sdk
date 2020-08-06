@@ -1,0 +1,146 @@
+import { Story, Preview } from '@storybook/addon-docs/blocks';
+
+# Cards
+
+1. [Usage](#usage)
+2. [Options](#options)
+3. [Card components](#card-components)
+4. [Code Examples](#code-examples)
+
+## Usage
+
+A card is a component that holds and groups data together. A card is typically made of sub-components like `content` and `footer`. To follow the design system each card has a box-shadow that can be configured.
+Tiles are similiar to cards - except they are often taller than they are wider
+
+| value  | details                                                                              |
+| ------ | ------------------------------------------------------------------------------------ |
+| `card` | The classname for the wrapper element that holds various data to give a card-like UI |
+| `tile` | The classname for the wrapper element that holds various data to give a tile-like UI |
+
+## Options
+
+There are three types of card layouts. The default layout comes with a `footer` and requires no added classname.
+
+| value            | details                                                                                       |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| `basic`          | Basic card layout that contains content, with no footer                                       |
+| `complex-footer` | Default card layout where the footer can handle more complex data i.e. an icon and a subtitle |
+
+### Shadow options
+
+There are three types of shadows. The default card has a standard box shadow and requires no added classname
+
+| value  | details                                             |
+| ------ | --------------------------------------------------- |
+| `hard` | Adds a hard box shadow to the card                  |
+| `dark` | Adds a box shadow to a card to be used in dark mode |
+
+Removing the box-shadow: Override the default style in your stylesheet
+
+```css
+.no-shadow: {
+  box-shadow: 0px;
+}
+```
+
+## Card components
+
+### Content
+
+Content is a wrapper that can hold text such as the `card-label` and take an element with a classname of `icon`
+
+| value        | details                                                                                       |
+| ------------ | --------------------------------------------------------------------------------------------- |
+| `content`    | A wrapper class to group the `card-label`, `subtitle` and `icon`                              |
+| `card-label` | A classname to add to a `<p>` tag to represent the card heading or label                      |
+| `tile-label` | A classname to add to a `<p>` tag to represent the tile heading or label                      |
+| `subtitle`   | A classname to add to a `<p>` tag to represent the subtitle of the card                       |
+| `icon`       | A classname to an element, it will automatically align itself to the left of the card content |
+
+### Footer
+
+`footer` is a wrapper that is placed at the bottom of a card - it typically holds extra information related to that card.
+
+| value      | details                                                                                              |
+| ---------- | ---------------------------------------------------------------------------------------------------- |
+| `footer`   | A wrapper class to group the information held at bottom of card                                      |
+| `subtitle` | A classname to add to a `<p>` tag to represent                                                       |
+| `icon`     | A classname to add to an element, it will automatically align itself to the left of the card content |
+
+## Code Examples
+
+### Basic card
+
+<Preview style={{height:'280px'}}>
+  <Story id="cards--basic-card" />
+</Preview>
+
+```html
+<div class="card basic">
+  <div class="content">
+    <div class="icon"></div>
+    <div>
+      <p class="card-label">Basic Card Label</p>
+      <p class="subtitle">card subtitle</p>
+    </div>
+  </div>
+</div>
+```
+
+### Default card
+
+<Preview style={{height:'280px'}}>
+  <Story id="cards--card-with-footer" />
+</Preview>
+
+```html
+<div class="card">
+  <div class="content">
+    <div class="icon"></div>
+    <p class="card-label">Default Card Label</p>
+  </div>
+  <div class="footer">
+    <p class="subtitle">Footer subtitle</p>
+  </div>
+</div>
+```
+
+### Complex Footer card
+
+<Preview style={{height:'280px'}}>
+  <Story id="cards--card-with-complex-footer" />
+</Preview>
+
+```html
+<div class="card complex-footer">
+  <div class="content">
+    <div class="icon"></div>
+    <div>
+      <p class="card-label">Example Complex Footer</p>
+    </div>
+  </div>
+  <div class="footer">
+    <p class="subtitle">Label</p>
+    <div>
+      <p>More Text</p>
+      <div class="icon"></div>
+    </div>
+  </div>
+</div>
+```
+
+### Tile
+
+<Preview style={{height: '280px'}}>
+  <Story id="cards--tile"/>
+</Preview>
+
+```html
+<div class="tile">
+  <div class="content">
+    <div class="icon"></div>
+    <p class="tile-label">Tile label</p>
+    <span class="tag">Optional Tag</span>
+  </div>
+</div>
+```

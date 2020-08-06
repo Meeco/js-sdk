@@ -1,0 +1,79 @@
+import { Story, Preview } from '@storybook/addon-docs/blocks';
+
+# Field Elements
+
+1. [Usage](#usage)
+2. [Custom css](#custom-css)
+2. [Code Examples](#code-examples)
+
+## Usage
+
+The field elements are custom styled HTML input elements. It is meant for input types of `text` `search` `date` `password` and `email`.
+
+The label HTML elements are also custom styled.
+
+No extra classnames are required.
+
+### Dropdown element
+
+A custom styled `select` element.
+
+| value | details |
+| --- | --- |
+| `dropdown-input` | Overrides the default select html element styles |
+
+## Custom css
+
+`input` elements take up the width of their container.
+
+To adjust the width of the element give the parent container a width value.
+
+```css
+.container {
+  width: 100px;
+  input {
+    // has a width of 100% so will now be 100px
+  }
+}
+```
+
+## Code Examples
+
+### Inputs
+
+<Preview style={{height:'240px'}}>
+  <Story id="field-elements--inputs" />
+</Preview>
+
+```html
+<label for="fname">First name</label>
+<input name="fname" id="fname" type="text" placeholder="First Name" />
+```
+
+```html
+<input type="search" placeholder="Search..." />
+```
+
+### Date Picker
+
+<Preview style={{height:'140px'}}>
+  <Story id="field-elements--date-picker" />
+</Preview>
+
+```html
+<input type="date" placeholder="yyyy-mm-dd" />
+```
+
+### Dropdown input
+
+<Preview style={{height:'140px'}}>
+  <Story id="field-elements--dropdown-input" />
+</Preview>
+
+```html
+<select class="dropdown-input">
+  <option>Option 1</option>
+  <option>Option 2</option>
+  <option>Option 3</option>
+</select>
+```
