@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style-kit.css" />
+    <style>
+      html,
+      body {
+        display: flex;
+        min-width: 100vw;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+      body {
+        padding: 32px;
+      }
+      img {
+        width: 100px;
+        margin-bottom: 16px;
+      }
+      .card {
+        margin-bottom: 32px;
+        width: 420px;
+      }
+      a {
+        color: #e61e3d;
+      }
+    </style>
+    <title>Meeco SDK</title>
+  </head>
+  <body>
+    <img
+      src="https://uploads-ssl.webflow.com/5cd5168c6c861f4fc7cfe969/5ddcaba04d724676d8758927_Meeco-Logo-2019-Circle-RGB.svg"
+    />
+    <h2>Meeco SDK Components</h2>
+    <div class="card">
+      <div class="content">
+        <div>
+          <p class="card-label">Meeco TS/JS SDK</p>
+          <p class="subtitle">An SDK built in TypeScript for interacting with the Meeco APIs.</p>
+          <a href="/js-sdk"><button class="primary small">View the Docs</button></a>
+          <a href="/sdk-demo"><button class="primary small">View the Demo Page</button></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="content">
+        <div>
+          <p class="card-label">Meeco Style Kit</p>
+          <p class="subtitle">A CSS framework for creating content with Meeco Components.</p>
+          <a href="/style-kit">
+            <button class="primary small">View the Component Docs</button>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="content">
+        <div>
+          <p class="card-label">Meeco CLI</p>
+          <p class="subtitle">
+            A NodeJS program to interact with the Meeco APIs via the Command Line. Built with the
+            TypeScript SDK.
+          </p>
+          <a href="https://github.com/Meeco/js-sdk/tree/master/packages/cli">
+            <button class="primary small">View the Docs</button>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="content">
+        <div>
+          <p class="card-label">Cryppo</p>
+          <p class="subtitle">
+            Cryppo is a cryptographic library that enables you to encrypt and decrypt data.
+            Has implementations for the following languages:
+            <ul>
+              <li><a href="https://github.com/Meeco/cryppo">Ruby</a></li>
+              <li><a href="https://github.com/Meeco/cryppo-js">JavaScript/TypeScript</a></li>
+              <li><a href="https://github.com/leikind/cryppo_ex">Elixir/Erlang</a></li>
+              <li><a href="https://github.com/Meeco/cryppo_dart">Dart/Flutter</a></li>
+            </ul>            
+          </p>
+          <a href="https://github.com/Meeco/cryppo-js">
+            <button class="primary small">View the JS Docs</button>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <p class="small">Copyright © <script>document.write( new Date().getFullYear() );</script>, Meeco Group Pty Ltd. All rights reserved. Meeco is a registered trademark.</p>
+  </body>
+</html>

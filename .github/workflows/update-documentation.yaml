@@ -23,6 +23,9 @@ jobs:
       # library mode
       - run: cd packages/sdk && cd ../../
       - run: npm run docs
+      # We use the style kit in the docs entry page
+      - run: npx lerna run build --scope @meeco/style-kit
+      - run: cp packages/style-kit/build/main.css docs/style-kit.css
       # Should run *before* the github pages deploy as that runs its own commit
       - name: Push OCLIF Generated CLI Readme
         uses: EndBug/add-and-commit@v4

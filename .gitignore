@@ -18,7 +18,12 @@ packages/**/cypress/videos
 
 
 /coverage
-/docs
+
+# All other documention is automatically generated and pushed to a separate repo
+/docs/**
+# Index directory page
+!/docs/index.html
+
 /yarn.lock
 node_modules
 .npmrc
