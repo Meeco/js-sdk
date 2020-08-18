@@ -1,7 +1,14 @@
-import { AttachmentResponse, Slot, ThumbnailResponse } from '@meeco/vault-api-sdk';
+import {
+  AttachmentResponse,
+  PostAttachmentDirectUploadUrlRequest,
+  Slot,
+  ThumbnailResponse
+} from '@meeco/vault-api-sdk';
 import { Buffer as _buffer } from 'buffer';
 import * as Jimp from 'jimp';
 import { AuthData } from '../models/auth-data';
+import { DirectAttachmentUploadUrlData } from '../models/direct-attachment-upload-url-data';
+import { DirectAttachmentUploadUrlResponse } from '../models/direct-attachment-upload-url-response';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { FileAttachmentData } from '../models/file-attachment-data';
@@ -185,6 +192,29 @@ export class ItemService {
 
     this.log('File was successfully attached');
     return updated;
+  }
+
+  public async directAttachmentUploadUrl(
+    config: DirectAttachmentUploadUrlData,
+    auth: AuthData
+  ): Promise<DirectAttachmentUploadUrlResponse> {
+    let uploadUrl;
+    try {
+      this.log('Getting Direct Attachment Upload Url');
+      const params: PostAttachmentDirectUploadUrlRequest = {
+        blob: {
+          filename: config.fileName,
+          content_type: config.fileType,
+          byte_size: config.fileSize
+        }
+      };
+      const factory = this.vaultAPIFactory(auth.vault_access_token);
+      uploadUrl = await factory.DirectAttachmentsApi.directAttachmentsUploadUrlPost(params);
+    } catch (err) {
+      this.log('Upload encrypted file failed - removing temp encrypted version');
+      throw err;
+    }
+    return uploadUrl;
   }
 
   private async downloadAndDecryptFile<T extends Blob>(
