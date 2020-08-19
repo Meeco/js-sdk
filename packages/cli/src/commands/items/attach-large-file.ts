@@ -56,7 +56,6 @@ export default class ItemsAttachLargeFile extends MeecoCommand {
       const uploadUrl = await service.directAttachmentUploadUrl(
         {
           ...fileConfig,
-          file,
           fileName,
           fileType,
           fileSize: fileStats.size
@@ -64,7 +63,51 @@ export default class ItemsAttachLargeFile extends MeecoCommand {
         authConfig
       );
 
-      console.log(uploadUrl);
+      const uploadResult = await service.directAttachmentUpload(
+        {
+          directUploadUrl: uploadUrl.url,
+          file: fileConfig.file,
+          encrypt: true,
+          options: {}
+        },
+        authConfig
+      );
+
+      const artifactsFileName = fileName + '.encryption_artifacts';
+      const artifactsFileDir = `./tmp/${artifactsFileName}`;
+      fs.writeFileSync(artifactsFileDir, JSON.stringify(uploadResult.artifacts));
+      const artifactsFileStats = fs.statSync(fileConfig.file);
+
+      const artifactsUploadUrl = await service.directAttachmentUploadUrl(
+        {
+          fileName: artifactsFileName,
+          fileType: 'application/json',
+          fileSize: artifactsFileStats.size
+        },
+        authConfig
+      );
+
+      await service.directAttachmentUpload(
+        {
+          directUploadUrl: artifactsUploadUrl.url,
+          file: artifactsFileDir,
+          encrypt: false,
+          options: {}
+        },
+        authConfig
+      );
+
+      const attachedDoc = await service.directAttachmentAttach(
+        {
+          blobId: uploadUrl.blob_id,
+          blobKey: uploadUrl.blob_key,
+          artifactsBlobId: artifactsUploadUrl.blob_id,
+          artifactsBlobKey: artifactsUploadUrl.blob_key
+        },
+        authConfig
+      );
+
+      this.printYaml(attachedDoc);
     } catch (err) {
       await this.handleException(err);
     }

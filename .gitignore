@@ -34,3 +34,8 @@ package-lock.json
 
 # Incremental build file
 tsconfig.build.tsbuildinfo
+
+untracked
+
+tmp
+!tmp/.keep
