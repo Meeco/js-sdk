@@ -10,6 +10,7 @@
     "test": "lerna run test"
   },
   "devDependencies": {
+    "chalk": "^4.0.0",
     "cypress": "^4.9.0",
     "lerna": "^3.22.0"
   }
