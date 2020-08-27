@@ -20,9 +20,10 @@ packages/**/cypress/videos
 /coverage
 
 # All other documention is automatically generated and pushed to a separate repo
-/docs/**
+/docs/*
 # Index directory page
 !/docs/index.html
+!/docs/static-assets
 
 /yarn.lock
 node_modules
@@ -34,8 +35,6 @@ package-lock.json
 
 # Incremental build file
 tsconfig.build.tsbuildinfo
-
-untracked
 
 tmp
 !tmp/.keep
