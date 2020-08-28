@@ -16,14 +16,14 @@ export async function directAttachmentUpload(
     simultaneousUploads: 1,
     callbacks: {
       onProgress: progress => {
-        console.log(progress);
+        // console.log(progress);
       },
       onSuccess: success => {
-        console.log(success);
+        // console.log(success);
         result = success;
       },
       onError: error => {
-        console.log(error);
+        // console.log(error);
         throw error;
       }
     }
