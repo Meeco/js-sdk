@@ -8,6 +8,12 @@ class ThreadPool {
    * Constructor
    * @param {Number} threads Number of threads
    */
+
+  numberOfThreads: any;
+  pendingJobs: any;
+  threads: any;
+  toStop: any;
+
   constructor(threads) {
     this.numberOfThreads = threads;
     this.pendingJobs = [];
