@@ -5,7 +5,9 @@ export function exampleFunction() {
   return 'example function ran';
 }
 
+export { AzureBlockDownload } from './azure-block-download';
 export { AzureBlockUpload } from './azure-block-upload';
+export { BlobStorage } from './services/Azure';
 
 export async function directAttachmentUpload(
   config: IDirectAttachmentUploadData,
