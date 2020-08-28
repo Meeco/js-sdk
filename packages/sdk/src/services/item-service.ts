@@ -1,4 +1,4 @@
-import * as MeecoAzure from '@meeco/azure-block-upload';
+// import * as MeecoAzure from '@meeco/azure-block-upload';
 import {
   AttachmentDirectUploadUrlResponse,
   AttachmentResponse,
@@ -11,8 +11,6 @@ import { Buffer as _buffer } from 'buffer';
 import * as Jimp from 'jimp';
 import { AuthData } from '../models/auth-data';
 import { IDirectAttachmentAttachData } from '../models/direct-attachment-attach-data';
-import { IDirectAttachmentUploadData } from '../models/direct-attachment-upload-data';
-import { IDirectAttachmentUploadResponse } from '../models/direct-attachment-upload-response';
 import { DirectAttachmentUploadUrlData } from '../models/direct-attachment-upload-url-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
@@ -222,31 +220,31 @@ export class ItemService {
     return uploadUrl;
   }
 
-  public async directAttachmentUpload(
-    config: IDirectAttachmentUploadData,
-    auth: AuthData
-  ): Promise<IDirectAttachmentUploadResponse> {
-    let result;
-    const client = new MeecoAzure.AzureBlockUpload(config.directUploadUrl, config.file, {
-      simultaneousUploads: 1,
-      callbacks: {
-        onProgress: progress => {
-          this.log(progress);
-        },
-        onSuccess: success => {
-          this.log(success);
-          result = success;
-        },
-        onError: error => {
-          this.log(error);
-          throw error;
-        }
-      }
-    });
-    await client.start(config.encrypt ? auth.data_encryption_key['_value'] : null);
+  // public async directAttachmentUpload(
+  //   config: IDirectAttachmentUploadData,
+  //   auth: AuthData
+  // ): Promise<IDirectAttachmentUploadResponse> {
+  //   let result;
+  //   // const client = new MeecoAzure.AzureBlockUpload(config.directUploadUrl, config.file, {
+  //   //   simultaneousUploads: 1,
+  //   //   callbacks: {
+  //   //     onProgress: progress => {
+  //   //       this.log(progress);
+  //   //     },
+  //   //     onSuccess: success => {
+  //   //       this.log(success);
+  //   //       result = success;
+  //   //     },
+  //   //     onError: error => {
+  //   //       this.log(error);
+  //   //       throw error;
+  //   //     }
+  //   //   }
+  //   // });
+  //   // await client.start(config.encrypt ? auth.data_encryption_key['_value'] : null);
 
-    return result;
-  }
+  //   return result;
+  // }
   public async directAttachmentAttach(
     config: IDirectAttachmentAttachData,
     auth: AuthData

@@ -1,0 +1,25 @@
+{
+  "name": "@meeco/large-file-upload-node",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@meeco/sdk": "0.0.11-beta",
+    "@meeco/large-file-upload-common": "1.0.0",
+    "file-type": "^15.0.0",
+    "bili": "^4.10.0"
+  },
+  "devDependencies": {
+    "typescript": "^3.9.6"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

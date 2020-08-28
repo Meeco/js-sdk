@@ -1,0 +1,24 @@
+{
+  "name": "@meeco/large-file-upload-common",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@meeco/cryppo": "^0.7.0",
+    "@meeco/sdk": "0.0.11-beta"
+  },
+  "devDependencies": {
+    "typescript": "^3.9.6",
+    "lodash.padstart": "^4.6.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

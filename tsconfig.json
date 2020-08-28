@@ -15,7 +15,10 @@
     "target": "es2017",
     "paths": {
       "@meeco/sdk": ["packages/sdk/src"],
-      "@meeco/cli": ["packages/cli/src"]
+      "@meeco/cli": ["packages/cli/src"],
+      "@meeco/large-file-upload-node": ["packages/large-file-upload-node/src"],
+      "@meeco/large-file-upload-browser": ["packages/large-file-upload-browser/src"],
+      "@meeco/large-file-upload-common": ["packages/large-file-upload-common/src"]
     }
   },
   "exclude": ["node_modules", "dist", "lib"]
