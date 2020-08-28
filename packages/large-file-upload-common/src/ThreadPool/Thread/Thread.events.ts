@@ -2,6 +2,8 @@
  * Class for dispatching Threads events
  */
 class Events {
+  onCompleted: any;
+  onError: any;
   constructor() {
     this.onCompleted = () => null;
     this.onError = () => null;

@@ -2,6 +2,8 @@ import Events from './Thread.events';
 import Status from './Thread.status';
 
 class Thread {
+  status: any;
+  events: any;
   constructor() {
     this.status = Status.IDDLE;
     this.events = new Events();

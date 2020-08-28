@@ -36,40 +36,40 @@ export async function largeFileUploadNode(
 
   console.log(uploadResult);
 
-  // const artifactsFileName = fileName + '.encryption_artifacts';
-  // const artifactsFileDir = `./tmp/${artifactsFileName}`;
-  // fs.writeFileSync(artifactsFileDir, JSON.stringify(uploadResult.artifacts));
-  // const artifactsFileStats = fs.statSync(artifactsFileDir);
+  const artifactsFileName = fileName + '.encryption_artifacts';
+  const artifactsFileDir = `./tmp/${artifactsFileName}`;
+  fs.writeFileSync(artifactsFileDir, JSON.stringify(uploadResult.artifacts));
+  const artifactsFileStats = fs.statSync(artifactsFileDir);
 
-  // const artifactsUploadUrl = await service.directAttachmentUploadUrl(
-  //   {
-  //     fileName: artifactsFileName,
-  //     fileType: 'application/json',
-  //     fileSize: artifactsFileStats.size
-  //   },
-  //   authConfig
-  // );
+  const artifactsUploadUrl = await service.directAttachmentUploadUrl(
+    {
+      fileName: artifactsFileName,
+      fileType: 'application/json',
+      fileSize: artifactsFileStats.size
+    },
+    authConfig
+  );
 
-  // await service.directAttachmentUpload(
-  //   {
-  //     directUploadUrl: artifactsUploadUrl.url,
-  //     file: artifactsFileDir,
-  //     encrypt: false,
-  //     options: {}
-  //   },
-  //   authConfig
-  // );
+  await directAttachmentUpload(
+    {
+      directUploadUrl: artifactsUploadUrl.url,
+      file: artifactsFileDir,
+      encrypt: false,
+      options: {}
+    },
+    authConfig
+  );
 
-  // const attachedDoc = await service.directAttachmentAttach(
-  //   {
-  //     blobId: uploadUrl.blob_id,
-  //     blobKey: uploadUrl.blob_key,
-  //     artifactsBlobId: artifactsUploadUrl.blob_id,
-  //     artifactsBlobKey: artifactsUploadUrl.blob_key
-  //   },
-  //   authConfig
-  // );
+  const attachedDoc = await service.directAttachmentAttach(
+    {
+      blobId: uploadUrl.blob_id,
+      blobKey: uploadUrl.blob_key,
+      artifactsBlobId: artifactsUploadUrl.blob_id,
+      artifactsBlobKey: artifactsUploadUrl.blob_key
+    },
+    authConfig
+  );
 
-  // return attachedDoc;
+  return attachedDoc;
   return '';
 }
