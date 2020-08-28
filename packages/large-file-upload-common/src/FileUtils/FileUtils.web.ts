@@ -2,13 +2,13 @@
  * Gets file size
  * @param {File} file
  */
-const getSize = (file = {}) => file.size;
+export const getSize = (file: File) => file?.size;
 
 /**
  * Gets file type
  * @param {File} file
  */
-const getType = (File = {}) => file.type;
+export const getType = (file: File) => file?.type;
 
 /**
  * Reads a part of a file
@@ -16,7 +16,7 @@ const getType = (File = {}) => file.type;
  * @param {Number} from Byte to start reading from
  * @param {Number} to Byte to stop reading. Must be equal or greater than `from`
  */
-const readBlock = (file, from, to) =>
+export const readBlock = (file, from, to) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
 
@@ -31,5 +31,3 @@ const readBlock = (file, from, to) =>
     };
     reader.readAsArrayBuffer(slicedFile);
   });
-
-module.exports = { getSize, getType, readBlock };

@@ -1,6 +1,6 @@
 import * as Cryppo from '@meeco/cryppo';
-import crypto from 'crypto';
-import padStart from 'lodash.padstart';
+import * as crypto from 'crypto';
+import * as padStart from 'lodash.padstart';
 import { isRunningOnWeb } from './app';
 import FileUtils from './FileUtils';
 import { BlobStorage } from './services/Azure';
@@ -144,7 +144,7 @@ export class AzureBlockUpload {
           const blockID = base64(`${this.blockIDPrefix}${padStart(nBlock, 5)}`);
           blockIDList.push(blockID);
 
-          const blockBuffer = await FileUtils.readBlock(this.file, from, to);
+          const blockBuffer: any = await FileUtils.readBlock(this.file, from, to);
           artifacts.range[nBlock] = `bytes=${from}-${to - 1}`;
 
           const data = new Uint8Array(blockBuffer);

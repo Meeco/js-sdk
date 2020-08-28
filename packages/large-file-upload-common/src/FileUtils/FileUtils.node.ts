@@ -1,16 +1,16 @@
-import fs from 'fs';
-import mime from 'mime-types';
+import * as fs from 'fs';
+import * as mime from 'mime-types';
 
 /**
  * Gets file size
  * @param {String} filePath
  */
-const getSize = (filePath = '') => {
+export const getSize = (filePath = '') => {
   const { size } = fs.statSync(filePath);
   return size;
 };
 
-const getType = (filePath = '') => mime.lookup(filePath);
+export const getType = (filePath = '') => mime.lookup(filePath);
 
 /**
  * Reads a part of a file
@@ -18,7 +18,7 @@ const getType = (filePath = '') => mime.lookup(filePath);
  * @param {Number} from Byte to start reading from
  * @param {Number} to Byte to stop reading. Must be equal or greater than `from`
  */
-const readBlock = (filePath, from, to) =>
+export const readBlock = (filePath, from, to) =>
   new Promise((resolve, reject) => {
     try {
       const chunkSize = to - from;
@@ -57,5 +57,3 @@ const readBlock = (filePath, from, to) =>
       reject(error);
     }
   });
-
-module.exports = { getSize, getType, readBlock };
