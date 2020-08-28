@@ -1,4 +1,4 @@
-import { largeFileUploadNode } from '@meeco/large-file-upload-node';
+import { largeFileUploadNode } from '@meeco/file-storage-node';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { FileAttachmentConfig } from '../../configs/file-attachment-config';

@@ -16,9 +16,9 @@
     "paths": {
       "@meeco/sdk": ["packages/sdk/src"],
       "@meeco/cli": ["packages/cli/src"],
-      "@meeco/large-file-upload-node": ["packages/large-file-upload-node/src"],
-      "@meeco/large-file-upload-browser": ["packages/large-file-upload-browser/src"],
-      "@meeco/large-file-upload-common": ["packages/large-file-upload-common/src"]
+      "@meeco/file-storage-node": ["packages/file-storage-node/src"],
+      "@meeco/file-storage-browser": ["packages/file-storage-browser/src"],
+      "@meeco/file-storage-common": ["packages/file-storage-common/src"]
     }
   },
   "exclude": ["node_modules", "dist", "lib"]

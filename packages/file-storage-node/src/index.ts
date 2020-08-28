@@ -1,4 +1,4 @@
-import { directAttachmentUpload } from '@meeco/large-file-upload-common';
+import { directAttachmentUpload } from '@meeco/file-storage-common';
 import { Environment, ItemService } from '@meeco/sdk';
 import * as FileType from 'file-type';
 import * as fs from 'fs';

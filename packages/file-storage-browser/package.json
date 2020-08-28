@@ -1,5 +1,5 @@
 {
-  "name": "@meeco/large-file-upload-browser",
+  "name": "@meeco/file-storage-browser",
   "version": "1.0.0",
   "description": "",
   "source": "src/index.ts",

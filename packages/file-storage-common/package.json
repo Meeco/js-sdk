@@ -1,5 +1,5 @@
 {
-  "name": "@meeco/large-file-upload-node",
+  "name": "@meeco/file-storage-common",
   "version": "1.0.0",
   "description": "",
   "source": "src/index.ts",
@@ -11,13 +11,13 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@meeco/sdk": "0.0.11-beta",
-    "@meeco/large-file-upload-common": "1.0.0",
-    "file-type": "^15.0.0",
-    "bili": "^4.10.0"
+    "@meeco/cryppo": "^0.7.0",
+    "@meeco/sdk": "0.0.11-beta"
   },
   "devDependencies": {
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.6",
+    "lodash.padstart": "^4.6.1",
+    "@types/node": "^10.14.18"
   },
   "keywords": [],
   "author": "",
