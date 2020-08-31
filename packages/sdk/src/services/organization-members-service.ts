@@ -1,5 +1,6 @@
 import { Environment } from '../models/environment';
 import { vaultAPIFactory, VaultAPIFactory } from '../util/api-factory';
+import { Logger, noopLogger } from '../util/logger';
 import cryppo from './cryppo-service';
 /**
  * Manage organization members from the API.
@@ -10,8 +11,12 @@ export class OrganizationMembersService {
   // for mocking during testing
   private cryppo = (<any>global).cryppo || cryppo;
 
-  constructor(environment: Environment, private log: (message: string) => void = () => {}) {
+  constructor(environment: Environment, private log: Logger = noopLogger) {
     this.vaultApiFactory = vaultAPIFactory(environment);
+  }
+
+  public setLogger(logger: Logger) {
+    this.log = logger;
   }
 
   public async createInvite(

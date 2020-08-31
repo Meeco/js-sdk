@@ -12,6 +12,7 @@ import {
   VaultAPIFactory
 } from '../util/api-factory';
 import { fetchConnectionWithId } from '../util/find-connection-between';
+import { Logger, noopLogger } from '../util/logger';
 import cryppo from './cryppo-service';
 import { ItemService } from './item-service';
 
@@ -45,9 +46,13 @@ export class ShareService {
   private keystoreApiFactory: KeystoreAPIFactory;
   private vaultApiFactory: VaultAPIFactory;
 
-  constructor(private environment: Environment, private log: (message: string) => void = () => {}) {
+  constructor(private environment: Environment, private log: Logger = noopLogger) {
     this.keystoreApiFactory = keystoreAPIFactory(environment);
     this.vaultApiFactory = vaultAPIFactory(environment);
+  }
+
+  public setLogger(logger: Logger) {
+    this.log = logger;
   }
 
   public async shareItem(

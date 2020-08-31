@@ -11,6 +11,7 @@ import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import cryppo from '../services/cryppo-service';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
+import { Logger, noopLogger } from '../util/logger';
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -19,7 +20,7 @@ export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
   private vaultAPIFactory: VaultAPIFactory;
 
-  constructor(environment: Environment, private log: (message: string) => void = () => {}) {
+  constructor(environment: Environment, private log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
   }
 
@@ -47,6 +48,10 @@ export class ItemService {
         return decrypted;
       })
     );
+  }
+
+  public setLogger(logger: Logger) {
+    this.log = logger;
   }
 
   public async create(vaultAccessToken: string, dek: EncryptionKey, config: ItemCreateData) {
