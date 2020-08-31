@@ -10,6 +10,7 @@ import {
   vaultAPIFactory
 } from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
+import { Logger, noopLogger } from '../util/logger';
 
 /**
  * Used for setting up connections between Meeco `User`s to allow the secure sharing of data (see also {@link ShareService})
@@ -18,9 +19,14 @@ export class ConnectionService {
   private cryppo = (<any>global).cryppo || cryppo;
   private vaultApiFactory: VaultAPIFactory;
   private keystoreApiFactory: KeystoreAPIFactory;
-  constructor(private environment: Environment, private log: (message: string) => void = () => {}) {
+
+  constructor(private environment: Environment, private log: Logger = noopLogger) {
     this.vaultApiFactory = vaultAPIFactory(environment);
     this.keystoreApiFactory = keystoreAPIFactory(environment);
+  }
+
+  public setLogger(logger: Logger) {
+    this.log = logger;
   }
 
   public async createInvitation(name: string, auth: AuthData) {
