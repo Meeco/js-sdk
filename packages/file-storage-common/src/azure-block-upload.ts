@@ -123,12 +123,16 @@ export class AzureBlockUpload {
   async start(dataEncryptionKey) {
     const p = new Promise((resolve, reject) => {
       const blockIDList: any[] = [];
-      const artifacts: any = {
-        iv: [],
+      const range: any[] = [];
+      const iv: any[] = [];
+      const at: any[] = [];
+      const artifacts = {
+        iv,
         ad: 'none',
-        at: [],
-        range: [],
-        encryption_stratergy: Cryppo.CipherStrategy.AES_GCM
+        at,
+        range,
+        encryption_stratergy: Cryppo.CipherStrategy.AES_GCM,
+        size: this.fileSize
       };
 
       const commit = async () => BlobStorage.putBlockList(this.url, blockIDList, this.fileType);
@@ -141,7 +145,7 @@ export class AzureBlockUpload {
               ? (nBlock + 1) * this.blockSize
               : this.fileSize;
 
-          const blockID = base64(`${this.blockIDPrefix}${padStart(nBlock, 5)}`);
+          const blockID: any = base64(`${this.blockIDPrefix}${padStart(nBlock, 5)}`);
           blockIDList.push(blockID);
 
           const blockBuffer: any = await FileUtils.readBlock(this.file, from, to);
@@ -165,7 +169,7 @@ export class AzureBlockUpload {
 
           await BlobStorage.putBlock(
             this.url,
-            encrypt ? Cryppo.stringAsBinaryBuffer(encrypt.encrypted) : data,
+            /*encrypt ? Cryppo.stringAsBinaryBuffer(encrypt.encrypted) : */ data,
             blockID
           );
 

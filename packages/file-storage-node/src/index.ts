@@ -1,7 +1,6 @@
 import * as Cryppo from '@meeco/cryppo';
 import { AzureBlockDownload, directAttachmentUpload } from '@meeco/file-storage-common';
 import { Environment, ItemService } from '@meeco/sdk';
-import * as FileSaver from 'file-saver';
 import * as FileType from 'file-type';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -92,10 +91,10 @@ export async function largeFileDownloadNode(attachmentID, dek, token) {
 
   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
   const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
-  const encrypted_artifact = JSON.parse(Cryppo.binaryBufferToString(encrypted_artifact_uint8array));
-
+  // const encrypted_artifact = JSON.parse(Cryppo.binaryBufferToString(encrypted_artifact_uint8array));
+  const encrypted_artifact = encrypted_artifact_uint8array;
   client = new AzureBlockDownload(direct_download.url);
-  let blocks = [];
+  let blocks = '';
 
   // console.log("range: " + encrypted_artifact.range);
   // console.log("range lenght: " + encrypted_artifact.range.length);
@@ -111,14 +110,15 @@ export async function largeFileDownloadNode(attachmentID, dek, token) {
       },
       encrypted_artifact.range[index]
     );
-
     blocks = blocks.concat(block);
   }
 
-  const byteArray = new Uint8Array(blocks);
-  const blob = new Blob([byteArray], { type: direct_download.content_type });
+  // const byteArray = new Uint8Array(blocks);
+  // const blob = new Blob([byteArray], { type: direct_download.content_type });
   //const blob = new Blob([this.combineBlocks(blocks[0])]);
-  FileSaver.saveAs(blob, direct_download.filename);
+  // FileSaver.saveAs(blob, direct_download.filename);
+  // fs.writeFileSync('something.txt', byteArray);
+  return { blocks, direct_download };
 }
 
 function getDirectDownloadInfo(id, type, token) {

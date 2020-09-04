@@ -1,5 +1,3 @@
-import * as Cryppo from '@meeco/cryppo';
-import FileUtils from './FileUtils';
 import { BlobStorage } from './services/Azure';
 
 export class AzureBlockDownload {
@@ -21,50 +19,40 @@ export class AzureBlockDownload {
    */
   async start(dataEncryptionKey, strategy, encryptionArtifact, range) {
     if (range) {
-      //console.log("range: " + range);
       const block = await BlobStorage.getBlock(this.url, range);
-      //console.log("block: " + block);
-      //console.log("block data: " + block.data);
-      //console.log("block data size : " + FileUtils.getSize(block.data));
-      const fileBuffer: any = await FileUtils.readBlock(
-        block.data,
-        0,
-        FileUtils.getSize(block.data)
-      );
-      const data = new Uint8Array(fileBuffer);
-      // console.log("block data: " + data);
-      // console.log("string version: " + Cryppo.binaryBufferToString(data));
+      // Buffer.from(block.data, 'binary');
 
-      let byteNumbers: any[] = [];
+      // const fileBuffer: any = await FileUtils.readBlock(
+      //   block.data,
+      //   0,
+      //   FileUtils.getSize(block.data)
+      // );
+      // const data = new Uint8Array(fileBuffer);
+      const data = block.data;
+
+      const byteNumbers: any[] = [];
       if (dataEncryptionKey && strategy && encryptionArtifact) {
-        //console.log("key" + dataEncryptionKey);
-        //console.log("encryption artifact" + JSON.stringify(encryptionArtifact));
-        //console.log("strategy" + strategy);
-        const str: any = Cryppo.decryptWithKeyUsingArtefacts(
-          dataEncryptionKey,
-          Cryppo.binaryBufferToString(data),
-          strategy,
-          encryptionArtifact
-        );
+        // const str = Cryppo.decryptWithKeyUsingArtefacts(
+        //   dataEncryptionKey,
+        //   data,
+        //   strategy,
+        //   encryptionArtifact
+        // );
+        const str = data;
 
-        //console.log("str" + str);
-        //console.log("string lenght" + str.length);
-
-        for (let i = 0; i < str.length; i++) {
-          byteNumbers.push(str.charCodeAt(i));
-        }
-        //console.log("byteNumber: " + byteNumbers);
+        // for (let i = 0; i < str.length; i++) {
+        //   byteNumbers.push(str.charCodeAt(i));
+        // }
       }
       return new Promise(resolve => {
-        //console.log("resolve byteNumber: " + byteNumbers);
-        resolve(byteNumbers || data);
+        resolve(/*byteNumbers || */ data);
       });
     } else {
       const blob = await BlobStorage.getBlock(this.url, null);
-      const fileBuffer: any = await FileUtils.readBlock(blob.data, 0, FileUtils.getSize(blob.data));
-      const data = new Uint8Array(fileBuffer);
+      // const fileBuffer: any = await FileUtils.readBlock(blob.data, 0, FileUtils.getSize(blob.data));
+      // const data = new Uint8Array(fileBuffer);
       return new Promise(resolve => {
-        resolve(data);
+        resolve(blob.data);
       });
     }
   }

@@ -3,11 +3,11 @@ import { largeFileDownloadNode } from '@meeco/file-storage-node';
 // import { ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
+import * as fs from 'fs';
 import { AuthConfig } from '../../configs/auth-config';
 import { authFlags } from '../../flags/auth-flags';
 import { writeFileContents } from '../../util/file';
 import MeecoCommand from '../../util/meeco-command';
-
 export default class ItemsGetLargeAttachment extends MeecoCommand {
   static description = 'Download and decrypt an attachment by id';
 
@@ -49,7 +49,9 @@ export default class ItemsGetLargeAttachment extends MeecoCommand {
       //     authConfig.vault_access_token,
       //     authConfig.data_encryption_key
       //   );
-      //   await this.writeFile(outputPath, file);
+
+      // await this.writeFile(outputPath, file);
+      fs.writeFileSync(outputPath + downloaded.direct_download.filename, downloaded.blocks);
     } catch (err) {
       //   await this.handleException(err);
     }

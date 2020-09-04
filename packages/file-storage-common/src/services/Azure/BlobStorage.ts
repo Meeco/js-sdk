@@ -1,10 +1,10 @@
-import axios from "axios";
+import axios from 'axios';
 
 const BLOCK_MAX_SIZE = 1 * 1024 * 1024; // 1MB;
 
 const buildAzureHeaders = () => ({
-  "x-ms-version": "2011-08-18",
-  "x-ms-date": new Date().toUTCString(),
+  'x-ms-version': '2011-08-18',
+  'x-ms-date': new Date().toUTCString()
 });
 
 /**
@@ -16,13 +16,13 @@ const buildAzureHeaders = () => ({
 const putBlock = async (sasUrl, data, blockID) => {
   const url = `${sasUrl}&comp=block&blockid=${blockID}`;
   return axios({
-    method: "put",
+    method: 'put',
     url,
     headers: {
       ...buildAzureHeaders(),
-      "x-ms-blob-type": "BlockBlob",
+      'x-ms-blob-type': 'BlockBlob'
     },
-    data,
+    data
   });
 };
 
@@ -36,18 +36,18 @@ const putBlock = async (sasUrl, data, blockID) => {
  */
 const putBlockList = async (sasUrl, blockIDList, fileType) => {
   const url = `${sasUrl}&comp=blocklist`;
-  const idString = blockIDList.map((id) => `<Latest>${id}</Latest>`).join("");
+  const idString = blockIDList.map(id => `<Latest>${id}</Latest>`).join('');
   const data = `<?xml version="1.0" encoding="utf-8"?><BlockList>${idString}</BlockList>`;
 
   return axios({
-    method: "put",
+    method: 'put',
     url,
     headers: {
       ...buildAzureHeaders(),
-      "x-ms-blob-content-type": fileType,
-      "Content-Type": "text/xml",
+      'x-ms-blob-content-type': fileType,
+      'Content-Type': 'text/xml'
     },
-    data,
+    data
   });
 };
 
@@ -58,12 +58,12 @@ const putBlockList = async (sasUrl, blockIDList, fileType) => {
  */
 const getBlock = async (sasUrl, range) => {
   const url = `${sasUrl}`;
-  const headers = range ? { "x-ms-range": range, "Range": range } : {};
+  const headers = range ? { 'x-ms-range': range, Range: range } : {};
   return axios({
-    method: "get",
+    method: 'get',
     url,
     headers: headers,
-    responseType: "blob",
+    responseType: 'blob'
   });
 };
 
@@ -71,11 +71,11 @@ const getBlock = async (sasUrl, range) => {
  * Get existing Blob Properties
  * @param {String} sasUrl azure blob storage endpoint with sas auth
  */
-const getBlobProperties = async (sasUrl) => {
+const getBlobProperties = async sasUrl => {
   const url = `${sasUrl}`;
   return axios({
-    method: "head",
-    url,
+    method: 'head',
+    url
   });
 };
 
@@ -84,5 +84,5 @@ export default {
   putBlock,
   putBlockList,
   getBlock,
-  getBlobProperties,
+  getBlobProperties
 };
