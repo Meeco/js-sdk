@@ -112,13 +112,13 @@ export async function largeFileDownloadNode(attachmentID, dek, token) {
     );
     blocks = blocks.concat(block);
   }
-
+  const buffer = Cryppo.stringAsBinaryBuffer(blocks);
   // const byteArray = new Uint8Array(blocks);
   // const blob = new Blob([byteArray], { type: direct_download.content_type });
   //const blob = new Blob([this.combineBlocks(blocks[0])]);
   // FileSaver.saveAs(blob, direct_download.filename);
   // fs.writeFileSync('something.txt', byteArray);
-  return { blocks, direct_download };
+  return { buffer, direct_download };
 }
 
 function getDirectDownloadInfo(id, type, token) {

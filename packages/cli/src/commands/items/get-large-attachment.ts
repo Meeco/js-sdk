@@ -51,7 +51,7 @@ export default class ItemsGetLargeAttachment extends MeecoCommand {
       //   );
 
       // await this.writeFile(outputPath, file);
-      fs.writeFileSync(outputPath + downloaded.direct_download.filename, downloaded.blocks);
+      fs.writeFileSync(outputPath + downloaded.direct_download.filename, downloaded.buffer);
     } catch (err) {
       //   await this.handleException(err);
     }
