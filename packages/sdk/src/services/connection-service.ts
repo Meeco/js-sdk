@@ -13,6 +13,11 @@ import {
 import { findConnectionBetween } from '../util/find-connection-between';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 
+export interface IDecryptedConnection {
+  name: string,
+  connection: Connection
+}
+
 /**
  * Used for setting up connections between Meeco `User`s to allow the secure sharing of data (see also {@link ShareService})
  */
@@ -118,7 +123,7 @@ export class ConnectionService {
     };
   }
 
-  public async list(vaultAccessToken: string, dek: EncryptionKey, nextPageAfter?: string, perPage?: number) {
+  public async list(vaultAccessToken: string, dek: EncryptionKey, nextPageAfter?: string, perPage?: number): Promise<IDecryptedConnection[]> {
     this.logger.log('Fetching connections');
     const result = await this.vaultApiFactory(vaultAccessToken).ConnectionApi.connectionsGet(nextPageAfter, perPage);
     this.logger.log('Decrypting connection names');
@@ -128,7 +133,7 @@ export class ConnectionService {
           serialized: connection.own.encrypted_recipient_name!,
           key: dek.key,
         })
-        .then(name => ({
+        .then((name: string) => ({
           name,
           connection,
         }))
