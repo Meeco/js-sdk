@@ -1,4 +1,4 @@
-import { Connection } from '@meeco/vault-api-sdk';
+import { Connection, ConnectionsResponse } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { ConnectionCreateData } from '../models/connection-create-data';
 import { EncryptionKey } from '../models/encryption-key';
@@ -12,6 +12,7 @@ import {
 } from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
+import { getAllPaged } from './paged-service';
 
 export interface IDecryptedConnection {
   name: string,
@@ -139,6 +140,28 @@ export class ConnectionService {
         }))
     );
     return Promise.all(decryptions);
+  }
+
+  public async listAll(vaultAccessToken: string, dek: EncryptionKey): Promise<IDecryptedConnection[]> {
+    const api = this.vaultApiFactory(vaultAccessToken).ConnectionApi;
+
+    return getAllPaged(cursor => api.connectionsGet(cursor)).then(results => {
+      const responses = results.reduce(
+        (a: Connection[], b: ConnectionsResponse) => a.concat(b.connections),
+        []
+      );
+      const decryptions = responses.map(connection =>
+        this.cryppo
+          .decryptWithKey({
+            serialized: connection.own.encrypted_recipient_name!,
+            key: dek.key,
+          })
+          .then((name: string) => ({
+            name,
+            connection
+          })));
+      return Promise.all(decryptions);
+    });
   }
 
   private encryptRecipientName(name: string, user: AuthData) {
