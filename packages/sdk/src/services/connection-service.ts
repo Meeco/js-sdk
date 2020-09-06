@@ -1,6 +1,7 @@
 import { Connection } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { ConnectionCreateData } from '../models/connection-create-data';
+import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import cryppo from '../services/cryppo-service';
 import {
@@ -117,15 +118,15 @@ export class ConnectionService {
     };
   }
 
-  public async listConnections(user: AuthData) {
+  public async list(vaultAccessToken: string, dek: EncryptionKey, nextPageAfter?: string, perPage?: number) {
     this.logger.log('Fetching connections');
-    const result = await this.vaultApiFactory(user).ConnectionApi.connectionsGet();
+    const result = await this.vaultApiFactory(vaultAccessToken).ConnectionApi.connectionsGet(nextPageAfter, perPage);
     this.logger.log('Decrypting connection names');
     const decryptions = (result.connections || []).map(connection =>
       this.cryppo
         .decryptWithKey({
           serialized: connection.own.encrypted_recipient_name!,
-          key: user.data_encryption_key.key,
+          key: dek.key,
         })
         .then(name => ({
           name,
