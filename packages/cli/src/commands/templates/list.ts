@@ -24,17 +24,27 @@ export default class TemplatesList extends MeecoCommand {
       required: false,
       description: 'Scope templates to a particular classification name',
     }),
+    label: _flags.string({
+      char: 'l',
+      default: undefined,
+      required: false,
+      description: 'Search label text',
+    }),
   };
 
   async run() {
     try {
       const { flags } = this.parse(this.constructor as typeof TemplatesList);
-      const { auth, classificationName, classificationScheme } = flags;
+      const { auth, classificationName, classificationScheme, label } = flags;
       const environment = await this.readEnvironmentFile();
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
       const service = vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
       cli.action.start('Fetching available templates');
-      const templates = await service.itemTemplatesGet(classificationScheme, classificationName);
+      const templates = await service.itemTemplatesGet(
+        classificationScheme,
+        classificationName,
+        label
+      );
       cli.action.stop();
       this.printYaml(TemplateConfig.encodeListFromJSON(templates));
     } catch (err) {

@@ -53,6 +53,31 @@ describe('templates:list', () => {
       const expected = readFileSync(outputFixture('list-templates.output.yaml'), 'utf-8');
       expect(ctx.stdout).to.contain(expected);
     });
+
+  customTest
+    .stderr()
+    .stdout()
+    .nock('https://sandbox.meeco.me/vault', api => {
+      api
+        .get('/item_templates')
+        .query({
+          'like': DEFAULT_CLASSIFICATION_NAME,
+        })
+        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+        .reply(200, response);
+    })
+    .run([
+      'templates:list',
+      ...testUserAuth,
+      ...testEnvironmentFile,
+      '-l',
+      DEFAULT_CLASSIFICATION_NAME,
+    ])
+    .it('fetches a list of available templates searching by label', ctx => {
+      const expected = readFileSync(outputFixture('list-templates.output.yaml'), 'utf-8');
+      expect(ctx.stdout).to.contain(expected);
+    });
 });
 
 const response = {
@@ -74,4 +99,6 @@ const response = {
   attachments: [],
   thumbnails: [],
   classification_nodes: [],
+  meta: [],
+};
 };

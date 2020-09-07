@@ -23,7 +23,10 @@ export default class ConnectionsList extends MeecoCommand {
       }
 
       const service = new ConnectionService(environment, this.updateStatus);
-      const result = await service.listAll(authConfig.vault_access_token, authConfig.data_encryption_key);
+      const result = await service.listAll(
+        authConfig.vault_access_token,
+        authConfig.data_encryption_key
+      );
       this.printYaml(result);
     } catch (err) {
       await this.handleException(err);
