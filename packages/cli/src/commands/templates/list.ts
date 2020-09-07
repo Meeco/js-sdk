@@ -1,4 +1,4 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { getAllPaged, reducePages, vaultAPIFactory } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { cli } from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
@@ -40,11 +40,9 @@ export default class TemplatesList extends MeecoCommand {
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
       const service = vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
       cli.action.start('Fetching available templates');
-      const templates = await service.itemTemplatesGet(
-        classificationScheme,
-        classificationName,
-        label
-      );
+      const templates = await getAllPaged(cursor =>
+        service.itemTemplatesGet(classificationScheme, classificationName, label, cursor)
+      ).then(reducePages);
       cli.action.stop();
       this.printYaml(TemplateConfig.encodeListFromJSON(templates));
     } catch (err) {

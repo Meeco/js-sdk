@@ -78,6 +78,31 @@ describe('templates:list', () => {
       const expected = readFileSync(outputFixture('list-templates.output.yaml'), 'utf-8');
       expect(ctx.stdout).to.contain(expected);
     });
+
+    customTest
+    .stderr()
+    .stdout()
+    .nock('https://sandbox.meeco.me/vault', api => {
+      api
+        .get('/item_templates')
+        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+        .reply(200, responsePart1)
+        .get('/item_templates')
+        .query({next_page_after: nextPage})
+        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+        .reply(200, responsePart2);
+    })
+    .run([
+      'templates:list',
+      ...testUserAuth,
+      ...testEnvironmentFile,
+    ])
+    .it('fetches all templates when paged', ctx => {
+      const expected = readFileSync(outputFixture('list-templates.output.yaml'), 'utf-8');
+      expect(ctx.stdout).to.contain(expected);
+    });
 });
 
 const response = {
@@ -101,4 +126,40 @@ const response = {
   classification_nodes: [],
   meta: [],
 };
+
+const nextPage = '00856148-6188-4b58-aca1-e15ceb7bbe13';
+
+const responsePart1 = {
+  ...response,
+  item_templates: [
+    {
+      name: 'food',
+      slots_ids: ['steak', 'pizza', 'yoghurt']
+    },
+    {
+      name: 'drink',
+      slot_ids: ['yoghurt', 'water', 'beer']
+    },
+  ],
+  next_page_after: nextPage,
+  meta: [
+    {
+      next_page_exists: true
+    },
+  ]
+};
+
+const responsePart2 = {
+  ...response,
+  item_templates: [
+    {
+      name: 'activities',
+      slot_ids: ['sport', 'recreational']
+    }
+  ],
+  meta: [
+    {
+      next_page_exists: false
+    }
+  ]
 };
