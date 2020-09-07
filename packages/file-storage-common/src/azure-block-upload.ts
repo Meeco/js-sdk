@@ -152,25 +152,25 @@ export class AzureBlockUpload {
           artifacts.range[nBlock] = `bytes=${from}-${to - 1}`;
 
           // const data = Cryppo.binaryBufferToString(blockBuffer);
-          const data = blockBuffer;
+          // const data = blockBuffer;
+          const data = new Uint8Array(blockBuffer);
 
           let encrypt: any = null;
           if (dataEncryptionKey) {
             const iv = crypto.randomBytes(12);
             encrypt = Cryppo.encryptWithKeyUsingArtefacts(
               dataEncryptionKey,
-              data,
+              Cryppo.binaryBufferToString(data),
               Cryppo.CipherStrategy.AES_GCM,
               Cryppo.binaryBufferToString(iv)
             );
             artifacts.iv[nBlock] = iv;
             artifacts.at[nBlock] = encrypt.artifacts.at;
-            //console.log(encrypt);
           }
 
           await BlobStorage.putBlock(
             this.url,
-            /*encrypt ? Cryppo.stringAsBinaryBuffer(encrypt.encrypted) : */ data,
+            encrypt ? Cryppo.stringAsBinaryBuffer(encrypt.encrypted) : data,
             blockID
           );
 

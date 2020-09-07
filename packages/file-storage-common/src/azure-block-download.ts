@@ -1,3 +1,4 @@
+import * as Cryppo from '@meeco/cryppo';
 import { BlobStorage } from './services/Azure';
 
 export class AzureBlockDownload {
@@ -27,27 +28,25 @@ export class AzureBlockDownload {
       //   0,
       //   FileUtils.getSize(block.data)
       // );
-      // const data = new Uint8Array(fileBuffer);
+      const data = new Uint8Array(block.data);
       // const data = Cryppo.stringAsBinaryBuffer(block.data);
       // const data = Buffer.from(block.data, 'binary');
-      const data = block.data;
+      // const data = block.data;
 
-      const byteNumbers: any[] = [];
+      let byteNumbers: Uint8Array;
       if (dataEncryptionKey && strategy && encryptionArtifact) {
-        // const str = Cryppo.decryptWithKeyUsingArtefacts(
-        //   dataEncryptionKey,
-        //   data,
-        //   strategy,
-        //   encryptionArtifact
-        // );
-        const str = data;
+        const str = Cryppo.decryptWithKeyUsingArtefacts(
+          dataEncryptionKey.key,
+          Cryppo.binaryBufferToString(data),
+          strategy,
+          encryptionArtifact
+        );
+        // const str = data;
 
-        // for (let i = 0; i < str.length; i++) {
-        //   byteNumbers.push(str.charCodeAt(i));
-        // }
+        byteNumbers = new Uint8Array(Cryppo.stringAsBinaryBuffer(str));
       }
       return new Promise(resolve => {
-        resolve(/*byteNumbers || */ data);
+        resolve(byteNumbers || data);
       });
     } else {
       const blob = await BlobStorage.getBlock(this.url, null);
