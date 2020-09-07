@@ -42,7 +42,7 @@ You will also need to configure your `compilerOptions` in your `tsconfig.base.js
 
 ## Usage Basics
 
-This is not an exhaustive list of functionatlity - just some basic use-cases. For full usage [see the API docs](https://meeco.github.io/js-sdk/)
+This is not an exhaustive list of functionality - just some basic use-cases. For full usage [see the API docs](https://meeco.github.io/js-sdk/)
 
 All examples expect you have your environment configured.
 

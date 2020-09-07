@@ -887,6 +887,8 @@ OPTIONS
 
   -e, --environment=environment                    [default: .environment.yaml] environment config file
 
+  -l, --label=label                                Search label text
+
   -n, --classificationName=classificationName      Scope templates to a particular classification name
 
   -s, --classificationScheme=classificationScheme  Scope templates to a particular classification scheme

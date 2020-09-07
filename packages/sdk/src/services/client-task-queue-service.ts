@@ -1,7 +1,7 @@
 import { ClientTaskQueueResponse } from '@meeco/vault-api-sdk';
 import { Environment } from '../models/environment';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
-import { getAllPaged, reducePages } from './paged-service';
+import { getAllPaged, reducePages } from '../util/paged';
 
 /**
  * A ClientTask represents a task the client is supposed to perform.

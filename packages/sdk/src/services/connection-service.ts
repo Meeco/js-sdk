@@ -12,7 +12,7 @@ import {
 } from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
-import { getAllPaged } from './paged-service';
+import { getAllPaged } from '../util/paged';
 
 export interface IDecryptedConnection {
   name: string,
