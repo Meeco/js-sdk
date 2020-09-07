@@ -11,13 +11,13 @@ export default class ConnectionsCreateConfig extends MeecoCommand {
     from: _flags.string({
       required: true,
       char: 'f',
-      description: `User config file for the 'from' user`
+      description: `User config file for the 'from' user`,
     }),
     to: _flags.string({
       required: true,
       char: 't',
-      description: `User config file for the 'to' user`
-    })
+      description: `User config file for the 'to' user`,
+    }),
   };
 
   static args = [];

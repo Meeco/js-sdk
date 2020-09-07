@@ -13,18 +13,18 @@ export default class SharesCreateConfig extends MeecoCommand {
     itemId: _flags.string({
       required: true,
       char: 'i',
-      description: `Item id of the 'from' user to share with the 'to' use`
+      description: `Item id of the 'from' user to share with the 'to' use`,
     }),
     from: _flags.string({
       required: true,
       char: 'f',
-      description: `User config file for the 'from' user`
+      description: `User config file for the 'from' user`,
     }),
     connectionId: _flags.string({
       required: true,
       char: 'c',
-      description: `Connection id for the 'to' user`
-    })
+      description: `Connection id for the 'to' user`,
+    }),
   };
 
   static args = [];

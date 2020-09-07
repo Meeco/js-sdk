@@ -6,7 +6,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('item:create', () => {
@@ -18,7 +18,7 @@ describe('item:create', () => {
       ...testUserAuth,
       ...testEnvironmentFile,
       '-i',
-      inputFixture('create-item-from-template.input.yaml')
+      inputFixture('create-item-from-template.input.yaml'),
     ])
     .it('creates an empty item from a template', ctx => {
       const expected = readFileSync(
@@ -37,7 +37,7 @@ describe('item:create', () => {
       ...testUserAuth,
       ...testEnvironmentFile,
       '-i',
-      inputFixture('create-item-with-slots.input.yaml')
+      inputFixture('create-item-with-slots.input.yaml'),
     ])
     .it('creates an item with slots provided in a config file', ctx => {
       const expected = readFileSync(outputFixture('create-item-with-slots.output.yaml'), 'utf-8');
@@ -52,17 +52,17 @@ function createItem({ template_name, item }) {
     update.slots_attributes = [
       {
         id: 'a',
-        name: 'Make'
+        name: 'Make',
       },
       {
         id: 'b',
-        name: 'Model'
-      }
+        name: 'Model',
+      },
     ];
   }
   const slots = (update.slots_attributes || []).map((slot, index) => ({
     ...slot,
-    id: slot_ids[index]
+    id: slot_ids[index],
   }));
   delete update.slots_attributes;
   return Promise.resolve({
@@ -70,8 +70,8 @@ function createItem({ template_name, item }) {
       id: 'item-foo',
       template_name,
       ...update,
-      slot_ids: slots.map(slot => slot.id)
+      slot_ids: slots.map(slot => slot.id),
     },
-    slots
+    slots,
   });
 }

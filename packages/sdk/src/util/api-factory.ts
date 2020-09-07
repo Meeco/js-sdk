@@ -94,7 +94,7 @@ const callApiWithHeaders = (
       middleware: [],
       // openapi-sdk style headers
       headers,
-      fetchApi: fetchInterceptor
+      fetchApi: fetchInterceptor,
     }),
     null,
     fetchInterceptor
@@ -106,7 +106,7 @@ const callApiWithHeaders = (
     const fetchOptions = args[argsCount - 1] || {};
     fetchOptions.headers = {
       ...headers,
-      ...fetchOptions.headers
+      ...fetchOptions.headers,
     };
     args[argsCount - 1] = fetchOptions;
   }
@@ -144,11 +144,11 @@ const keystoreAPI = (
             {
               ...additionalHeaders,
               X_MEECO_API_VERSION,
-              X_MEECO_API_COMPONENT: 'keystore'
+              X_MEECO_API_COMPONENT: 'keystore',
             },
             args
           );
-      }
+      },
     }
   ) as InstanceType<typeof Keystore[typeof api]>;
 };
@@ -176,11 +176,11 @@ const vaultAPI = (
             {
               ...additionalHeaders,
               X_MEECO_API_VERSION,
-              X_MEECO_API_COMPONENT: 'vault'
+              X_MEECO_API_COMPONENT: 'vault',
             },
             args
           );
-      }
+      },
     }
   ) as InstanceType<typeof Vault[typeof api]>;
 };
@@ -261,7 +261,7 @@ export const keystoreAPIFactory = (environment: Environment) => (
     {
       get(target, property: KeystoreAPIName) {
         return keystoreAPI(property, environment, userAuth, headers);
-      }
+      },
     }
   ) as KeystoreAPIFactoryInstance;
 
@@ -277,17 +277,17 @@ export const vaultAPIFactory: (Environment) => (UserAuth, IHeaders?) => VaultAPI
     {
       get(target, property: VaultAPIName) {
         return vaultAPI(property, environment, userAuth, headers);
-      }
+      },
     }
   ) as VaultAPIFactoryInstance;
 
 const toCurl = (url, options) => {
   const defaultHeaders = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
   const allHeaders = {
     ...defaultHeaders,
-    ...options.headers
+    ...options.headers,
   };
   const headersString = Object.keys(allHeaders)
     .map(key => `  --header "${key}: ${allHeaders[key]}"`)

@@ -18,8 +18,8 @@ describe('Colors', () => {
           x: 0,
           y: 0,
           width: 1270,
-          height: 924
-        }
+          height: 924,
+        },
       });
     });
   });

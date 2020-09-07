@@ -1,6 +1,6 @@
 import {
   OrganizationsManagingOrganizationsApi,
-  PostOrganizationRequest
+  PostOrganizationRequest,
 } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
@@ -25,7 +25,7 @@ export class OrganizationsService {
     const result = await this.api.organizationsIdLoginPost(id);
     const decryptedVaultSessionToken = await this.cryppo.decryptSerializedWithPrivateKey({
       privateKeyPem: privateKey,
-      serialized: result.encrypted_access_token
+      serialized: result.encrypted_access_token,
     });
     return new AuthData({
       secret: '',
@@ -33,7 +33,7 @@ export class OrganizationsService {
       vault_access_token: decryptedVaultSessionToken,
       data_encryption_key: EncryptionKey.fromRaw(''),
       key_encryption_key: EncryptionKey.fromRaw(''),
-      passphrase_derived_key: EncryptionKey.fromRaw('')
+      passphrase_derived_key: EncryptionKey.fromRaw(''),
     });
   }
 
@@ -44,12 +44,12 @@ export class OrganizationsService {
     return {
       organization: result.organization,
       privateKey: rsaKeyPair.privateKey,
-      publicKey: rsaKeyPair.publicKey
+      publicKey: rsaKeyPair.publicKey,
     };
   }
 }
 
 export enum MemberRoles {
   Admin = 'admin',
-  Owner = 'owner'
+  Owner = 'owner',
 }

@@ -11,8 +11,8 @@ export default class SharesCreate extends MeecoCommand {
     config: _flags.string({
       char: 'c',
       description: 'Share config file to use for setting up the share',
-      required: true
-    })
+      required: true,
+    }),
   };
 
   static args = [{ name: 'file' }];

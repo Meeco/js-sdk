@@ -18,7 +18,7 @@ export class ItemListConfig {
     return {
       kind: ItemListConfig.kind,
       ...(metadata ? { metadata } : {}),
-      spec: json.items
+      spec: json.items,
     };
   }
 }

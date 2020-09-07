@@ -11,8 +11,8 @@ export default class ConnectionsCreate extends MeecoCommand {
     config: _flags.string({
       char: 'c',
       description: 'Connection config file to use for the creation',
-      required: true
-    })
+      required: true,
+    }),
   };
 
   async run() {

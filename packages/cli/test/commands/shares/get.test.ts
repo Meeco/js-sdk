@@ -26,8 +26,8 @@ function mockVault(api: nock.Scope) {
     .reply(200, {
       connection: {
         id: 'con_1',
-        encryption_space_id: 'es_1'
-      }
+        encryption_space_id: 'es_1',
+      },
     });
 
   api
@@ -46,13 +46,13 @@ function mockVault(api: nock.Scope) {
         encrypted_values: [
           {
             slot_id: 'sl_1',
-            encrypted_value: 'encrypted_fluffy'
+            encrypted_value: 'encrypted_fluffy',
           },
           {
             slot_id: 'sl_2',
-            encrypted_value: 'encrypted_12'
-          }
-        ]
+            encrypted_value: 'encrypted_12',
+          },
+        ],
       },
       item: {
         created_at: new Date(0),
@@ -60,7 +60,7 @@ function mockVault(api: nock.Scope) {
         id: 'it_1',
         label: 'My Cat',
         encrypted: true,
-        slot_ids: ['sl_1', 'sl_2']
+        slot_ids: ['sl_1', 'sl_2'],
       },
       slots: [
         {
@@ -70,7 +70,7 @@ function mockVault(api: nock.Scope) {
           label: 'name',
           encrypted: true,
           // The API will return null as the encrypted_values on the share are to be used
-          encrypted_value: null
+          encrypted_value: null,
         },
         {
           created_at: new Date(0),
@@ -79,15 +79,15 @@ function mockVault(api: nock.Scope) {
           label: 'age',
           encrypted: true,
           // The API will return null as the encrypted_values on the share are to be used
-          encrypted_value: null
-        }
+          encrypted_value: null,
+        },
       ],
       associations_to: [],
       associations: [],
       attachments: [],
       classification_nodes: [],
       shares: [],
-      thumbnails: []
+      thumbnails: [],
     });
 }
 
@@ -98,7 +98,7 @@ function mockKeystore(api: nock.Scope) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       encryption_space_data_encryption_key: {
-        serialized_data_encryption_key: 'secret_shared_key'
-      }
+        serialized_data_encryption_key: 'secret_shared_key',
+      },
     });
 }

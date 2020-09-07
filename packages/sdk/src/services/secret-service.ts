@@ -11,7 +11,7 @@ export class SecretService {
   private readonly derivationConstants = {
     iterationVariance: 0,
     minIterations: 100000,
-    length: 32
+    length: 32,
   };
 
   /**
@@ -70,7 +70,7 @@ export class SecretService {
     return {
       version,
       username,
-      secretKey: secretKey.replace(/-/g, '') // strip padding from secret key
+      secretKey: secretKey.replace(/-/g, ''), // strip padding from secret key
     };
   }
 
@@ -85,7 +85,7 @@ export class SecretService {
         useSalt: secretKey
           .split('')
           .reverse()
-          .join('')
+          .join(''),
       })
       .then(derived => derived.key);
   }
@@ -98,7 +98,7 @@ export class SecretService {
       .generateDerivedKey({
         ...this.derivationConstants,
         key: password,
-        useSalt: secretKey
+        useSalt: secretKey,
       })
       .then(derived => derived.key);
   }

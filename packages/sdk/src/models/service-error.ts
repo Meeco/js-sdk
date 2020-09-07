@@ -1,6 +1,6 @@
 export const ERROR_CODES = {
   InvalidSecretFormat: 'INVALID_SECRET_FORMAT',
-  LoginFailed: 'LOGIN_FAILED'
+  LoginFailed: 'LOGIN_FAILED',
 };
 
 export class MeecoServiceError extends Error {

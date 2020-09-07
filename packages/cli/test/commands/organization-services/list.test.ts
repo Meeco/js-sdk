@@ -35,7 +35,7 @@ const response = {
       validated_at: null,
       agent_id: null,
       created_at: '2020-07-02T05:47:44.983Z',
-      status: 'requested'
+      status: 'requested',
     },
     {
       id: '00000000-0000-0000-0000-000000000001',
@@ -47,7 +47,7 @@ const response = {
       validated_at: null,
       agent_id: null,
       created_at: '2020-07-02T05:47:44.983Z',
-      status: 'requested'
-    }
-  ]
+      status: 'requested',
+    },
+  ],
 };

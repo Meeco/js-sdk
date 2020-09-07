@@ -23,8 +23,8 @@ export class EncryptionSpaceData {
       spec: {
         to_user_connection_id: this.to_user_connection_id,
         from_user_connection_id: this.from_user_connection_id,
-        shared_data_encryption_key: this.shared_data_encryption_key
-      }
+        shared_data_encryption_key: this.shared_data_encryption_key,
+      },
     };
   }
 }

@@ -43,7 +43,7 @@ export class TemplatesService {
     return {
       template,
       slots,
-      classification_nodes
+      classification_nodes,
     };
   }
 }

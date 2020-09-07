@@ -9,7 +9,7 @@ export default class SharesList extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
   };
 
   async run() {

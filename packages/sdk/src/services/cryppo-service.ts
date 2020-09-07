@@ -11,5 +11,5 @@ import * as cryppo from '@meeco/cryppo';
  * @hidden
  */
 export default (<typeof cryppo>{
-  ...cryppo
+  ...cryppo,
 }) as typeof cryppo;

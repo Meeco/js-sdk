@@ -5,7 +5,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('items:update', () => {
@@ -19,7 +19,7 @@ describe('items:update', () => {
       ...testUserAuth,
       ...testEnvironmentFile,
       '-i',
-      inputFixture('update-item.input.yaml')
+      inputFixture('update-item.input.yaml'),
     ])
     .it('Updates the item', ctx => {
       const expected = readFileSync(outputFixture('update-item.output.yaml'), 'utf-8');
@@ -33,7 +33,7 @@ const response = {
     updated_at: new Date(0),
     label: 'My Fave Foods',
     name: 'food',
-    slot_ids: ['pizza']
+    slot_ids: ['pizza'],
   },
   slots: [
     {
@@ -45,15 +45,15 @@ const response = {
       encrypted_value: 'Supreme',
       encrypted: true,
       created_at: new Date(0),
-      updated_at: new Date(0)
-    }
+      updated_at: new Date(0),
+    },
   ],
   associations_to: [],
   associations: [],
   attachments: [],
   classification_nodes: [],
   shares: [],
-  thumbnails: []
+  thumbnails: [],
 };
 
 function mockVault(api) {
@@ -63,7 +63,7 @@ function mockVault(api) {
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
-      client_tasks: [{}, {}]
+      client_tasks: [{}, {}],
     });
   api
     .get('/client_task_queue')
@@ -71,7 +71,7 @@ function mockVault(api) {
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
-      client_tasks: [{}, {}, {}]
+      client_tasks: [{}, {}, {}],
     });
   api
     .put('/items/my-item', {
@@ -80,15 +80,15 @@ function mockVault(api) {
         slots_attributes: [
           {
             name: 'pizza',
-            encrypted_value: '[serialized][encrypted]Supreme[with my_generated_dek]'
+            encrypted_value: '[serialized][encrypted]Supreme[with my_generated_dek]',
           },
           {
             name: 'steak',
             encrypted_value: '[serialized][encrypted][with my_generated_dek]',
-            _destroy: true
-          }
-        ]
-      }
+            _destroy: true,
+          },
+        ],
+      },
     })
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')

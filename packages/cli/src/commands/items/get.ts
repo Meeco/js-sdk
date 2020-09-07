@@ -10,7 +10,7 @@ export default class ItemsGet extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
   };
 
   static args = [{ name: 'itemId', required: true }];

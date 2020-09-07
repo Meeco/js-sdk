@@ -31,7 +31,7 @@ export class ConnectionV2Config {
     return {
       kind: ConnectionV2Config.kind,
       ...(metadata ? { metadata } : {}),
-      spec: json
+      spec: json,
     };
   }
 }

@@ -14,7 +14,7 @@ describe('shares:create-config', () => {
       'connection-id',
       '-i',
       'my-item',
-      ...testEnvironmentFile
+      ...testEnvironmentFile,
     ])
     .it('builds a share template file from two users and an item', ctx => {
       const expected = readFileSync(outputFixture('create-config-share.output.yaml'), 'utf-8');
@@ -30,7 +30,7 @@ const response = {
   attachments: [],
   classification_nodes: [],
   shares: [],
-  thumbnails: []
+  thumbnails: [],
 };
 
 function mockVault(api) {

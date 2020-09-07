@@ -7,9 +7,9 @@ export default {
   decorators: [withKnobs],
   parameters: {
     docs: {
-      page: mdx
-    }
-  }
+      page: mdx,
+    },
+  },
 };
 
 export const shadows = () => /*html*/ `

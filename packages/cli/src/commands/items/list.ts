@@ -10,7 +10,7 @@ export default class ItemsList extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
   };
 
   async run() {

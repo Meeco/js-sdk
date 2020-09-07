@@ -13,7 +13,7 @@ describe('organization-services:get', () => {
       'organization_id',
       'service_id',
       ...testUserAuth,
-      ...testEnvironmentFile
+      ...testEnvironmentFile,
     ])
     .it('returns a validated or requested by logged in user organization ', ctx => {
       const expected = readFileSync(outputFixture('get-organization-service.output.yaml'), 'utf-8');
@@ -32,8 +32,8 @@ const response = {
     validated_at: null,
     agent_id: null,
     created_at: '2020-07-02T05:47:44.983Z',
-    status: 'requested'
-  }
+    status: 'requested',
+  },
 };
 
 function mockVault(api) {

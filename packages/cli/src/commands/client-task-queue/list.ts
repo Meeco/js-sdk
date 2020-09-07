@@ -14,14 +14,14 @@ export default class ClientTaskQueueList extends MeecoCommand {
     supressChangingState: _flags.string({
       required: false,
       default: 'true',
-      description: 'suppress transitioning tasks in the response to in_progress: true, false'
+      description: 'suppress transitioning tasks in the response to in_progress: true, false',
     }),
     state: _flags.string({
       char: 's',
       required: false,
       default: 'Todo',
-      description: 'Client Task Queue avalible states: ' + Object.keys(State)
-    })
+      description: 'Client Task Queue avalible states: ' + Object.keys(State),
+    }),
   };
 
   async run() {
@@ -49,7 +49,7 @@ export default class ClientTaskQueueList extends MeecoCommand {
       );
       this.printYaml({
         kind: 'ClientTaskQueue',
-        spec: response.client_tasks
+        spec: response.client_tasks,
       });
     } catch (err) {
       await this.handleException(err);

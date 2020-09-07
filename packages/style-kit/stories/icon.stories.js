@@ -103,7 +103,7 @@ const icon_list = [
   'verified-reverse',
   'wallet',
   'website',
-  'zoom'
+  'zoom',
 ];
 
 export const meecoIcons = () => {

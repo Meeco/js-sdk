@@ -11,7 +11,7 @@ export default class ItemsUpdate extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
-    item: _flags.string({ char: 'i', required: true, description: 'item yaml file' })
+    item: _flags.string({ char: 'i', required: true, description: 'item yaml file' }),
   };
 
   async run() {
@@ -41,7 +41,7 @@ export default class ItemsUpdate extends MeecoCommand {
     const updateData = new ItemUpdateData({
       id: itemConfig?.id!,
       label: itemConfig?.label,
-      slots: itemConfig?.slots
+      slots: itemConfig?.slots,
     });
 
     try {

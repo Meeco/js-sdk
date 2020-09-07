@@ -5,7 +5,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('organization-services:update', () => {
@@ -19,7 +19,7 @@ describe('organization-services:update', () => {
       ...testEnvironmentFile,
       'organization_id',
       '-s',
-      inputFixture('update-organization-service.input.yaml')
+      inputFixture('update-organization-service.input.yaml'),
     ])
     .it('Updates the organization', ctx => {
       const expected = readFileSync(
@@ -36,8 +36,8 @@ function mockVault(api) {
       service: {
         name: 'Sample Service',
         description: 'Sample service description',
-        contract: { name: 'sample contract' }
-      }
+        contract: { name: 'sample contract' },
+      },
     })
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
@@ -55,7 +55,7 @@ const response = {
     validated_at: null,
     agent_id: null,
     created_at: '2020-07-02T05:47:44.983Z',
-    status: 'requested'
+    status: 'requested',
   },
   organization: {
     id: 'e2fed464-878b-4d4b-9017-99abc50504ed',
@@ -69,6 +69,6 @@ const response = {
     agent_id: '706ff9fb-bd58-4707-ba6c-50f97b94718b',
     created_at: '2020-07-02T01:57:42.437Z',
     updated_at: '2020-07-02T01:58:07.934Z',
-    status: 'validated'
-  }
+    status: 'validated',
+  },
 };

@@ -5,7 +5,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('organization-members:create-invitation', () => {
@@ -18,7 +18,7 @@ describe('organization-members:create-invitation', () => {
       ...testUserAuth,
       ...testEnvironmentFile,
       '-o',
-      inputFixture('create-organization-members-invitation.input.yaml')
+      inputFixture('create-organization-members-invitation.input.yaml'),
     ])
     .it('Requests the creation of a new organization member invitation', ctx => {
       const expected = readFileSync(
@@ -46,20 +46,20 @@ const response = {
     integration_data: {
       intent: 'member',
       organization_id: '00000000-0000-0000-0000-000000000000',
-      organization_member_role: 'admin'
-    }
-  }
+      organization_member_role: 'admin',
+    },
+  },
 };
 
 function mockVault(api) {
   api
     .post('/invitations', {
       public_key: {
-        public_key: '--PUBLIC_KEY--ABCD'
+        public_key: '--PUBLIC_KEY--ABCD',
       },
       invitation: {
-        organization_member_role: 'admin'
-      }
+        organization_member_role: 'admin',
+      },
     })
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')

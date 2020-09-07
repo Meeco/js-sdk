@@ -9,17 +9,17 @@ export default class OrganizationServicesGet extends MeecoCommand {
     'Retrieve a validated organization service. Only validated services are accessible.';
 
   static examples = [
-    `meeco organization-services:get <organization_id> <service_id> > .my-created-service.yaml`
+    `meeco organization-services:get <organization_id> <service_id> > .my-created-service.yaml`,
   ];
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
   };
 
   static args = [
     { name: 'organization_id', required: true },
-    { name: 'service_id', required: true }
+    { name: 'service_id', required: true },
   ];
 
   async run() {

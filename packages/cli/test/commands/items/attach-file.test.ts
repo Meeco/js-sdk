@@ -37,7 +37,7 @@ describe('items:attach-file', () => {
       '-c',
       inputFixture('text-file-attachment.input.yaml'),
       ...testUserAuth,
-      ...testEnvironmentFile
+      ...testEnvironmentFile,
     ])
     .it('encrypts and uploads a file to a slot', ctx => {
       expect(ctx.stderr).to.contain('File was successfully attached');
@@ -54,7 +54,7 @@ describe('items:attach-file', () => {
       '-c',
       inputFixture('image-file-attachment.input.yaml'),
       ...testUserAuth,
-      ...testEnvironmentFile
+      ...testEnvironmentFile,
     ])
     .it('generates and uploads a thumbnail for the binary if it is an image', ctx => {
       expect(ctx.stderr).to.contain('File was successfully attached');
@@ -69,7 +69,7 @@ function mockDefaults(api: Scope) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       item: {
-        id: 'my_test_item_id'
+        id: 'my_test_item_id',
       },
       slots: [],
       associations_to: [],
@@ -77,7 +77,7 @@ function mockDefaults(api: Scope) {
       attachments: [],
       classification_nodes: [],
       shares: [],
-      thumbnails: []
+      thumbnails: [],
     });
 
   api
@@ -89,18 +89,18 @@ function mockDefaults(api: Scope) {
             slot_type_name: 'attachment',
             attachments_attributes: [
               {
-                id: 'new_attachment_id'
-              }
-            ]
-          }
-        ]
-      }
+                id: 'new_attachment_id',
+              },
+            ],
+          },
+        ],
+      },
     })
     .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       item: {
-        id: 'my_test_item_id'
+        id: 'my_test_item_id',
       },
       slots: [],
       associations_to: [],
@@ -108,7 +108,7 @@ function mockDefaults(api: Scope) {
       attachments: [],
       classification_nodes: [],
       shares: [],
-      thumbnails: []
+      thumbnails: [],
     });
 }
 
@@ -125,8 +125,8 @@ function mockApisForImage(api: Scope) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       thumbnail: {
-        id: 'new_thumbnail_id'
-      }
+        id: 'new_thumbnail_id',
+      },
     });
 
   api
@@ -141,8 +141,8 @@ function mockApisForImage(api: Scope) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       attachment: {
-        id: 'new_attachment_id'
-      }
+        id: 'new_attachment_id',
+      },
     });
 }
 
@@ -161,7 +161,7 @@ function mockApisForText(api: Scope) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       attachment: {
-        id: 'new_attachment_id'
-      }
+        id: 'new_attachment_id',
+      },
     });
 }

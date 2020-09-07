@@ -9,7 +9,7 @@ export default class OrganizationServicesUpdate extends MeecoCommand {
   static description = `Modify a requested organization service. Members of the organization with roles owner and admin can use this command to modify the requested service.`;
 
   static examples = [
-    `meeco organization-services:update <organization_id> -s .my-created-service.yaml`
+    `meeco organization-services:update <organization_id> -s .my-created-service.yaml`,
   ];
 
   static flags = {
@@ -18,8 +18,8 @@ export default class OrganizationServicesUpdate extends MeecoCommand {
     organizationServiceConfig: _flags.string({
       char: 's',
       required: true,
-      description: 'service yaml file'
-    })
+      description: 'service yaml file',
+    }),
   };
 
   static args = [{ name: 'organization_id', required: true }];
@@ -56,7 +56,7 @@ export default class OrganizationServicesUpdate extends MeecoCommand {
         service.id,
         organization_id,
         {
-          service: organizationServiceConfigFile.service
+          service: organizationServiceConfigFile.service,
         }
       );
       this.printYaml(OrganizationServiceConfig.encodeFromJSON(result.service));

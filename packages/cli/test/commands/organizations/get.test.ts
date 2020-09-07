@@ -27,9 +27,9 @@ const response = {
     validated_by_id: null,
     agent_id: null,
     validated_at: null,
-    created_at: '2020-06-23T08:38:32.915Z'
+    created_at: '2020-06-23T08:38:32.915Z',
   },
-  services: []
+  services: [],
 };
 
 function mockVault(api) {
