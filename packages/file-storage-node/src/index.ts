@@ -82,20 +82,10 @@ export async function largeFileDownloadNode(attachmentID, dek, token) {
     token
   );
   const direct_download = await getDirectDownloadInfo(attachmentID, 'binary_file', token);
-  // console.log(
-  //   "direct_download_encrypted_artifact : " +
-  //     direct_download_encrypted_artifact
-  // );
-  // console.log("direct_download : " + direct_download);
-  // console.log("dek : " + dek);
-
   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
   const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
-  // const encrypted_artifact = JSON.parse(Cryppo.binaryBufferToString(encrypted_artifact_uint8array));
   const encrypted_artifact = JSON.parse(encrypted_artifact_uint8array.toString('utf-8'));
   client = new AzureBlockDownload(direct_download.url);
-  // console.log("range: " + encrypted_artifact.range);
-  // console.log("range lenght: " + encrypted_artifact.range.length);
   const blocks: Buffer[] = [];
 
   for (let index = 0; index < encrypted_artifact.range.length; index++) {
@@ -111,13 +101,7 @@ export async function largeFileDownloadNode(attachmentID, dek, token) {
     );
     blocks.push(block);
   }
-  // const buffer = Cryppo.stringAsBinaryBuffer(blocks);
   const byteArray = Buffer.concat(blocks);
-  // const byteArray = new Uint8Array(blocks);
-  // const blob = new Blob([byteArray], { type: direct_download.content_type });
-  //const blob = new Blob([this.combineBlocks(blocks[0])]);
-  // FileSaver.saveAs(blob, direct_download.filename);
-  // fs.writeFileSync('something.txt', byteArray);
   return { byteArray, direct_download };
 }
 

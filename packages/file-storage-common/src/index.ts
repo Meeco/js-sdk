@@ -17,15 +17,11 @@ export async function directAttachmentUpload(
   const client = new AzureBlockUpload(config.directUploadUrl, config.file, {
     simultaneousUploads: 1,
     callbacks: {
-      onProgress: progress => {
-        // console.log(progress);
-      },
+      onProgress: progress => {},
       onSuccess: success => {
-        // console.log(success);
         result = success;
       },
       onError: error => {
-        // console.log(error);
         throw error;
       }
     }

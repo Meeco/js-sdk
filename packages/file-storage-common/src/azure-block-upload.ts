@@ -150,9 +150,6 @@ export class AzureBlockUpload {
 
           const blockBuffer: any = await FileUtils.readBlock(this.file, from, to);
           artifacts.range[nBlock] = `bytes=${from}-${to - 1}`;
-
-          // const data = Cryppo.binaryBufferToString(blockBuffer);
-          // const data = blockBuffer;
           const data = new Uint8Array(blockBuffer);
 
           let encrypt: any = null;
