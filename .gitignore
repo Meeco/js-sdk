@@ -27,7 +27,6 @@ packages/**/cypress/videos
 /yarn.lock
 node_modules
 .npmrc
-package-lock.json
 
 # local environment
 .*.yaml
