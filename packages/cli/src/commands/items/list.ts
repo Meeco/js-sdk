@@ -25,7 +25,7 @@ export default class ItemsList extends MeecoCommand {
     }
 
     try {
-      const response = await service.list(authConfig.vault_access_token);
+      const response = await service.listAll(authConfig.vault_access_token);
       this.printYaml(ItemListConfig.encodeFromJSON(response));
     } catch (err) {
       await this.handleException(err);
