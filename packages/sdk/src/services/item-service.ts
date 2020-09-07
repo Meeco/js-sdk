@@ -220,6 +220,22 @@ export class ItemService {
     return uploadUrl;
   }
 
+  public async getDirectAttachmentInfo(
+    config: { attachmentId: string },
+    auth: AuthData
+  ): Promise<any> {
+    let uploadUrl;
+    try {
+      this.log('Getting Direct Attachment Info');
+      const factory = this.vaultAPIFactory(auth.vault_access_token);
+      uploadUrl = await factory.DirectAttachmentsApi.directAttachmentsIdGet(config.attachmentId);
+    } catch (err) {
+      this.log('Upload encrypted file failed - removing temp encrypted version');
+      throw err;
+    }
+    return uploadUrl;
+  }
+
   // public async directAttachmentUpload(
   //   config: IDirectAttachmentUploadData,
   //   auth: AuthData

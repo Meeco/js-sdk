@@ -1,7 +1,9 @@
 import { stringAsBinaryBuffer } from '@meeco/cryppo';
+import { largeFileDownloadNode } from '@meeco/file-storage-node';
 import { ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
+import * as fs from 'fs';
 import { AuthConfig } from '../../configs/auth-config';
 import { authFlags } from '../../flags/auth-flags';
 import { writeFileContents } from '../../util/file';
@@ -40,12 +42,27 @@ export default class ItemsGetAttachment extends MeecoCommand {
       }
 
       const service = new ItemService(environment, this.updateStatus);
-      const file = await service.downloadAttachment(
-        attachmentId,
-        authConfig.vault_access_token,
-        authConfig.data_encryption_key
-      );
-      await this.writeFile(outputPath, file);
+
+      const attachmentInfo = await service.getDirectAttachmentInfo({ attachmentId }, authConfig);
+
+      console.log(attachmentInfo);
+      if (attachmentInfo.attachment.is_direct_upload) {
+        // was uploaded in chunks
+        const downloaded = await largeFileDownloadNode(
+          attachmentId,
+          authConfig.data_encryption_key,
+          authConfig.vault_access_token
+        );
+        fs.writeFileSync(outputPath + downloaded.direct_download.filename, downloaded.byteArray);
+      } else {
+        // was not uploaded in chunks
+        const file = await service.downloadAttachment(
+          attachmentId,
+          authConfig.vault_access_token,
+          authConfig.data_encryption_key
+        );
+        await this.writeFile(outputPath, file);
+      }
     } catch (err) {
       await this.handleException(err);
     }

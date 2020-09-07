@@ -35,8 +35,6 @@ export async function largeFileUploadNode(
     authConfig
   );
 
-  // console.log(uploadResult);
-
   const artifactsFileName = fileName + '.encryption_artifacts';
   const artifactsFileDir = `./tmp/${artifactsFileName}`;
   fs.writeFileSync(artifactsFileDir, JSON.stringify(uploadResult.artifacts));

@@ -1,4 +1,4 @@
-import { ItemService } from '@meeco/sdk';
+import { largeFileUploadNode } from '@meeco/file-storage-node';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { lookup } from 'mime-types';
@@ -50,16 +50,9 @@ export default class ItemsAttachFile extends MeecoCommand {
         );
       }
 
-      const service = new ItemService(environment, this.updateStatus);
-      await service.attachFile(
-        {
-          ...fileConfig,
-          file,
-          fileName,
-          fileType
-        },
-        authConfig
-      );
+      const uploadedFile = await largeFileUploadNode(fileConfig.file, environment, authConfig);
+
+      this.printYaml(uploadedFile);
     } catch (err) {
       await this.handleException(err);
     }
