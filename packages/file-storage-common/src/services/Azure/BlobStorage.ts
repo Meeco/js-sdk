@@ -63,7 +63,9 @@ const getBlock = async (sasUrl, range) => {
     method: 'get',
     url,
     headers: headers,
-    responseType: 'blob'
+    responseType: 'arraybuffer'
+  }).then(result => {
+    return result;
   });
 };
 

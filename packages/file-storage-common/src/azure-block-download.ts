@@ -28,6 +28,8 @@ export class AzureBlockDownload {
       //   FileUtils.getSize(block.data)
       // );
       // const data = new Uint8Array(fileBuffer);
+      // const data = Cryppo.stringAsBinaryBuffer(block.data);
+      // const data = Buffer.from(block.data, 'binary');
       const data = block.data;
 
       const byteNumbers: any[] = [];
