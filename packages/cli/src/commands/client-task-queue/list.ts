@@ -42,7 +42,7 @@ export default class ClientTaskQueueList extends MeecoCommand {
           'Invalid state provided, state argument value must be one of this: ' + Object.keys(State)
         );
       }
-      const response = await service.list(
+      const response = await service.listAll(
         authConfig.vault_access_token,
         supressChangingState === 'false' ? false : true,
         clientTaskQueueState
