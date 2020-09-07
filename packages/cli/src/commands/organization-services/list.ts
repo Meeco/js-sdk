@@ -1,4 +1,4 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { getAllPaged, reducePages, vaultAPIFactory } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationServiceListConfig } from '../../configs/organization-services-list-config';
 import { authFlags } from '../../flags/auth-flags';
@@ -28,11 +28,10 @@ export default class OrganizationServicesList extends MeecoCommand {
     }
     try {
       this.updateStatus('Fetching services');
-      const result = await vaultAPIFactory(environment)(
-        authConfig
-      ).OrganizationsManagingServicesApi.organizationsOrganizationIdRequestedServicesGet(
-        organization_id
-      );
+      const api = vaultAPIFactory(environment)(authConfig).OrganizationsManagingServicesApi;
+      const result = await getAllPaged(cursor =>
+        api.organizationsOrganizationIdRequestedServicesGet(organization_id, cursor)
+      ).then(reducePages);
       this.finish();
       this.printYaml(OrganizationServiceListConfig.encodeFromJSON(result.services));
     } catch (err) {
