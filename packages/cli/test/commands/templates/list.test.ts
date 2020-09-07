@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import {
   DEFAULT_CLASSIFICATION_NAME,
   DEFAULT_CLASSIFICATION_SCHEME,
+  MOCK_NEXT_PAGE_AFTER,
 } from '../../../src/util/constants';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
@@ -61,7 +62,7 @@ describe('templates:list', () => {
       api
         .get('/item_templates')
         .query({
-          'like': DEFAULT_CLASSIFICATION_NAME,
+          like: DEFAULT_CLASSIFICATION_NAME,
         })
         .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
@@ -79,7 +80,7 @@ describe('templates:list', () => {
       expect(ctx.stdout).to.contain(expected);
     });
 
-    customTest
+  customTest
     .stderr()
     .stdout()
     .nock('https://sandbox.meeco.me/vault', api => {
@@ -89,16 +90,12 @@ describe('templates:list', () => {
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, responsePart1)
         .get('/item_templates')
-        .query({next_page_after: nextPage})
+        .query({ next_page_after: MOCK_NEXT_PAGE_AFTER })
         .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, responsePart2);
     })
-    .run([
-      'templates:list',
-      ...testUserAuth,
-      ...testEnvironmentFile,
-    ])
+    .run(['templates:list', ...testUserAuth, ...testEnvironmentFile])
     .it('fetches all templates when paged', ctx => {
       const expected = readFileSync(outputFixture('list-templates.output.yaml'), 'utf-8');
       expect(ctx.stdout).to.contain(expected);
@@ -127,26 +124,24 @@ const response = {
   meta: [],
 };
 
-const nextPage = '00856148-6188-4b58-aca1-e15ceb7bbe13';
-
 const responsePart1 = {
   ...response,
   item_templates: [
     {
       name: 'food',
-      slots_ids: ['steak', 'pizza', 'yoghurt']
+      slots_ids: ['steak', 'pizza', 'yoghurt'],
     },
     {
       name: 'drink',
-      slot_ids: ['yoghurt', 'water', 'beer']
+      slot_ids: ['yoghurt', 'water', 'beer'],
     },
   ],
-  next_page_after: nextPage,
+  next_page_after: MOCK_NEXT_PAGE_AFTER,
   meta: [
     {
-      next_page_exists: true
+      next_page_exists: true,
     },
-  ]
+  ],
 };
 
 const responsePart2 = {
@@ -154,12 +149,12 @@ const responsePart2 = {
   item_templates: [
     {
       name: 'activities',
-      slot_ids: ['sport', 'recreational']
-    }
+      slot_ids: ['sport', 'recreational'],
+    },
   ],
   meta: [
     {
-      next_page_exists: false
-    }
-  ]
+      next_page_exists: false,
+    },
+  ],
 };

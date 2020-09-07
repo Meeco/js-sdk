@@ -1,4 +1,4 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { getAllPaged, reducePages, vaultAPIFactory } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationsListConfig } from '../../configs/organizations-list-config';
@@ -30,9 +30,11 @@ export default class OrganizationsList extends MeecoCommand {
       const environment = await this.readEnvironmentFile();
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
       this.updateStatus('Fetching ' + mode + ' organizations');
-      const result = await vaultAPIFactory(environment)(
-        authConfig
-      ).OrganizationsForVaultUsersApi.organizationsGet(mode === 'validated' ? undefined : mode);
+      const api = vaultAPIFactory(environment)(authConfig);
+      const modeParam = mode === 'validated' ? undefined : mode;
+      const result = await getAllPaged(cursor =>
+        api.OrganizationsForVaultUsersApi.organizationsGet(modeParam, cursor)
+      ).then(reducePages);
       this.finish();
       this.printYaml(OrganizationsListConfig.encodeFromJSON(result.organizations));
     } catch (err) {

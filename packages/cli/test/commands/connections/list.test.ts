@@ -1,5 +1,6 @@
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
+import { MOCK_NEXT_PAGE_AFTER } from '../../../src/util/constants';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 describe('connections:list', () => {
@@ -87,10 +88,10 @@ describe('connections:list', () => {
               records_count: 1
             }
           ],
-          next_page_after: '00856148-6188-4b58-aca1-e15ceb7bbe13',
+          next_page_after: MOCK_NEXT_PAGE_AFTER,
         })
         .get('/connections')
-        .query({next_page_after: '00856148-6188-4b58-aca1-e15ceb7bbe13'})
+        .query({next_page_after: MOCK_NEXT_PAGE_AFTER})
         .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, {
