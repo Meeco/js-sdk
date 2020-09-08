@@ -73,6 +73,37 @@ export async function largeFileUploadNode(
   return '';
 }
 
+export async function fileDownloadNode(
+  attachmentId: string,
+  environment: Environment,
+  authConfig: any,
+  logFunction: any
+): Promise<{ fileName: string; buffer: Buffer }> {
+  const service = new ItemService(environment, logFunction);
+
+  const attachmentInfo = await service.getDirectAttachmentInfo({ attachmentId }, authConfig);
+  let buffer: Buffer;
+  const fileName: string = attachmentInfo.attachment.filename;
+  if (attachmentInfo.attachment.is_direct_upload) {
+    // was uploaded in chunks
+    const downloaded = await largeFileDownloadNode(
+      attachmentId,
+      authConfig.data_encryption_key,
+      authConfig.vault_access_token
+    );
+    buffer = downloaded.byteArray;
+  } else {
+    // was not uploaded in chunks
+    const downloaded = await service.downloadAttachment(
+      attachmentId,
+      authConfig.vault_access_token,
+      authConfig.data_encryption_key
+    );
+    buffer = Buffer.from(downloaded);
+  }
+  return { fileName, buffer };
+}
+
 export async function largeFileDownloadNode(attachmentID, dek, token) {
   const direct_download_encrypted_artifact = await getDirectDownloadInfo(
     attachmentID,

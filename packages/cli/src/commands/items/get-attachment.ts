@@ -1,9 +1,6 @@
-import { stringAsBinaryBuffer } from '@meeco/cryppo';
-import { largeFileDownloadNode } from '@meeco/file-storage-node';
-import { ItemService } from '@meeco/sdk';
+import { fileDownloadNode } from '@meeco/file-storage-node';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
-import * as fs from 'fs';
 import { AuthConfig } from '../../configs/auth-config';
 import { authFlags } from '../../flags/auth-flags';
 import { writeFileContents } from '../../util/file';
@@ -41,36 +38,21 @@ export default class ItemsGetAttachment extends MeecoCommand {
         this.error('Must specify a valid auth config file');
       }
 
-      const service = new ItemService(environment, this.updateStatus);
-
-      const attachmentInfo = await service.getDirectAttachmentInfo({ attachmentId }, authConfig);
-
-      console.log(attachmentInfo);
-      if (attachmentInfo.attachment.is_direct_upload) {
-        // was uploaded in chunks
-        const downloaded = await largeFileDownloadNode(
-          attachmentId,
-          authConfig.data_encryption_key,
-          authConfig.vault_access_token
-        );
-        fs.writeFileSync(outputPath + downloaded.direct_download.filename, downloaded.byteArray);
-      } else {
-        // was not uploaded in chunks
-        const file = await service.downloadAttachment(
-          attachmentId,
-          authConfig.vault_access_token,
-          authConfig.data_encryption_key
-        );
-        await this.writeFile(outputPath, file);
-      }
+      const downloadedFile = await fileDownloadNode(
+        attachmentId,
+        environment,
+        authConfig,
+        this.updateStatus
+      );
+      await this.writeFile(outputPath + downloadedFile.fileName, downloadedFile.buffer);
     } catch (err) {
       await this.handleException(err);
     }
   }
 
-  writeFile(destination: string, decryptedContents: string) {
+  writeFile(destination: string, decryptedContents: Buffer) {
     this.updateStatus('Writing decrypted file to destination');
-    return writeFileContents(destination, stringAsBinaryBuffer(decryptedContents), {
+    return writeFileContents(destination, decryptedContents, {
       flag: 'wx' // Write if not exists but fail if the file exists
     }).catch(err => {
       if (err.code === 'EEXIST') {
