@@ -3,7 +3,7 @@ import { customTest, testEnvironmentFile, testUserAuth } from '../../test-helper
 
 describe('organization-members:delete', () => {
   customTest
-    .nock('https://sandbox.meeco.me/vault', api =>
+    .nock('https://sandbox.meeco.me/vault', (api) =>
       api
         .delete('/organizations/organization_id/members/id')
         .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
@@ -19,7 +19,7 @@ describe('organization-members:delete', () => {
       ...testUserAuth,
       ...testEnvironmentFile,
     ])
-    .it('delete a requested organization member', ctx => {
-      expect(ctx.stderr).to.equal('');
+    .it('delete a requested organization member', (ctx) => {
+      expect(ctx.stdout.trim()).to.equal('Member successfully deleted');
     });
 });

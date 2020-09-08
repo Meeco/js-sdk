@@ -177,11 +177,9 @@ export class ItemService {
             {
               label,
               slot_type_name: 'attachment',
-              attachments_attributes: [
-                {
-                  id: uploadedBinary.attachment.id,
-                },
-              ],
+              attachment_attributes: {
+                id: uploadedBinary.attachment.id,
+              },
             },
           ],
         },

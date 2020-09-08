@@ -159,7 +159,7 @@ function stubVault(api: Nock.Scope) {
   api
     .put('/me', {
       user: {
-        private_encryption_space_id: 'data_encryption_key_id',
+        private_dek_external_id: 'data_encryption_key_id',
       },
     })
     .matchHeader('Authorization', '[decrypted]encrypted_vault_session_string--PRIVATE_KEY--12324')

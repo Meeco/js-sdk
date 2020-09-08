@@ -194,7 +194,7 @@ export class UserService {
     this.log('Update vault encryption space');
     await vaultUserApi.mePut({
       user: {
-        private_encryption_space_id: dek.id,
+        private_dek_external_id: dek.id,
       },
     });
 
@@ -340,7 +340,7 @@ export class UserService {
 
     const encryptedDek = await this.getDataEncryptionKey(
       sessionAuthenticationToken,
-      vaultUser.user.private_encryption_space_id!
+      vaultUser.user.private_dek_external_id!
     );
     const dek = await this.cryppo.decryptWithKey({
       serialized: encryptedDek.serialized_data_encryption_key,

@@ -122,7 +122,7 @@ export class ConnectionService {
     const decryptions = (result.connections || []).map(connection =>
       this.cryppo
         .decryptWithKey({
-          serialized: connection.encrypted_recipient_name!,
+          serialized: connection.own.encrypted_recipient_name!,
           key: user.data_encryption_key.key,
         })
         .then(name => ({
