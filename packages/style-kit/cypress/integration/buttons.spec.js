@@ -13,8 +13,8 @@ describe('Buttons', () => {
       foreground: meecoWhite,
       size: {
         width: 146,
-        height: 44
-      }
+        height: 44,
+      },
     },
     {
       label: 'Primary Small',
@@ -22,8 +22,8 @@ describe('Buttons', () => {
       foreground: meecoWhite,
       size: {
         width: 126,
-        height: 30
-      }
+        height: 30,
+      },
     },
     {
       label: 'Secondary Large',
@@ -31,8 +31,8 @@ describe('Buttons', () => {
       foreground: meecoRed,
       size: {
         width: 168,
-        height: 44
-      }
+        height: 44,
+      },
     },
     {
       label: 'Secondary Small',
@@ -40,8 +40,8 @@ describe('Buttons', () => {
       foreground: meecoRed,
       size: {
         width: 145,
-        height: 30
-      }
+        height: 30,
+      },
     },
     {
       label: 'Text Large',
@@ -49,8 +49,8 @@ describe('Buttons', () => {
       foreground: meecoRed,
       size: {
         width: 121,
-        height: 44
-      }
+        height: 44,
+      },
     },
     {
       label: 'Text Small',
@@ -58,9 +58,9 @@ describe('Buttons', () => {
       foreground: meecoRed,
       size: {
         width: 104,
-        height: 30
-      }
-    }
+        height: 30,
+      },
+    },
   ];
 
   buttonTypes.forEach(button => {
@@ -84,8 +84,8 @@ describe('Buttons', () => {
             clip: {
               x: 0,
               y: 0,
-              ...button.size
-            }
+              ...button.size,
+            },
           });
       });
     });

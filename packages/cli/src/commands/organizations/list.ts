@@ -19,8 +19,8 @@ export default class OrganizationsList extends MeecoCommand {
       required: false,
       options: ['validated', 'requested', 'member'],
       description:
-        'There are three modes: validated, requested and member \n validated - return all validated organizations \n requested - list organizations in the requested state that the current user has requested \n member - list organizations in which the current user is a member.'
-    })
+        'There are three modes: validated, requested and member \n validated - return all validated organizations \n requested - list organizations in the requested state that the current user has requested \n member - list organizations in which the current user is a member.',
+    }),
   };
 
   async run() {

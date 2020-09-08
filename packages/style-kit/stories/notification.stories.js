@@ -5,7 +5,7 @@ import { withKnobs, text, boolean } from '@storybook/addon-knobs';
 export default {
   title: 'Notifications',
   decorators: [withKnobs],
-  parameters: { docs: { page: mdx } }
+  parameters: { docs: { page: mdx } },
 };
 
 export const notificationWithIcon = () => /*html*/ `

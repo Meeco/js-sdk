@@ -6,9 +6,9 @@ export default {
   title: 'Controls',
   parameters: {
     docs: {
-      page: mdx
-    }
-  }
+      page: mdx,
+    },
+  },
 };
 
 export const toggle = () => /*html*/ `

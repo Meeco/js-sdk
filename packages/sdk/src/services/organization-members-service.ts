@@ -28,11 +28,11 @@ export class OrganizationMembersService {
     return await this.vaultApiFactory(vaultAccessToken)
       .InvitationApi.invitationsPost({
         public_key: {
-          public_key: organizationAgentPublicKey
+          public_key: organizationAgentPublicKey,
         },
         invitation: {
-          organization_member_role: role
-        }
+          organization_member_role: role,
+        },
       })
       .then(result => result.invitation);
   }
@@ -41,21 +41,21 @@ export class OrganizationMembersService {
     const rsaKeyPair = await this.cryppo.generateRSAKeyPair(4096);
     const result = await this.vaultApiFactory(vaultAccessToken).ConnectionApi.connectionsPost({
       public_key: {
-        public_key: rsaKeyPair.publicKey
+        public_key: rsaKeyPair.publicKey,
       },
       connection: {
-        invitation_token: invitationToken
-      }
+        invitation_token: invitationToken,
+      },
     });
     return {
       connection: result.connection,
       privateKey: rsaKeyPair.privateKey,
-      publicKey: rsaKeyPair.publicKey
+      publicKey: rsaKeyPair.publicKey,
     };
   }
 }
 
 export enum OrganizationMemberRoles {
   Admin = 'admin',
-  Owner = 'owner'
+  Owner = 'owner',
 }

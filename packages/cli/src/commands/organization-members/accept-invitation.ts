@@ -10,7 +10,7 @@ export default class OrganizationMembersAcceptInvitation extends MeecoCommand {
   static description = 'Accept Invitation to become organization member.';
 
   static examples = [
-    `meeco organization-members:accpet-invitation -i .my-member-invitation.yaml -a .user_2.yaml > .my-org-member-connection.yaml`
+    `meeco organization-members:accpet-invitation -i .my-member-invitation.yaml -a .user_2.yaml > .my-org-member-connection.yaml`,
   ];
 
   static flags = {
@@ -19,8 +19,8 @@ export default class OrganizationMembersAcceptInvitation extends MeecoCommand {
     invitationConfig: _flags.string({
       char: 'i',
       required: true,
-      description: 'member invitation yaml file'
-    })
+      description: 'member invitation yaml file',
+    }),
   };
 
   async run() {
@@ -50,7 +50,7 @@ export default class OrganizationMembersAcceptInvitation extends MeecoCommand {
       this.printYaml(
         ConnectionV2Config.encodeFromJSON(result.connection, {
           privateKey: result.privateKey,
-          publicKey: result.publicKey
+          publicKey: result.publicKey,
         })
       );
     } catch (err) {

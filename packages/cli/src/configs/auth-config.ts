@@ -53,7 +53,7 @@ export class AuthConfig {
       ),
       passphrase_derived_key: EncryptionKey.fromSerialized(
         yamlConfigObj.metadata!.passphrase_derived_key as string
-      )
+      ),
     });
   }
 
@@ -61,7 +61,7 @@ export class AuthConfig {
     return AuthConfig.fromYamlConfig({
       kind: AuthConfig.kind,
       metadata,
-      spec: {}
+      spec: {},
     });
   }
 
@@ -72,7 +72,7 @@ export class AuthConfig {
     return {
       kind: AuthConfig.kind,
       metadata: payloadSortedAlphabetically, // Note: EncryptionKey's should stringify with their own `toJSON()`
-      spec: {}
+      spec: {},
     };
   }
 }

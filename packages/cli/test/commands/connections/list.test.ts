@@ -15,13 +15,13 @@ describe('connections:list', () => {
           connections: [
             {
               id: 'abc123',
-              encrypted_recipient_name: 'Some Encrypted Name'
+              encrypted_recipient_name: 'Some Encrypted Name',
             },
             {
               id: 'def456',
-              encrypted_recipient_name: 'Some Other Encrypted Name'
-            }
-          ]
+              encrypted_recipient_name: 'Some Other Encrypted Name',
+            },
+          ],
         });
     })
     .run(['connections:list', ...testUserAuth, ...testEnvironmentFile])

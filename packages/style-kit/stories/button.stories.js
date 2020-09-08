@@ -7,9 +7,9 @@ export default {
   title: 'Button',
   parameters: {
     docs: {
-      page: mdx
-    }
-  }
+      page: mdx,
+    },
+  },
 };
 
 export const primaryButton = () => /*html*/ `

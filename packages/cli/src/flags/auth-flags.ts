@@ -5,6 +5,6 @@ export const authFlags = {
     char: 'a',
     required: true,
     description: 'Authorization config file yaml file (if not using the default .user.yaml)',
-    default: '.user.yaml'
-  })
+    default: '.user.yaml',
+  }),
 };

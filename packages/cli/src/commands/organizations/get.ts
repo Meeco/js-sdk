@@ -12,7 +12,7 @@ export default class OrganizationsGet extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
   };
 
   static args = [{ name: 'id', required: true }];

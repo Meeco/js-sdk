@@ -16,14 +16,14 @@ export default class TemplatesList extends MeecoCommand {
       char: 's',
       default: undefined,
       required: false,
-      description: 'Scope templates to a particular classification scheme'
+      description: 'Scope templates to a particular classification scheme',
     }),
     classificationName: _flags.string({
       char: 'n',
       default: undefined,
       required: false,
-      description: 'Scope templates to a particular classification name'
-    })
+      description: 'Scope templates to a particular classification name',
+    }),
   };
 
   async run() {

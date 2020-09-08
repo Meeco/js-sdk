@@ -17,7 +17,11 @@ export default class ItemsAttachFile extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
-    config: _flags.string({ char: 'c', required: true, description: 'file attachment config yaml' })
+    config: _flags.string({
+      char: 'c',
+      required: true,
+      description: 'file attachment config yaml',
+    }),
   };
 
   static args = [];
@@ -56,7 +60,7 @@ export default class ItemsAttachFile extends MeecoCommand {
           ...fileConfig,
           file,
           fileName,
-          fileType
+          fileType,
         },
         authConfig
       );

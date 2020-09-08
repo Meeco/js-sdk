@@ -12,7 +12,7 @@ export default class ItemsCreate extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
-    item: _flags.string({ char: 'i', required: true, description: 'item yaml file' })
+    item: _flags.string({ char: 'i', required: true, description: 'item yaml file' }),
   };
 
   async run() {
@@ -37,7 +37,7 @@ export default class ItemsCreate extends MeecoCommand {
     const itemCreateData = new ItemCreateData({
       template_name: itemConfigFile.templateName,
       slots: itemConfig!.slots,
-      item: { label: itemConfig!.label }
+      item: { label: itemConfig!.label },
     });
 
     try {

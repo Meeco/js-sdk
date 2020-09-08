@@ -8,7 +8,7 @@ export default class ConnectionsList extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
   };
 
   async run() {

@@ -11,7 +11,7 @@ The organization service will remain in the 'requested' state until validated \
 or rejected by meeco`;
 
   static examples = [
-    `meeco organization-services:create <organization_id> -c .my-service-config.yaml > .my-created-service.yaml`
+    `meeco organization-services:create <organization_id> -c .my-service-config.yaml > .my-created-service.yaml`,
   ];
 
   static flags = {
@@ -20,8 +20,8 @@ or rejected by meeco`;
     organizationServiceConfig: _flags.string({
       char: 'c',
       required: true,
-      description: 'organization service config file'
-    })
+      description: 'organization service config file',
+    }),
   };
 
   static args = [{ name: 'organization_id', required: true }];
@@ -52,7 +52,7 @@ or rejected by meeco`;
       this.printYaml(
         OrganizationServiceConfig.encodeFromJSON(result.service, {
           privateKey: result.privateKey,
-          publicKey: result.publicKey
+          publicKey: result.publicKey,
         })
       );
     } catch (err) {

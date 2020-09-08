@@ -31,7 +31,7 @@ export class InvitationConfig {
     return {
       kind: InvitationConfig.kind,
       ...(metadata ? { metadata } : {}),
-      spec: json
+      spec: json,
     };
   }
 }

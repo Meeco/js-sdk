@@ -18,22 +18,22 @@ export default class ItemsCreateConfig extends MeecoCommand {
       char: 's',
       default: undefined,
       required: false,
-      description: 'Scope templates to a particular classification scheme'
+      description: 'Scope templates to a particular classification scheme',
     }),
     classificationName: _flags.string({
       char: 'n',
       default: undefined,
       required: false,
-      description: 'Scope templates to a particular classification name'
-    })
+      description: 'Scope templates to a particular classification name',
+    }),
   };
 
   static args = [
     {
       name: 'templateName',
       description: 'Name of the template to use for the item',
-      required: true
-    }
+      required: true,
+    },
   ];
 
   async run() {
@@ -58,7 +58,7 @@ export default class ItemsCreateConfig extends MeecoCommand {
     this.printYaml(
       ItemConfig.encodeFromTemplate({
         template,
-        slots: templates.slots.filter(slot => template.slot_ids.includes(slot.id))
+        slots: templates.slots.filter(slot => template.slot_ids.includes(slot.id)),
       })
     );
   }

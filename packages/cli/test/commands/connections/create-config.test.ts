@@ -11,7 +11,7 @@ describe('connections:create-config', () => {
       '-f',
       inputFixture('connection-from.input.yaml'),
       '-t',
-      inputFixture('connection-to.input.yaml')
+      inputFixture('connection-to.input.yaml'),
     ])
     .it('builds an connection template from two user auth files', ctx => {
       const expected = readFileSync(outputFixture('create-config-connection.output.yaml'), 'utf-8');

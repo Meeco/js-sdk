@@ -17,7 +17,7 @@ describe('organization-members:delete', () => {
       'organization_id',
       'id',
       ...testUserAuth,
-      ...testEnvironmentFile
+      ...testEnvironmentFile,
     ])
     .it('delete a requested organization member', ctx => {
       expect(ctx.stderr).to.equal('');

@@ -11,8 +11,8 @@ export class TemplateConfig {
         kind: TemplateConfig.pluralKind,
         spec: json.map(template => ({
           ...template,
-          slots: template.slots
-        }))
+          slots: template.slots,
+        })),
       };
     }
 
@@ -25,15 +25,15 @@ export class TemplateConfig {
       kind: TemplateConfig.kind,
       spec: {
         ...json.template,
-        slots: json.slots
-      }
+        slots: json.slots,
+      },
     };
   }
 
   static encodeListFromJSON(json: FastItemTemplatesResponse) {
     return {
       kind: TemplateConfig.pluralKind,
-      spec: json.item_templates.map(template => template.name)
+      spec: json.item_templates.map(template => template.name),
     };
   }
 }

@@ -35,7 +35,7 @@ export class ShareConfig {
       from: AuthConfig.fromMetadata(yamlConfigObj.spec.from),
       connectionId: yamlConfigObj.spec.connection_id,
       itemId: yamlConfigObj.spec.item_id,
-      options: yamlConfigObj.metadata!
+      options: yamlConfigObj.metadata!,
     });
   }
 
@@ -44,9 +44,9 @@ export class ShareConfig {
       kind: ShareConfig.kind,
       metadata: {
         connection_id: payload.connectionId,
-        shared_data_encryption_key: EncryptionKey.fromRaw(payload.sharedDataEncryptionKey)
+        shared_data_encryption_key: EncryptionKey.fromRaw(payload.sharedDataEncryptionKey),
       },
-      spec: {}
+      spec: {},
     };
   }
 
@@ -61,8 +61,8 @@ export class ShareConfig {
       spec: {
         item_id: itemId,
         connection_id: connectionId,
-        from
-      }
+        from,
+      },
     };
   }
 }

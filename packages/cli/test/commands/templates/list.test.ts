@@ -2,7 +2,7 @@ import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import {
   DEFAULT_CLASSIFICATION_NAME,
-  DEFAULT_CLASSIFICATION_SCHEME
+  DEFAULT_CLASSIFICATION_SCHEME,
 } from '../../../src/util/constants';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
@@ -34,7 +34,7 @@ describe('templates:list', () => {
         .get('/item_templates')
         .query({
           'by_classification[scheme]': DEFAULT_CLASSIFICATION_SCHEME,
-          'by_classification[name]': DEFAULT_CLASSIFICATION_NAME
+          'by_classification[name]': DEFAULT_CLASSIFICATION_NAME,
         })
         .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
@@ -47,7 +47,7 @@ describe('templates:list', () => {
       '-s',
       DEFAULT_CLASSIFICATION_SCHEME,
       '-n',
-      DEFAULT_CLASSIFICATION_NAME
+      DEFAULT_CLASSIFICATION_NAME,
     ])
     .it('fetches a list of available templates scoped to classification scheme and name', ctx => {
       const expected = readFileSync(outputFixture('list-templates.output.yaml'), 'utf-8');
@@ -59,19 +59,19 @@ const response = {
   item_templates: [
     {
       name: 'food',
-      slots_ids: ['steak', 'pizza', 'yoghurt']
+      slots_ids: ['steak', 'pizza', 'yoghurt'],
     },
     {
       name: 'drink',
-      slot_ids: ['yoghurt', 'water', 'beer']
+      slot_ids: ['yoghurt', 'water', 'beer'],
     },
     {
       name: 'activities',
-      slot_ids: ['sport', 'recreational']
-    }
+      slot_ids: ['sport', 'recreational'],
+    },
   ],
   slots: [],
   attachments: [],
   thumbnails: [],
-  classification_nodes: []
+  classification_nodes: [],
 };

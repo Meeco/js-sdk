@@ -10,7 +10,7 @@ export default class ItemsRemoveSlot extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
   };
 
   static args = [{ name: 'slotId', required: true }];

@@ -21,7 +21,7 @@ export class OrganizationsListConfig {
     return {
       kind: OrganizationsListConfig.kind,
       ...(metadata ? { metadata } : {}),
-      spec: json
+      spec: json,
     };
   }
 }

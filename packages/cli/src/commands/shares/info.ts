@@ -11,8 +11,8 @@ export default class SharesInfo extends MeecoCommand {
     config: _flags.string({
       char: 'c',
       description: 'Connection config file to use getting share information',
-      required: true
-    })
+      required: true,
+    }),
   };
 
   static args = [{ name: 'file' }];

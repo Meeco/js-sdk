@@ -28,9 +28,9 @@ function stubVault(api: nock.Scope) {
           id: 'from_user_connection_id',
           encryption_space_id: 'from_user_shared_encryption_space_id',
           other_user_connection_public_key: 'to_user_public_key',
-          user_id: 'to_user_id'
-        }
-      ]
+          user_id: 'to_user_id',
+        },
+      ],
     });
 
   api
@@ -43,9 +43,9 @@ function stubVault(api: nock.Scope) {
           id: 'to_user_connection_id',
           public_key: 'to_user_public_key',
           encryption_space_id: 'to_user_shared_encryption_space_id',
-          user_id: 'from_user_id'
-        }
-      ]
+          user_id: 'from_user_id',
+        },
+      ],
     });
 }
 
@@ -56,7 +56,7 @@ function stubKeystore(api: nock.Scope) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       encryption_space_data_encryption_key: {
-        serialized_data_encryption_key: 'serialized_shared_data_encryption_key'
-      }
+        serialized_data_encryption_key: 'serialized_shared_data_encryption_key',
+      },
     });
 }

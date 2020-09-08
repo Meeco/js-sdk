@@ -13,7 +13,7 @@ export default class OrganizationsUpdate extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
-    org: _flags.string({ char: 'o', required: true, description: 'organization yaml file' })
+    org: _flags.string({ char: 'o', required: true, description: 'organization yaml file' }),
   };
 
   async run() {
@@ -42,7 +42,7 @@ export default class OrganizationsUpdate extends MeecoCommand {
       const result = await vaultAPIFactory(environment)(
         authConfig
       ).OrganizationsManagingOrganizationsApi.organizationsIdPut(organization.id, {
-        organization
+        organization,
       });
       this.printYaml(OrganizationConfig.encodeFromJSON(result.organization));
       this.updateStatus('Successfully updated');

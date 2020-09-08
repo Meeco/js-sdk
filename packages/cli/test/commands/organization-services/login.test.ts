@@ -5,7 +5,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('organization-services:login', () => {
@@ -19,7 +19,7 @@ describe('organization-services:login', () => {
       ...testUserAuth,
       ...testEnvironmentFile,
       '-s',
-      inputFixture('login-organization-service.input.yaml')
+      inputFixture('login-organization-service.input.yaml'),
     ])
     .it('returns organization service agent login information ', ctx => {
       const expected = readFileSync(
@@ -32,7 +32,7 @@ describe('organization-services:login', () => {
 
 const response = {
   token_type: 'bearer',
-  encrypted_access_token: 'DP2HJmMPgGgExZCAsHDf'
+  encrypted_access_token: 'DP2HJmMPgGgExZCAsHDf',
 };
 
 function mockVault(api) {

@@ -28,7 +28,7 @@ export class OrganizationServicesService {
     );
     const decryptedVaultSessionToken = await this.cryppo.decryptSerializedWithPrivateKey({
       privateKeyPem: privateKey,
-      serialized: result.encrypted_access_token
+      serialized: result.encrypted_access_token,
     });
     return new AuthData({
       secret: '',
@@ -36,7 +36,7 @@ export class OrganizationServicesService {
       vault_access_token: decryptedVaultSessionToken,
       data_encryption_key: EncryptionKey.fromRaw(''),
       key_encryption_key: EncryptionKey.fromRaw(''),
-      passphrase_derived_key: EncryptionKey.fromRaw('')
+      passphrase_derived_key: EncryptionKey.fromRaw(''),
     });
   }
 
@@ -44,12 +44,12 @@ export class OrganizationServicesService {
     const rsaKeyPair = await this.cryppo.generateRSAKeyPair(4096);
     service.public_key = rsaKeyPair.publicKey;
     const result = await this.api.organizationsOrganizationIdServicesPost(organizationId, {
-      service
+      service,
     });
     return {
       service: result.service,
       privateKey: rsaKeyPair.privateKey,
-      publicKey: rsaKeyPair.publicKey
+      publicKey: rsaKeyPair.publicKey,
     };
   }
 }

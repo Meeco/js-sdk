@@ -16,19 +16,19 @@ describe('shares:list', () => {
             {
               id: 'sh_1',
               connection_id: 'con_1',
-              shareable_id: 'it_1'
+              shareable_id: 'it_1',
             },
             {
               id: 'sh_2',
               connection_id: 'con_1',
-              shareable_id: 'it_3'
+              shareable_id: 'it_3',
             },
             {
               id: 'sh_3',
               connection_id: 'con_2',
-              shareable_id: 'it_2'
-            }
-          ]
+              shareable_id: 'it_2',
+            },
+          ],
         });
     })
     .run(['shares:list', ...testUserAuth, ...testEnvironmentFile])

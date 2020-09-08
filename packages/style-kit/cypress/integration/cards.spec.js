@@ -30,8 +30,8 @@ describe('Cards and Shadows', () => {
         y: 0,
         // Width and height also need to be larger to include padding on both sides
         width: settings.clip.width + 2 * 16,
-        height: settings.clip.height + 2 * 16
-      }
+        height: settings.clip.height + 2 * 16,
+      },
     };
   };
 
@@ -47,8 +47,8 @@ describe('Cards and Shadows', () => {
           includeShadow({
             clip: {
               width: 217,
-              height: 76
-            }
+              height: 76,
+            },
           })
         );
       });
@@ -67,8 +67,8 @@ describe('Cards and Shadows', () => {
           includeShadow({
             clip: {
               width: 225,
-              height: 119
-            }
+              height: 119,
+            },
           })
         );
       });
@@ -87,8 +87,8 @@ describe('Cards and Shadows', () => {
           includeShadow({
             clip: {
               width: 273,
-              height: 145
-            }
+              height: 145,
+            },
           })
         );
       });

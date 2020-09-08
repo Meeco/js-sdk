@@ -43,13 +43,8 @@ export class CaptchaService {
     });
 
     return new Promise((res, rej) => {
-      this.app = this.server!.listen(this.port, err => {
-        if (err) {
-          rej(err);
-        } else {
-          res();
-        }
-      });
+      this.app = this.server!.listen(this.port, res);
+      this.server!.on('error', rej);
     });
   }
 

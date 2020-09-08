@@ -27,8 +27,8 @@ export default class MeecoCommand extends Command {
       char: 'e',
       description: 'environment config file',
       default: '.environment.yaml',
-      required: false
-    })
+      required: false,
+    }),
   };
 
   protected updateStatus = cli.action.start.bind(cli.action);

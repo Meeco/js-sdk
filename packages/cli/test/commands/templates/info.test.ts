@@ -26,43 +26,43 @@ const response = {
       created_at: new Date(0),
       updated_at: new Date(0),
       name: 'food',
-      slots_ids: ['steak', 'pizza', 'yoghurt']
+      slots_ids: ['steak', 'pizza', 'yoghurt'],
     },
     {
       created_at: new Date(0),
       updated_at: new Date(0),
       name: 'drink',
-      slot_ids: ['yoghurt', 'water', 'beer']
-    }
+      slot_ids: ['yoghurt', 'water', 'beer'],
+    },
   ],
   slots: [
     {
       id: 'pizza',
       created_at: new Date(0),
-      updated_at: new Date(0)
+      updated_at: new Date(0),
     },
     {
       id: 'steak',
       created_at: new Date(0),
-      updated_at: new Date(0)
+      updated_at: new Date(0),
     },
     {
       id: 'yoghurt',
       created_at: new Date(0),
-      updated_at: new Date(0)
+      updated_at: new Date(0),
     },
     {
       id: 'water',
       created_at: new Date(0),
-      updated_at: new Date(0)
+      updated_at: new Date(0),
     },
     {
       id: 'beer',
       created_at: new Date(0),
-      updated_at: new Date(0)
-    }
+      updated_at: new Date(0),
+    },
   ],
   attachments: [],
   thumbnails: [],
-  classification_nodes: []
+  classification_nodes: [],
 };

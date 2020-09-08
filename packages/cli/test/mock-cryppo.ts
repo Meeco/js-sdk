@@ -17,29 +17,29 @@ export function _mockCryppo() {
           options: <any>{
             serialize() {
               return `serialized.derivation.artifacts.${args.key}`;
-            }
-          }
+            },
+          },
         });
       });
 
       sandbox.stub(<any>_cryppoService, 'generateEncryptionVerificationArtifacts').callsFake(() => {
         return {
           token: 'token',
-          salt: 'salt'
+          salt: 'salt',
         };
       });
 
       sandbox.stub(<any>_cryppoService, 'encryptWithKey').callsFake(args => {
         return Promise.resolve({
           serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
-          encrypted: `[encrypted]${args.data}`
+          encrypted: `[encrypted]${args.data}`,
         });
       });
 
       sandbox.stub(<any>_cryppoService, 'encryptWithPublicKey').callsFake(args => {
         return Promise.resolve({
           serialized: `[serialized][rsa_encrypted]${args.data}[with ${args.publicKeyPem}]`,
-          encrypted: `[rsa_encrypted]${args.data}`
+          encrypted: `[rsa_encrypted]${args.data}`,
         });
       });
 
@@ -52,7 +52,7 @@ export function _mockCryppo() {
           signature: `${data}[signed with ${pem}]`,
           serialized: `[serialized]${data}[signed with ${pem}]`,
           data,
-          keySize: 4096
+          keySize: 4096,
         };
       });
 
@@ -68,7 +68,7 @@ export function _mockCryppo() {
         return Promise.resolve({
           privateKey: '--PRIVATE_KEY--12324',
           publicKey: '--PUBLIC_KEY--ABCD',
-          bits: 256
+          bits: 256,
         });
       });
 
@@ -79,6 +79,6 @@ export function _mockCryppo() {
     finally: () => {
       sandbox.restore();
       _stubbed = false;
-    }
+    },
   };
 }
