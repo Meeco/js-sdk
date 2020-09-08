@@ -1,6 +1,20 @@
-import * as fs from 'fs';
+// import * as fs from 'fs';
 import * as mime from 'mime-types';
 
+const fs = {
+  statSync(a) {
+    return a;
+  },
+  openSync(a, b) {
+    return a;
+  },
+  closeSync(a) {
+    return a;
+  },
+  read(a, b, c, d, e, f) {
+    return a;
+  }
+};
 /**
  * Gets file size
  * @param {String} filePath

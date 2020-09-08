@@ -145,7 +145,7 @@ export class AzureBlockUpload {
               ? (nBlock + 1) * this.blockSize
               : this.fileSize;
 
-          const blockID: any = base64(`${this.blockIDPrefix}${padStart(nBlock, 5)}`);
+          const blockID: any = base64(`${this.blockIDPrefix}${padStart.default(nBlock, 5)}`);
           blockIDList.push(blockID);
 
           const blockBuffer: any = await FileUtils.readBlock(this.file, from, to);
