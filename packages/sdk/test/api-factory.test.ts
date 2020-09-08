@@ -173,7 +173,6 @@ describe('API Factories', () => {
         associations: [],
         attachments: [],
         classification_nodes: [],
-        shares: [],
         slots: [],
         thumbnails: [],
       });
