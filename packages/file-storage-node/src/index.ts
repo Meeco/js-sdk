@@ -76,7 +76,7 @@ export async function largeFileUploadNode(
 export async function fileDownloadNode(
   attachmentId: string,
   environment: Environment,
-  authConfig: any,
+  authConfig: AuthData,
   logFunction: any
 ): Promise<{ fileName: string; buffer: Buffer }> {
   const service = new ItemService(environment, logFunction);
@@ -89,7 +89,8 @@ export async function fileDownloadNode(
     const downloaded = await largeFileDownloadNode(
       attachmentId,
       authConfig.data_encryption_key,
-      authConfig.vault_access_token
+      authConfig.vault_access_token,
+      environment.vault.url
     );
     buffer = downloaded.byteArray;
   } else {
@@ -104,13 +105,14 @@ export async function fileDownloadNode(
   return { fileName, buffer };
 }
 
-export async function largeFileDownloadNode(attachmentID, dek, token) {
+export async function largeFileDownloadNode(attachmentID, dek, token, vaultUrl) {
   const direct_download_encrypted_artifact = await getDirectDownloadInfo(
     attachmentID,
     'encryption_artifact_file',
-    token
+    token,
+    vaultUrl
   );
-  const direct_download = await getDirectDownloadInfo(attachmentID, 'binary_file', token);
+  const direct_download = await getDirectDownloadInfo(attachmentID, 'binary_file', token, vaultUrl);
   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
   const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
   const encrypted_artifact = JSON.parse(encrypted_artifact_uint8array.toString('utf-8'));
@@ -134,7 +136,7 @@ export async function largeFileDownloadNode(attachmentID, dek, token) {
   return { byteArray, direct_download };
 }
 
-function getDirectDownloadInfo(id, type, token) {
+function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl: string) {
   const options = {
     headers: {
       'Content-Type': 'application/json',
@@ -144,10 +146,9 @@ function getDirectDownloadInfo(id, type, token) {
     method: 'GET'
   };
 
-  return fetch(
-    `http://localhost:3000/direct/attachments/${id}/download_url?type=${type}`,
-    options
-  ).then(res => {
-    return res.json();
-  });
+  return fetch(`${vaultUrl}/direct/attachments/${id}/download_url?type=${type}`, options).then(
+    res => {
+      return res.json();
+    }
+  );
 }
