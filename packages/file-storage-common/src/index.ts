@@ -20,7 +20,10 @@ export { BlobStorage } from './services/Azure';
 export async function directAttachmentUpload(
   config: IDirectAttachmentUploadData,
   auth: AuthData,
-  fileUtilsLib
+  fileUtilsLib,
+  progressUpdateFunc?:
+    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
+    | null
 ): Promise<IDirectAttachmentUploadResponse> {
   let result;
   const client = new AzureBlockUpload(
@@ -40,7 +43,10 @@ export async function directAttachmentUpload(
     },
     fileUtilsLib
   );
-  await client.start(config.encrypt ? auth.data_encryption_key['_value'] : null);
+  await client.start(
+    config.encrypt ? auth.data_encryption_key['_value'] : null,
+    progressUpdateFunc
+  );
 
   return result;
 }

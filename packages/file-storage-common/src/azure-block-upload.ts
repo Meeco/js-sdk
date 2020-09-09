@@ -121,7 +121,12 @@ export class AzureBlockUpload {
   /**
    * Start uploading
    */
-  async start(dataEncryptionKey) {
+  async start(
+    dataEncryptionKey,
+    progressUpdateFunc?:
+      | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
+      | null
+  ) {
     const p = new Promise((resolve, reject) => {
       const blockIDList: any[] = [];
       const range: any[] = [];
@@ -172,8 +177,10 @@ export class AzureBlockUpload {
             encrypt ? Cryppo.stringAsBinaryBuffer(encrypt.encrypted) : data,
             blockID
           );
-
           const progress = (nBlock + 1) / this.totalBlocks;
+          if (progressUpdateFunc) {
+            progressUpdateFunc(blockBuffer, progress * 100);
+          }
 
           this.totalRemainingBytes -= this.blockSize;
 

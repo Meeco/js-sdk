@@ -14,14 +14,21 @@ export async function fileUploadBrowser({
   dek,
   vaultUrl,
   vaultAccessToken,
-  subscriptionKey
+  subscriptionKey,
+  progressUpdateFunc = null
 }: {
   file: File;
   dek: string;
   vaultUrl: string;
   vaultAccessToken: string;
   subscriptionKey: string;
+  progressUpdateFunc?:
+    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
+    | null;
 }): Promise<any> {
+  if (progressUpdateFunc) {
+    progressUpdateFunc(null, 0);
+  }
   const authConfig = new AuthData({
     data_encryption_key: EncryptionKey.fromSerialized(dek),
     key_encryption_key: EncryptionKey.fromRaw(''),
@@ -47,7 +54,8 @@ export async function fileUploadBrowser({
       options: {}
     },
     authConfig,
-    FileUtils
+    FileUtils,
+    progressUpdateFunc
   );
   console.log(uploadResult);
   const artifactsFileName = file.name + '.encryption_artifacts';

@@ -58,13 +58,17 @@ async function attachFile() {
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
+    const progressUpdateFunc = (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => {
+      $set('fileUploadProgressBar', percentageComplete.toString());
+    };
 
     const attached = await fileUploadBrowser({
       file,
       dek,
       vaultUrl,
       vaultAccessToken,
-      subscriptionKey
+      subscriptionKey,
+      progressUpdateFunc
     });
 
     $set('attached', JSON.stringify(attached, null, 2));
