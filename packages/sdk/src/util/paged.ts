@@ -11,7 +11,7 @@ function cleanInput(x: NextPageSpecR): NextPageSpec {
   return x === null ? undefined : x;
 }
 
-function resultHasNext(r: IPagedResponse): boolean {
+export function resultHasNext(r: IPagedResponse): boolean {
   const pageExists: boolean = r.meta.some(x => x['next_page_exists']) || !!r.next_page_after;
   if (pageExists && !r.next_page_after) {
     // Expect this error on API update or bad test cases.

@@ -12,11 +12,11 @@ import {
 } from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
-import { getAllPaged } from '../util/paged';
+import { getAllPaged, resultHasNext } from '../util/paged';
 
 export interface IDecryptedConnection {
-  name: string,
-  connection: Connection
+  name: string;
+  connection: Connection;
 }
 
 /**
@@ -124,9 +124,22 @@ export class ConnectionService {
     };
   }
 
-  public async list(vaultAccessToken: string, dek: EncryptionKey, nextPageAfter?: string, perPage?: number): Promise<IDecryptedConnection[]> {
+  public async list(
+    vaultAccessToken: string,
+    dek: EncryptionKey,
+    nextPageAfter?: string,
+    perPage?: number
+  ): Promise<IDecryptedConnection[]> {
     this.logger.log('Fetching connections');
-    const result = await this.vaultApiFactory(vaultAccessToken).ConnectionApi.connectionsGet(nextPageAfter, perPage);
+    const result = await this.vaultApiFactory(vaultAccessToken).ConnectionApi.connectionsGet(
+      nextPageAfter,
+      perPage
+    );
+
+    if (resultHasNext(result) && perPage === undefined) {
+      this.logger.warn('Some results omitted, but page limit was not explicitly set');
+    }
+
     this.logger.log('Decrypting connection names');
     const decryptions = (result.connections || []).map(connection =>
       this.cryppo
@@ -142,7 +155,10 @@ export class ConnectionService {
     return Promise.all(decryptions);
   }
 
-  public async listAll(vaultAccessToken: string, dek: EncryptionKey): Promise<IDecryptedConnection[]> {
+  public async listAll(
+    vaultAccessToken: string,
+    dek: EncryptionKey
+  ): Promise<IDecryptedConnection[]> {
     const api = this.vaultApiFactory(vaultAccessToken).ConnectionApi;
 
     return getAllPaged(cursor => api.connectionsGet(cursor)).then(results => {
@@ -158,8 +174,9 @@ export class ConnectionService {
           })
           .then((name: string) => ({
             name,
-            connection
-          })));
+            connection,
+          }))
+      );
       return Promise.all(decryptions);
     });
   }
