@@ -1,40 +1,19 @@
+import * as Cryppo from '@meeco/cryppo';
 import {
+  AzureBlockDownload,
   directAttachmentAttach,
   directAttachmentUpload,
   directAttachmentUploadUrl
 } from '@meeco/file-storage-common';
-import { AuthData, EncryptionKey } from '@meeco/sdk';
+import { AuthData, EncryptionKey, Environment, ItemService } from '@meeco/sdk';
 export { Environment } from '@meeco/sdk';
-// export class AuthData {
-//   public data_encryption_key: EncryptionKey;
-//   public key_encryption_key: EncryptionKey;
-//   public keystore_access_token: string;
-//   public passphrase_derived_key: EncryptionKey;
-//   public secret: string;
-//   public vault_access_token: string;
-
-//   constructor(config: {
-//     data_encryption_key: EncryptionKey;
-//     key_encryption_key: EncryptionKey;
-//     keystore_access_token: string;
-//     passphrase_derived_key: EncryptionKey;
-//     secret: string;
-//     vault_access_token: string;
-//   }) {
-//     this.data_encryption_key = config.data_encryption_key;
-//     this.key_encryption_key = config.key_encryption_key;
-//     this.keystore_access_token = config.keystore_access_token;
-//     this.passphrase_derived_key = config.passphrase_derived_key;
-//     this.secret = config.secret;
-//     this.vault_access_token = config.vault_access_token;
-//   }
-// }
 
 export async function fileUploadBrowser(
   file: File,
   dek: string,
   vaultUrl: string,
-  vaultAccessToken: string
+  vaultAccessToken: string,
+  subscriptionKey: string
 ): Promise<any> {
   const authConfig = new AuthData({
     data_encryption_key: EncryptionKey.fromSerialized(dek),
@@ -44,17 +23,6 @@ export async function fileUploadBrowser(
     secret: '',
     vault_access_token: vaultAccessToken
   });
-  // const environment = new Environment({
-  //   vault: {
-  //     url: vaultUrl,
-  //     subscription_key: ''
-  //   },
-  //   keystore: {
-  //     url: '',
-  //     subscription_key: '',
-  //     provider_api_key: ''
-  //   }
-  // });
   const uploadUrl = await directAttachmentUploadUrl(
     {
       fileSize: file.size,
@@ -115,82 +83,101 @@ export async function fileUploadBrowser(
   return attachedDoc;
 }
 
-// export async function fileDownloadBrowser(
-//   attachmentId: string,
-//   environment: Environment,
-//   authConfig: AuthData,
-//   logFunction: any
-// ): Promise<{ fileName: string; buffer: Buffer }> {
-//   const service = new ItemService(environment, logFunction);
+export async function fileDownloadBrowser(
+  attachmentId: string,
+  dek: string,
+  vaultUrl: string,
+  vaultAccessToken: string,
+  subscriptionKey: string
+): Promise<File> {
+  const authConfig = new AuthData({
+    data_encryption_key: EncryptionKey.fromSerialized(dek),
+    key_encryption_key: EncryptionKey.fromRaw(''),
+    keystore_access_token: '',
+    passphrase_derived_key: EncryptionKey.fromRaw(''),
+    secret: '',
+    vault_access_token: vaultAccessToken
+  });
+  const environment = new Environment({
+    vault: {
+      url: vaultUrl,
+      subscription_key: subscriptionKey
+    },
+    keystore: {
+      url: '',
+      subscription_key: subscriptionKey,
+      provider_api_key: ''
+    }
+  });
 
-//   const attachmentInfo = await service.getDirectAttachmentInfo({ attachmentId }, authConfig);
-//   let buffer: Buffer;
-//   const fileName: string = attachmentInfo.attachment.filename;
-//   if (attachmentInfo.attachment.is_direct_upload) {
-//     // was uploaded in chunks
-//     const downloaded = await largeFileDownloadBrowser(
-//       attachmentId,
-//       authConfig.data_encryption_key,
-//       authConfig.vault_access_token,
-//       environment.vault.url
-//     );
-//     buffer = downloaded.byteArray;
-//   } else {
-//     // was not uploaded in chunks
-//     const downloaded = await service.downloadAttachment(
-//       attachmentId,
-//       authConfig.vault_access_token,
-//       authConfig.data_encryption_key
-//     );
-//     buffer = Buffer.from(downloaded);
-//   }
-//   return { fileName, buffer };
-// }
+  const service = new ItemService(environment);
 
-// export async function largeFileDownloadBrowser(attachmentID, dek, token, vaultUrl) {
-//   const direct_download_encrypted_artifact = await getDirectDownloadInfo(
-//     attachmentID,
-//     'encryption_artifact_file',
-//     token,
-//     vaultUrl
-//   );
-//   const direct_download = await getDirectDownloadInfo(attachmentID, 'binary_file', token, vaultUrl);
-//   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
-//   const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
-//   const encrypted_artifact = JSON.parse(encrypted_artifact_uint8array.toString('utf-8'));
-//   client = new AzureBlockDownload(direct_download.url);
-//   const blocks: Buffer[] = [];
+  const attachmentInfo = await service.getDirectAttachmentInfo({ attachmentId }, authConfig);
+  let buffer: Uint8Array;
+  const fileName: string = attachmentInfo.attachment.filename;
+  if (attachmentInfo.attachment.is_direct_upload) {
+    // was uploaded in chunks
+    const downloaded = await largeFileDownloadBrowser(
+      attachmentId,
+      authConfig.data_encryption_key,
+      authConfig.vault_access_token,
+      environment.vault.url
+    );
+    buffer = downloaded.byteArray;
+  } else {
+    // was not uploaded in chunks
+    const downloaded = await service.downloadAttachment(
+      attachmentId,
+      authConfig.vault_access_token,
+      authConfig.data_encryption_key
+    );
+    buffer = Buffer.from(downloaded);
+  }
+  return new File([buffer], fileName);
+}
 
-//   for (let index = 0; index < encrypted_artifact.range.length; index++) {
-//     const block: any = await client.start(
-//       dek,
-//       encrypted_artifact.encryption_stratergy,
-//       {
-//         iv: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
-//         ad: encrypted_artifact.ad,
-//         at: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data))
-//       },
-//       encrypted_artifact.range[index]
-//     );
-//     blocks.push(block);
-//   }
-//   const byteArray = Buffer.concat(blocks);
-//   return { byteArray, direct_download };
-// }
+export async function largeFileDownloadBrowser(attachmentID, dek, token, vaultUrl) {
+  const direct_download_encrypted_artifact = await getDirectDownloadInfo(
+    attachmentID,
+    'encryption_artifact_file',
+    token,
+    vaultUrl
+  );
+  const direct_download = await getDirectDownloadInfo(attachmentID, 'binary_file', token, vaultUrl);
+  let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
+  const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
+  const encrypted_artifact = JSON.parse(Cryppo.binaryBufferToString(encrypted_artifact_uint8array));
+  client = new AzureBlockDownload(direct_download.url);
+  let blocks = new Uint8Array();
 
-// function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl: string) {
-//   const options = {
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Accept: 'application/json',
-//       Authorization: 'Bearer ' + token
-//     },
-//     method: 'GET'
-//   };
+  for (let index = 0; index < encrypted_artifact.range.length; index++) {
+    const block: any = await client.start(
+      dek,
+      encrypted_artifact.encryption_stratergy,
+      {
+        iv: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
+        ad: encrypted_artifact.ad,
+        at: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data))
+      },
+      encrypted_artifact.range[index]
+    );
+    blocks = new Uint8Array([...blocks, ...block]);
+  }
+  return { byteArray: blocks, direct_download };
+}
 
-//   return fetch(`${vaultUrl}/direct/attachments/${id}/download_url?type=${type}`, options).then(
-//     res => {
-//       return res.json();
-//     }
-//   );
-// }
+function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl: string) {
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: 'Bearer ' + token
+    },
+    method: 'GET'
+  };
+  return fetch(`${vaultUrl}/direct/attachments/${id}/download_url?type=${type}`, options).then(
+    res => {
+      return res.json();
+    }
+  );
+}

@@ -1,4 +1,4 @@
-import { fileUploadBrowser } from '../src/index';
+import { fileDownloadBrowser, fileUploadBrowser } from '../src/index';
 import './styles.scss';
 
 const $ = id => document.getElementById(id)!;
@@ -35,22 +35,11 @@ function updateEnvironment() {
     return $set('environmentStatus', 'Error: Please configure all environment fields');
   }
 
-  // environment = new Environment({
-  //   vault: {
-  //     url: vaultUrl,
-  //     subscription_key: subscriptionKey
-  //   },
-  //   keystore: {
-  //     url: '',
-  //     subscription_key: subscriptionKey,
-  //     provider_api_key: ''
-  //   }
-  // });
-
   $set('environmentStatus', 'Saved');
 }
 
 $('attachFile').addEventListener('click', attachFile, false);
+$('downloadAttachment').addEventListener('click', downloadAttachment);
 
 async function attachFile() {
   const [file] = ($('attachment') as any).files;
@@ -69,12 +58,43 @@ async function attachFile() {
       file,
       localStorage.getItem('dataEncryptionKey') || '',
       localStorage.getItem('vaultUrl') || '',
-      localStorage.getItem('vaultAccessToken') || ''
+      localStorage.getItem('vaultAccessToken') || '',
+      localStorage.getItem('subscriptionKey') || ''
     );
 
     $set('attached', JSON.stringify(attached, null, 2));
   } catch (error) {
     $set('attached', `Error (See Action Log for Details)`);
+    return handleException(error);
+  }
+}
+
+async function downloadAttachment() {
+  const attachmentId = $get('attachmentId');
+  if (!attachmentId) {
+    return alert('Please enter attachmentId first');
+  }
+  $set('downloadAttachmentDetails', '');
+
+  try {
+    const downloadedFile = await fileDownloadBrowser(
+      attachmentId,
+      localStorage.getItem('dataEncryptionKey') || '',
+      localStorage.getItem('vaultUrl') || '',
+      localStorage.getItem('vaultAccessToken') || '',
+      localStorage.getItem('subscriptionKey') || ''
+    );
+    const fileUrl = URL.createObjectURL(downloadedFile);
+
+    // add download button, click it then remove it
+    const a = document.createElement('a');
+    a.href = fileUrl;
+    a.download = downloadedFile.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (error) {
+    $set('downloadAttachmentDetails', `Error (See Action Log for Details)`);
     return handleException(error);
   }
 }
