@@ -82,7 +82,10 @@ async function downloadAttachment() {
       localStorage.getItem('dataEncryptionKey') || '',
       localStorage.getItem('vaultUrl') || '',
       localStorage.getItem('vaultAccessToken') || '',
-      localStorage.getItem('subscriptionKey') || ''
+      localStorage.getItem('subscriptionKey') || '',
+      (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => {
+        $set('fileDownloadProgressBar', percentageComplete.toString());
+      }
     );
     const fileUrl = URL.createObjectURL(downloadedFile);
 

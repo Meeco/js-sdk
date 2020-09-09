@@ -91,8 +91,14 @@ export async function fileDownloadBrowser(
   dek: string,
   vaultUrl: string,
   vaultAccessToken: string,
-  subscriptionKey: string
+  subscriptionKey: string,
+  progressUpdateFunc:
+    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
+    | null = null
 ): Promise<File> {
+  if (progressUpdateFunc) {
+    progressUpdateFunc(null, 0);
+  }
   const authConfig = new AuthData({
     data_encryption_key: EncryptionKey.fromSerialized(dek),
     key_encryption_key: EncryptionKey.fromRaw(''),
@@ -124,7 +130,8 @@ export async function fileDownloadBrowser(
       attachmentId,
       authConfig.data_encryption_key,
       authConfig.vault_access_token,
-      environment.vault.url
+      environment.vault.url,
+      progressUpdateFunc
     );
     buffer = downloaded.byteArray;
   } else {
@@ -139,7 +146,13 @@ export async function fileDownloadBrowser(
   return new File([buffer], fileName);
 }
 
-export async function largeFileDownloadBrowser(attachmentID, dek, token, vaultUrl) {
+export async function largeFileDownloadBrowser(
+  attachmentID,
+  dek,
+  token,
+  vaultUrl,
+  progressUpdateFunc: ((chunkBuffer, percentageComplete) => void) | null
+) {
   const direct_download_encrypted_artifact = await getDirectDownloadInfo(
     attachmentID,
     'encryption_artifact_file',
@@ -165,6 +178,11 @@ export async function largeFileDownloadBrowser(attachmentID, dek, token, vaultUr
       encrypted_artifact.range[index]
     );
     blocks = new Uint8Array([...blocks, ...block]);
+    if (progressUpdateFunc) {
+      const buffer = block.buffer;
+      const percentageComplete = ((index + 1) / encrypted_artifact.range.length) * 100;
+      progressUpdateFunc(buffer, percentageComplete);
+    }
   }
   return { byteArray: blocks, direct_download };
 }
