@@ -2,7 +2,6 @@ import * as Cryppo from '@meeco/cryppo';
 import * as crypto from 'crypto';
 import * as padStart from 'lodash.padstart';
 import { isRunningOnWeb } from './app';
-import FileUtils from './FileUtils';
 import { BlobStorage } from './services/Azure';
 import ThreadPool from './ThreadPool';
 
@@ -34,8 +33,9 @@ export class AzureBlockUpload {
   currentFilePointer: any;
   totalRemainingBytes: any;
   totalBlocks: any;
+  fileUtilsLib: any;
 
-  constructor(url, file, opts: any = {}) {
+  constructor(url, file, opts: any = {}, fileUtilsLib) {
     if (typeof url !== 'string') {
       throw new Error('url must be a string');
     }
@@ -65,6 +65,7 @@ export class AzureBlockUpload {
     this.simultaneousUploads = opts.simultaneousUploads || 3;
 
     this.blockIDPrefix = opts.blockIDPrefix || 'block';
+    this.fileUtilsLib = fileUtilsLib;
 
     // Callbacks
     const { onProgress = () => null, onSuccess = () => null, onError = err => console.error(err) } =
@@ -86,12 +87,12 @@ export class AzureBlockUpload {
     /**
      * Size of file
      */
-    this.fileSize = FileUtils.getSize(this.file);
+    this.fileSize = this.fileUtilsLib.getSize(this.file);
 
     /**
      * Type of file
      */
-    this.fileType = FileUtils.getType(this.file);
+    this.fileType = this.fileUtilsLib.getType(this.file);
 
     /**
      * Indicates where in the file we are
@@ -145,10 +146,11 @@ export class AzureBlockUpload {
               ? (nBlock + 1) * this.blockSize
               : this.fileSize;
 
-          const blockID: any = base64(`${this.blockIDPrefix}${padStart.default(nBlock, 5)}`);
+          const padstartFunction = padStart.default ? padStart.default : padStart;
+          const blockID: any = base64(`${this.blockIDPrefix}${padstartFunction(nBlock, 5)}`);
           blockIDList.push(blockID);
 
-          const blockBuffer: any = await FileUtils.readBlock(this.file, from, to);
+          const blockBuffer: any = await this.fileUtilsLib.readBlock(this.file, from, to);
           artifacts.range[nBlock] = `bytes=${from}-${to - 1}`;
           const data = new Uint8Array(blockBuffer);
 

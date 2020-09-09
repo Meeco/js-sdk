@@ -236,31 +236,6 @@ export class ItemService {
     return uploadUrl;
   }
 
-  // public async directAttachmentUpload(
-  //   config: IDirectAttachmentUploadData,
-  //   auth: AuthData
-  // ): Promise<IDirectAttachmentUploadResponse> {
-  //   let result;
-  //   // const client = new MeecoAzure.AzureBlockUpload(config.directUploadUrl, config.file, {
-  //   //   simultaneousUploads: 1,
-  //   //   callbacks: {
-  //   //     onProgress: progress => {
-  //   //       this.log(progress);
-  //   //     },
-  //   //     onSuccess: success => {
-  //   //       this.log(success);
-  //   //       result = success;
-  //   //     },
-  //   //     onError: error => {
-  //   //       this.log(error);
-  //   //       throw error;
-  //   //     }
-  //   //   }
-  //   // });
-  //   // await client.start(config.encrypt ? auth.data_encryption_key['_value'] : null);
-
-  //   return result;
-  // }
   public async directAttachmentAttach(
     config: IDirectAttachmentAttachData,
     auth: AuthData

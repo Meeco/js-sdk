@@ -6,6 +6,7 @@ import {
   directAttachmentUploadUrl
 } from '@meeco/file-storage-common';
 import { AuthData, EncryptionKey, Environment, ItemService } from '@meeco/sdk';
+import * as FileUtils from './FileUtils.web';
 export { Environment } from '@meeco/sdk';
 
 export async function fileUploadBrowser(
@@ -39,7 +40,8 @@ export async function fileUploadBrowser(
       encrypt: true,
       options: {}
     },
-    authConfig
+    authConfig,
+    FileUtils
   );
   console.log(uploadResult);
   const artifactsFileName = file.name + '.encryption_artifacts';
@@ -68,7 +70,8 @@ export async function fileUploadBrowser(
       encrypt: false,
       options: {}
     },
-    authConfig
+    authConfig,
+    FileUtils
   );
   const attachedDoc = await directAttachmentAttach(
     {

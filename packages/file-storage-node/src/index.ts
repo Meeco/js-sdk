@@ -1,9 +1,10 @@
 import * as Cryppo from '@meeco/cryppo';
 import { AzureBlockDownload, directAttachmentUpload } from '@meeco/file-storage-common';
-import { Environment, ItemService } from '@meeco/sdk';
+import { AuthData, Environment, ItemService } from '@meeco/sdk';
 import * as FileType from 'file-type';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as FileUtils from './FileUtils.node';
 
 export async function largeFileUploadNode(
   filePath,
@@ -32,7 +33,8 @@ export async function largeFileUploadNode(
       encrypt: true,
       options: {}
     },
-    authConfig
+    authConfig,
+    FileUtils
   );
 
   const artifactsFileName = fileName + '.encryption_artifacts';
@@ -56,7 +58,8 @@ export async function largeFileUploadNode(
       encrypt: false,
       options: {}
     },
-    authConfig
+    authConfig,
+    FileUtils
   );
 
   const attachedDoc = await service.directAttachmentAttach(
@@ -70,7 +73,6 @@ export async function largeFileUploadNode(
   );
 
   return attachedDoc;
-  return '';
 }
 
 export async function fileDownloadNode(
