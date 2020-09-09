@@ -54,13 +54,18 @@ async function attachFile() {
   // const file: any = await fileAsBinaryString(blob);
 
   try {
-    const attached = await fileUploadBrowser(
+    const dek = localStorage.getItem('dataEncryptionKey') || '';
+    const vaultUrl = localStorage.getItem('vaultUrl') || '';
+    const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
+
+    const attached = await fileUploadBrowser({
       file,
-      localStorage.getItem('dataEncryptionKey') || '',
-      localStorage.getItem('vaultUrl') || '',
-      localStorage.getItem('vaultAccessToken') || '',
-      localStorage.getItem('subscriptionKey') || ''
-    );
+      dek,
+      vaultUrl,
+      vaultAccessToken,
+      subscriptionKey
+    });
 
     $set('attached', JSON.stringify(attached, null, 2));
   } catch (error) {
@@ -77,16 +82,21 @@ async function downloadAttachment() {
   $set('downloadAttachmentDetails', '');
 
   try {
-    const downloadedFile = await fileDownloadBrowser(
+    const dek = localStorage.getItem('dataEncryptionKey') || '';
+    const vaultUrl = localStorage.getItem('vaultUrl') || '';
+    const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
+    const progressUpdateFunc = (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => {
+      $set('fileDownloadProgressBar', percentageComplete.toString());
+    };
+    const downloadedFile = await fileDownloadBrowser({
       attachmentId,
-      localStorage.getItem('dataEncryptionKey') || '',
-      localStorage.getItem('vaultUrl') || '',
-      localStorage.getItem('vaultAccessToken') || '',
-      localStorage.getItem('subscriptionKey') || '',
-      (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => {
-        $set('fileDownloadProgressBar', percentageComplete.toString());
-      }
-    );
+      dek,
+      vaultUrl,
+      vaultAccessToken,
+      subscriptionKey,
+      progressUpdateFunc
+    });
     const fileUrl = URL.createObjectURL(downloadedFile);
 
     // add download button, click it then remove it

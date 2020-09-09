@@ -9,13 +9,19 @@ import { AuthData, EncryptionKey, Environment, ItemService } from '@meeco/sdk';
 import * as FileUtils from './FileUtils.web';
 export { Environment } from '@meeco/sdk';
 
-export async function fileUploadBrowser(
-  file: File,
-  dek: string,
-  vaultUrl: string,
-  vaultAccessToken: string,
-  subscriptionKey: string
-): Promise<any> {
+export async function fileUploadBrowser({
+  file,
+  dek,
+  vaultUrl,
+  vaultAccessToken,
+  subscriptionKey
+}: {
+  file: File;
+  dek: string;
+  vaultUrl: string;
+  vaultAccessToken: string;
+  subscriptionKey: string;
+}): Promise<any> {
   const authConfig = new AuthData({
     data_encryption_key: EncryptionKey.fromSerialized(dek),
     key_encryption_key: EncryptionKey.fromRaw(''),
@@ -86,16 +92,23 @@ export async function fileUploadBrowser(
   return attachedDoc;
 }
 
-export async function fileDownloadBrowser(
-  attachmentId: string,
-  dek: string,
-  vaultUrl: string,
-  vaultAccessToken: string,
-  subscriptionKey: string,
-  progressUpdateFunc:
+export async function fileDownloadBrowser({
+  attachmentId,
+  dek,
+  vaultUrl,
+  vaultAccessToken,
+  subscriptionKey,
+  progressUpdateFunc = null
+}: {
+  attachmentId: string;
+  dek: string;
+  vaultUrl: string;
+  vaultAccessToken: string;
+  subscriptionKey: string;
+  progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
-    | null = null
-): Promise<File> {
+    | null;
+}): Promise<File> {
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
@@ -146,7 +159,7 @@ export async function fileDownloadBrowser(
   return new File([buffer], fileName);
 }
 
-export async function largeFileDownloadBrowser(
+async function largeFileDownloadBrowser(
   attachmentID,
   dek,
   token,
