@@ -9,15 +9,15 @@
 
 //   static flags = {
 //     ...MeecoCommand.flags,
-//     ...authFlags
+//     ...authFlags,
 //   };
 
 //   static args = [
 //     {
 //       name: 'shareId',
 //       required: true,
-//       description: 'ID of the shared item to fetch'
-//     }
+//       description: 'ID of the shared item to fetch',
+//     },
 //   ];
 
 //   async run() {

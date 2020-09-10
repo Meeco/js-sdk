@@ -9,7 +9,7 @@
 
 //   static flags = {
 //     ...MeecoCommand.flags,
-//     ...authFlags
+//     ...authFlags,
 //   };
 
 //   async run() {
