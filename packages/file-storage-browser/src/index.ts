@@ -70,7 +70,6 @@ export async function fileUploadBrowser({
       type: 'application/json',
     }
   );
-  // const artifactsFileStats = fs.statSync(artifactsFileDir);
   const artifactsUploadUrl = await directAttachmentUploadUrl(
     {
       fileName: artifactsFileName,

@@ -126,18 +126,57 @@ async function downloadAttachment() {
   const slotId = $get('downloadSlotId');
 
   $set('downloadAttachmentDetails', '');
+  const videoPlayer = document.querySelector('video');
+  let mediaSource: MediaSource;
+  let sourceBuffer: SourceBuffer;
 
   try {
     const dek = localStorage.getItem('dataEncryptionKey') || '';
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
+    let isSteamingMedia = false;
     const progressUpdateFunc = (
       chunkBuffer: ArrayBuffer | null,
       percentageComplete: number,
       videoCodec?: string
     ) => {
       $set('fileDownloadProgressBar', percentageComplete.toString());
+      if (videoCodec && chunkBuffer && videoPlayer) {
+        if (!isSteamingMedia) {
+          isSteamingMedia = true;
+          mediaSource = new MediaSource();
+          mediaSource.addEventListener(
+            'sourceopen',
+            async () => {
+              if (!sourceBuffer) {
+                sourceBuffer = mediaSource.addSourceBuffer(videoCodec);
+              }
+              if (chunkBuffer) {
+                sourceBuffer.appendBuffer(chunkBuffer);
+                if (videoPlayer.paused) {
+                  videoPlayer
+                    .play()
+                    .then(() => {})
+                    .catch(e => {
+                      console.log(e);
+                    });
+                }
+              }
+            },
+            false
+          );
+          videoPlayer.src = window.URL.createObjectURL(mediaSource);
+        } else {
+          if (!sourceBuffer.updating) {
+            sourceBuffer.appendBuffer(chunkBuffer);
+          } else {
+            sourceBuffer.addEventListener('updateend', () => {
+              sourceBuffer.appendBuffer(chunkBuffer);
+            });
+          }
+        }
+      }
     };
 
     const environment = new Environment({
