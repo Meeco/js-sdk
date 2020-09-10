@@ -20,7 +20,7 @@ export default class ItemsList extends MeecoCommand {
     const { auth, all } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-    const service = new ItemService(environment);
+    const service = new ItemService(environment, this.log);
 
     if (!authConfig) {
       this.error('Must specify a valid auth config file');

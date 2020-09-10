@@ -31,7 +31,7 @@ export default class ClientTaskQueueList extends MeecoCommand {
     const { supressChangingState, state, auth, all } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-    const service = new ClientTaskQueueService(environment);
+    const service = new ClientTaskQueueService(environment, this.log);
 
     if (!authConfig) {
       this.error('Must specify a valid auth config file');
