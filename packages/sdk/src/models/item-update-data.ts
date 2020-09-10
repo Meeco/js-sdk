@@ -1,11 +1,11 @@
-import { Slot } from '@meeco/vault-api-sdk';
+import { DecryptedSlot } from './local-slot';
 
 export class ItemUpdateData {
   public id: string;
   public label: string;
-  public slots?: Slot[];
+  public slots?: DecryptedSlot[];
 
-  constructor(config: { id: string; slots?: Slot[]; label: string }) {
+  constructor(config: { id: string; slots?: DecryptedSlot[]; label: string }) {
     this.id = config.id;
     this.label = config.label;
     this.slots = config.slots || [];

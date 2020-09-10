@@ -1,3 +1,4 @@
+import { EncryptionKey, Environment, ItemService, ItemUpdateData } from '@meeco/sdk';
 import { fileDownloadBrowser, fileUploadBrowser } from '../src/index';
 import './styles.scss';
 
@@ -44,6 +45,7 @@ $('downloadAttachment').addEventListener('click', downloadAttachment);
 async function attachFile() {
   const [file] = ($('attachment') as any).files;
   const videoCodec = $get('videoCodec') || undefined;
+  const label = $get('attachmentSlotLabel') || 'attachment';
   if (!file) {
     return alert('Please attach file first');
   }
@@ -55,7 +57,7 @@ async function attachFile() {
   // const file: any = await fileAsBinaryString(blob);
 
   try {
-    const dek = localStorage.getItem('dataEncryptionKey') || '';
+    const privateDek = localStorage.getItem('dataEncryptionKey') || '';
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
@@ -64,17 +66,55 @@ async function attachFile() {
       $set('fileUploadProgressBar', percentageComplete.toString());
     };
 
-    const attached = await fileUploadBrowser({
+    const environment = new Environment({
+      vault: {
+        url: vaultUrl,
+        subscription_key: subscriptionKey,
+      },
+      keystore: {
+        url: '',
+        subscription_key: subscriptionKey,
+        provider_api_key: '',
+      },
+    });
+
+    const itemService = new ItemService(environment);
+    const itemFetchResult = await itemService.get(
+      itemId,
+      vaultAccessToken,
+      EncryptionKey.fromSerialized(privateDek)
+    );
+    const { attachment, dek: attachmentDek } = await fileUploadBrowser({
       file,
-      dek,
       vaultUrl,
       vaultAccessToken,
       subscriptionKey,
       videoCodec,
-      progressUpdateFunc
+      progressUpdateFunc,
     });
-
-    $set('attached', JSON.stringify(attached, null, 2));
+    const existingItem = itemFetchResult.item;
+    const itemUpdateData = new ItemUpdateData({
+      id: existingItem.id,
+      slots: [
+        {
+          label,
+          slot_type_name: 'attachment',
+          attachment_attributes: {
+            id: attachment.id,
+          },
+          value: attachmentDek.key,
+        },
+      ],
+      label: existingItem.label,
+    });
+    const updated = await itemService.update(
+      vaultAccessToken,
+      EncryptionKey.fromSerialized(privateDek),
+      itemUpdateData
+    );
+    const slotId = updated.slots.find(slot => slot.attachment_id === attachment.id)?.id;
+    console.log(updated);
+    $set('attached', JSON.stringify({ itemId, slotId, attachment }, null, 2));
   } catch (error) {
     $set('attached', `Error (See Action Log for Details)`);
     return handleException(error);
@@ -82,10 +122,9 @@ async function attachFile() {
 }
 
 async function downloadAttachment() {
-  const attachmentId = $get('attachmentId');
-  if (!attachmentId) {
-    return alert('Please enter attachmentId first');
-  }
+  const itemId = $get('downloadItemId');
+  const slotId = $get('downloadSlotId');
+
   $set('downloadAttachmentDetails', '');
 
   try {
@@ -100,13 +139,34 @@ async function downloadAttachment() {
     ) => {
       $set('fileDownloadProgressBar', percentageComplete.toString());
     };
+
+    const environment = new Environment({
+      vault: {
+        url: vaultUrl,
+        subscription_key: subscriptionKey,
+      },
+      keystore: {
+        url: '',
+        subscription_key: subscriptionKey,
+        provider_api_key: '',
+      },
+    });
+
+    const itemService = new ItemService(environment);
+    const itemFetchResult = await itemService.get(
+      itemId,
+      vaultAccessToken,
+      EncryptionKey.fromSerialized(dek)
+    );
+    const attachmentSlot: any = itemFetchResult.slots.find(slot => slot.id === slotId); // return type from the vault-api-sdk is wrong thus the type to any
+
     const downloadedFile = await fileDownloadBrowser({
-      attachmentId,
-      dek,
+      attachmentId: attachmentSlot?.attachment_id,
+      dek: attachmentSlot?.value,
       vaultUrl,
       vaultAccessToken,
       subscriptionKey,
-      progressUpdateFunc
+      progressUpdateFunc,
     });
     const fileUrl = URL.createObjectURL(downloadedFile);
 

@@ -3,7 +3,7 @@ import {
   AzureBlockDownload,
   directAttachmentAttach,
   directAttachmentUpload,
-  directAttachmentUploadUrl
+  directAttachmentUploadUrl,
 } from '@meeco/file-storage-common';
 import { AuthData, EncryptionKey, Environment, ItemService } from '@meeco/sdk';
 import * as FileUtils from './FileUtils.web';
@@ -11,15 +11,13 @@ export { Environment } from '@meeco/sdk';
 
 export async function fileUploadBrowser({
   file,
-  dek,
   vaultUrl,
   vaultAccessToken,
   subscriptionKey,
   videoCodec,
-  progressUpdateFunc = null
+  progressUpdateFunc = null,
 }: {
   file: File;
-  dek: string;
   vaultUrl: string;
   vaultAccessToken: string;
   subscriptionKey: string;
@@ -27,23 +25,24 @@ export async function fileUploadBrowser({
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null;
-}): Promise<any> {
+}): Promise<{ attachment: any; dek: EncryptionKey }> {
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
+  const dek = EncryptionKey.fromRaw(Cryppo.generateRandomKey());
   const authConfig = new AuthData({
-    data_encryption_key: EncryptionKey.fromSerialized(dek),
+    data_encryption_key: dek,
     key_encryption_key: EncryptionKey.fromRaw(''),
     keystore_access_token: '',
     passphrase_derived_key: EncryptionKey.fromRaw(''),
     secret: '',
-    vault_access_token: vaultAccessToken
+    vault_access_token: vaultAccessToken,
   });
   const uploadUrl = await directAttachmentUploadUrl(
     {
       fileSize: file.size,
       fileType: file.type,
-      fileName: file.name
+      fileName: file.name,
     },
     authConfig,
     vaultUrl
@@ -53,7 +52,7 @@ export async function fileUploadBrowser({
       directUploadUrl: uploadUrl.url,
       file,
       encrypt: true,
-      options: {}
+      options: {},
     },
     authConfig,
     FileUtils,
@@ -68,7 +67,7 @@ export async function fileUploadBrowser({
     [JSON.stringify(uploadResult.artifacts)],
     file.name + '.encryption_artifacts',
     {
-      type: 'application/json'
+      type: 'application/json',
     }
   );
   // const artifactsFileStats = fs.statSync(artifactsFileDir);
@@ -76,7 +75,7 @@ export async function fileUploadBrowser({
     {
       fileName: artifactsFileName,
       fileType: 'application/json',
-      fileSize: artifactsFile.size
+      fileSize: artifactsFile.size,
     },
     authConfig,
     vaultUrl
@@ -86,7 +85,7 @@ export async function fileUploadBrowser({
       directUploadUrl: artifactsUploadUrl.url,
       file: artifactsFile,
       encrypt: false,
-      options: {}
+      options: {},
     },
     authConfig,
     FileUtils
@@ -96,12 +95,12 @@ export async function fileUploadBrowser({
       blobId: uploadUrl.blob_id,
       blobKey: uploadUrl.blob_key,
       artifactsBlobId: artifactsUploadUrl.blob_id,
-      artifactsBlobKey: artifactsUploadUrl.blob_key
+      artifactsBlobKey: artifactsUploadUrl.blob_key,
     },
     authConfig,
     vaultUrl
   );
-  return attachedDoc;
+  return { attachment: attachedDoc.attachment, dek };
 }
 
 export async function fileDownloadBrowser({
@@ -110,7 +109,7 @@ export async function fileDownloadBrowser({
   vaultUrl,
   vaultAccessToken,
   subscriptionKey,
-  progressUpdateFunc = null
+  progressUpdateFunc = null,
 }: {
   attachmentId: string;
   dek: string;
@@ -125,23 +124,23 @@ export async function fileDownloadBrowser({
     progressUpdateFunc(null, 0);
   }
   const authConfig = new AuthData({
-    data_encryption_key: EncryptionKey.fromSerialized(dek),
+    data_encryption_key: EncryptionKey.fromRaw(dek),
     key_encryption_key: EncryptionKey.fromRaw(''),
     keystore_access_token: '',
     passphrase_derived_key: EncryptionKey.fromRaw(''),
     secret: '',
-    vault_access_token: vaultAccessToken
+    vault_access_token: vaultAccessToken,
   });
   const environment = new Environment({
     vault: {
       url: vaultUrl,
-      subscription_key: subscriptionKey
+      subscription_key: subscriptionKey,
     },
     keystore: {
       url: '',
       subscription_key: subscriptionKey,
-      provider_api_key: ''
-    }
+      provider_api_key: '',
+    },
   });
 
   const service = new ItemService(environment);
@@ -202,7 +201,7 @@ async function largeFileDownloadBrowser(
       {
         iv: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,
-        at: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data))
+        at: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
       },
       encrypted_artifact.range[index]
     );
@@ -221,9 +220,9 @@ function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: 'Bearer ' + token
+      Authorization: 'Bearer ' + token,
     },
-    method: 'GET'
+    method: 'GET',
   };
   return fetch(`${vaultUrl}/direct/attachments/${id}/download_url?type=${type}`, options).then(
     res => {

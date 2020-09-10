@@ -62,6 +62,14 @@
         value="33d32606-c2e9-446c-8828-86ea655fcc6b"
       />
       <input
+        id="attachmentSlotLabel"
+        placeholder="label e.g. Video of Dog"
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        value="testAttachmentLabel"
+      />
+      <input
         id="videoCodec"
         placeholder='video codec e.g. video/webm; codecs="vorbis,vp8"'
         type="text"
@@ -84,16 +92,31 @@
       <h4>Download Attachment</h4>
       <hr />
       <input
-        id="attachmentId"
+        id="downloadItemId"
         placeholder="attachmentId"
         type="text"
         autocapitalize="off"
         autocomplete="off"
-        value="06a3c71b-4932-4461-870a-68736ec75ce9"
+        value="33d32606-c2e9-446c-8828-86ea655fcc6b"
+      />
+      <input
+        id="downloadSlotId"
+        placeholder="attachmentId"
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        value="e4141f28-ac33-4e8f-ba63-3ac1f42edafd"
       />
       <button type="button" id="downloadAttachment">Download</button>
       <progress id="fileDownloadProgressBar" value="0" max="100"></progress>
       <textarea disabled id="downloadAttachmentDetails" rows="3"></textarea>
+    </div>
+
+    <div class="card">
+      <h4>Event Log</h4>
+      <hr />
+      <sub>Any log events that the SDK output will appear here:</sub>
+      <textarea disabled id="log" rows="5"></textarea>
     </div>
   </body>
 </html>
