@@ -1,7 +1,13 @@
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import { MOCK_NEXT_PAGE_AFTER } from '../../../src/util/constants';
-import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
+import {
+  customTest,
+  outputFixture,
+  testEnvironmentFile,
+  testGetAll,
+  testUserAuth,
+} from '../../test-helpers';
 
 describe('client-task-queue:list', () => {
   customTest
@@ -39,7 +45,14 @@ describe('client-task-queue:list', () => {
         .reply(200, responsePart2)
     )
     .stdout()
-    .run(['client-task-queue:list', ...testUserAuth, ...testEnvironmentFile, '-s', 'Todo'])
+    .run([
+      'client-task-queue:list',
+      ...testUserAuth,
+      ...testEnvironmentFile,
+      ...testGetAll,
+      '-s',
+      'Todo',
+    ])
     .it('list all tasks for client when paginated', ctx => {
       const expected = readFileSync(outputFixture('list-client-task-queue.output.yaml'), 'utf-8');
       expect(ctx.stdout.trim()).to.equal(expected.trim());

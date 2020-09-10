@@ -2,6 +2,7 @@ import { ClientTaskQueueService, State } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { authFlags } from '../../flags/auth-flags';
+import { pageFlags } from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ClientTaskQueueList extends MeecoCommand {
@@ -11,6 +12,7 @@ export default class ClientTaskQueueList extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
+    ...pageFlags,
     supressChangingState: _flags.string({
       required: false,
       default: 'true',
@@ -26,7 +28,7 @@ export default class ClientTaskQueueList extends MeecoCommand {
 
   async run() {
     const { flags } = this.parse(this.constructor as typeof ClientTaskQueueList);
-    const { supressChangingState, state, auth } = flags;
+    const { supressChangingState, state, auth, all } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
     const service = new ClientTaskQueueService(environment);
@@ -42,11 +44,17 @@ export default class ClientTaskQueueList extends MeecoCommand {
           'Invalid state provided, state argument value must be one of this: ' + Object.keys(State)
         );
       }
-      const response = await service.listAll(
-        authConfig.vault_access_token,
-        supressChangingState === 'false' ? false : true,
-        clientTaskQueueState
-      );
+      const response = all
+        ? await service.listAll(
+            authConfig.vault_access_token,
+            supressChangingState === 'false' ? false : true,
+            clientTaskQueueState
+          )
+        : await service.list(
+            authConfig.vault_access_token,
+            supressChangingState === 'false' ? false : true,
+            clientTaskQueueState
+          );
       this.printYaml({
         kind: 'ClientTaskQueue',
         spec: response.client_tasks,

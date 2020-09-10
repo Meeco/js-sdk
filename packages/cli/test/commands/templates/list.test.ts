@@ -5,7 +5,13 @@ import {
   DEFAULT_CLASSIFICATION_SCHEME,
   MOCK_NEXT_PAGE_AFTER,
 } from '../../../src/util/constants';
-import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
+import {
+  customTest,
+  outputFixture,
+  testEnvironmentFile,
+  testGetAll,
+  testUserAuth,
+} from '../../test-helpers';
 
 describe('templates:list', () => {
   customTest
@@ -95,8 +101,8 @@ describe('templates:list', () => {
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, responsePart2);
     })
-    .run(['templates:list', ...testUserAuth, ...testEnvironmentFile])
-    .it('fetches all templates when paged', ctx => {
+    .run(['templates:list', ...testUserAuth, ...testEnvironmentFile, ...testGetAll])
+    .it('fetches all templates when paginated', ctx => {
       const expected = readFileSync(outputFixture('list-templates.output.yaml'), 'utf-8');
       expect(ctx.stdout).to.contain(expected);
     });

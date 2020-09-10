@@ -1,7 +1,13 @@
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import { MOCK_NEXT_PAGE_AFTER } from '../../../src/util/constants';
-import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
+import {
+  customTest,
+  outputFixture,
+  testEnvironmentFile,
+  testGetAll,
+  testUserAuth,
+} from '../../test-helpers';
 
 describe('organization-services:list', () => {
   customTest
@@ -38,7 +44,13 @@ describe('organization-services:list', () => {
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, responsePart2);
     })
-    .run(['organization-services:list', 'organization_id', ...testUserAuth, ...testEnvironmentFile])
+    .run([
+      'organization-services:list',
+      'organization_id',
+      ...testUserAuth,
+      ...testEnvironmentFile,
+      ...testGetAll,
+    ])
     .it('shows a list of validated organizations when paginated', ctx => {
       const expected = readFileSync(
         outputFixture('list-organization-services-requested.output.yaml'),

@@ -1,7 +1,13 @@
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import { MOCK_NEXT_PAGE_AFTER } from '../../../src/util/constants';
-import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
+import {
+  customTest,
+  outputFixture,
+  testEnvironmentFile,
+  testGetAll,
+  testUserAuth,
+} from '../../test-helpers';
 
 describe('items:list', () => {
   customTest
@@ -33,7 +39,7 @@ describe('items:list', () => {
         .reply(200, responsePart2)
     )
     .stdout()
-    .run(['items:list', ...testUserAuth, ...testEnvironmentFile])
+    .run(['items:list', ...testUserAuth, ...testEnvironmentFile, ...testGetAll])
     .it('lists all items that the user has when paginated', ctx => {
       const expected = readFileSync(outputFixture('list-items.output.yaml'), 'utf-8');
       expect(ctx.stdout).to.contain(expected);
