@@ -2,7 +2,7 @@ const Status = {
   IDDLE: 'iddle',
   COMPLETED: 'completed',
   WORKING: 'working',
-  FAILED: 'failed'
+  FAILED: 'failed',
 };
 
 export default Status;

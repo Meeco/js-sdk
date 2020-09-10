@@ -53,7 +53,7 @@ export default class ItemsGetAttachment extends MeecoCommand {
   writeFile(destination: string, decryptedContents: Buffer) {
     this.updateStatus('Writing decrypted file to destination');
     return writeFileContents(destination, decryptedContents, {
-      flag: 'wx' // Write if not exists but fail if the file exists
+      flag: 'wx', // Write if not exists but fail if the file exists
     }).catch(err => {
       if (err.code === 'EEXIST') {
         throw new CLIError(

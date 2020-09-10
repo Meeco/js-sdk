@@ -7,8 +7,10 @@
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc -p tsconfig.build.json"
+    "test": "echo \"Error: no test specified\"",
+    "build": "tsc -p tsconfig.build.json",
+    "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
   },
   "dependencies": {
     "@meeco/sdk": "0.0.11-beta",

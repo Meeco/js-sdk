@@ -53,6 +53,9 @@ export default class ItemsAttachFile extends MeecoCommand {
           `Failed to read file '${filePath}' - please check that the file exists and is readable`
         );
       }
+      this.log(file.toString());
+      this.log(fileName);
+      this.log(fileType);
       const uploadedFile = await largeFileUploadNode(fileConfig.file, environment, authConfig);
 
       this.printYaml(uploadedFile);

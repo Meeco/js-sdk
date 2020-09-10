@@ -5,13 +5,13 @@ import {
   CreateAttachmentResponse,
   PostAttachmentDirectUploadUrlRequest,
   Slot,
-  ThumbnailResponse
+  ThumbnailResponse,
 } from '@meeco/vault-api-sdk';
 import { Buffer as _buffer } from 'buffer';
 import * as Jimp from 'jimp';
 import { AuthData } from '../models/auth-data';
 import { IDirectAttachmentAttachData } from '../models/direct-attachment-attach-data';
-import { DirectAttachmentUploadUrlData } from '../models/direct-attachment-upload-url-data';
+import { IDirectAttachmentUploadUrlData } from '../models/direct-attachment-upload-url-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { FileAttachmentData } from '../models/file-attachment-data';
@@ -201,7 +201,7 @@ export class ItemService {
   }
 
   public async directAttachmentUploadUrl(
-    config: DirectAttachmentUploadUrlData,
+    config: IDirectAttachmentUploadUrlData,
     auth: AuthData
   ): Promise<AttachmentDirectUploadUrlResponse> {
     let uploadUrl;
@@ -211,8 +211,8 @@ export class ItemService {
         blob: {
           filename: config.fileName,
           content_type: config.fileType,
-          byte_size: config.fileSize
-        }
+          byte_size: config.fileSize,
+        },
       };
       const factory = this.vaultAPIFactory(auth.vault_access_token);
       uploadUrl = await factory.DirectAttachmentsApi.directAttachmentsUploadUrlPost(params);
@@ -249,8 +249,8 @@ export class ItemService {
         blob_id: config.blobId,
         blob_key: config.blobKey,
         encrypted_artifact_blob_id: config.artifactsBlobId,
-        encrypted_artifact_blob_key: config.artifactsBlobKey
-      }
+        encrypted_artifact_blob_key: config.artifactsBlobKey,
+      },
     });
     return attachment;
   }

@@ -4,7 +4,7 @@ const BLOCK_MAX_SIZE = 1 * 1024 * 1024; // 1MB;
 
 const buildAzureHeaders = () => ({
   'x-ms-version': '2011-08-18',
-  'x-ms-date': new Date().toUTCString()
+  'x-ms-date': new Date().toUTCString(),
 });
 
 /**
@@ -20,9 +20,9 @@ const putBlock = async (sasUrl, data, blockID) => {
     url,
     headers: {
       ...buildAzureHeaders(),
-      'x-ms-blob-type': 'BlockBlob'
+      'x-ms-blob-type': 'BlockBlob',
     },
-    data
+    data,
   });
 };
 
@@ -45,9 +45,9 @@ const putBlockList = async (sasUrl, blockIDList, fileType) => {
     headers: {
       ...buildAzureHeaders(),
       'x-ms-blob-content-type': fileType,
-      'Content-Type': 'text/xml'
+      'Content-Type': 'text/xml',
     },
-    data
+    data,
   });
 };
 
@@ -62,8 +62,8 @@ const getBlock = async (sasUrl, range) => {
   return axios({
     method: 'get',
     url,
-    headers: headers,
-    responseType: 'arraybuffer'
+    headers,
+    responseType: 'arraybuffer',
   }).then(result => {
     return result;
   });
@@ -77,7 +77,7 @@ const getBlobProperties = async sasUrl => {
   const url = `${sasUrl}`;
   return axios({
     method: 'head',
-    url
+    url,
   });
 };
 
@@ -86,5 +86,5 @@ export default {
   putBlock,
   putBlockList,
   getBlock,
-  getBlobProperties
+  getBlobProperties,
 };

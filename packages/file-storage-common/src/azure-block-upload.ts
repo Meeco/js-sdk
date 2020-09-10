@@ -74,7 +74,7 @@ export class AzureBlockUpload {
     this.callbacks = {
       onProgress,
       onError,
-      onSuccess
+      onSuccess,
     };
 
     this.analizeFile();
@@ -138,7 +138,7 @@ export class AzureBlockUpload {
         at,
         range,
         encryption_stratergy: Cryppo.CipherStrategy.AES_GCM,
-        size: this.fileSize
+        size: this.fileSize,
       };
 
       const commit = async () => BlobStorage.putBlockList(this.url, blockIDList, this.fileType);
@@ -161,12 +161,12 @@ export class AzureBlockUpload {
 
           let encrypt: any = null;
           if (dataEncryptionKey) {
-            const iv = crypto.randomBytes(12);
+            const ivArtifact = crypto.randomBytes(12);
             encrypt = Cryppo.encryptWithKeyUsingArtefacts(
               dataEncryptionKey,
               Cryppo.binaryBufferToString(data),
               Cryppo.CipherStrategy.AES_GCM,
-              Cryppo.binaryBufferToString(iv)
+              Cryppo.binaryBufferToString(ivArtifact)
             );
             artifacts.iv[nBlock] = iv;
             artifacts.at[nBlock] = encrypt.artifacts.at;

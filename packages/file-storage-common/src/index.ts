@@ -4,7 +4,7 @@ import {
   Configuration,
   CreateAttachmentResponse,
   DirectAttachmentsApi,
-  PostAttachmentDirectUploadUrlRequest
+  PostAttachmentDirectUploadUrlRequest,
 } from '@meeco/vault-api-sdk';
 import { AzureBlockUpload } from './azure-block-upload';
 export function exampleFunction() {
@@ -38,8 +38,8 @@ export async function directAttachmentUpload(
         },
         onError: error => {
           throw error;
-        }
-      }
+        },
+      },
     },
     fileUtilsLib
   );
@@ -62,8 +62,8 @@ export async function directAttachmentUploadUrl(
       blob: {
         filename: config.fileName,
         content_type: config.fileType,
-        byte_size: config.fileSize
-      }
+        byte_size: config.fileSize,
+      },
     };
     const api = new DirectAttachmentsApi(
       new Configuration({ basePath: vaultUrl, apiKey: auth.vault_access_token })
@@ -89,8 +89,8 @@ export async function directAttachmentAttach(
       blob_id: config.blobId,
       blob_key: config.blobKey,
       encrypted_artifact_blob_id: config.artifactsBlobId,
-      encrypted_artifact_blob_key: config.artifactsBlobKey
-    }
+      encrypted_artifact_blob_key: config.artifactsBlobKey,
+    },
   });
   return attachment;
 }

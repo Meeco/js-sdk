@@ -1,5 +1,5 @@
 import { DecryptedSlot, ITemplateData } from '@meeco/sdk';
-import { Attachment, Item, /*Share, */Slot, Thumbnail } from '@meeco/vault-api-sdk';
+import { Attachment, Item, /*Share, */ Slot, Thumbnail } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { ITEM_ASSOCIATIONS, SLOT_TYPE_BLACKLIST } from '../util/constants';
 import { ConfigReader, IYamlConfig } from './yaml-config';

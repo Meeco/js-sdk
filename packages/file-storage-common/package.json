@@ -7,8 +7,10 @@
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc -p tsconfig.build.json"
+    "test": "echo \"Error: no test specified\" ",
+    "build": "tsc -p tsconfig.build.json",
+    "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
   },
   "dependencies": {
     "@meeco/cryppo": "^0.7.0",
@@ -17,7 +19,8 @@
   "devDependencies": {
     "typescript": "^3.9.6",
     "lodash.padstart": "^4.6.1",
-    "@types/node": "^10.14.18"
+    "@types/node": "^10.14.18",
+    "prettier": "~1.19.1"
   },
   "keywords": [],
   "author": "",
