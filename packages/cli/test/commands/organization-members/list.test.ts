@@ -37,7 +37,7 @@ const response = {
     agent_id: null,
     created_at: '2020-06-05T04:02:11.174Z',
     updated_at: '2020-06-17T02:47:43.874Z',
-    status: 'validated'
+    status: 'validated',
   },
   members: [
     {
@@ -46,7 +46,7 @@ const response = {
       email: 'owner@meeco.com',
       is_app_logging_enabled: null,
       image: null,
-      role: 'owner'
-    }
-  ]
+      role: 'owner',
+    },
+  ],
 };

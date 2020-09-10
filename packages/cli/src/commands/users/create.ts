@@ -14,18 +14,18 @@ export default class CreateUser extends MeecoCommand {
     password: _flags.string({
       char: 'p',
       description: 'Password to use for the new user (will be prompted for if not provided)',
-      required: false
+      required: false,
     }),
     secret: _flags.string({
       hidden: true,
       char: 's',
       description: 'Manual secret to use (for testing purposes)',
-      required: false
+      required: false,
     }),
     port: _flags.integer({
       default: 5210,
-      description: 'Port to listen on for captcha response (optional - use if 5210 is reserved)'
-    })
+      description: 'Port to listen on for captcha response (optional - use if 5210 is reserved)',
+    }),
   };
 
   async run() {

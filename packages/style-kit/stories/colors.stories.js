@@ -18,7 +18,7 @@ const secondary = [
   'fuchsia',
   'pink',
   'ocean-blue',
-  'forest-green'
+  'forest-green',
 ];
 
 const variants = ['shade', 'tint50', 'tint10'];

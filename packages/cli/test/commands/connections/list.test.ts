@@ -14,14 +14,24 @@ describe('connections:list', () => {
         .reply(200, {
           connections: [
             {
-              id: 'abc123',
-              encrypted_recipient_name: 'Some Encrypted Name'
+              own: {
+                id: 'abc123',
+                encrypted_recipient_name: 'Some Encrypted Name',
+              },
+              the_other_user: {
+                id: 'abc345',
+              },
             },
             {
-              id: 'def456',
-              encrypted_recipient_name: 'Some Other Encrypted Name'
-            }
-          ]
+              own: {
+                id: 'def456',
+                encrypted_recipient_name: 'Some Encrypted Name',
+              },
+              the_other_user: {
+                id: 'def789',
+              },
+            },
+          ],
         });
     })
     .run(['connections:list', ...testUserAuth, ...testEnvironmentFile])

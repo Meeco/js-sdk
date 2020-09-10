@@ -18,8 +18,8 @@ const response = {
   item_templates: [
     {
       name: 'food',
-      slot_ids: ['steak', 'pizza', 'yoghurt']
-    }
+      slot_ids: ['steak', 'pizza', 'yoghurt'],
+    },
   ],
   slots: [
     {
@@ -28,7 +28,7 @@ const response = {
       name: 'pizza',
       foo: 'bar',
       slot_type_name: 'key_value',
-      encrypted_value: 'Hawaiian'
+      encrypted_value: 'Hawaiian',
     },
     {
       id: 'steak',
@@ -36,7 +36,7 @@ const response = {
       name: 'steak',
       foo: 'bar',
       slot_type_name: 'key_value',
-      encrypted_value: 'Rump'
+      encrypted_value: 'Rump',
     },
     {
       id: 'beer',
@@ -44,12 +44,12 @@ const response = {
       name: 'beer',
       foo: 'bar',
       slot_type_name: 'key_value',
-      encrypted_value: 'Session Ale'
-    }
+      encrypted_value: 'Session Ale',
+    },
   ],
   attachments: [],
   thumbnails: [],
-  classification_nodes: []
+  classification_nodes: [],
 };
 
 function mockVault(api) {

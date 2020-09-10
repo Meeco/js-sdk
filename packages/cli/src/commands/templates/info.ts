@@ -20,21 +20,21 @@ export default class TemplatesInfo extends MeecoCommand {
       char: 's',
       default: undefined,
       required: false,
-      description: 'Scope templates to a particular classification scheme'
+      description: 'Scope templates to a particular classification scheme',
     }),
     classificationName: _flags.string({
       char: 'n',
       default: undefined,
       required: false,
-      description: 'Scope templates to a particular classification name'
-    })
+      description: 'Scope templates to a particular classification name',
+    }),
   };
 
   static args = [
     {
       name: 'templateName',
-      required: true
-    }
+      required: true,
+    },
   ];
 
   async run() {
@@ -56,14 +56,14 @@ export default class TemplatesInfo extends MeecoCommand {
       const keyedSlots = result.slots.reduce(
         (prev, slot) => ({
           ...prev,
-          [slot.id]: slot
+          [slot.id]: slot,
         }),
         {}
       );
 
       const mappedTemplates = matchingTemplates.map(template => ({
         template,
-        slots: template.slot_ids.map(slot => keyedSlots[slot]) as Slot[]
+        slots: template.slot_ids.map(slot => keyedSlots[slot]) as Slot[],
       }));
 
       cli.action.stop();

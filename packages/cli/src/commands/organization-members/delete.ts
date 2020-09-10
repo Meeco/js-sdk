@@ -11,12 +11,12 @@ export default class OrganizationMembersDelete extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
   };
 
   static args = [
     { name: 'organization_id', required: true, description: 'ID of the Organization' },
-    { name: 'id', required: true, description: 'user ID of the Member' }
+    { name: 'id', required: true, description: 'user ID of the Member' },
   ];
 
   async run() {

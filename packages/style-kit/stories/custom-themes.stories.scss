@@ -20,16 +20,16 @@ $my-custom-theme: (
   darkText: map-get($meeco-charcoal-palette, 'shade'),
   tabs: (
     background: transparentize(map-get($meeco-smoke-palette, 'base'), 0.5),
-    foreground: white
+    foreground: white,
   ),
   avatar: (
     background: map-get($meeco-ocean-blue-palette, 'tint10'),
-    color: map-get($meeco-ocean-blue-palette, 'base')
+    color: map-get($meeco-ocean-blue-palette, 'base'),
   ),
   notification: (
     background: $meeco-dark-mode-item,
-    foreground: white
-  )
+    foreground: white,
+  ),
 );
 
 .story {

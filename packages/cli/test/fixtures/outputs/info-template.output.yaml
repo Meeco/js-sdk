@@ -26,7 +26,7 @@ spec:
       ordinal: null
       visible: null
       classification_node_ids: null
-      attachment_ids: null
+      attachment_id: null
       slotable_id: null
       slotable_type: null
       required: null
@@ -35,8 +35,12 @@ spec:
       slot_type_name: null
       creator: null
       encrypted_value: null
+      encrypted_value_verification_key: null
+      value_verification_hash: null
       image: null
       label: null
+      original_id: null
+      owner_id: null
     - id: water
       own: null
       share_id: null
@@ -46,7 +50,7 @@ spec:
       ordinal: null
       visible: null
       classification_node_ids: null
-      attachment_ids: null
+      attachment_id: null
       slotable_id: null
       slotable_type: null
       required: null
@@ -55,8 +59,12 @@ spec:
       slot_type_name: null
       creator: null
       encrypted_value: null
+      encrypted_value_verification_key: null
+      value_verification_hash: null
       image: null
       label: null
+      original_id: null
+      owner_id: null
     - id: beer
       own: null
       share_id: null
@@ -66,7 +74,7 @@ spec:
       ordinal: null
       visible: null
       classification_node_ids: null
-      attachment_ids: null
+      attachment_id: null
       slotable_id: null
       slotable_type: null
       required: null
@@ -75,5 +83,9 @@ spec:
       slot_type_name: null
       creator: null
       encrypted_value: null
+      encrypted_value_verification_key: null
+      value_verification_hash: null
       image: null
       label: null
+      original_id: null
+      owner_id: null

@@ -7,9 +7,10 @@ import {
   KeystoreAPIFactory,
   keystoreAPIFactory,
   VaultAPIFactory,
-  vaultAPIFactory
+  vaultAPIFactory,
 } from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
+import { Logger, noopLogger } from '../util/logger';
 
 /**
  * Used for setting up connections between Meeco `User`s to allow the secure sharing of data (see also {@link ShareService})
@@ -18,9 +19,14 @@ export class ConnectionService {
   private cryppo = (<any>global).cryppo || cryppo;
   private vaultApiFactory: VaultAPIFactory;
   private keystoreApiFactory: KeystoreAPIFactory;
-  constructor(private environment: Environment, private log: (message: string) => void = () => {}) {
+
+  constructor(private environment: Environment, private log: Logger = noopLogger) {
     this.vaultApiFactory = vaultAPIFactory(environment);
     this.keystoreApiFactory = keystoreAPIFactory(environment);
+  }
+
+  public setLogger(logger: Logger) {
+    this.log = logger;
   }
 
   public async createInvitation(name: string, auth: AuthData) {
@@ -35,11 +41,11 @@ export class ConnectionService {
       .InvitationApi.invitationsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,
-          public_key: keyPair.keyPair.publicKey
+          public_key: keyPair.keyPair.publicKey,
         },
         invitation: {
-          encrypted_recipient_name: encryptedName
-        }
+          encrypted_recipient_name: encryptedName,
+        },
       })
       .then(result => result.invitation);
   }
@@ -56,12 +62,12 @@ export class ConnectionService {
       .ConnectionApi.connectionsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,
-          public_key: keyPair.keyPair.publicKey
+          public_key: keyPair.keyPair.publicKey,
         },
         connection: {
           encrypted_recipient_name: encryptedName,
-          invitation_token: invitationToken
-        }
+          invitation_token: invitationToken,
+        },
       })
       .then(res => res.connection);
   }
@@ -105,7 +111,7 @@ export class ConnectionService {
       invitation,
       fromUserConnection,
       toUserConnection,
-      options
+      options,
     };
   }
 
@@ -116,12 +122,12 @@ export class ConnectionService {
     const decryptions = (result.connections || []).map(connection =>
       this.cryppo
         .decryptWithKey({
-          serialized: connection.encrypted_recipient_name!,
-          key: user.data_encryption_key.key
+          serialized: connection.own.encrypted_recipient_name!,
+          key: user.data_encryption_key.key,
         })
         .then(name => ({
           name,
-          connection
+          connection,
         }))
     );
     return Promise.all(decryptions);
@@ -132,7 +138,7 @@ export class ConnectionService {
       .encryptWithKey({
         data: name,
         key: user.data_encryption_key.key,
-        strategy: this.cryppo.CipherStrategy.AES_GCM
+        strategy: this.cryppo.CipherStrategy.AES_GCM,
       })
       .then(result => result.serialized);
   }
@@ -143,7 +149,7 @@ export class ConnectionService {
     const toPrivateKeyEncrypted = await this.cryppo.encryptWithKey({
       data: keyPair.privateKey,
       key: user.key_encryption_key.key,
-      strategy: this.cryppo.CipherStrategy.AES_GCM
+      strategy: this.cryppo.CipherStrategy.AES_GCM,
     });
 
     const keystoreStoredKeyPair = await this.keystoreApiFactory(user)
@@ -152,13 +158,13 @@ export class ConnectionService {
         encrypted_serialized_key: toPrivateKeyEncrypted.serialized,
         // API will 500 without
         metadata: {},
-        external_identifiers: []
+        external_identifiers: [],
       })
       .then(result => result.keypair);
 
     return {
       keyPair,
-      keystoreStoredKeyPair
+      keystoreStoredKeyPair,
     };
   }
 }

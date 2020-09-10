@@ -14,7 +14,7 @@ describe('shares:create-config', () => {
       'connection-id',
       '-i',
       'my-item',
-      ...testEnvironmentFile
+      ...testEnvironmentFile,
     ])
     .it('builds a share template file from two users and an item', ctx => {
       const expected = readFileSync(outputFixture('create-config-share.output.yaml'), 'utf-8');
@@ -30,7 +30,7 @@ const response = {
   attachments: [],
   classification_nodes: [],
   shares: [],
-  thumbnails: []
+  thumbnails: [],
 };
 
 function mockVault(api) {
@@ -44,5 +44,8 @@ function mockVault(api) {
     .get('/connections/connection-id')
     .matchHeader('Authorization', 'from_vault_access')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, { connection: { id: 'connection-id' } });
+    .reply(200, {
+      connection: { own: { id: 'connection-id' } },
+      the_other_user: { id: 'other-connection-id' },
+    });
 }

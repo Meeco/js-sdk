@@ -13,7 +13,7 @@ describe('organizations:list', () => {
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, {
           organizations: response.organizations.filter(f => f.status === 'validated'),
-          services: []
+          services: [],
         });
     })
     .run(['organizations:list', ...testUserAuth, ...testEnvironmentFile])
@@ -36,7 +36,7 @@ describe('organizations:list', () => {
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, {
           organizations: response.organizations.filter(f => f.status === 'requested'),
-          services: []
+          services: [],
         });
     })
     .run(['organizations:list', '-m', 'requested', ...testUserAuth, ...testEnvironmentFile])
@@ -61,7 +61,7 @@ describe('organizations:list', () => {
           organizations: response.organizations.filter(
             f => f.status === 'validated' && f.name === 'Member mode Inc.'
           ),
-          services: []
+          services: [],
         });
     })
     .run(['organizations:list', '-m', 'member', ...testUserAuth, ...testEnvironmentFile])
@@ -87,7 +87,7 @@ const response = {
       validated_by_id: null,
       agent_id: null,
       validated_at: null,
-      created_at: '2020-06-23T08:38:32.915Z'
+      created_at: '2020-06-23T08:38:32.915Z',
     },
     {
       id: '00000000-0000-0000-0000-000000000001',
@@ -100,7 +100,7 @@ const response = {
       validated_by_id: '00000000-0000-0000-0000-000000000011',
       agent_id: null,
       validated_at: '2020-06-25T08:38:32.915Z',
-      created_at: '2020-06-23T08:38:32.915Z'
+      created_at: '2020-06-23T08:38:32.915Z',
     },
     {
       id: '00000000-0000-0000-0000-000000000002',
@@ -113,7 +113,7 @@ const response = {
       validated_by_id: '00000000-0000-0000-0000-000000000022',
       agent_id: null,
       validated_at: '2020-06-25T08:38:32.915Z',
-      created_at: '2020-06-23T08:38:32.915Z'
-    }
-  ]
+      created_at: '2020-06-23T08:38:32.915Z',
+    },
+  ],
 };

@@ -20,20 +20,20 @@ describe('API Factories', () => {
         .matchHeader('X_MEECO_API_VERSION', '2.0.0')
         .matchHeader('X_MEECO_API_COMPONENT', 'keystore')
         .reply(200, {
-          status: 'ok'
+          status: 'ok',
         });
       const apiFactory = keystoreAPIFactory(<any>{
         keystore: {
           subscription_key: 'my_sub_key',
-          url: 'https://meeco-keystore.example.com'
-        }
+          url: 'https://meeco-keystore.example.com',
+        },
       });
       const forUser = apiFactory(<any>{
-        keystore_access_token: 'my-keystore-token'
+        keystore_access_token: 'my-keystore-token',
       });
       const result = await forUser.KeypairApi.keypairsIdGet('my-id');
       expect(result).to.eql({
-        status: 'ok'
+        status: 'ok',
       });
     });
 
@@ -52,21 +52,21 @@ describe('API Factories', () => {
           classification_nodes: [],
           shares: [],
           slots: [],
-          thumbnails: []
+          thumbnails: [],
         });
       const apiFactory = keystoreAPIFactory(<any>{
         keystore: {
           subscription_key: 'my_sub_key',
-          url: 'https://meeco-keystore.example.com'
-        }
+          url: 'https://meeco-keystore.example.com',
+        },
       });
       const forUser = apiFactory(<any>{
-        keystore_access_token: 'my-keystore-token'
+        keystore_access_token: 'my-keystore-token',
       });
       const result = await forUser.KeypairApi.keypairsIdGet('my-id', {
         headers: {
-          X_MY_CUSTOM_HEADER: 'foo'
-        }
+          X_MY_CUSTOM_HEADER: 'foo',
+        },
       });
       // tslint:disable-next-line
       expect(result).to.be.ok;
@@ -79,21 +79,21 @@ describe('API Factories', () => {
       const apiFactory = keystoreAPIFactory(<any>{
         keystore: {
           subscription_key: 'my_sub_key',
-          url: 'https://meeco-keystore.example.com'
-        }
+          url: 'https://meeco-keystore.example.com',
+        },
       });
       const forUser = apiFactory(<any>{
-        keystore_access_token: 'my-keystore-token'
+        keystore_access_token: 'my-keystore-token',
       });
       let error;
       try {
         const result = await forUser.KeypairApi.keypairsIdGet('my-id', {
           headers: {
-            X_MY_CUSTOM_HEADER: 'foo'
-          }
+            X_MY_CUSTOM_HEADER: 'foo',
+          },
         });
         expect(result).to.eql({
-          status: 'ok'
+          status: 'ok',
         });
       } catch (err) {
         error = err;
@@ -119,16 +119,16 @@ describe('API Factories', () => {
           classification_nodes: [],
           shares: [],
           slots: [],
-          thumbnails: []
+          thumbnails: [],
         });
       const apiFactory = vaultAPIFactory(<any>{
         vault: {
           subscription_key: 'my_sub_key',
-          url: 'https://meeco-vault.example.com'
-        }
+          url: 'https://meeco-vault.example.com',
+        },
       });
       const forUser = apiFactory(<any>{
-        vault_access_token: 'my-vault-token'
+        vault_access_token: 'my-vault-token',
       });
       const result = await forUser.ItemApi.itemsIdGet('my-id');
       // tslint:disable-next-line
@@ -150,20 +150,20 @@ describe('API Factories', () => {
           classification_nodes: [],
           shares: [],
           slots: [],
-          thumbnails: []
+          thumbnails: [],
         });
       const apiFactory = vaultAPIFactory(<any>{
         vault: {
           subscription_key: 'my_sub_key',
-          url: 'https://meeco-vault.example.com'
-        }
+          url: 'https://meeco-vault.example.com',
+        },
       });
       const forUser = apiFactory(
         <any>{
-          vault_access_token: 'my-vault-token'
+          vault_access_token: 'my-vault-token',
         },
         {
-          X_MY_CUSTOM_HEADER: 'foo'
+          X_MY_CUSTOM_HEADER: 'foo',
         }
       );
       const result = await forUser.ItemApi.itemsIdGet('my-id');
@@ -173,9 +173,8 @@ describe('API Factories', () => {
         associations: [],
         attachments: [],
         classification_nodes: [],
-        shares: [],
         slots: [],
-        thumbnails: []
+        thumbnails: [],
       });
     });
 
@@ -186,17 +185,17 @@ describe('API Factories', () => {
       const apiFactory = vaultAPIFactory(<any>{
         vault: {
           subscription_key: 'my_sub_key',
-          url: 'https://meeco-vault.example.com'
-        }
+          url: 'https://meeco-vault.example.com',
+        },
       });
       const forUser = apiFactory(<any>{
-        vault_access_token: 'my-vault-token'
+        vault_access_token: 'my-vault-token',
       });
       let error;
       try {
         const result = await forUser.ItemApi.itemsIdGet('my-id');
         expect(result).to.eql({
-          status: 'ok'
+          status: 'ok',
         });
       } catch (err) {
         error = err;

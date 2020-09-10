@@ -36,7 +36,7 @@ export class ClientTaskQueueService {
 
     return {
       todo: todoTasks.client_tasks.length,
-      in_progress: inProgressTasks.client_tasks.length
+      in_progress: inProgressTasks.client_tasks.length,
     };
   }
 }
@@ -45,7 +45,7 @@ export enum State {
   Todo = 'todo',
   InProgress = 'in_progress',
   Done = 'done',
-  Failed = 'failed'
+  Failed = 'failed',
 }
 
 export interface IOutstandingClientTasks {

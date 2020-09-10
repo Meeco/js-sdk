@@ -16,15 +16,15 @@ describe('items:list', () => {
               name: 'My Car',
               slot_ids: ['make_model'],
               created_at: new Date(0),
-              updated_at: new Date(0)
+              updated_at: new Date(0),
             },
             {
               id: 'b',
               name: 'My House',
               slot_ids: ['add'],
               created_at: new Date(0),
-              updated_at: new Date(0)
-            }
+              updated_at: new Date(0),
+            },
           ],
           slots: [
             {
@@ -32,22 +32,22 @@ describe('items:list', () => {
               name: 'Make and Model',
               value: 'Tesla Model S',
               created_at: new Date(0),
-              updated_at: new Date(0)
+              updated_at: new Date(0),
             },
             {
               id: 'add',
               name: 'address',
               value: '123 Fake Street',
               created_at: new Date(0),
-              updated_at: new Date(0)
-            }
+              updated_at: new Date(0),
+            },
           ],
           associations_to: [],
           associations: [],
           attachments: [],
           classification_nodes: [],
           shares: [],
-          thumbnails: []
+          thumbnails: [],
         })
     )
     .stdout()

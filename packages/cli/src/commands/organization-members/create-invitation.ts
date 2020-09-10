@@ -11,13 +11,13 @@ export default class OrganizationMembersCreateInvitation extends MeecoCommand {
     'Create Invitation to invite other vault users as member of organization. This command is only accessible to organization agent.';
 
   static examples = [
-    `meeco organization-members:crate-invitation -o .my-created-organization.yaml -a .my-org-login.yaml > .my-org-member-invitation.yaml`
+    `meeco organization-members:crate-invitation -o .my-created-organization.yaml -a .my-org-login.yaml > .my-org-member-invitation.yaml`,
   ];
 
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
-    org: _flags.string({ char: 'o', required: true, description: 'organization yaml file' })
+    org: _flags.string({ char: 'o', required: true, description: 'organization yaml file' }),
   };
 
   static args = [
@@ -25,8 +25,8 @@ export default class OrganizationMembersCreateInvitation extends MeecoCommand {
       name: 'member_role',
       required: false,
       default: OrganizationMemberRoles.Admin,
-      description: 'Organization member avalible roles: ' + Object.keys(OrganizationMemberRoles)
-    }
+      description: 'Organization member avalible roles: ' + Object.keys(OrganizationMemberRoles),
+    },
   ];
 
   async run() {

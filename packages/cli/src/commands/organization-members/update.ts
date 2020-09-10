@@ -16,8 +16,8 @@ export default class OrganizationMembersUpdate extends MeecoCommand {
     organizationMemberConfig: _flags.string({
       char: 'm',
       required: true,
-      description: 'org member yaml file'
-    })
+      description: 'org member yaml file',
+    }),
   };
 
   async run() {
@@ -62,8 +62,8 @@ export default class OrganizationMembersUpdate extends MeecoCommand {
         member.id,
         {
           organization_member: {
-            role: member.role
-          }
+            role: member.role,
+          },
         }
       );
       this.log('Successfully updated');

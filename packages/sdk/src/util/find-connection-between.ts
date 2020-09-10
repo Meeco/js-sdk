@@ -23,7 +23,8 @@ export async function findConnectionBetween(
   const sharedConnections = fromUserConnections.connections!.filter(
     fromConnection =>
       !!toUserConnections.connections!.find(
-        toConnection => fromConnection.public_key === toConnection.other_user_connection_public_key
+        toConnection =>
+          fromConnection.own.user_public_key === toConnection.the_other_user.user_public_key
       )
   );
 
@@ -32,7 +33,8 @@ export async function findConnectionBetween(
   }
   const [fromUserConnection] = sharedConnections;
   const toUserConnection = toUserConnections.connections!.find(
-    toConnection => fromUserConnection.public_key === toConnection.other_user_connection_public_key
+    toConnection =>
+      fromUserConnection.own.user_public_key === toConnection.the_other_user.user_public_key
   );
 
   if (!toUserConnection) {
@@ -52,7 +54,7 @@ export async function fetchConnectionWithId(
   const response = await connectionApi(user, environment).connectionsIdGet(connectionId);
   const connection = response.connection;
 
-  if (!connection || !connection.id) {
+  if (!connection || !connection.own.id) {
     throw new Error(`Conncetion ${connectionId} not found.`);
   }
 

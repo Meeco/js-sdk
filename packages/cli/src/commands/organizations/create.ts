@@ -11,7 +11,7 @@ The organization will remain in the 'requested' state until validated \
 or rejected by meeco`;
 
   static examples = [
-    `meeco organizations:create -c .my-organization-config.yaml > .my-created-organization.yaml`
+    `meeco organizations:create -c .my-organization-config.yaml > .my-created-organization.yaml`,
   ];
 
   static flags = {
@@ -20,8 +20,8 @@ or rejected by meeco`;
     organizationConfig: _flags.string({
       char: 'c',
       required: true,
-      description: 'organization config file'
-    })
+      description: 'organization config file',
+    }),
   };
 
   async run() {
@@ -49,7 +49,7 @@ or rejected by meeco`;
       this.printYaml(
         OrganizationConfig.encodeFromJSON(result.organization, {
           privateKey: result.privateKey,
-          publicKey: result.publicKey
+          publicKey: result.publicKey,
         })
       );
     } catch (err) {

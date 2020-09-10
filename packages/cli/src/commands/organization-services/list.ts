@@ -11,7 +11,7 @@ export default class OrganizationServicesList extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
   };
 
   static args = [{ name: 'organization_id', required: true }];

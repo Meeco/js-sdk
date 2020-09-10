@@ -20,7 +20,7 @@ describe('client-task-queue:list', () => {
               additional_options: {},
               last_state_transition_at: new Date(0),
               report: {},
-              created_at: new Date(0)
+              created_at: new Date(0),
             },
             {
               id: 'b',
@@ -30,9 +30,9 @@ describe('client-task-queue:list', () => {
               additional_options: {},
               last_state_transition_at: new Date(0),
               report: {},
-              created_at: new Date(0)
-            }
-          ]
+              created_at: new Date(0),
+            },
+          ],
         })
     )
     .stdout()

@@ -5,7 +5,7 @@ import { color, withKnobs } from '@storybook/addon-knobs';
 export default {
   title: 'Pills and Tabs',
   decrators: [withKnobs],
-  parameters: { docs: { page: mdx } }
+  parameters: { docs: { page: mdx } },
 };
 
 const sampleColors = ['red', 'blue', 'grey', 'green'];

@@ -21,7 +21,7 @@ export function mockSRP() {
       sandbox.stub(SRPSession.prototype, 'createVerifier').callsFake(() => {
         return Promise.resolve({
           verifier: '000000000VERIFIER',
-          salt: '00SALT'
+          salt: '00SALT',
         });
       });
       sandbox.stub(SRPSession.prototype, 'getClientPublic').callsFake(() => {
@@ -33,7 +33,7 @@ export function mockSRP() {
     },
     finally: () => {
       sandbox.restore();
-    }
+    },
   };
 }
 
@@ -52,6 +52,6 @@ function runCommand(args: string[]) {
   return {
     async run(ctx) {
       return ctor.run(argv);
-    }
+    },
   };
 }

@@ -1,5 +1,6 @@
 import { Environment } from '../models/environment';
 import { vaultAPIFactory, VaultAPIFactory } from '../util/api-factory';
+import { Logger, noopLogger } from '../util/logger';
 import cryppo from './cryppo-service';
 /**
  * Manage organization members from the API.
@@ -10,8 +11,12 @@ export class OrganizationMembersService {
   // for mocking during testing
   private cryppo = (<any>global).cryppo || cryppo;
 
-  constructor(environment: Environment, private log: (message: string) => void = () => {}) {
+  constructor(environment: Environment, private log: Logger = noopLogger) {
     this.vaultApiFactory = vaultAPIFactory(environment);
+  }
+
+  public setLogger(logger: Logger) {
+    this.log = logger;
   }
 
   public async createInvite(
@@ -23,11 +28,11 @@ export class OrganizationMembersService {
     return await this.vaultApiFactory(vaultAccessToken)
       .InvitationApi.invitationsPost({
         public_key: {
-          public_key: organizationAgentPublicKey
+          public_key: organizationAgentPublicKey,
         },
         invitation: {
-          organization_member_role: role
-        }
+          organization_member_role: role,
+        },
       })
       .then(result => result.invitation);
   }
@@ -36,21 +41,21 @@ export class OrganizationMembersService {
     const rsaKeyPair = await this.cryppo.generateRSAKeyPair(4096);
     const result = await this.vaultApiFactory(vaultAccessToken).ConnectionApi.connectionsPost({
       public_key: {
-        public_key: rsaKeyPair.publicKey
+        public_key: rsaKeyPair.publicKey,
       },
       connection: {
-        invitation_token: invitationToken
-      }
+        invitation_token: invitationToken,
+      },
     });
     return {
       connection: result.connection,
       privateKey: rsaKeyPair.privateKey,
-      publicKey: rsaKeyPair.publicKey
+      publicKey: rsaKeyPair.publicKey,
     };
   }
 }
 
 export enum OrganizationMemberRoles {
   Admin = 'admin',
-  Owner = 'owner'
+  Owner = 'owner',
 }

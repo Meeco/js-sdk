@@ -21,6 +21,7 @@ import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import cryppo from '../services/cryppo-service';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
+import { Logger, noopLogger } from '../util/logger';
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -29,7 +30,7 @@ export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
   private vaultAPIFactory: VaultAPIFactory;
 
-  constructor(environment: Environment, private log: (message: string) => void = () => {}) {
+  constructor(environment: Environment, private log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
   }
 
@@ -46,17 +47,21 @@ export class ItemService {
           slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
             ? await this.cryppo.decryptWithKey({
                 key: dataEncryptionKey.key,
-                serialized: slot.encrypted_value
+                serialized: slot.encrypted_value,
               })
             : (slot as DecryptedSlot).value;
         const decrypted = {
           ...slot,
           encrypted: false,
-          value
+          value,
         };
         return decrypted;
       })
     );
+  }
+
+  public setLogger(logger: Logger) {
+    this.log = logger;
   }
 
   public async create(vaultAccessToken: string, dek: EncryptionKey, config: ItemCreateData) {
@@ -68,8 +73,8 @@ export class ItemService {
       template_name: config.template_name,
       item: {
         label: config.item.label,
-        slots_attributes
-      }
+        slots_attributes,
+      },
     });
   }
 
@@ -81,8 +86,8 @@ export class ItemService {
     return await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdPut(config.id, {
       item: {
         label: config.label,
-        slots_attributes
-      }
+        slots_attributes,
+      },
     });
   }
 
@@ -104,7 +109,7 @@ export class ItemService {
     const encryptedThumbnail = await ItemService.cryppo.encryptWithKey({
       key: auth.data_encryption_key.key,
       data: ItemService.cryppo.binaryBufferToString(thumbnail),
-      strategy: ItemService.cryppo.CipherStrategy.AES_GCM
+      strategy: ItemService.cryppo.CipherStrategy.AES_GCM,
     });
 
     this.log('Uploading encrypted image thumbnail');
@@ -146,7 +151,7 @@ export class ItemService {
     const encryptedFile = await ItemService.cryppo.encryptWithKey({
       key: auth.data_encryption_key.key,
       data: ItemService.cryppo.binaryBufferToString(file),
-      strategy: ItemService.cryppo.CipherStrategy.AES_GCM
+      strategy: ItemService.cryppo.CipherStrategy.AES_GCM,
     });
 
     let uploadedBinary: AttachmentResponse;
@@ -182,14 +187,12 @@ export class ItemService {
             {
               label,
               slot_type_name: 'attachment',
-              attachments_attributes: [
-                {
-                  id: uploadedBinary.attachment.id
-                }
-              ]
-            }
-          ]
-        }
+              attachment_attributes: {
+                id: uploadedBinary.attachment.id,
+              },
+            },
+          ],
+        },
       }
     );
 
@@ -261,7 +264,7 @@ export class ItemService {
     const encryptedContents = await ItemService.cryppo.binaryBufferToString(buffer);
     const decryptedContents = await ItemService.cryppo.decryptWithKey({
       serialized: encryptedContents,
-      key: dataEncryptionKey.key
+      key: dataEncryptionKey.key,
     });
     return decryptedContents;
   }
@@ -302,19 +305,19 @@ export class ItemService {
 
     return {
       ...result,
-      slots
+      slots,
     };
   }
 
   private async encryptSlot(slot: DecryptedSlot, dek: EncryptionKey) {
     const encrypted: any = {
-      ...slot
+      ...slot,
     };
     encrypted.encrypted_value = await ItemService.cryppo
       .encryptWithKey({
         strategy: ItemService.cryppo.CipherStrategy.AES_GCM,
         key: dek.key,
-        data: slot.value || ''
+        data: slot.value || '',
       })
       .then(result => result.serialized);
     delete encrypted.value;

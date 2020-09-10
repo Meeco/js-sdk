@@ -17,7 +17,11 @@ export default class ItemsAttachFile extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
-    config: _flags.string({ char: 'c', required: true, description: 'file attachment config yaml' })
+    config: _flags.string({
+      char: 'c',
+      required: true,
+      description: 'file attachment config yaml',
+    }),
   };
 
   static args = [];
@@ -49,7 +53,6 @@ export default class ItemsAttachFile extends MeecoCommand {
           `Failed to read file '${filePath}' - please check that the file exists and is readable`
         );
       }
-
       const uploadedFile = await largeFileUploadNode(fileConfig.file, environment, authConfig);
 
       this.printYaml(uploadedFile);

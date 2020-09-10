@@ -34,7 +34,7 @@ export class ConnectionConfig {
     return new ConnectionConfig({
       from: AuthConfig.fromMetadata(yamlConfigObj.spec.from),
       to: AuthConfig.fromMetadata(yamlConfigObj.spec.to),
-      options: yamlConfigObj.metadata!
+      options: yamlConfigObj.metadata!,
     });
   }
 
@@ -48,12 +48,12 @@ export class ConnectionConfig {
       kind: ConnectionConfig.kind,
       metadata: {
         invitation_id: payload.invitation.id,
-        from_user_connection_id: payload.fromUserConnection.id,
-        to_user_connection_id: payload.toUserConnection.id
+        from_user_connection_id: payload.fromUserConnection.own.id,
+        to_user_connection_id: payload.toUserConnection.own.id,
       },
       spec: {
-        ...payload.options
-      }
+        ...payload.options,
+      },
     };
   }
 
@@ -65,12 +65,12 @@ export class ConnectionConfig {
       kind: ConnectionConfig.kind,
       metadata: {
         fromName: '',
-        toName: ''
+        toName: '',
       },
       spec: {
         from,
-        to
-      }
+        to,
+      },
     };
   }
 

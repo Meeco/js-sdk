@@ -6,9 +6,9 @@ export default {
   title: 'Field Elements',
   parameters: {
     docs: {
-      page: mdx
-    }
-  }
+      page: mdx,
+    },
+  },
 };
 
 export const inputs = () => /*html*/ `

@@ -14,15 +14,15 @@ export default class ItemsGetAttachment extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
-    outputPath: _flags.string({ char: 'o', required: true, description: 'output file path' })
+    outputPath: _flags.string({ char: 'o', required: true, description: 'output file path' }),
   };
 
   static args = [
     {
       name: 'attachmentId',
       description: 'ID of the attachment to download',
-      required: true
-    }
+      required: true,
+    },
   ];
 
   async run() {

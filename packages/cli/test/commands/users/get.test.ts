@@ -32,7 +32,7 @@ describe('meeco users:get', () => {
       '1.user-1.my_secret_key',
       '-p',
       '123.asupersecretpassphrase',
-      ...testEnvironmentFile
+      ...testEnvironmentFile,
     ])
     .it('retrieves all user details with credentials provided via command line flags', ctx => {
       const expected = readFileSync(outputFixture('get-user.output.yaml'), 'utf-8');
@@ -44,24 +44,24 @@ function stubKeystore(api: Nock.Scope) {
   api
     .post('/srp/challenges', {
       srp_a: '000000000CLIENTPUBLIC',
-      username: 'user-1'
+      username: 'user-1',
     })
     .reply(200, {
       challenge: <SrpChallenge>{
         challenge_b: '00SERVERPUBLIC',
-        challenge_salt: '00SALT'
-      }
+        challenge_salt: '00SALT',
+      },
     });
   api
     .post('/srp/session', {
       srp_m: '00SALT:00SERVERPUBLIC:PROOF',
       srp_a: '000000000CLIENTPUBLIC',
-      username: 'user-1'
+      username: 'user-1',
     })
     .reply(200, {
       session: <Session>{
-        session_authentication_string: 'keystore_auth_token'
-      }
+        session_authentication_string: 'keystore_auth_token',
+      },
     });
   api
     .get('/key_encryption_key')
@@ -69,8 +69,8 @@ function stubKeystore(api: Nock.Scope) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       key_encryption_key: {
-        serialized_key_encryption_key: `key_encryption_key`
-      }
+        serialized_key_encryption_key: `key_encryption_key`,
+      },
     });
   api
     .get('/data_encryption_keys/data_encryption_key_id')
@@ -78,8 +78,8 @@ function stubKeystore(api: Nock.Scope) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       data_encryption_key: {
-        serialized_data_encryption_key: `data_encryption_key`
-      }
+        serialized_data_encryption_key: `data_encryption_key`,
+      },
     });
   api
     .get('/keypairs/external_id/auth')
@@ -89,8 +89,8 @@ function stubKeystore(api: Nock.Scope) {
       keypair: {
         public_key: '--PUBLIC_KEY--ABCD',
         encrypted_serialized_key: '--PRIVATE_KEY--12324',
-        external_identifiers: [UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER]
-      }
+        external_identifiers: [UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER],
+      },
     });
 }
 
@@ -100,23 +100,23 @@ function stubVault(api: Nock.Scope) {
     .matchHeader(
       'Authorization',
       [
-        '[decrypted]vault_auth_token--PRIVATE_KEY--12324[decrypted with key_encryption_key[decrypted with derived_key_123.asupersecretpassphrase]]'
+        '[decrypted]vault_auth_token--PRIVATE_KEY--12324[decrypted with key_encryption_key[decrypted with derived_key_123.asupersecretpassphrase]]',
       ].join('')
     )
     .reply(200, {
       user: {
         id: 'vault_user',
-        private_encryption_space_id: 'data_encryption_key_id'
+        private_dek_external_id: 'data_encryption_key_id',
       },
-      associations: []
+      associations: [],
     });
   api
     .post('/session', {
-      public_key: '--PUBLIC_KEY--ABCD'
+      public_key: '--PUBLIC_KEY--ABCD',
     })
     .reply(200, {
       session: {
-        encrypted_session_authentication_string: 'vault_auth_token'
-      }
+        encrypted_session_authentication_string: 'vault_auth_token',
+      },
     });
 }

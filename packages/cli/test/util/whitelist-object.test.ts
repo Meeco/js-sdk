@@ -7,21 +7,21 @@ describe('whitelist object', () => {
       whitelistObject(['foo', 'baz'], {
         foo: 'foo',
         bar: 'bar',
-        baz: 'baz'
+        baz: 'baz',
       })
     ).to.eql({
       foo: 'foo',
-      baz: 'baz'
+      baz: 'baz',
     });
   });
 
   it('does not add keys that do not exist', () => {
     expect(
       whitelistObject(['foo', 'bar'], {
-        foo: 'foo'
+        foo: 'foo',
       })
     ).to.eql({
-      foo: 'foo'
+      foo: 'foo',
     });
   });
 });

@@ -15,15 +15,15 @@ export default class ItemsGetThumbnail extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
-    outputPath: _flags.string({ char: 'o', required: true, description: 'output file path' })
+    outputPath: _flags.string({ char: 'o', required: true, description: 'output file path' }),
   };
 
   static args = [
     {
       name: 'thumbnailId',
       description: 'ID of the thumbnail to download',
-      required: true
-    }
+      required: true,
+    },
   ];
 
   async run() {
@@ -54,7 +54,7 @@ export default class ItemsGetThumbnail extends MeecoCommand {
   writeFile(destination: string, decryptedContents: string) {
     this.updateStatus('Writing decrypted file to destination');
     return writeFileContents(destination, stringAsBinaryBuffer(decryptedContents), {
-      flag: 'wx' // Write if not exists but fail if the file exists
+      flag: 'wx', // Write if not exists but fail if the file exists
     }).catch(err => {
       if (err.code === 'EEXIST') {
         throw new CLIError(

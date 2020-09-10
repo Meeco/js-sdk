@@ -11,7 +11,7 @@ export default class OrganizationMembersList extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
-    ...authFlags
+    ...authFlags,
   };
 
   static args = [{ name: 'organization_id', required: true }];
@@ -30,7 +30,7 @@ export default class OrganizationMembersList extends MeecoCommand {
       this.finish();
       this.printYaml({
         kind: 'OrganizationMembers',
-        spec: { organization: result.organization, members: result.members }
+        spec: { organization: result.organization, members: result.members },
       });
     } catch (err) {
       await this.handleException(err);

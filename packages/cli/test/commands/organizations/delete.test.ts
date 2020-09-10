@@ -14,6 +14,6 @@ describe('organizations:delete', () => {
     .stderr()
     .run(['organizations:delete', 'id', ...testUserAuth, ...testEnvironmentFile])
     .it('delete a requested organization', ctx => {
-      expect(ctx.stderr).to.equal('');
+      expect(ctx.stdout.trim()).to.equal('Organization successfully deleted');
     });
 });

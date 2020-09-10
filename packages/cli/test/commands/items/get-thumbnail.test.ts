@@ -2,7 +2,7 @@ import {
   binaryBufferToString,
   CipherStrategy,
   encryptWithKey,
-  stringAsBinaryBuffer
+  stringAsBinaryBuffer,
 } from '@meeco/cryppo';
 import { EncryptionKey } from '@meeco/sdk';
 import { ThumbnailApi } from '@meeco/vault-api-sdk';
@@ -26,7 +26,7 @@ describe('items:get-thumbnail', () => {
       expect(path).to.eql('out_file.txt');
       expect(contents).to.eql(singleBluePixel);
       expect(options).to.eql({
-        flag: 'wx'
+        flag: 'wx',
       });
       written = true;
       return Promise.resolve();
@@ -40,10 +40,10 @@ describe('items:get-thumbnail', () => {
           const encryptedPixel = await encryptWithKey({
             data: pixelString,
             key: dek.key,
-            strategy: CipherStrategy.AES_GCM
+            strategy: CipherStrategy.AES_GCM,
           });
           return stringAsBinaryBuffer(encryptedPixel.serialized);
-        }
+        },
       });
     }))
     .stdout()
@@ -54,7 +54,7 @@ describe('items:get-thumbnail', () => {
       '-o',
       'out_file.txt',
       ...testUserAuth,
-      ...testEnvironmentFile
+      ...testEnvironmentFile,
     ])
     .it('downloads, decrypts and saves an thumbnail to a file', () => {
       expect(written).to.eql(true);
@@ -63,7 +63,7 @@ describe('items:get-thumbnail', () => {
   customTest
     .stub(fileUtils, 'writeFileContents', <any>((path, contents, options) => {
       return Promise.reject({
-        code: 'EEXIST'
+        code: 'EEXIST',
       });
     }))
     .stub(ThumbnailApi.prototype, 'thumbnailsIdGet', <any>(id => {
@@ -75,10 +75,10 @@ describe('items:get-thumbnail', () => {
           const encryptedPixel = await encryptWithKey({
             data: pixelString,
             key: dek.key,
-            strategy: CipherStrategy.AES_GCM
+            strategy: CipherStrategy.AES_GCM,
           });
           return stringAsBinaryBuffer(encryptedPixel.serialized);
-        }
+        },
       });
     }))
     .stdout()
@@ -89,7 +89,7 @@ describe('items:get-thumbnail', () => {
       '-o',
       'out_file.txt',
       ...testUserAuth,
-      ...testEnvironmentFile
+      ...testEnvironmentFile,
     ])
     .catch(err =>
       expect(err.message)
@@ -101,7 +101,7 @@ describe('items:get-thumbnail', () => {
   customTest
     .stub(fileUtils, 'writeFileContents', <any>((path, contents, options) => {
       return Promise.reject({
-        code: 'OTHER'
+        code: 'OTHER',
       });
     }))
     .stub(ThumbnailApi.prototype, 'thumbnailsIdGet', <any>(id => {
@@ -113,10 +113,10 @@ describe('items:get-thumbnail', () => {
           const encryptedPixel = await encryptWithKey({
             data: pixelString,
             key: dek.key,
-            strategy: CipherStrategy.AES_GCM
+            strategy: CipherStrategy.AES_GCM,
           });
           return stringAsBinaryBuffer(encryptedPixel.serialized);
-        }
+        },
       });
     }))
     .stdout()
@@ -127,7 +127,7 @@ describe('items:get-thumbnail', () => {
       '-o',
       'out_file.txt',
       ...testUserAuth,
-      ...testEnvironmentFile
+      ...testEnvironmentFile,
     ])
     .catch(err => expect(err.message).to.contain('Failed to write to destination file'))
     .it('handles other file write errors');

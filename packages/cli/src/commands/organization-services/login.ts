@@ -16,8 +16,8 @@ export default class OrganizationServicesLogin extends MeecoCommand {
     organizationServiceConfig: _flags.string({
       char: 's',
       required: true,
-      description: 'service yaml file'
-    })
+      description: 'service yaml file',
+    }),
   };
 
   async run() {

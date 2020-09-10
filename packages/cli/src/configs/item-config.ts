@@ -55,8 +55,8 @@ export class ItemConfig {
       ...(data.metadata ? { metadata: data.metadata } : {}),
       spec: {
         ...data.item,
-        ...nested
-      }
+        ...nested,
+      },
     };
   }
 
@@ -67,15 +67,15 @@ export class ItemConfig {
     return {
       kind: ItemConfig.kind,
       metadata: {
-        template_name: template.template.name
+        template_name: template.template.name,
       },
       spec: {
         label: '',
         slots: template.slots.filter(notBlacklisted).map(slot => ({
           name: slot.name,
-          value: ''
-        }))
-      }
+          value: '',
+        })),
+      },
     };
   }
 }
