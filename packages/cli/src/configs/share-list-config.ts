@@ -15,7 +15,7 @@
 //     const shares = (result.shares || []).map(share => {
 //       return {
 //         share_id: share.id,
-//         connection_id: share.connection_id
+//         connection_id: share.connection_id,
 //       };
 //     });
 //     return ShareListConfig.encodeFromJson({ shares });
@@ -25,7 +25,7 @@
 //     return {
 //       kind: ShareListConfig.kind,
 //       ...(metadata ? { metadata } : {}),
-//       spec: json.shares
+//       spec: json.shares,
 //     };
 //   }
 // }

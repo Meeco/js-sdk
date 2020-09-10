@@ -9,9 +9,10 @@
 //   KeystoreAPIFactory,
 //   keystoreAPIFactory,
 //   vaultAPIFactory,
-//   VaultAPIFactory
+//   VaultAPIFactory,
 // } from '../util/api-factory';
 // import { fetchConnectionWithId } from '../util/find-connection-between';
+// import { Logger, noopLogger } from '../util/logger';
 // import cryppo from './cryppo-service';
 // import { ItemService } from './item-service';
 
@@ -45,9 +46,13 @@
 //   private keystoreApiFactory: KeystoreAPIFactory;
 //   private vaultApiFactory: VaultAPIFactory;
 
-//   constructor(private environment: Environment, private log: (message: string) => void = () => {}) {
+//   constructor(private environment: Environment, private log: Logger = noopLogger) {
 //     this.keystoreApiFactory = keystoreAPIFactory(environment);
 //     this.vaultApiFactory = vaultAPIFactory(environment);
+//   }
+
+//   public setLogger(logger: Logger) {
+//     this.log = logger;
 //   }
 
 //   public async shareItem(
@@ -80,11 +85,11 @@
 
 //     this.log('Sending shared data');
 //     const shareResult = await this.vaultApiFactory(fromUser).SharesApi.sharesPost({
-//       shares: [share]
+//       shares: [share],
 //     });
 //     return {
 //       ...share,
-//       share: shareResult
+//       share: shareResult,
 //     };
 //   }
 
@@ -131,7 +136,7 @@
 //       );
 //       const decryptedSharedDataEncryptionKey = await this.cryppo.decryptWithKey({
 //         serialized: space.encryption_space_data_encryption_key.serialized_data_encryption_key,
-//         key: user.key_encryption_key.key
+//         key: user.key_encryption_key.key,
 //       });
 //       key = EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey);
 //     }
@@ -142,7 +147,7 @@
 //       item,
 //       slots: decryptedSlots,
 //       share,
-//       connection
+//       connection,
 //     };
 //   }
 
@@ -166,7 +171,7 @@
 //       const encryptonSpace = await this.createSharedEncryptionSpace(fromUser, connection);
 //       sharedEncryptionSpace = {
 //         from_user_connection_id: connection.id,
-//         shared_data_encryption_key: EncryptionKey.fromRaw(encryptonSpace.dataEncryptionKey)
+//         shared_data_encryption_key: EncryptionKey.fromRaw(encryptonSpace.dataEncryptionKey),
 //       };
 //     }
 
@@ -185,7 +190,7 @@
 //       distributable: false,
 //       outgoing: true,
 //       // TODO - this should be the connection id but API does not support it yet
-//       user_id: toUserId
+//       user_id: toUserId,
 //     };
 //   }
 
@@ -196,7 +201,7 @@
 //     if (!connection.encryption_space_id) {
 //       // Users have no shared encryption space
 //       return new EncryptionSpaceData({
-//         from_user_connection_id: connection.id
+//         from_user_connection_id: connection.id,
 //       });
 //     }
 
@@ -208,12 +213,12 @@
 //     const decryptedSharedDataEncryptionKey = await this.cryppo.decryptWithKey({
 //       serialized: sharedDataEncryptionKey.encryption_space_data_encryption_key
 //         ?.serialized_data_encryption_key!,
-//       key: user.key_encryption_key.key
+//       key: user.key_encryption_key.key,
 //     });
 
 //     return new EncryptionSpaceData({
 //       from_user_connection_id: connection.id,
-//       shared_data_encryption_key: EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey)
+//       shared_data_encryption_key: EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey),
 //     });
 //   }
 
@@ -229,14 +234,14 @@
 
 //     const shareableDataEncryptionKey = await this.cryppo.encryptWithPublicKey({
 //       data: fromUserEncryptionSpace.dataEncryptionKey,
-//       publicKeyPem: recipientPublicKey
+//       publicKeyPem: recipientPublicKey,
 //     });
 
 //     this.log('Updating connection encryption space');
 //     await this.vaultApiFactory(fromUser).ConnectionApi.connectionsConnectionIdEncryptionSpacePost(
 //       connection.id!,
 //       {
-//         encryption_space_id: encryptionSpaceId
+//         encryption_space_id: encryptionSpaceId,
 //       }
 //     );
 
@@ -246,13 +251,13 @@
 //       external_id: encryptionSpaceId,
 //       public_key: recipientPublicKey,
 //       key_metadata: {
-//         key_type: this.cryppo.CipherStrategy.AES_GCM
-//       }
+//         key_type: this.cryppo.CipherStrategy.AES_GCM,
+//       },
 //     });
 //     return {
 //       connection,
 //       dataEncryptionKey: fromUserEncryptionSpace.dataEncryptionKey,
-//       fromUserSharedKey: sharedKey.shared_key
+//       fromUserSharedKey: sharedKey.shared_key,
 //     };
 //   }
 
@@ -275,7 +280,7 @@
 
 //     const privateKey = await this.cryppo.decryptWithKey({
 //       serialized: keyPair.encrypted_serialized_key,
-//       key: toUser.key_encryption_key.key
+//       key: toUser.key_encryption_key.key,
 //     });
 //     this.log('Claiming data encryption key');
 //     const reEncryptedDataEncryptionKey = await this.claimAndReEncryptSharedDataEncryptionKey(
@@ -283,7 +288,7 @@
 //       encryptionSpaceId,
 //       {
 //         publicKey: keyPair.public_key,
-//         privateKey
+//         privateKey,
 //       }
 //     );
 
@@ -291,7 +296,7 @@
 //     const encryptionSpace = await this.keystoreApiFactory(
 //       toUser
 //     ).EncryptionSpaceApi.encryptionSpacesPost({
-//       encrypted_serialized_key: reEncryptedDataEncryptionKey.serialized
+//       encrypted_serialized_key: reEncryptedDataEncryptionKey.serialized,
 //     });
 //     const { encryption_space_id } = encryptionSpace.encryption_space_data_encryption_key!;
 
@@ -299,7 +304,7 @@
 //     await this.vaultApiFactory(toUser).ConnectionApi.connectionsConnectionIdEncryptionSpacePost(
 //       connection.id,
 //       {
-//         encryption_space_id
+//         encryption_space_id,
 //       }
 //     );
 
@@ -313,17 +318,17 @@
 //     const encryptedDataEncryptionKey = await this.cryppo.encryptWithKey({
 //       data: dataEncryptionKey,
 //       key: user.key_encryption_key.key,
-//       strategy: this.cryppo.CipherStrategy.AES_GCM
+//       strategy: this.cryppo.CipherStrategy.AES_GCM,
 //     });
 //     const encryptionSpace = await this.keystoreApiFactory(user)
 //       .EncryptionSpaceApi.encryptionSpacesPost({
-//         encrypted_serialized_key: encryptedDataEncryptionKey.serialized
+//         encrypted_serialized_key: encryptedDataEncryptionKey.serialized,
 //       })
 //       .then(result => result.encryption_space_data_encryption_key);
 
 //     return {
 //       dataEncryptionKey,
-//       encryptionSpace
+//       encryptionSpace,
 //     };
 //   }
 
@@ -339,7 +344,7 @@
 //     const claimedKey = await this.keystoreApiFactory(user)
 //       .SharedKeyApi.sharedKeysExternalIdClaimKeyPost(encryptionSpaceId, {
 //         public_key: keyPair.publicKey,
-//         request_signature: signature.serialized
+//         request_signature: signature.serialized,
 //       })
 //       .catch(async err => {
 //         if (err?.status === 403 && typeof err?.json === 'function') {
@@ -354,12 +359,12 @@
 //       });
 //     const decryptedDataEncryptionKey = await this.cryppo.decryptSerializedWithPrivateKey({
 //       serialized: claimedKey.shared_key_claimed?.serialized_shared_key!,
-//       privateKeyPem: keyPair.privateKey
+//       privateKeyPem: keyPair.privateKey,
 //     });
 //     const reEncryptedDataEncryptionKey = await this.cryppo.encryptWithKey({
 //       key: user.key_encryption_key.key,
 //       data: decryptedDataEncryptionKey,
-//       strategy: this.cryppo.CipherStrategy.AES_GCM
+//       strategy: this.cryppo.CipherStrategy.AES_GCM,
 //     });
 
 //     return reEncryptedDataEncryptionKey;
@@ -389,12 +394,12 @@
 //           .encryptWithKey({
 //             data: slot.value || '',
 //             key: sharedDataEncryptionKey.key,
-//             strategy: this.cryppo.CipherStrategy.AES_GCM
+//             strategy: this.cryppo.CipherStrategy.AES_GCM,
 //           })
 //           .then(result => result.serialized);
 //         return {
 //           slot_id: slot.id,
-//           encrypted_value
+//           encrypted_value,
 //         };
 //       });
 //     return Promise.all(encryptions);
