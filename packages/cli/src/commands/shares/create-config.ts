@@ -45,7 +45,7 @@ export default class SharesCreateConfig extends MeecoCommand {
       // Ensure the item to share exists first since setting up a first share takes a bit of work
       await new ItemService(environment)
         .get(itemId, fromUser.vault_access_token, fromUser.data_encryption_key)
-        .catch((err) => {
+        .catch(err => {
           if (err.status === 404) {
             throw new CLIError(`Item with id '${itemId}' was not found on the 'from' user`);
           }

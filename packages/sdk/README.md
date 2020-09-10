@@ -23,7 +23,7 @@ Since Angular 6, the following polyfills are required to be added to your `polyf
 const buffer = require('buffer');
 (window as any).Buffer = buffer;
 (window as any).process = {
-  browser: true
+  browser: true,
 };
 ```
 
@@ -186,18 +186,18 @@ const service = new ItemService(environment);
 const item = await service.create(user.vault_access_token, user.data_encryption_key, {
   template_name: availableTemplates.item_templates[0].name,
   item: {
-    label: 'My Car'
+    label: 'My Car',
   },
   slots: [
     {
       name: 'make_model',
-      value: 'Ford Focus'
+      value: 'Ford Focus',
     },
     {
       name: 'year',
-      value: '2017'
-    }
-  ]
+      value: '2017',
+    },
+  ],
 });
 ```
 

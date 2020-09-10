@@ -16,7 +16,7 @@ describe('shares:create-config', () => {
       'my-item',
       ...testEnvironmentFile,
     ])
-    .it('builds a share template file from two users and an item', (ctx) => {
+    .it('builds a share template file from two users and an item', ctx => {
       const expected = readFileSync(outputFixture('create-config-share.output.yaml'), 'utf-8');
       expect(ctx.stdout).to.contain(expected);
     });
