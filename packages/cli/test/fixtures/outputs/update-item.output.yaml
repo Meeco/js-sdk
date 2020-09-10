@@ -11,7 +11,6 @@ spec:
   visible: null
   updated_at: 1970-01-01
   item_template_label: null
-  shareable: null
   image: null
   item_image: null
   item_image_background_colour: null
@@ -22,8 +21,9 @@ spec:
     - pizza
   me: null
   background_color: null
-  share_count: null
-  valid_share_count: null
+  original_id: null
+  owner_id: null
+  share_id: null
   slots:
     - id: pizza
       own: null
@@ -34,7 +34,7 @@ spec:
       ordinal: null
       visible: null
       classification_node_ids: null
-      attachment_ids: null
+      attachment_id: null
       slotable_id: null
       slotable_type: null
       required: null
@@ -43,10 +43,13 @@ spec:
       slot_type_name: key_value
       creator: null
       encrypted_value: Supreme
+      encrypted_value_verification_key: null
+      value_verification_hash: null
       image: null
       label: Pizza
+      original_id: null
+      owner_id: null
   thumbnails: []
   attachments: []
-  shares: []
 
 # Item updated. There are 5 outstanding client tasks. Todo: 2 & InProgress: 3

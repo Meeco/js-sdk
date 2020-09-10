@@ -62,7 +62,6 @@ const response = {
   associations: [],
   attachments: [],
   classification_nodes: [],
-  shares: [],
   thumbnails: [],
 };
 

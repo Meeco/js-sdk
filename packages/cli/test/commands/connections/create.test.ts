@@ -55,9 +55,14 @@ function stubVault(api: nock.Scope) {
     .reply(200, {
       connections: [
         {
-          id: 'connection_id',
-          other_user_connection_public_key: 'to_user_public',
-          public_key: 'from_user_public',
+          own: {
+            id: 'connection_id',
+            user_public_key: 'from_user_public',
+          },
+          the_other_user: {
+            id: 'other_connection_id',
+            user_public_key: 'to_user_public',
+          },
         },
       ],
     });
@@ -69,9 +74,14 @@ function stubVault(api: nock.Scope) {
     .reply(200, {
       connections: [
         {
-          id: 'connection_id',
-          other_user_connection_public_key: 'from_user_public',
-          public_key: 'to_user_public',
+          own: {
+            id: 'other_connection_id',
+            user_public_key: 'to_user_public',
+          },
+          the_other_user: {
+            id: 'connection_id',
+            user_public_key: 'from_user_public',
+          },
         },
       ],
     });
@@ -87,7 +97,14 @@ function stubVault(api: nock.Scope) {
     })
     .reply(200, {
       connection: {
-        id: 'connection_id',
+        own: {
+          id: 'connection_id',
+          user_public_key: 'to_user_public',
+        },
+        the_other_user: {
+          id: 'other_connection_id',
+          user_public_key: 'from_user_public',
+        },
       },
     });
 }

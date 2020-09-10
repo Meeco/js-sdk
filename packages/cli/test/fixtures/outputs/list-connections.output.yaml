@@ -1,32 +1,38 @@
 - name: Some Encrypted Name[decrypted with my_generated_dek]
   connection:
-    id: abc123
-    user_id: null
-    user_name: null
-    user_image: null
-    user_email: null
-    user_type: null
-    encryption_space_id: null
-    public_key: null
-    keypair_external_id: null
-    other_user_connection_public_key: null
-    other_user_connection_encryption_space_id: null
-    other_user_connection_keypair_external_id: null
-    encrypted_recipient_name: Some Encrypted Name
-    integration_data: null
-- name: Some Other Encrypted Name[decrypted with my_generated_dek]
+    own:
+      id: abc123
+      encrypted_recipient_name: Some Encrypted Name
+      integration_data: null
+      connection_type: null
+      user_image: null
+      user_type: null
+      user_public_key: null
+      user_keypair_external_id: null
+    the_other_user:
+      id: abc345
+      connection_type: null
+      user_id: null
+      user_image: null
+      user_type: null
+      user_public_key: null
+      user_keypair_external_id: null
+- name: Some Encrypted Name[decrypted with my_generated_dek]
   connection:
-    id: def456
-    user_id: null
-    user_name: null
-    user_image: null
-    user_email: null
-    user_type: null
-    encryption_space_id: null
-    public_key: null
-    keypair_external_id: null
-    other_user_connection_public_key: null
-    other_user_connection_encryption_space_id: null
-    other_user_connection_keypair_external_id: null
-    encrypted_recipient_name: Some Other Encrypted Name
-    integration_data: null
+    own:
+      id: def456
+      encrypted_recipient_name: Some Encrypted Name
+      integration_data: null
+      connection_type: null
+      user_image: null
+      user_type: null
+      user_public_key: null
+      user_keypair_external_id: null
+    the_other_user:
+      id: def789
+      connection_type: null
+      user_id: null
+      user_image: null
+      user_type: null
+      user_public_key: null
+      user_keypair_external_id: null

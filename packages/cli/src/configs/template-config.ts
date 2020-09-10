@@ -1,5 +1,5 @@
 import { ITemplateData } from '@meeco/sdk';
-import { FastItemTemplatesResponse } from '@meeco/vault-api-sdk';
+import { ItemTemplatesResponse } from '@meeco/vault-api-sdk';
 
 export class TemplateConfig {
   static readonly kind = 'Template';
@@ -30,7 +30,7 @@ export class TemplateConfig {
     };
   }
 
-  static encodeListFromJSON(json: FastItemTemplatesResponse) {
+  static encodeListFromJSON(json: ItemTemplatesResponse) {
     return {
       kind: TemplateConfig.pluralKind,
       spec: json.item_templates.map(template => template.name),

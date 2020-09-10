@@ -15,7 +15,7 @@ describe('organization-members:update', () => {
       inputFixture('update-organization-member.input.yaml'),
     ])
     .it('Updates the organization member', ctx => {
-      expect(ctx.stderr).to.equal('');
+      expect(ctx.stdout.trim()).to.equal('Successfully updated');
     });
 });
 

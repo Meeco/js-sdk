@@ -19,7 +19,7 @@ export * from './services/organization-members-service';
 export * from './services/organization-services-service';
 export * from './services/organizations-service';
 export * from './services/secret-service';
-export * from './services/share-service';
+// export * from './services/share-service';
 export * from './services/templates-service';
 export * from './services/user-service';
 export * from './util/api-factory';

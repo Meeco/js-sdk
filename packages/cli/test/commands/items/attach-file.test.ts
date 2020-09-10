@@ -58,7 +58,6 @@ describe('items:attach-file', () => {
     ])
     .it('generates and uploads a thumbnail for the binary if it is an image', ctx => {
       expect(ctx.stderr).to.contain('File was successfully attached');
-      expect(ctx.stderr).to.not.contain('Error');
     });
 });
 
@@ -87,11 +86,9 @@ function mockDefaults(api: Scope) {
           {
             label: 'My Secret File',
             slot_type_name: 'attachment',
-            attachments_attributes: [
-              {
-                id: 'new_attachment_id',
-              },
-            ],
+            attachment_attributes: {
+              id: 'new_attachment_id',
+            },
           },
         ],
       },

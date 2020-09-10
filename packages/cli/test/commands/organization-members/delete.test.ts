@@ -20,6 +20,6 @@ describe('organization-members:delete', () => {
       ...testEnvironmentFile,
     ])
     .it('delete a requested organization member', ctx => {
-      expect(ctx.stderr).to.equal('');
+      expect(ctx.stdout.trim()).to.equal('Member successfully deleted');
     });
 });
