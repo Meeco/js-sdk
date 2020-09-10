@@ -43,6 +43,7 @@ $('downloadAttachment').addEventListener('click', downloadAttachment);
 
 async function attachFile() {
   const [file] = ($('attachment') as any).files;
+  const videoCodec = $get('videoCodec') || undefined;
   if (!file) {
     return alert('Please attach file first');
   }
@@ -58,6 +59,7 @@ async function attachFile() {
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
+
     const progressUpdateFunc = (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => {
       $set('fileUploadProgressBar', percentageComplete.toString());
     };
@@ -68,6 +70,7 @@ async function attachFile() {
       vaultUrl,
       vaultAccessToken,
       subscriptionKey,
+      videoCodec,
       progressUpdateFunc
     });
 
@@ -90,7 +93,11 @@ async function downloadAttachment() {
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
-    const progressUpdateFunc = (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => {
+    const progressUpdateFunc = (
+      chunkBuffer: ArrayBuffer | null,
+      percentageComplete: number,
+      videoCodec?: string
+    ) => {
       $set('fileDownloadProgressBar', percentageComplete.toString());
     };
     const downloadedFile = await fileDownloadBrowser({

@@ -15,6 +15,7 @@ export async function fileUploadBrowser({
   vaultUrl,
   vaultAccessToken,
   subscriptionKey,
+  videoCodec,
   progressUpdateFunc = null
 }: {
   file: File;
@@ -22,6 +23,7 @@ export async function fileUploadBrowser({
   vaultUrl: string;
   vaultAccessToken: string;
   subscriptionKey: string;
+  videoCodec?: string;
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null;
@@ -59,7 +61,9 @@ export async function fileUploadBrowser({
   );
   console.log(uploadResult);
   const artifactsFileName = file.name + '.encryption_artifacts';
-  // const artifactsFileDir = `./tmp/${artifactsFileName}`;
+  if (videoCodec) {
+    uploadResult.artifacts['videoCodec'] = videoCodec;
+  }
   const artifactsFile = new File(
     [JSON.stringify(uploadResult.artifacts)],
     file.name + '.encryption_artifacts',
@@ -114,7 +118,7 @@ export async function fileDownloadBrowser({
   vaultAccessToken: string;
   subscriptionKey: string;
   progressUpdateFunc?:
-    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
+    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
     | null;
 }): Promise<File> {
   if (progressUpdateFunc) {
@@ -172,7 +176,7 @@ async function largeFileDownloadBrowser(
   dek,
   token,
   vaultUrl,
-  progressUpdateFunc: ((chunkBuffer, percentageComplete) => void) | null
+  progressUpdateFunc: ((chunkBuffer, percentageComplete, videoCodec?: string) => void) | null
 ) {
   const direct_download_encrypted_artifact = await getDirectDownloadInfo(
     attachmentID,
@@ -184,6 +188,10 @@ async function largeFileDownloadBrowser(
   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
   const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
   const encrypted_artifact = JSON.parse(Cryppo.binaryBufferToString(encrypted_artifact_uint8array));
+  const videoCodec = encrypted_artifact.videoCodec;
+  if (progressUpdateFunc && videoCodec) {
+    progressUpdateFunc(null, 0, videoCodec);
+  }
   client = new AzureBlockDownload(direct_download.url);
   let blocks = new Uint8Array();
 
@@ -202,7 +210,7 @@ async function largeFileDownloadBrowser(
     if (progressUpdateFunc) {
       const buffer = block.buffer;
       const percentageComplete = ((index + 1) / encrypted_artifact.range.length) * 100;
-      progressUpdateFunc(buffer, percentageComplete);
+      progressUpdateFunc(buffer, percentageComplete, videoCodec);
     }
   }
   return { byteArray: blocks, direct_download };

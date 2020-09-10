@@ -61,7 +61,22 @@
         autocomplete="off"
         value="33d32606-c2e9-446c-8828-86ea655fcc6b"
       />
+      <input
+        id="videoCodec"
+        placeholder='video codec e.g. video/webm; codecs="vorbis,vp8"'
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        list="availableCodecs"
+      />
+      <datalist id="availableCodecs">
+        <option value='video/mp4; codecs="avc1.640028"; profiles="iso6,avc1,mp41"'
+          >video/mp4; codecs="avc1.640028"; profiles="iso6,avc1,mp41"</option
+        >
+        <option value='video/webm; codecs="vorbis,vp8"'>video/webm; codecs="vorbis,vp8"</option>
+      </datalist>
       <button type="button" id="attachFile">Attach</button>
+      <progress id="fileUploadProgressBar" value="0" max="100"></progress>
       <textarea disabled id="attached" rows="10"></textarea>
     </div>
 
