@@ -9,9 +9,9 @@
   },
   "bugs": "https://github.com/Meeco/cli/issues",
   "dependencies": {
-    "@meeco/sdk": "0.0.11-beta",
     "@meeco/cryppo": "^0.6.2",
     "@meeco/keystore-api-sdk": "0.14.1-beta.1",
+    "@meeco/sdk": "0.0.11-beta",
     "@meeco/vault-api-sdk": "0.19.1-beta.3",
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.13.3",

@@ -2,20 +2,24 @@
   "compilerOptions": {
     "baseUrl": ".",
     "declaration": true,
-    "importHelpers": true,
-    "module": "commonjs",
-    "outDir": "lib",
-    "strict": true,
-    "target": "es2017",
-    "noImplicitAny": false,
-    "noUnusedLocals": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "outDir": "lib",
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2017",
     "paths": {
-      "@meeco/sdk": ["packages/sdk/src"]
+      "@meeco/sdk": ["packages/sdk/src"],
+      "@meeco/cli": ["packages/cli/src"],
+      "@meeco/file-storage-node": ["packages/file-storage-node/src"],
+      "@meeco/file-storage-browser": ["packages/file-storage-browser/src"],
+      "@meeco/file-storage-common": ["packages/file-storage-common/src"]
     }
   },
-  "include": ["packages"],
-  "exclude": ["packages/*/dist", "packages/*/build", "packages/*/lib"]
+  "exclude": ["node_modules", "dist", "lib"]
 }
