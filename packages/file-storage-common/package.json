@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@meeco/cryppo": "^0.7.0",
-    "@meeco/sdk": "0.0.11-beta"
+    "@meeco/sdk": "0.0.12-alpha"
   },
   "devDependencies": {
     "bili": "^4.10.0",

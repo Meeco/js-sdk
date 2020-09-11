@@ -13,7 +13,7 @@
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
   },
   "dependencies": {
-    "@meeco/sdk": "0.0.11-beta",
+    "@meeco/sdk": "0.0.12-alpha",
     "@meeco/file-storage-common": "0.0.2-beta",
     "@meeco/cryppo": "^0.7.0",
     "file-type": "^15.0.0",
