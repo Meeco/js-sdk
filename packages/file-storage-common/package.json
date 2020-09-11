@@ -14,12 +14,13 @@
   },
   "dependencies": {
     "@meeco/cryppo": "^0.7.0",
-    "@meeco/sdk": "0.0.11-beta"
+    "@meeco/sdk": "0.0.11-beta",
+    "axios": "^0.20.0",
+    "lodash.padstart": "^4.6.1"
   },
   "devDependencies": {
     "bili": "^4.10.0",
     "typescript": "^3.9.6",
-    "lodash.padstart": "^4.6.1",
     "@types/node": "^10.14.18",
     "prettier": "~1.19.1"
   },
