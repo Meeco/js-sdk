@@ -60,6 +60,22 @@ export class ShareService {
     this.log = logger;
   }
 
+  public async shareSingleSlotFromItem(
+    fromUser: AuthData,
+    connectionId: string,
+    itemId: string,
+    slotId: string,
+    shareOptions: IShareOptions = {
+      sharing_mode: 'owner',
+      acceptance_required: 'acceptance_not_required',
+    }
+  ): Promise<SharesResponse> {
+    return this.shareItem(fromUser, connectionId, itemId, {
+      ...shareOptions,
+      slot_id: slotId,
+    });
+  }
+
   public async shareItem(
     fromUser: AuthData,
     connectionId: string,
