@@ -55,7 +55,7 @@ export default class SharesCreate extends MeecoCommand {
       const result = await service.shareItem(share.from, share.connectionId, share.itemId, {
         sharing_mode,
         acceptance_required,
-        slot_id: slot_id == '' ? null : slot_id,
+        slot_id: slot_id === '' ? null : slot_id,
       });
       this.printYaml(result);
     } catch (err) {

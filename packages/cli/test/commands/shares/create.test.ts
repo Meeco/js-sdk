@@ -81,13 +81,12 @@ function stubVault(api: nock.Scope) {
     .post('/items/from_user_vault_item_to_share_id/shares', {
       shares: [
         {
-          recipient_id: 'to_user_id',
-          public_key: 'to_user_public_key',
-          encrypted_dek:
-            '[serialized][rsa_encrypted]randomly_generated_key[with to_user_public_key]',
-          keypair_external_id: 'to_user_keypair_external_id',
           sharing_mode: 'owner',
           acceptance_required: 'acceptance_not_required',
+          slot_id: null,
+          recipient_id: 'to_user_id',
+          public_key: 'to_user_public_key',
+          keypair_external_id: 'to_user_keypair_external_id',
           slot_values: [
             {
               slot_id: 'slot_a',
@@ -106,6 +105,8 @@ function stubVault(api: nock.Scope) {
               value_verification_hash,
             },
           ],
+          encrypted_dek:
+            '[serialized][rsa_encrypted]randomly_generated_key[with to_user_public_key]',
         },
       ],
     })
