@@ -1,11 +1,11 @@
 import { ShareService } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
-import { ItemConfig } from '../../configs/item-config';
 import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
-export default class SharesGet extends MeecoCommand {
-  static description = 'Get the item associated with a share, along with the decrypted values';
+export default class SharesGetIncoming extends MeecoCommand {
+  static description =
+    'Read an incoming share together with shared item, slots, and associated other data';
 
   static flags = {
     ...MeecoCommand.flags,
@@ -16,12 +16,12 @@ export default class SharesGet extends MeecoCommand {
     {
       name: 'shareId',
       required: true,
-      description: 'ID of the shared item to fetch',
+      description: 'ID of the share to fetch',
     },
   ];
 
   async run() {
-    const { args, flags } = this.parse(this.constructor as typeof SharesGet);
+    const { args, flags } = this.parse(this.constructor as typeof SharesGetIncoming);
 
     const { auth } = flags;
     const { shareId } = args;
@@ -35,8 +35,8 @@ export default class SharesGet extends MeecoCommand {
 
     const service = new ShareService(environment, this.updateStatus);
     try {
-      const item = await service.getSharedItemIncoming(authConfig, shareId);
-      this.printYaml(ItemConfig.encodeFromJSON(item));
+      const reslut = await service.getSharedItemIncoming(authConfig, shareId);
+      this.printYaml(reslut);
     } catch (err) {
       await this.handleException(err);
     }

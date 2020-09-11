@@ -113,7 +113,7 @@ export class ShareService {
   }
 
   public async getSharedItemIncoming(user: AuthData, shareId: string) {
-    const { item, share, slots } = await this.vaultApiFactory(user)
+    const shareWithItemData = await this.vaultApiFactory(user)
       .SharesApi.incomingSharesIdItemGet(shareId)
       .catch(err => {
         if ((<Response>err).status === 404) {
@@ -124,8 +124,12 @@ export class ShareService {
         throw err;
       });
 
+    if (shareWithItemData.share.acceptance_required === 'acceptance_required') {
+      return shareWithItemData;
+    }
+
     const keyPairExternal = await this.keystoreApiFactory(user).KeypairApi.keypairsIdGet(
-      share.keypair_external_id!
+      shareWithItemData.share.keypair_external_id!
     );
 
     const decryptedPrivateKey = await this.cryppo.decryptWithKey({
@@ -135,17 +139,16 @@ export class ShareService {
 
     const dek = await this.cryppo.decryptSerializedWithPrivateKey({
       privateKeyPem: decryptedPrivateKey,
-      serialized: share.encrypted_dek,
+      serialized: shareWithItemData.share.encrypted_dek,
     });
 
     const key = EncryptionKey.fromRaw(dek);
 
-    const decryptedSlots = await ItemService.decryptAllSlots(slots!, key);
+    const decryptedSlots = await ItemService.decryptAllSlots(shareWithItemData.slots, key);
 
     return {
-      item,
+      ...shareWithItemData,
       slots: decryptedSlots,
-      share,
     };
   }
 
