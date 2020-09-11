@@ -1,4 +1,8 @@
-import { EncryptedSlotValue, PostItemSharesRequestShare } from '@meeco/vault-api-sdk';
+import {
+  EncryptedSlotValue,
+  PostItemSharesRequestShare,
+  SharesResponse,
+} from '@meeco/vault-api-sdk';
 import { hmac } from 'node-forge';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
@@ -21,6 +25,10 @@ import { ItemService } from './item-service';
  * Connections can be setup via the {@link ConnectionService}
  */
 export class ShareService {
+  constructor(private environment: Environment, private log: Logger = noopLogger) {
+    this.keystoreApiFactory = keystoreAPIFactory(environment);
+    this.vaultApiFactory = vaultAPIFactory(environment);
+  }
   /**
    * @visibleForTesting
    * @ignore
@@ -32,9 +40,12 @@ export class ShareService {
   private keystoreApiFactory: KeystoreAPIFactory;
   private vaultApiFactory: VaultAPIFactory;
 
-  constructor(private environment: Environment, private log: Logger = noopLogger) {
-    this.keystoreApiFactory = keystoreAPIFactory(environment);
-    this.vaultApiFactory = vaultAPIFactory(environment);
+  static generate_value_verificaiton_hash(value_verification_key: string, slot_value: string) {
+    const hmac_create = hmac.create();
+    hmac_create.start('sha256', value_verification_key);
+    hmac_create.update(slot_value);
+    const value_verification_hash = hmac_create.digest().toHex();
+    return value_verification_hash;
   }
 
   public setLogger(logger: Logger) {
@@ -49,7 +60,7 @@ export class ShareService {
       sharing_mode: 'owner',
       acceptance_required: 'acceptance_not_required',
     }
-  ) {
+  ): Promise<SharesResponse> {
     this.log('Fetching connection');
     const fromUserConnection = await fetchConnectionWithId(
       fromUser,
@@ -70,10 +81,7 @@ export class ShareService {
     const shareResult = await this.vaultApiFactory(fromUser).SharesApi.itemsIdSharesPost(itemId, {
       shares: [share],
     });
-    return {
-      ...share,
-      share: shareResult,
-    };
+    return shareResult;
   }
 
   public async listShares(user: AuthData) {
@@ -198,10 +206,10 @@ export class ShareService {
           .then(result => result.serialized);
 
         // this will be replace by cryppo call later
-        const hmac_create = hmac.create();
-        hmac_create.start('sha256', value_verification_key);
-        hmac_create.update(slot.value || '');
-        const value_verification_hash = hmac_create.digest().toHex();
+        const value_verification_hash = ShareService.generate_value_verificaiton_hash(
+          value_verification_key,
+          slot.value || ''
+        );
 
         return {
           slot_id: slot.id || '',
