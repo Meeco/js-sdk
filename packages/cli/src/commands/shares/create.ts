@@ -29,13 +29,19 @@ export default class SharesCreate extends MeecoCommand {
       description:
         'Some shares require that the recipient accepts the terms of the share. \n There are two acceptance_require: acceptance_not_required & acceptance_required \n acceptance_not_required - recipient dont require acceptance  \n acceptance_required - recipient require acceptance before viewing shared item.',
     }),
+    slot_id: _flags.string({
+      char: 's',
+      default: '',
+      required: false,
+      description: 'If sharing only a single slot, the id of the slot',
+    }),
   };
 
   static args = [{ name: 'file' }];
 
   async run() {
     const { flags } = this.parse(SharesCreate);
-    const { config, sharing_mode, acceptance_required } = flags;
+    const { config, sharing_mode, acceptance_required, slot_id } = flags;
 
     try {
       const environment = await this.readEnvironmentFile();
@@ -49,6 +55,7 @@ export default class SharesCreate extends MeecoCommand {
       const result = await service.shareItem(share.from, share.connectionId, share.itemId, {
         sharing_mode,
         acceptance_required,
+        slot_id: slot_id == '' ? null : slot_id,
       });
       this.printYaml(result);
     } catch (err) {
