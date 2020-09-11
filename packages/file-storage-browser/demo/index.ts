@@ -54,8 +54,6 @@ async function attachFile() {
     return alert('Please enter an item id');
   }
   $set('attached', '');
-  // const file: any = await fileAsBinaryString(blob);
-
   try {
     const privateDek = localStorage.getItem('dataEncryptionKey') || '';
     const vaultUrl = localStorage.getItem('vaultUrl') || '';

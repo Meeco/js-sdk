@@ -168,7 +168,7 @@ export class AzureBlockUpload {
               Cryppo.CipherStrategy.AES_GCM,
               Cryppo.binaryBufferToString(ivArtifact)
             );
-            artifacts.iv[nBlock] = iv;
+            artifacts.iv[nBlock] = ivArtifact;
             artifacts.at[nBlock] = encrypt.artifacts.at;
           }
 
