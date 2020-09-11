@@ -1,11 +1,11 @@
 {
   "name": "@meeco/file-storage-common",
-  "version": "0.0.1-beta",
+  "version": "0.0.2-beta",
   "description": "",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/file-storage-common/src/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" ",
     "build": "tsc -p tsconfig.build.json && bili src/index.ts --format cjs --format es --module-name meeco-file-storage-common",

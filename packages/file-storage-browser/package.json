@@ -1,11 +1,11 @@
 {
   "name": "@meeco/file-storage-browser",
-  "version": "0.0.1-beta",
+  "version": "0.0.2-beta",
   "description": "",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/file-storage-browser/src/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "build": "tsc -p tsconfig.build.json && bili src/index.ts --format cjs --format es --module-name meeco-file-storage-browser",
@@ -17,7 +17,7 @@
   "dependencies": {
     "@meeco/sdk": "0.0.11-beta",
     "@meeco/vault-api-sdk": "0.19.1-beta.2",
-    "@meeco/file-storage-common": "0.0.1-beta",
+    "@meeco/file-storage-common": "0.0.2-beta",
     "@meeco/cryppo": "^0.6.2"
   },
   "devDependencies": {
