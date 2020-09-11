@@ -1,20 +1,19 @@
-import { AuthData } from '@meeco/sdk';
+import * as Cryppo from '@meeco/cryppo';
 import {
+  AttachmentApi,
   AttachmentDirectUploadUrlResponse,
   Configuration,
   CreateAttachmentResponse,
   DirectAttachmentsApi,
   PostAttachmentDirectUploadUrlRequest,
 } from '@meeco/vault-api-sdk';
+import { AuthData } from './auth-data';
 import { AzureBlockUpload } from './azure-block-upload';
-export function exampleFunction() {
-  console.log('example function ran');
-  return 'example function ran';
-}
-
-export { Environment, ItemService } from '@meeco/sdk';
+import { EncryptionKey } from './encryption-key';
+export * from './auth-data';
 export { AzureBlockDownload } from './azure-block-download';
 export { AzureBlockUpload } from './azure-block-upload';
+export * from './encryption-key';
 export { BlobStorage } from './services/Azure';
 
 export async function directAttachmentUpload(
@@ -95,6 +94,46 @@ export async function directAttachmentAttach(
   return attachment;
 }
 
+export async function getDirectAttachmentInfo(
+  config: { attachmentId: string },
+  auth: AuthData,
+  vaultUrl: string
+): Promise<any> {
+  const api = new DirectAttachmentsApi(
+    new Configuration({ basePath: vaultUrl, apiKey: auth.vault_access_token })
+  );
+  return await api.directAttachmentsIdGet(config.attachmentId);
+}
+
+export async function downloadAttachment(
+  id: string,
+  vaultAccessToken: string,
+  dataEncryptionKey: EncryptionKey,
+  vaultUrl: string
+) {
+  return downloadAndDecryptFile(
+    () =>
+      new AttachmentApi(
+        new Configuration({ basePath: vaultUrl, apiKey: vaultAccessToken })
+      ).attachmentsIdDownloadGet(id),
+    dataEncryptionKey
+  );
+}
+
+export async function downloadAndDecryptFile<T extends Blob>(
+  download: () => Promise<T>,
+  dataEncryptionKey: EncryptionKey
+) {
+  const result = await download();
+  const buffer = await (<any>result).arrayBuffer();
+  const encryptedContents = await Cryppo.binaryBufferToString(buffer);
+  const decryptedContents = await Cryppo.decryptWithKey({
+    serialized: encryptedContents,
+    key: dataEncryptionKey.key,
+  });
+  return decryptedContents;
+}
+
 interface IDirectAttachmentUploadData {
   directUploadUrl: string;
   file: File | string;
@@ -123,4 +162,26 @@ export interface IDirectAttachmentAttachData {
   blobKey: string;
   artifactsBlobId: number;
   artifactsBlobKey: string;
+}
+
+interface IAPIConfig {
+  url: string;
+  subscription_key: string;
+}
+
+/**
+ * Environment configuration - used to point to the desired API host (e.g sandbox or production) and configure
+ * your subscription keys for API access.
+ */
+export class Environment {
+  public vault: IAPIConfig;
+  public keystore: IAPIConfig;
+
+  constructor(config: {
+    vault: IAPIConfig;
+    keystore: IAPIConfig & { provider_api_key: string }; // TODO: check if this one is still needed
+  }) {
+    this.vault = config.vault;
+    this.keystore = config.keystore;
+  }
 }

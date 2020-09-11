@@ -2,7 +2,7 @@ node_modules/
 .vscode/
 .cache/
 .nyc_output/
-lib/
+dist/
 src/
 test/
 coverage/

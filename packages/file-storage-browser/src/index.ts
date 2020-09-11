@@ -1,13 +1,16 @@
 import * as Cryppo from '@meeco/cryppo';
 import {
+  AuthData,
   AzureBlockDownload,
   directAttachmentAttach,
   directAttachmentUpload,
   directAttachmentUploadUrl,
+  downloadAttachment,
+  EncryptionKey,
+  Environment,
+  getDirectAttachmentInfo,
 } from '@meeco/file-storage-common';
-import { AuthData, EncryptionKey, Environment, ItemService } from '@meeco/sdk';
 import * as FileUtils from './FileUtils.web';
-export { Environment } from '@meeco/sdk';
 
 export async function fileUploadBrowser({
   file,
@@ -142,9 +145,7 @@ export async function fileDownloadBrowser({
     },
   });
 
-  const service = new ItemService(environment);
-
-  const attachmentInfo = await service.getDirectAttachmentInfo({ attachmentId }, authConfig);
+  const attachmentInfo = await getDirectAttachmentInfo({ attachmentId }, authConfig, vaultUrl);
   let buffer: Uint8Array;
   const fileName: string = attachmentInfo.attachment.filename;
   if (attachmentInfo.attachment.is_direct_upload) {
@@ -159,10 +160,11 @@ export async function fileDownloadBrowser({
     buffer = downloaded.byteArray;
   } else {
     // was not uploaded in chunks
-    const downloaded = await service.downloadAttachment(
+    const downloaded = await downloadAttachment(
       attachmentId,
       authConfig.vault_access_token,
-      authConfig.data_encryption_key
+      authConfig.data_encryption_key,
+      vaultUrl
     );
     buffer = Buffer.from(downloaded);
   }
@@ -204,7 +206,7 @@ async function largeFileDownloadBrowser(
       },
       encrypted_artifact.range[index]
     );
-    blocks = new Uint8Array([...blocks, ...block]);
+    blocks = new Uint8Array([...(blocks as any), ...block]);
     if (progressUpdateFunc) {
       const buffer = block.buffer;
       const percentageComplete = ((index + 1) / encrypted_artifact.range.length) * 100;
