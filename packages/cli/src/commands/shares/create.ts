@@ -13,13 +13,29 @@ export default class SharesCreate extends MeecoCommand {
       description: 'Share config file to use for setting up the share',
       required: true,
     }),
+    sharing_mode: _flags.string({
+      char: 'm',
+      default: 'owner',
+      required: false,
+      options: ['owner', 'anyone'],
+      description:
+        'There are two sharing_mode: owner and anyone \n owner - non-owner will not be able to on-share a share \n anyone - anyone allow to on-share a share.',
+    }),
+    acceptance_required: _flags.string({
+      char: 't',
+      default: 'acceptance_not_required',
+      required: false,
+      options: ['acceptance_not_required', 'acceptance_required'],
+      description:
+        'Some shares require that the recipient accepts the terms of the share. \n There are two acceptance_require: acceptance_not_required & acceptance_required \n acceptance_not_required - recipient dont require acceptance  \n acceptance_required - recipient require acceptance before viewing shared item.',
+    }),
   };
 
   static args = [{ name: 'file' }];
 
   async run() {
     const { flags } = this.parse(SharesCreate);
-    const { config } = flags;
+    const { config, sharing_mode, acceptance_required } = flags;
 
     try {
       const environment = await this.readEnvironmentFile();
@@ -30,7 +46,10 @@ export default class SharesCreate extends MeecoCommand {
       }
 
       const service = new ShareService(environment, this.updateStatus);
-      const result = await service.shareItem(share.from, share.connectionId, share.itemId);
+      const result = await service.shareItem(share.from, share.connectionId, share.itemId, {
+        sharing_mode,
+        acceptance_required,
+      });
       this.printYaml(result);
     } catch (err) {
       await this.handleException(err);

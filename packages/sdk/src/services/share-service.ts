@@ -20,6 +20,13 @@ import { Logger, noopLogger } from '../util/logger';
 import cryppo from './cryppo-service';
 import { ItemService } from './item-service';
 
+interface IShareOptions extends PostItemSharesRequestShare {
+  expires_at?: Date;
+  terms?: string;
+  sharing_mode: string;
+  acceptance_required: string;
+}
+
 /**
  * Service for sharing data between two connected Meeco users.
  * Connections can be setup via the {@link ConnectionService}
@@ -56,10 +63,7 @@ export class ShareService {
     fromUser: AuthData,
     connectionId: string,
     itemId: string,
-    shareOptions: PostItemSharesRequestShare = {
-      sharing_mode: 'owner',
-      acceptance_required: 'acceptance_not_required',
-    }
+    shareOptions: IShareOptions
   ): Promise<SharesResponse> {
     this.log('Fetching connection');
     const fromUserConnection = await fetchConnectionWithId(
