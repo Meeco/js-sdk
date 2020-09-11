@@ -1,6 +1,6 @@
 {
   "name": "@meeco/file-storage-browser",
-  "version": "0.0.1",
+  "version": "0.0.1-beta",
   "description": "",
   "source": "src/index.ts",
   "main": "lib/index.js",
