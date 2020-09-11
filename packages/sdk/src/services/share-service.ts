@@ -1,5 +1,6 @@
 import {
   EncryptedSlotValue,
+  GetShareResponse,
   PostItemSharesRequestShare,
   SharesResponse,
 } from '@meeco/vault-api-sdk';
@@ -84,8 +85,12 @@ export class ShareService {
     return shareResult;
   }
 
-  public async listShares(user: AuthData) {
+  public async listShares(user: AuthData): Promise<SharesResponse> {
     return await this.vaultApiFactory(user).SharesApi.incomingSharesGet();
+  }
+
+  public async acceptIncomingShare(user: AuthData, shareId: string): Promise<GetShareResponse> {
+    return await this.vaultApiFactory(user).SharesApi.incomingSharesIdAcceptPut(shareId);
   }
 
   public async deleteSharedItem(user: AuthData, shareId: string) {
