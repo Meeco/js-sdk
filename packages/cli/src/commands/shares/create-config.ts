@@ -25,6 +25,11 @@ export default class SharesCreateConfig extends MeecoCommand {
       char: 'c',
       description: `Connection id for the 'to' user`,
     }),
+    slotName: _flags.string({
+      required: false,
+      char: 's',
+      description: 'Name of slot to share (if sharing a single slot)'
+    })
   };
 
   static args = [];
@@ -32,7 +37,7 @@ export default class SharesCreateConfig extends MeecoCommand {
   async run() {
     try {
       const { flags } = this.parse(this.constructor as typeof SharesCreateConfig);
-      const { from, connectionId, itemId } = flags;
+      const { from, connectionId, itemId, slotName } = flags;
       const environment = await this.readEnvironmentFile();
       const fromUser = await this.readConfigFromFile(AuthConfig, from);
 
@@ -43,7 +48,7 @@ export default class SharesCreateConfig extends MeecoCommand {
       await fetchConnectionWithId(fromUser, connectionId, environment, this.updateStatus);
 
       // Ensure the item to share exists first since setting up a first share takes a bit of work
-      await new ItemService(environment)
+      const item = await new ItemService(environment)
         .get(itemId, fromUser.vault_access_token, fromUser.data_encryption_key)
         .catch(err => {
           if (err.status === 404) {
@@ -51,7 +56,14 @@ export default class SharesCreateConfig extends MeecoCommand {
           }
           throw err;
         });
-      this.printYaml(ShareConfig.encodeFromUsersWithItem(fromUser, connectionId, itemId));
+      let slotId: string | undefined;
+      if (slotName) {
+        slotId = item.slots.find(slot => slot.name === slotName)?.id
+        if (slotId === undefined) {
+          throw new CLIError(`Slot with name '${slotName}' was not found on the item`);
+        }
+      }
+      this.printYaml(ShareConfig.encodeFromUsersWithItem(fromUser, connectionId, itemId, slotId));
     } catch (err) {
       await this.handleException(err);
     }

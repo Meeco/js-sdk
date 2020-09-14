@@ -185,7 +185,11 @@ export class ShareService {
     if (!item) {
       throw new MeecoServiceError(`Item '${itemId}' not found`);
     }
-    const { slots } = item;
+    let { slots } = item;
+
+    if (shareOptions.slot_id) {
+      slots = slots.filter(slot => slot.id === shareOptions.slot_id);
+    }
 
     this.log('Decrypting all slots');
     const decryptedSlots = await ItemService.decryptAllSlots(slots!, fromUser.data_encryption_key);
