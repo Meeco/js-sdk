@@ -31,7 +31,7 @@
     "webpack": "^4.44.1",
     "webpack-bundle-analyzer": "^3.8.0",
     "webpack-dev-server": "^3.11.0",
-    "@meeco/sdk": "0.0.11-beta"
+    "@meeco/sdk": "0.0.12-alpha"
   },
   "keywords": [],
   "author": "",
