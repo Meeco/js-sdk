@@ -7,18 +7,17 @@ import {
   DirectAttachmentsApi,
   PostAttachmentDirectUploadUrlRequest,
 } from '@meeco/vault-api-sdk';
-import { AuthData } from './auth-data';
 import { AzureBlockUpload } from './azure-block-upload';
-import { EncryptionKey } from './encryption-key';
-export * from './auth-data';
 export { AzureBlockDownload } from './azure-block-download';
 export { AzureBlockUpload } from './azure-block-upload';
-export * from './encryption-key';
 export { BlobStorage } from './services/Azure';
 
 export async function directAttachmentUpload(
   config: IDirectAttachmentUploadData,
-  auth: AuthData,
+  auth: {
+    data_encryption_key: string;
+    vault_access_token: string;
+  },
   fileUtilsLib,
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
@@ -42,17 +41,17 @@ export async function directAttachmentUpload(
     },
     fileUtilsLib
   );
-  await client.start(
-    config.encrypt ? auth.data_encryption_key['_value'] : null,
-    progressUpdateFunc
-  );
+  await client.start(config.encrypt ? auth.data_encryption_key : null, progressUpdateFunc);
 
   return result;
 }
 
 export async function directAttachmentUploadUrl(
   config: IDirectAttachmentUploadUrlData,
-  auth: AuthData,
+  auth: {
+    data_encryption_key: string;
+    vault_access_token: string;
+  },
   vaultUrl: string
 ): Promise<AttachmentDirectUploadUrlResponse> {
   let uploadUrl;
@@ -77,7 +76,10 @@ export async function directAttachmentUploadUrl(
 
 export async function directAttachmentAttach(
   config: IDirectAttachmentAttachData,
-  auth: AuthData,
+  auth: {
+    data_encryption_key: string;
+    vault_access_token: string;
+  },
   vaultUrl
 ): Promise<CreateAttachmentResponse> {
   const api = new DirectAttachmentsApi(
@@ -96,7 +98,10 @@ export async function directAttachmentAttach(
 
 export async function getDirectAttachmentInfo(
   config: { attachmentId: string },
-  auth: AuthData,
+  auth: {
+    data_encryption_key: string;
+    vault_access_token: string;
+  },
   vaultUrl: string
 ): Promise<any> {
   const api = new DirectAttachmentsApi(
@@ -108,7 +113,7 @@ export async function getDirectAttachmentInfo(
 export async function downloadAttachment(
   id: string,
   vaultAccessToken: string,
-  dataEncryptionKey: EncryptionKey,
+  dataEncryptionKey: string,
   vaultUrl: string
 ) {
   return downloadAndDecryptFile(
@@ -122,14 +127,14 @@ export async function downloadAttachment(
 
 export async function downloadAndDecryptFile<T extends Blob>(
   download: () => Promise<T>,
-  dataEncryptionKey: EncryptionKey
+  dataEncryptionKey: string
 ) {
   const result = await download();
   const buffer = await (<any>result).arrayBuffer();
   const encryptedContents = await Cryppo.binaryBufferToString(buffer);
   const decryptedContents = await Cryppo.decryptWithKey({
     serialized: encryptedContents,
-    key: dataEncryptionKey.key,
+    key: dataEncryptionKey,
   });
   return decryptedContents;
 }
@@ -162,26 +167,4 @@ export interface IDirectAttachmentAttachData {
   blobKey: string;
   artifactsBlobId: number;
   artifactsBlobKey: string;
-}
-
-interface IAPIConfig {
-  url: string;
-  subscription_key: string;
-}
-
-/**
- * Environment configuration - used to point to the desired API host (e.g sandbox or production) and configure
- * your subscription keys for API access.
- */
-export class Environment {
-  public vault: IAPIConfig;
-  public keystore: IAPIConfig;
-
-  constructor(config: {
-    vault: IAPIConfig;
-    keystore: IAPIConfig & { provider_api_key: string }; // TODO: check if this one is still needed
-  }) {
-    this.vault = config.vault;
-    this.keystore = config.keystore;
-  }
 }

@@ -1,13 +1,10 @@
 import * as Cryppo from '@meeco/cryppo';
 import {
-  AuthData,
   AzureBlockDownload,
   directAttachmentAttach,
   directAttachmentUpload,
   directAttachmentUploadUrl,
   downloadAttachment,
-  EncryptionKey,
-  Environment,
   getDirectAttachmentInfo,
 } from '@meeco/file-storage-common';
 import * as FileUtils from './FileUtils.web';
@@ -28,19 +25,15 @@ export async function fileUploadBrowser({
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null;
-}): Promise<{ attachment: any; dek: EncryptionKey }> {
+}): Promise<{ attachment: any; dek: string }> {
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
-  const dek = EncryptionKey.fromRaw(Cryppo.generateRandomKey());
-  const authConfig = new AuthData({
+  const dek = Cryppo.generateRandomKey();
+  const authConfig = {
     data_encryption_key: dek,
-    key_encryption_key: EncryptionKey.fromRaw(''),
-    keystore_access_token: '',
-    passphrase_derived_key: EncryptionKey.fromRaw(''),
-    secret: '',
     vault_access_token: vaultAccessToken,
-  });
+  };
   const uploadUrl = await directAttachmentUploadUrl(
     {
       fileSize: file.size,
@@ -125,25 +118,16 @@ export async function fileDownloadBrowser({
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
-  const authConfig = new AuthData({
-    data_encryption_key: EncryptionKey.fromRaw(dek),
-    key_encryption_key: EncryptionKey.fromRaw(''),
-    keystore_access_token: '',
-    passphrase_derived_key: EncryptionKey.fromRaw(''),
-    secret: '',
+  const authConfig = {
+    data_encryption_key: dek,
     vault_access_token: vaultAccessToken,
-  });
-  const environment = new Environment({
+  };
+  const environment = {
     vault: {
       url: vaultUrl,
       subscription_key: subscriptionKey,
     },
-    keystore: {
-      url: '',
-      subscription_key: subscriptionKey,
-      provider_api_key: '',
-    },
-  });
+  };
 
   const attachmentInfo = await getDirectAttachmentInfo({ attachmentId }, authConfig, vaultUrl);
   let buffer: Uint8Array;

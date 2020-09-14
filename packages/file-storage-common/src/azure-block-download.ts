@@ -1,6 +1,5 @@
 import * as Cryppo from '@meeco/cryppo';
 import { CipherStrategy } from '@meeco/cryppo';
-import { EncryptionKey } from './encryption-key';
 import { BlobStorage } from './services/Azure';
 
 export class AzureBlockDownload {
@@ -21,7 +20,7 @@ export class AzureBlockDownload {
    * Start downloading
    */
   async start(
-    dataEncryptionKey: EncryptionKey | null,
+    dataEncryptionKey: string | null,
     strategy: CipherStrategy | null,
     encryptionArtifact: any,
     range: string | null
@@ -32,7 +31,7 @@ export class AzureBlockDownload {
       let byteNumbers: Uint8Array;
       if (dataEncryptionKey && strategy && encryptionArtifact) {
         const str = Cryppo.decryptWithKeyUsingArtefacts(
-          dataEncryptionKey.key,
+          dataEncryptionKey,
           Cryppo.binaryBufferToString(data),
           strategy,
           encryptionArtifact
