@@ -133,8 +133,6 @@ export class ShareService {
         }
         throw err;
       });
-
-    this.log('Share successfully deleted');
   }
 
   public async getSharedItemIncoming(user: AuthData, shareId: string) {
