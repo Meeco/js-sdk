@@ -1,4 +1,4 @@
-import { ShareType } from '@meeco/sdk/src';
+import { ShareType } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
