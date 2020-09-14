@@ -19,7 +19,7 @@
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
   },
   "dependencies": {
-    "@meeco/vault-api-sdk": "0.19.1-beta.2",
+    "@meeco/vault-api-sdk": "^0.19.1-beta.4",
     "@meeco/file-storage-common": "0.0.4-beta",
     "@meeco/cryppo": "^0.7.0",
     "lodash.padstart": "^4.6.1",
@@ -31,7 +31,7 @@
     "webpack": "^4.44.1",
     "webpack-bundle-analyzer": "^3.8.0",
     "webpack-dev-server": "^3.11.0",
-    "@meeco/sdk": "0.0.12-alpha"
+    "@meeco/sdk": "^0.0.12-alpha.2"
   },
   "keywords": [],
   "author": "",

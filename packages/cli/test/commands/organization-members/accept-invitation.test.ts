@@ -21,7 +21,7 @@ describe('organization-members:accept-invitation', () => {
       '-i',
       inputFixture('accept-organization-members-invitation.input.yaml'),
     ])
-    .it('Requests the creation of a new organization member invitation', ctx => {
+    .it('Requests the acceptance of a new organization member invitation', ctx => {
       const expected = readFileSync(
         outputFixture('accept-organization-members-invitation.output.yaml'),
         'utf-8'
