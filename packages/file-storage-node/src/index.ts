@@ -89,7 +89,10 @@ export async function fileDownloadNode(
 
   const attachmentInfo = await getDirectAttachmentInfo(
     { attachmentId },
-    authConfig,
+    {
+      data_encryption_key: authConfig.data_encryption_key.key,
+      vault_access_token: authConfig.vault_access_token,
+    },
     environment.vault.url
   );
   let buffer: Buffer;
