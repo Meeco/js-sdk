@@ -2,7 +2,6 @@ node_modules/
 .vscode/
 .cache/
 .nyc_output/
-dist/
 src/
 test/
 coverage/
