@@ -28,8 +28,8 @@ export default class SharesCreateConfig extends MeecoCommand {
     slotName: _flags.string({
       required: false,
       char: 's',
-      description: 'Name of slot to share (if sharing a single slot)'
-    })
+      description: 'Name of slot to share (if sharing a single slot)',
+    }),
   };
 
   static args = [];
@@ -58,7 +58,7 @@ export default class SharesCreateConfig extends MeecoCommand {
         });
       let slotId: string | undefined;
       if (slotName) {
-        slotId = item.slots.find(slot => slot.name === slotName)?.id
+        slotId = item.slots.find(slot => slot.name === slotName)?.id;
         if (slotId === undefined) {
           throw new CLIError(`Slot with name '${slotName}' was not found on the item`);
         }

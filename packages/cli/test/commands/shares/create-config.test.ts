@@ -46,10 +46,12 @@ describe('shares:create-config with slot', () => {
 
 const response = {
   item: {},
-  slots: [{
-    name: 'my_slot',
-    id: 'slot123',
-  }],
+  slots: [
+    {
+      name: 'my_slot',
+      id: 'slot123',
+    },
+  ],
   associations_to: [],
   associations: [],
   attachments: [],

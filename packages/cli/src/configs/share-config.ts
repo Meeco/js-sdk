@@ -39,7 +39,7 @@ export class ShareConfig {
       connectionId: yamlConfigObj.spec.connection_id,
       itemId: yamlConfigObj.spec.item_id,
       options: yamlConfigObj.metadata!,
-      slotId: yamlConfigObj.spec.slot_id
+      slotId: yamlConfigObj.spec.slot_id,
     });
   }
 
@@ -65,7 +65,7 @@ export class ShareConfig {
       metadata: {},
       spec: {
         item_id: itemId,
-        ...(slotId ? {slot_id: slotId} : {}),
+        ...(slotId ? { slot_id: slotId } : {}),
         connection_id: connectionId,
         from,
       },
