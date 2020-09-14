@@ -28,6 +28,11 @@ interface IShareOptions extends PostItemSharesRequestShare {
   acceptance_required: string;
 }
 
+export enum ShareType {
+  incoming = 'incoming',
+  outgoing = 'outgoing',
+}
+
 /**
  * Service for sharing data between two connected Meeco users.
  * Connections can be setup via the {@link ConnectionService}
@@ -105,8 +110,12 @@ export class ShareService {
     return shareResult;
   }
 
-  public async listShares(user: AuthData): Promise<SharesResponse> {
-    return await this.vaultApiFactory(user).SharesApi.incomingSharesGet();
+  public async listShares(user: AuthData, shareType: ShareType.incoming): Promise<SharesResponse> {
+    if (shareType === ShareType.incoming) {
+      return await this.vaultApiFactory(user).SharesApi.incomingSharesGet();
+    } else {
+      return await this.vaultApiFactory(user).SharesApi.outgoingSharesGet();
+    }
   }
 
   public async acceptIncomingShare(user: AuthData, shareId: string): Promise<GetShareResponse> {
