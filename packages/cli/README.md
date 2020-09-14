@@ -107,6 +107,7 @@ If you would prefer to provide a configuration file with your credentials, suppl
 1. Ensure users are connected first (see above)
 2. Select an item from user 1 to share to user 2
 3. Create the share template: `meeco shares:create-config --from .user.yaml --connectionId <connection_id_to_share_to> -i <item_id_to_share> > .share_config.yaml`
+   (If you only want to share one slot, also add `-s <slot_name>`).
 4. Create the share: `meeco shares:create -c .share_config.yaml`
 
 You can fetch the share and shared item as the second user with `meeco shares:get-incoming -a .user_2.yaml <share_id>`
