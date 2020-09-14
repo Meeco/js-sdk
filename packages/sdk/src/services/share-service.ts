@@ -1,10 +1,10 @@
+import { hmacSha256Digest } from '@meeco/cryppo/dist/src/digests/hmac-digest';
 import {
   EncryptedSlotValue,
   GetShareResponse,
   PostItemSharesRequestShare,
   SharesResponse,
 } from '@meeco/vault-api-sdk';
-import { hmac } from 'node-forge';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
@@ -54,11 +54,7 @@ export class ShareService {
   private vaultApiFactory: VaultAPIFactory;
 
   static generate_value_verificaiton_hash(value_verification_key: string, slot_value: string) {
-    const hmac_create = hmac.create();
-    hmac_create.start('sha256', value_verification_key);
-    hmac_create.update(slot_value);
-    const value_verification_hash = hmac_create.digest().toHex();
-    return value_verification_hash;
+    return hmacSha256Digest(value_verification_key, slot_value);
   }
 
   public setLogger(logger: Logger) {
