@@ -1,27 +1,32 @@
 {
   "name": "@meeco/file-storage-common",
   "version": "0.0.2-beta",
-  "description": "",
+  "description": "Core module for uploading and downloading encrypted files",
   "source": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "types": "dist/file-storage-common/src/index.d.ts",
+  "types": "./lib/index.d.ts",
+  "browser": "./lib/esm/index.js",
+  "main": "./lib/umd/index.js",
+  "module": "./lib/esm/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" ",
-    "build": "tsc -p tsconfig.build.json && bili src/index.ts --format cjs --format es --module-name meeco-file-storage-common",
+    "build": "npm run build:types && npm run build:esm && npm run build:umd",
+    "build:types": "tsc -p tsconfig.json --emitDeclarationOnly",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:umd": "tsc -p tsconfig.umd.json",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
   },
   "dependencies": {
     "@meeco/cryppo": "^0.7.0",
-    "@meeco/sdk": "0.0.12-alpha"
+    "axios": "^0.20.0",
+    "lodash.padstart": "^4.6.1"
   },
   "devDependencies": {
-    "bili": "^4.10.0",
-    "typescript": "^3.9.6",
-    "lodash.padstart": "^4.6.1",
+    "@types/lodash.padstart": "^4.6.6",
     "@types/node": "^10.14.18",
-    "prettier": "~1.19.1"
+    "bili": "^4.10.0",
+    "prettier": "~1.19.1",
+    "typescript": "^3.9.6"
   },
   "keywords": [],
   "author": "",

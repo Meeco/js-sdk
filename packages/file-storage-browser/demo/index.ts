@@ -100,7 +100,7 @@ async function attachFile() {
           attachment_attributes: {
             id: attachment.id,
           },
-          value: attachmentDek.key,
+          value: attachmentDek,
         },
       ],
       label: existingItem.label,

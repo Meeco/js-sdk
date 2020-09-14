@@ -4,10 +4,10 @@ import {
   directAttachmentAttach,
   directAttachmentUpload,
   directAttachmentUploadUrl,
+  downloadAttachment,
+  getDirectAttachmentInfo,
 } from '@meeco/file-storage-common';
-import { AuthData, EncryptionKey, Environment, ItemService } from '@meeco/sdk';
 import * as FileUtils from './FileUtils.web';
-export { Environment } from '@meeco/sdk';
 
 export async function fileUploadBrowser({
   file,
@@ -25,19 +25,15 @@ export async function fileUploadBrowser({
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null;
-}): Promise<{ attachment: any; dek: EncryptionKey }> {
+}): Promise<{ attachment: any; dek: string }> {
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
-  const dek = EncryptionKey.fromRaw(Cryppo.generateRandomKey());
-  const authConfig = new AuthData({
+  const dek = Cryppo.generateRandomKey();
+  const authConfig = {
     data_encryption_key: dek,
-    key_encryption_key: EncryptionKey.fromRaw(''),
-    keystore_access_token: '',
-    passphrase_derived_key: EncryptionKey.fromRaw(''),
-    secret: '',
     vault_access_token: vaultAccessToken,
-  });
+  };
   const uploadUrl = await directAttachmentUploadUrl(
     {
       fileSize: file.size,
@@ -122,29 +118,18 @@ export async function fileDownloadBrowser({
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
-  const authConfig = new AuthData({
-    data_encryption_key: EncryptionKey.fromRaw(dek),
-    key_encryption_key: EncryptionKey.fromRaw(''),
-    keystore_access_token: '',
-    passphrase_derived_key: EncryptionKey.fromRaw(''),
-    secret: '',
+  const authConfig = {
+    data_encryption_key: dek,
     vault_access_token: vaultAccessToken,
-  });
-  const environment = new Environment({
+  };
+  const environment = {
     vault: {
       url: vaultUrl,
       subscription_key: subscriptionKey,
     },
-    keystore: {
-      url: '',
-      subscription_key: subscriptionKey,
-      provider_api_key: '',
-    },
-  });
+  };
 
-  const service = new ItemService(environment);
-
-  const attachmentInfo = await service.getDirectAttachmentInfo({ attachmentId }, authConfig);
+  const attachmentInfo = await getDirectAttachmentInfo({ attachmentId }, authConfig, vaultUrl);
   let buffer: Uint8Array;
   const fileName: string = attachmentInfo.attachment.filename;
   if (attachmentInfo.attachment.is_direct_upload) {
@@ -159,10 +144,11 @@ export async function fileDownloadBrowser({
     buffer = downloaded.byteArray;
   } else {
     // was not uploaded in chunks
-    const downloaded = await service.downloadAttachment(
+    const downloaded = await downloadAttachment(
       attachmentId,
       authConfig.vault_access_token,
-      authConfig.data_encryption_key
+      authConfig.data_encryption_key,
+      vaultUrl
     );
     buffer = Buffer.from(downloaded);
   }
@@ -204,7 +190,7 @@ async function largeFileDownloadBrowser(
       },
       encrypted_artifact.range[index]
     );
-    blocks = new Uint8Array([...blocks, ...block]);
+    blocks = new Uint8Array([...(blocks as any), ...block]);
     if (progressUpdateFunc) {
       const buffer = block.buffer;
       const percentageComplete = ((index + 1) / encrypted_artifact.range.length) * 100;

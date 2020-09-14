@@ -1,5 +1,9 @@
 import * as Cryppo from '@meeco/cryppo';
-import { AzureBlockDownload, directAttachmentUpload } from '@meeco/file-storage-common';
+import {
+  AzureBlockDownload,
+  directAttachmentUpload,
+  getDirectAttachmentInfo,
+} from '@meeco/file-storage-common';
 import { AuthData, Environment, ItemService } from '@meeco/sdk';
 import * as FileType from 'file-type';
 import * as fs from 'fs';
@@ -21,7 +25,7 @@ export async function largeFileUploadNode(
     {
       fileSize: fileStats.size,
       fileType: fileType ? fileType : '',
-      fileName
+      fileName,
     },
     authConfig
   );
@@ -31,7 +35,7 @@ export async function largeFileUploadNode(
       directUploadUrl: uploadUrl.url,
       file: filePath,
       encrypt: true,
-      options: {}
+      options: {},
     },
     authConfig,
     FileUtils
@@ -46,7 +50,7 @@ export async function largeFileUploadNode(
     {
       fileName: artifactsFileName,
       fileType: 'application/json',
-      fileSize: artifactsFileStats.size
+      fileSize: artifactsFileStats.size,
     },
     authConfig
   );
@@ -56,7 +60,7 @@ export async function largeFileUploadNode(
       directUploadUrl: artifactsUploadUrl.url,
       file: artifactsFileDir,
       encrypt: false,
-      options: {}
+      options: {},
     },
     authConfig,
     FileUtils
@@ -67,7 +71,7 @@ export async function largeFileUploadNode(
       blobId: uploadUrl.blob_id,
       blobKey: uploadUrl.blob_key,
       artifactsBlobId: artifactsUploadUrl.blob_id,
-      artifactsBlobKey: artifactsUploadUrl.blob_key
+      artifactsBlobKey: artifactsUploadUrl.blob_key,
     },
     authConfig
   );
@@ -83,7 +87,14 @@ export async function fileDownloadNode(
 ): Promise<{ fileName: string; buffer: Buffer }> {
   const service = new ItemService(environment, logFunction);
 
-  const attachmentInfo = await service.getDirectAttachmentInfo({ attachmentId }, authConfig);
+  const attachmentInfo = await getDirectAttachmentInfo(
+    { attachmentId },
+    {
+      data_encryption_key: authConfig.data_encryption_key.key,
+      vault_access_token: authConfig.vault_access_token,
+    },
+    environment.vault.url
+  );
   let buffer: Buffer;
   const fileName: string = attachmentInfo.attachment.filename;
   if (attachmentInfo.attachment.is_direct_upload) {
@@ -128,7 +139,7 @@ export async function largeFileDownloadNode(attachmentID, dek, token, vaultUrl) 
       {
         iv: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,
-        at: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data))
+        at: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
       },
       encrypted_artifact.range[index]
     );
@@ -143,9 +154,9 @@ function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: 'Bearer ' + token
+      Authorization: 'Bearer ' + token,
     },
-    method: 'GET'
+    method: 'GET',
   };
 
   return fetch(`${vaultUrl}/direct/attachments/${id}/download_url?type=${type}`, options).then(
