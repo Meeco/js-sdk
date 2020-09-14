@@ -1,0 +1,8 @@
+kind: Authentication
+metadata:
+  secret: 1.to.secret
+  keystore_access_token: to_keystore_access
+  vault_access_token: to_vault_access
+  data_encryption_key: dG9fZGVr
+  key_encryption_key: dG9fa2Vr
+  passphrase_derived_key: dG9fcGFzc3BocmFzZV9kZXJpdmVk

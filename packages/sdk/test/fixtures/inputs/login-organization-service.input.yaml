@@ -1,0 +1,10 @@
+kind: OrganizationService
+metadata:
+  privateKey: --PRIVATE_KEY--12324
+spec:
+  id: 00000000-0000-0000-0000-000000000001
+  name: Sample Service
+  description: Sample service description
+  contract:
+    name: sample contract
+  organization_id: 00000000-0000-0000-0000-000000000011

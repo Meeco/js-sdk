@@ -1,0 +1,8 @@
+kind: Shares
+spec:
+  - share_id: sh_1
+    connection_id: con_1
+  - share_id: sh_2
+    connection_id: con_1
+  - share_id: sh_3
+    connection_id: con_2
