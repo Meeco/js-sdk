@@ -4,7 +4,8 @@ import { isRunningOnWeb } from './app';
 import { BlobStorage } from './services/Azure';
 import ThreadPool from './ThreadPool';
 
-const base64 = str => (isRunningOnWeb ? window.btoa(str) : Buffer.from(str).toString('base64'));
+const base64 = (str: string) =>
+  isRunningOnWeb ? window.btoa(str) : Buffer.from(str).toString('base64');
 
 export class AzureBlockUpload {
   /**
@@ -34,7 +35,7 @@ export class AzureBlockUpload {
   totalBlocks: any;
   fileUtilsLib: any;
 
-  constructor(url, file, opts: any = {}, fileUtilsLib) {
+  constructor(url: string, file: File | string, opts: any = {}, fileUtilsLib: any) {
     if (typeof url !== 'string') {
       throw new Error('url must be a string');
     }
@@ -67,8 +68,11 @@ export class AzureBlockUpload {
     this.fileUtilsLib = fileUtilsLib;
 
     // Callbacks
-    const { onProgress = () => null, onSuccess = () => null, onError = err => console.error(err) } =
-      opts.callbacks || {};
+    const {
+      onProgress = () => null,
+      onSuccess = () => null,
+      onError = (err: string) => console.error(err),
+    } = opts.callbacks || {};
 
     this.callbacks = {
       onProgress,
@@ -121,7 +125,7 @@ export class AzureBlockUpload {
    * Start uploading
    */
   async start(
-    dataEncryptionKey,
+    dataEncryptionKey: string | null,
     progressUpdateFunc?:
       | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
       | null
@@ -142,7 +146,7 @@ export class AzureBlockUpload {
 
       const commit = async () => BlobStorage.putBlockList(this.url, blockIDList, this.fileType);
 
-      const job = async nBlock => {
+      const job = async (nBlock: any) => {
         try {
           const from = nBlock * this.blockSize;
           const to =

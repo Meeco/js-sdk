@@ -1,4 +1,6 @@
 import * as Cryppo from '@meeco/cryppo';
+import { CipherStrategy } from '@meeco/cryppo';
+import { EncryptionKey } from './encryption-key';
 import { BlobStorage } from './services/Azure';
 
 export class AzureBlockDownload {
@@ -7,7 +9,7 @@ export class AzureBlockDownload {
    *
    */
   url: any;
-  constructor(url) {
+  constructor(url: string) {
     if (typeof url !== 'string') {
       throw new Error('url must be a string');
     }
@@ -18,7 +20,12 @@ export class AzureBlockDownload {
   /**
    * Start downloading
    */
-  async start(dataEncryptionKey, strategy, encryptionArtifact, range) {
+  async start(
+    dataEncryptionKey: EncryptionKey | null,
+    strategy: CipherStrategy | null,
+    encryptionArtifact: any,
+    range: string | null
+  ) {
     if (range) {
       const block = await BlobStorage.getBlock(this.url, range);
       const data = new Uint8Array(block.data);

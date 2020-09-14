@@ -1,8 +1,12 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./lib"
-    // "rootDir": "."
+    "baseUrl": ".",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "outDir": "./lib",
+    "noImplicitAny": false
   },
-  "include": ["demo/**/*", "src/**/*"]
+  "include": ["./src", "./demo"]
 }
