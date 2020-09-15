@@ -145,7 +145,7 @@ spec:
 
 4. We can verify the slots contain the correct values by fetching the item again
 
-`meeco items:get -i .my_item.yaml`
+`meeco items:get <item_id> > .my_item.yaml`
 
 ```yaml
 #...
