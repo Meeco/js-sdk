@@ -107,7 +107,19 @@ configureFetch(fetchPolyfill);
 
 ### Loggers
 
-Most services allow a logger to be configured. The default for this is a no-op function (`() => {}`). If you would like to log message to the console, you can pass in `console.log` as the logger. You can pass in any function that takes strings as an argument (for exmaple, if you want to update a progress bar message).
+Most services allow a logger to be configured. The default for this is a no-op function (`() => {}`). If you would like to log message to the console, you can pass in `console.log` as the logger. You can pass in any function that takes strings as an argument (for example, if you want to update a progress bar message).
+
+To log warnings or errors you can pass loggers like so
+
+```javascript
+{
+ error: errorLogFunc,
+ warn: warnLogFunc,
+ report: baseLogFunc,
+}
+```
+
+where each of the logging functions takes a string to print.
 
 ### API Factories
 
