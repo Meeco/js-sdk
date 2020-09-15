@@ -1,28 +1,53 @@
 import { ClientTaskQueueResponse } from '@meeco/vault-api-sdk';
 import { Environment } from '../models/environment';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
+import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
+import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 
 /**
  * A ClientTask represents a task the client is supposed to perform.
  */
 export class ClientTaskQueueService {
   private vaultAPIFactory: VaultAPIFactory;
+  private log: IFullLogger;
 
-  constructor(environment: Environment) {
+  constructor(environment: Environment, log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
+    this.log = toFullLogger(log);
   }
 
-  public list(
+  public setLogger(logger: Logger) {
+    this.log = toFullLogger(logger);
+  }
+
+  public async list(
+    vaultAccessToken: string,
+    supressChangingState: boolean = true,
+    state: State = State.Todo,
+    nextPageAfter?: string,
+    perPage?: number
+  ): Promise<ClientTaskQueueResponse> {
+    const result = await this.vaultAPIFactory(
+      vaultAccessToken
+    ).ClientTaskQueueApi.clientTaskQueueGet(nextPageAfter, perPage, supressChangingState, state);
+
+    if (resultHasNext(result) && perPage === undefined) {
+      // TODO-- should pass a warning logger!
+      this.log.warn('Some results omitted, but page limit was not explicitly set');
+    }
+
+    return result;
+  }
+
+  public async listAll(
     vaultAccessToken: string,
     supressChangingState: boolean = true,
     state: State = State.Todo
   ): Promise<ClientTaskQueueResponse> {
-    return this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi.clientTaskQueueGet(
-      undefined,
-      undefined,
-      supressChangingState,
-      state
-    );
+    const api = this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi;
+    return getAllPaged(cursor =>
+      api.clientTaskQueueGet(cursor, undefined, supressChangingState, state)
+    ).then(reducePages);
   }
 
   public async countOutstandingTasks(vaultAccessToken: string): Promise<IOutstandingClientTasks> {

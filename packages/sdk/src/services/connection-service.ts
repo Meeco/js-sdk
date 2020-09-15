@@ -1,6 +1,7 @@
-import { Connection } from '@meeco/vault-api-sdk';
+import { Connection, ConnectionsResponse } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { ConnectionCreateData } from '../models/connection-create-data';
+import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import cryppo from '../services/cryppo-service';
 import {
@@ -11,6 +12,12 @@ import {
 } from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
+import { getAllPaged, resultHasNext } from '../util/paged';
+
+export interface IDecryptedConnection {
+  name: string;
+  connection: Connection;
+}
 
 /**
  * Used for setting up connections between Meeco `User`s to allow the secure sharing of data (see also {@link ShareService})
@@ -117,22 +124,69 @@ export class ConnectionService {
     };
   }
 
+  /**
+   * @deprecated Use [list] instead.
+   * @param user
+   */
   public async listConnections(user: AuthData) {
+    return this.list(user.vault_access_token, user.data_encryption_key);
+  }
+
+  public async list(
+    vaultAccessToken: string,
+    dek: EncryptionKey,
+    nextPageAfter?: string,
+    perPage?: number
+  ): Promise<IDecryptedConnection[]> {
     this.logger.log('Fetching connections');
-    const result = await this.vaultApiFactory(user).ConnectionApi.connectionsGet();
+    const result = await this.vaultApiFactory(vaultAccessToken).ConnectionApi.connectionsGet(
+      nextPageAfter,
+      perPage
+    );
+
+    if (resultHasNext(result) && perPage === undefined) {
+      this.logger.warn('Some results omitted, but page limit was not explicitly set');
+    }
+
     this.logger.log('Decrypting connection names');
     const decryptions = (result.connections || []).map(connection =>
       this.cryppo
         .decryptWithKey({
           serialized: connection.own.encrypted_recipient_name!,
-          key: user.data_encryption_key.key,
+          key: dek.key,
         })
-        .then(name => ({
+        .then((name: string) => ({
           name,
           connection,
         }))
     );
     return Promise.all(decryptions);
+  }
+
+  public async listAll(
+    vaultAccessToken: string,
+    dek: EncryptionKey
+  ): Promise<IDecryptedConnection[]> {
+    const api = this.vaultApiFactory(vaultAccessToken).ConnectionApi;
+
+    return getAllPaged(cursor => api.connectionsGet(cursor)).then(results => {
+      const responses = results.reduce(
+        (a: Connection[], b: ConnectionsResponse) => a.concat(b.connections),
+        []
+      );
+      const decryptions = responses.map(connection =>
+        this.cryppo
+          .decryptWithKey({
+            serialized: connection.own.encrypted_recipient_name!,
+            key: dek.key,
+          })
+          .then((name: string) => ({
+            name,
+            connection,
+          }))
+      );
+      return Promise.all(decryptions);
+    });
   }
 
   private encryptRecipientName(name: string, user: AuthData) {

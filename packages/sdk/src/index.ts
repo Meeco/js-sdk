@@ -24,5 +24,6 @@ export * from './services/templates-service';
 export * from './services/user-service';
 export * from './util/api-factory';
 export * from './util/find-connection-between';
+export * from './util/paged';
 import _cryppo from './services/cryppo-service';
 export const _cryppoService = _cryppo;

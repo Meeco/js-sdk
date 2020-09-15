@@ -3,6 +3,7 @@ import {
   AttachmentDirectUploadUrlResponse,
   AttachmentResponse,
   CreateAttachmentResponse,
+  ItemsResponse,
   PostAttachmentDirectUploadUrlRequest,
   Slot,
   ThumbnailResponse,
@@ -22,6 +23,7 @@ import { MeecoServiceError } from '../models/service-error';
 import cryppo from '../services/cryppo-service';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
+import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -327,7 +329,33 @@ export class ItemService {
     return encrypted;
   }
 
-  public list(vaultAccessToken: string) {
-    return this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet();
+  public async list(
+    vaultAccessToken: string,
+    templateIds?: string,
+    nextPageAfter?: string,
+    perPage?: number
+  ) {
+    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet(
+      templateIds,
+      undefined,
+      undefined,
+      nextPageAfter,
+      perPage
+    );
+
+    if (resultHasNext(result) && perPage === undefined) {
+      // TODO - needs a warning logger
+      this.logger.warn('Some results omitted, but page limit was not explicitly set');
+    }
+
+    return result;
+  }
+
+  public async listAll(vaultAccessToken: string, templateIds?: string): Promise<ItemsResponse> {
+    const api = this.vaultAPIFactory(vaultAccessToken).ItemApi;
+
+    return getAllPaged(cursor => api.itemsGet(templateIds, undefined, undefined, cursor)).then(
+      reducePages
+    );
   }
 }
