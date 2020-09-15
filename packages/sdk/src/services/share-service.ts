@@ -1,407 +1,258 @@
-// import { Connection, PostSharesEncryptedValues } from '@meeco/vault-api-sdk';
-// import { AuthData } from '../models/auth-data';
-// import { EncryptionKey } from '../models/encryption-key';
-// import { EncryptionSpaceData } from '../models/encryption-space-data';
-// import { Environment } from '../models/environment';
-// import { DecryptedSlot } from '../models/local-slot';
-// import { MeecoServiceError } from '../models/service-error';
-// import {
-//   KeystoreAPIFactory,
-//   keystoreAPIFactory,
-//   vaultAPIFactory,
-//   VaultAPIFactory,
-// } from '../util/api-factory';
-// import { fetchConnectionWithId } from '../util/find-connection-between';
-// import { Logger, noopLogger } from '../util/logger';
-// import cryppo from './cryppo-service';
-// import { ItemService } from './item-service';
+import { hmacSha256Digest } from '@meeco/cryppo/dist/src/digests/hmac-digest';
+import {
+  EncryptedSlotValue,
+  GetShareResponse,
+  PostItemSharesRequestShare,
+  SharesResponse,
+} from '@meeco/vault-api-sdk';
+import { AuthData } from '../models/auth-data';
+import { EncryptionKey } from '../models/encryption-key';
+import { Environment } from '../models/environment';
+import { DecryptedSlot } from '../models/local-slot';
+import { MeecoServiceError } from '../models/service-error';
+import {
+  KeystoreAPIFactory,
+  keystoreAPIFactory,
+  vaultAPIFactory,
+  VaultAPIFactory,
+} from '../util/api-factory';
+import { fetchConnectionWithId } from '../util/find-connection-between';
+import { Logger, noopLogger } from '../util/logger';
+import cryppo from './cryppo-service';
+import { ItemService } from './item-service';
 
-// interface ISharedEncryptionSpace {
-//   from_user_connection_id: string;
-//   to_user_connection_id?: string;
-//   shared_data_encryption_key?: EncryptionKey;
-// }
+interface IShareOptions extends PostItemSharesRequestShare {
+  expires_at?: Date;
+  terms?: string;
+  sharing_mode: string;
+  acceptance_required: string;
+}
 
-// interface IShareOptions {
-//   expires_at?: Date;
-//   terms?: string;
-//   note?: string;
-//   distributable?: boolean;
-//   tradeable?: boolean;
-// }
+export enum ShareType {
+  incoming = 'incoming',
+  outgoing = 'outgoing',
+}
 
-// /**
-//  * Service for sharing data between two connected Meeco users.
-//  * Connections can be setup via the {@link ConnectionService}
-//  */
-// export class ShareService {
-//   /**
-//    * @visibleForTesting
-//    * @ignore
-//    */
-//   static Date = global.Date;
+/**
+ * Service for sharing data between two connected Meeco users.
+ * Connections can be setup via the {@link ConnectionService}
+ */
+export class ShareService {
+  constructor(private environment: Environment, private log: Logger = noopLogger) {
+    this.keystoreApiFactory = keystoreAPIFactory(environment);
+    this.vaultApiFactory = vaultAPIFactory(environment);
+  }
+  /**
+   * @visibleForTesting
+   * @ignore
+   */
+  static Date = global.Date;
 
-//   // for mocking during testing
-//   private cryppo = (<any>global).cryppo || cryppo;
-//   private keystoreApiFactory: KeystoreAPIFactory;
-//   private vaultApiFactory: VaultAPIFactory;
+  // for mocking during testing
+  private cryppo = (<any>global).cryppo || cryppo;
+  private keystoreApiFactory: KeystoreAPIFactory;
+  private vaultApiFactory: VaultAPIFactory;
 
-//   constructor(private environment: Environment, private log: Logger = noopLogger) {
-//     this.keystoreApiFactory = keystoreAPIFactory(environment);
-//     this.vaultApiFactory = vaultAPIFactory(environment);
-//   }
+  static generate_value_verificaiton_hash(value_verification_key: string, slot_value: string) {
+    return hmacSha256Digest(value_verification_key, slot_value);
+  }
 
-//   public setLogger(logger: Logger) {
-//     this.log = logger;
-//   }
+  public setLogger(logger: Logger) {
+    this.log = logger;
+  }
 
-//   public async shareItem(
-//     fromUser: AuthData,
-//     connectionId: string,
-//     itemId: string,
-//     shareOptions: IShareOptions = {}
-//   ) {
-//     const fromUserConnection = await fetchConnectionWithId(
-//       fromUser,
-//       connectionId,
-//       this.environment,
-//       this.log
-//     );
+  public async shareSingleSlotFromItem(
+    fromUser: AuthData,
+    connectionId: string,
+    itemId: string,
+    slotId: string,
+    shareOptions: IShareOptions = {
+      sharing_mode: 'owner',
+      acceptance_required: 'acceptance_not_required',
+    }
+  ): Promise<SharesResponse> {
+    return this.shareItem(fromUser, connectionId, itemId, {
+      ...shareOptions,
+      slot_id: slotId,
+    });
+  }
 
-//     this.log('Fetching shared encryption space');
-//     const sharedEncryptionSpace = await this.fetchSharedEncryptionSpace(
-//       fromUser,
-//       fromUserConnection
-//     );
+  public async shareItem(
+    fromUser: AuthData,
+    connectionId: string,
+    itemId: string,
+    shareOptions: IShareOptions
+  ): Promise<SharesResponse> {
+    this.log('Fetching connection');
+    const fromUserConnection = await fetchConnectionWithId(
+      fromUser,
+      connectionId,
+      this.environment,
+      this.log
+    );
 
-//     const share = await this.shareItemFromVaultItem(
-//       fromUser,
-//       fromUserConnection,
-//       sharedEncryptionSpace,
-//       itemId,
-//       fromUserConnection.user_id,
-//       shareOptions
-//     );
+    this.log('Preparing item to share');
+    const share = await this.shareItemFromVaultItem(fromUser, itemId, {
+      ...shareOptions,
+      recipient_id: fromUserConnection.the_other_user.user_id,
+      public_key: fromUserConnection.the_other_user.user_public_key,
+      keypair_external_id: fromUserConnection.the_other_user.user_keypair_external_id!,
+    });
 
-//     this.log('Sending shared data');
-//     const shareResult = await this.vaultApiFactory(fromUser).SharesApi.sharesPost({
-//       shares: [share],
-//     });
-//     return {
-//       ...share,
-//       share: shareResult,
-//     };
-//   }
+    this.log('Sending shared data');
+    const shareResult = await this.vaultApiFactory(fromUser).SharesApi.itemsIdSharesPost(itemId, {
+      shares: [share],
+    });
+    return shareResult;
+  }
 
-//   public async listShares(user: AuthData) {
-//     return await this.vaultApiFactory(user).SharesApi.sharesIncomingGet();
-//   }
+  public async listShares(user: AuthData, shareType: ShareType.incoming): Promise<SharesResponse> {
+    if (shareType === ShareType.incoming) {
+      return await this.vaultApiFactory(user).SharesApi.incomingSharesGet();
+    } else {
+      return await this.vaultApiFactory(user).SharesApi.outgoingSharesGet();
+    }
+  }
 
-//   public async deleteSharedItem(user: AuthData, shareId: string) {
-//     await this.vaultApiFactory(user)
-//       .SharesApi.sharesIdDelete(shareId)
-//       .catch(err => {
-//         if ((<Response>err).status === 404) {
-//           throw new MeecoServiceError(
-//             `Share with id '${shareId}' not found for the specified user`
-//           );
-//         }
-//         throw err;
-//       });
+  public async acceptIncomingShare(user: AuthData, shareId: string): Promise<GetShareResponse> {
+    return await this.vaultApiFactory(user).SharesApi.incomingSharesIdAcceptPut(shareId);
+  }
 
-//     this.log('Share successfully deleted');
-//   }
+  public async deleteSharedItem(user: AuthData, shareId: string) {
+    await this.vaultApiFactory(user)
+      .SharesApi.sharesIdDelete(shareId)
+      .catch(err => {
+        if ((<Response>err).status === 404) {
+          throw new MeecoServiceError(
+            `Share with id '${shareId}' not found for the specified user`
+          );
+        }
+        throw err;
+      });
+  }
 
-//   public async getSharedItem(user: AuthData, shareId: string) {
-//     const { item, share, slots } = await this.vaultApiFactory(user)
-//       .SharesApi.sharesIdGet(shareId)
-//       .catch(err => {
-//         if ((<Response>err).status === 404) {
-//           throw new MeecoServiceError(
-//             `Share with id '${shareId}' not found for the specified user`
-//           );
-//         }
-//         throw err;
-//       });
+  public async getSharedItemIncoming(user: AuthData, shareId: string) {
+    const shareWithItemData = await this.vaultApiFactory(user)
+      .SharesApi.incomingSharesIdItemGet(shareId)
+      .catch(err => {
+        if ((<Response>err).status === 404) {
+          throw new MeecoServiceError(
+            `Share with id '${shareId}' not found for the specified user`
+          );
+        }
+        throw err;
+      });
 
-//     const connection = await this.ensureClaimedKey(user, share.connection_id);
+    if (shareWithItemData.share.acceptance_required === 'acceptance_required') {
+      return shareWithItemData;
+    }
 
-//     let key: EncryptionKey;
+    const keyPairExternal = await this.keystoreApiFactory(user).KeypairApi.keypairsIdGet(
+      shareWithItemData.share.keypair_external_id!
+    );
 
-//     if (item.own) {
-//       key = user.data_encryption_key;
-//     } else {
-//       const space = await this.keystoreApiFactory(user).EncryptionSpaceApi.encryptionSpacesIdGet(
-//         connection.encryption_space_id!
-//       );
-//       const decryptedSharedDataEncryptionKey = await this.cryppo.decryptWithKey({
-//         serialized: space.encryption_space_data_encryption_key.serialized_data_encryption_key,
-//         key: user.key_encryption_key.key,
-//       });
-//       key = EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey);
-//     }
+    const decryptedPrivateKey = await this.cryppo.decryptWithKey({
+      serialized: keyPairExternal.keypair.encrypted_serialized_key,
+      key: user.key_encryption_key.key,
+    });
 
-//     const decryptedSlots = await ItemService.decryptAllSlots(slots!, key);
+    const dek = await this.cryppo.decryptSerializedWithPrivateKey({
+      privateKeyPem: decryptedPrivateKey,
+      serialized: shareWithItemData.share.encrypted_dek,
+    });
 
-//     return {
-//       item,
-//       slots: decryptedSlots,
-//       share,
-//       connection,
-//     };
-//   }
+    const key = EncryptionKey.fromRaw(dek);
 
-//   private async shareItemFromVaultItem(
-//     fromUser: AuthData,
-//     connection: Connection,
-//     sharedEncryptionSpace: ISharedEncryptionSpace,
-//     itemId: string,
-//     toUserId: string,
-//     shareOptions: IShareOptions
-//   ) {
-//     const item = await this.vaultApiFactory(fromUser).ItemApi.itemsIdGet(itemId);
+    const decryptedSlots = await ItemService.decryptAllSlots(shareWithItemData.slots, key);
 
-//     if (!item) {
-//       throw new MeecoServiceError(`Item '${itemId}' not found`);
-//     }
-//     const { slots } = item;
+    return {
+      ...shareWithItemData,
+      slots: decryptedSlots,
+    };
+  }
 
-//     if (!sharedEncryptionSpace.shared_data_encryption_key) {
-//       this.log('No encryption space found - creating one');
-//       const encryptonSpace = await this.createSharedEncryptionSpace(fromUser, connection);
-//       sharedEncryptionSpace = {
-//         from_user_connection_id: connection.id,
-//         shared_data_encryption_key: EncryptionKey.fromRaw(encryptonSpace.dataEncryptionKey),
-//       };
-//     }
+  private async shareItemFromVaultItem(
+    fromUser: AuthData,
+    itemId: string,
+    shareOptions: PostItemSharesRequestShare
+  ): Promise<PostItemSharesRequestShare> {
+    const item = await this.vaultApiFactory(fromUser).ItemApi.itemsIdGet(itemId);
 
-//     this.log('Decrypting all slots');
-//     const decryptedSlots = await ItemService.decryptAllSlots(slots!, fromUser.data_encryption_key);
-//     this.log('Encrypting slots with shared key');
-//     const encrypted_values = await this.convertSlotsToEncryptedValuesForShare(
-//       decryptedSlots,
-//       sharedEncryptionSpace.shared_data_encryption_key!
-//     );
-//     return {
-//       ...shareOptions,
-//       shareable_id: itemId,
-//       shareable_type: 'Item',
-//       encrypted_values,
-//       distributable: false,
-//       outgoing: true,
-//       // TODO - this should be the connection id but API does not support it yet
-//       user_id: toUserId,
-//     };
-//   }
+    if (!item) {
+      throw new MeecoServiceError(`Item '${itemId}' not found`);
+    }
+    let { slots } = item;
 
-//   public async fetchSharedEncryptionSpace(
-//     user: AuthData,
-//     connection: Connection
-//   ): Promise<ISharedEncryptionSpace> {
-//     if (!connection.encryption_space_id) {
-//       // Users have no shared encryption space
-//       return new EncryptionSpaceData({
-//         from_user_connection_id: connection.id,
-//       });
-//     }
+    if (shareOptions.slot_id) {
+      slots = slots.filter(slot => slot.id === shareOptions.slot_id);
+    }
 
-//     this.log('Fetching shared encryption key');
-//     const sharedDataEncryptionKey = await this.keystoreApiFactory(
-//       user
-//     ).EncryptionSpaceApi.encryptionSpacesIdGet(connection.encryption_space_id);
+    this.log('Decrypting all slots');
+    const decryptedSlots = await ItemService.decryptAllSlots(slots!, fromUser.data_encryption_key);
 
-//     const decryptedSharedDataEncryptionKey = await this.cryppo.decryptWithKey({
-//       serialized: sharedDataEncryptionKey.encryption_space_data_encryption_key
-//         ?.serialized_data_encryption_key!,
-//       key: user.key_encryption_key.key,
-//     });
+    this.log('Encrypting slots with generate DEK');
+    const dek = this.cryppo.generateRandomKey();
 
-//     return new EncryptionSpaceData({
-//       from_user_connection_id: connection.id,
-//       shared_data_encryption_key: EncryptionKey.fromRaw(decryptedSharedDataEncryptionKey),
-//     });
-//   }
+    const slot_values = await this.convertSlotsToEncryptedValuesForShare(
+      decryptedSlots,
+      EncryptionKey.fromRaw(dek)
+    );
 
-//   private async createSharedEncryptionSpace(fromUser: AuthData, connection: Connection) {
-//     this.log('Generating from user data encryption key');
-//     const fromUserEncryptionSpace = await this.createAndStoreNewDataEncryptionKey(fromUser);
-//     const encryptionSpaceId = fromUserEncryptionSpace.encryptionSpace?.encryption_space_id!;
+    const encryptedDek = await this.cryppo.encryptWithPublicKey({
+      publicKeyPem: shareOptions.public_key,
+      data: dek,
+    });
 
-//     const recipientPublicKey = connection.other_user_connection_public_key;
-//     if (!recipientPublicKey) {
-//       throw new MeecoServiceError('Other user public key missing!');
-//     }
+    return {
+      ...shareOptions,
+      slot_values,
+      encrypted_dek: encryptedDek.serialized,
+    };
+  }
 
-//     const shareableDataEncryptionKey = await this.cryppo.encryptWithPublicKey({
-//       data: fromUserEncryptionSpace.dataEncryptionKey,
-//       publicKeyPem: recipientPublicKey,
-//     });
+  /**
+   * In the API: a share expects an `encrypted_value` property.
+   * For a tile item - this is a stringified json payload of key/value
+   * pairs where the key is the slot id and the value is the slot value
+   * encrypted with a shared data encryption key.
+   */
+  private async convertSlotsToEncryptedValuesForShare(
+    slots: DecryptedSlot[],
+    sharedDataEncryptionKey: EncryptionKey
+  ): Promise<EncryptedSlotValue[]> {
+    const encryptions = slots
+      .filter(slot => slot.value)
+      .map(async slot => {
+        const encrypted_value = await cryppo
+          .encryptWithKey({
+            data: slot.value || '',
+            key: sharedDataEncryptionKey.key,
+            strategy: this.cryppo.CipherStrategy.AES_GCM,
+          })
+          .then(result => result.serialized);
 
-//     this.log('Updating connection encryption space');
-//     await this.vaultApiFactory(fromUser).ConnectionApi.connectionsConnectionIdEncryptionSpacePost(
-//       connection.id!,
-//       {
-//         encryption_space_id: encryptionSpaceId,
-//       }
-//     );
+        const value_verification_key = await cryppo.generateRandomKey(64);
+        const encrypted_value_verification_key = await cryppo
+          .encryptWithKey({
+            data: value_verification_key,
+            key: sharedDataEncryptionKey.key,
+            strategy: this.cryppo.CipherStrategy.AES_GCM,
+          })
+          .then(result => result.serialized);
 
-//     this.log('Sending shared key');
-//     const sharedKey = await this.keystoreApiFactory(fromUser).SharedKeyApi.sharedKeysPost({
-//       encrypted_key: shareableDataEncryptionKey.serialized,
-//       external_id: encryptionSpaceId,
-//       public_key: recipientPublicKey,
-//       key_metadata: {
-//         key_type: this.cryppo.CipherStrategy.AES_GCM,
-//       },
-//     });
-//     return {
-//       connection,
-//       dataEncryptionKey: fromUserEncryptionSpace.dataEncryptionKey,
-//       fromUserSharedKey: sharedKey.shared_key,
-//     };
-//   }
+        // this will be replace by cryppo call later
+        const value_verification_hash = ShareService.generate_value_verificaiton_hash(
+          value_verification_key,
+          slot.value || ''
+        );
 
-//   private async ensureClaimedKey(user: AuthData, connectionId: string) {
-//     const connection = await fetchConnectionWithId(user, connectionId, this.environment, this.log);
-//     if (!connection.encryption_space_id) {
-//       this.log('Shared data encryption key not yet claimed - claiming');
-//       return this.claimSharedEncryptionSpace(user, connection);
-//     }
-
-//     return connection;
-//   }
-
-//   private async claimSharedEncryptionSpace(toUser: AuthData, connection: Connection) {
-//     const encryptionSpaceId = connection.other_user_connection_encryption_space_id!;
-//     this.log('Fetching key pair');
-//     const keyPair = await this.keystoreApiFactory(toUser)
-//       .KeypairApi.keypairsIdGet(connection.keypair_external_id || '')
-//       .then(res => res.keypair);
-
-//     const privateKey = await this.cryppo.decryptWithKey({
-//       serialized: keyPair.encrypted_serialized_key,
-//       key: toUser.key_encryption_key.key,
-//     });
-//     this.log('Claiming data encryption key');
-//     const reEncryptedDataEncryptionKey = await this.claimAndReEncryptSharedDataEncryptionKey(
-//       toUser,
-//       encryptionSpaceId,
-//       {
-//         publicKey: keyPair.public_key,
-//         privateKey,
-//       }
-//     );
-
-//     this.log('Creating new encryption space with re-encrypted claimed key');
-//     const encryptionSpace = await this.keystoreApiFactory(
-//       toUser
-//     ).EncryptionSpaceApi.encryptionSpacesPost({
-//       encrypted_serialized_key: reEncryptedDataEncryptionKey.serialized,
-//     });
-//     const { encryption_space_id } = encryptionSpace.encryption_space_data_encryption_key!;
-
-//     this.log('Updating shared encryption space');
-//     await this.vaultApiFactory(toUser).ConnectionApi.connectionsConnectionIdEncryptionSpacePost(
-//       connection.id,
-//       {
-//         encryption_space_id,
-//       }
-//     );
-
-//     connection.encryption_space_id = encryption_space_id;
-
-//     return connection;
-//   }
-
-//   private async createAndStoreNewDataEncryptionKey(user: AuthData) {
-//     const dataEncryptionKey = this.cryppo.generateRandomKey();
-//     const encryptedDataEncryptionKey = await this.cryppo.encryptWithKey({
-//       data: dataEncryptionKey,
-//       key: user.key_encryption_key.key,
-//       strategy: this.cryppo.CipherStrategy.AES_GCM,
-//     });
-//     const encryptionSpace = await this.keystoreApiFactory(user)
-//       .EncryptionSpaceApi.encryptionSpacesPost({
-//         encrypted_serialized_key: encryptedDataEncryptionKey.serialized,
-//       })
-//       .then(result => result.encryption_space_data_encryption_key);
-
-//     return {
-//       dataEncryptionKey,
-//       encryptionSpace,
-//     };
-//   }
-
-//   private async claimAndReEncryptSharedDataEncryptionKey(
-//     user: AuthData,
-//     encryptionSpaceId: string,
-//     keyPair: {
-//       privateKey: string;
-//       publicKey: string;
-//     }
-//   ) {
-//     const signature = await this.buildClaimKeySignature(encryptionSpaceId, keyPair.privateKey);
-//     const claimedKey = await this.keystoreApiFactory(user)
-//       .SharedKeyApi.sharedKeysExternalIdClaimKeyPost(encryptionSpaceId, {
-//         public_key: keyPair.publicKey,
-//         request_signature: signature.serialized,
-//       })
-//       .catch(async err => {
-//         if (err?.status === 403 && typeof err?.json === 'function') {
-//           const json = await err.json();
-//           if (json?.errors[0].error === 'invalid_request_signature') {
-//             throw new MeecoServiceError(
-//               `Failed to claim shared encryption key - the request signature was rejected by the API`
-//             );
-//           }
-//         }
-//         throw err;
-//       });
-//     const decryptedDataEncryptionKey = await this.cryppo.decryptSerializedWithPrivateKey({
-//       serialized: claimedKey.shared_key_claimed?.serialized_shared_key!,
-//       privateKeyPem: keyPair.privateKey,
-//     });
-//     const reEncryptedDataEncryptionKey = await this.cryppo.encryptWithKey({
-//       key: user.key_encryption_key.key,
-//       data: decryptedDataEncryptionKey,
-//       strategy: this.cryppo.CipherStrategy.AES_GCM,
-//     });
-
-//     return reEncryptedDataEncryptionKey;
-//   }
-
-//   private buildClaimKeySignature(encryptionSpaceId: string | undefined, privateKey: string) {
-//     const requestUrl = `${this.environment.keystore.url}/shared_keys/${encryptionSpaceId}/claim_key`;
-//     const verification = `--request-timestamp=${new ShareService.Date().toISOString()}`;
-//     const urlToSign = requestUrl + verification;
-//     return this.cryppo.signWithPrivateKey(privateKey, urlToSign);
-//   }
-
-//   /**
-//    * In the API: a share expects an `encrypted_value` property.
-//    * For a tile item - this is a stringified json payload of key/value
-//    * pairs where the key is the slot id and the value is the slot value
-//    * encrypted with a shared data encryption key.
-//    */
-//   private async convertSlotsToEncryptedValuesForShare(
-//     slots: DecryptedSlot[],
-//     sharedDataEncryptionKey: EncryptionKey
-//   ): Promise<PostSharesEncryptedValues[]> {
-//     const encryptions = slots
-//       .filter(slot => slot.value)
-//       .map(async slot => {
-//         const encrypted_value = await cryppo
-//           .encryptWithKey({
-//             data: slot.value || '',
-//             key: sharedDataEncryptionKey.key,
-//             strategy: this.cryppo.CipherStrategy.AES_GCM,
-//           })
-//           .then(result => result.serialized);
-//         return {
-//           slot_id: slot.id,
-//           encrypted_value,
-//         };
-//       });
-//     return Promise.all(encryptions);
-//   }
-// }
+        return {
+          slot_id: slot.id || '',
+          encrypted_value,
+          encrypted_value_verification_key,
+          value_verification_hash,
+        };
+      });
+    return Promise.all(encryptions);
+  }
+}

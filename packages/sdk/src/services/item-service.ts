@@ -22,6 +22,7 @@ import { MeecoServiceError } from '../models/service-error';
 import cryppo from '../services/cryppo-service';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 import { Logger, noopLogger } from '../util/logger';
+import { ShareService } from './share-service';
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -43,13 +44,31 @@ export class ItemService {
   ): Promise<DecryptedSlot[]> {
     return Promise.all(
       slots.map(async slot => {
-        const value =
+        let value =
           slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
             ? await this.cryppo.decryptWithKey({
                 key: dataEncryptionKey.key,
                 serialized: slot.encrypted_value,
               })
             : (slot as DecryptedSlot).value;
+
+        if (
+          value != null &&
+          slot.encrypted_value_verification_key != null &&
+          slot.value_verification_hash != null
+        ) {
+          const decryptedValueVerificationKey = await this.cryppo.decryptWithKey({
+            serialized: slot.encrypted_value_verification_key,
+            key: dataEncryptionKey.key,
+          });
+
+          value =
+            ShareService.generate_value_verificaiton_hash(decryptedValueVerificationKey, value) ===
+            slot.value_verification_hash
+              ? value
+              : 'Invalid Value: Faild to verify integrity of slot value';
+        }
+
         const decrypted = {
           ...slot,
           encrypted: false,

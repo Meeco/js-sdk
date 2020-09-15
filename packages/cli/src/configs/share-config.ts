@@ -5,6 +5,7 @@ import { IYamlConfig } from './yaml-config';
 
 interface IShareSpec {
   item_id: string;
+  slot_id?: string;
   connection_id: string;
   from: AuthConfig;
 }
@@ -15,6 +16,7 @@ export class ShareConfig {
   public readonly connectionId: string;
   public readonly from: AuthConfig;
   public readonly itemId: string;
+  public readonly slotId?: string;
   public readonly options: {};
 
   constructor(data: ShareConfig) {
@@ -22,6 +24,7 @@ export class ShareConfig {
     this.from = data.from;
     this.connectionId = data.connectionId;
     this.options = data.options;
+    this.slotId = data.slotId;
   }
 
   static fromYamlConfig(yamlConfigObj: IYamlConfig<{}, IShareSpec>): ShareConfig {
@@ -36,6 +39,7 @@ export class ShareConfig {
       connectionId: yamlConfigObj.spec.connection_id,
       itemId: yamlConfigObj.spec.item_id,
       options: yamlConfigObj.metadata!,
+      slotId: yamlConfigObj.spec.slot_id,
     });
   }
 
@@ -53,13 +57,15 @@ export class ShareConfig {
   static encodeFromUsersWithItem(
     from: AuthConfig,
     connectionId: string,
-    itemId: string
+    itemId: string,
+    slotId: string | undefined
   ): IYamlConfig<any, IShareSpec> {
     return {
       kind: ShareConfig.kind,
       metadata: {},
       spec: {
         item_id: itemId,
+        ...(slotId ? { slot_id: slotId } : {}),
         connection_id: connectionId,
         from,
       },

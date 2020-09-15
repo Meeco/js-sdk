@@ -22,9 +22,36 @@ describe('shares:create-config', () => {
     });
 });
 
+describe('shares:create-config with slot', () => {
+  customTest
+    .stdout()
+    .nock('https://sandbox.meeco.me/vault', mockVault)
+    .run([
+      'shares:create-config',
+      '-f',
+      inputFixture('connection-from.input.yaml'),
+      '-c',
+      'connection-id',
+      '-i',
+      'my-item',
+      '-s',
+      'my_slot',
+      ...testEnvironmentFile,
+    ])
+    .it('builds a share template file from two users and an item', ctx => {
+      const expected = readFileSync(outputFixture('create-config-share.output-slot.yaml'), 'utf-8');
+      expect(ctx.stdout).to.contain(expected);
+    });
+});
+
 const response = {
   item: {},
-  slots: [],
+  slots: [
+    {
+      name: 'my_slot',
+      id: 'slot123',
+    },
+  ],
   associations_to: [],
   associations: [],
   attachments: [],
