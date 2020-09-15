@@ -10,13 +10,13 @@ export interface IFullLogger {
 export type Logger = SimpleLogger | IFullLogger;
 
 export function toFullLogger(l: Logger): IFullLogger {
-  if ('warn' in l) {
-    return l;
-  } else {
+  if (typeof l === 'function') {
     return {
       error: m => l('ERROR: ' + m),
       warn: m => l('WARNING: ' + m),
       report: l,
     };
+  } else {
+    return l;
   }
 }
