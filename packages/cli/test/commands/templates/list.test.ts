@@ -1,22 +1,17 @@
+import * as sdk from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import {
   DEFAULT_CLASSIFICATION_NAME,
-  DEFAULT_CLASSIFICATION_SCHEME,
+  DEFAULT_CLASSIFICATION_SCHEME
 } from '../../../src/util/constants';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 describe('templates:list', () => {
   customTest
+    .stub(sdk, 'vaultAPIFactory', vaultAPIFactory as any)
     .stderr()
     .stdout()
-    .nock('https://sandbox.meeco.me/vault', api => {
-      api
-        .get('/item_templates')
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, response);
-    })
     .run(['templates:list', ...testUserAuth, ...testEnvironmentFile])
     .it(
       'fetches a list of available templates (no classification scheme or name provided)',
@@ -27,19 +22,9 @@ describe('templates:list', () => {
     );
 
   customTest
+    .stub(sdk, 'vaultAPIFactory', vaultAPIFactory as any)
     .stderr()
     .stdout()
-    .nock('https://sandbox.meeco.me/vault', api => {
-      api
-        .get('/item_templates')
-        .query({
-          'by_classification[scheme]': DEFAULT_CLASSIFICATION_SCHEME,
-          'by_classification[name]': DEFAULT_CLASSIFICATION_NAME,
-        })
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, response);
-    })
     .run([
       'templates:list',
       ...testUserAuth,
@@ -55,23 +40,73 @@ describe('templates:list', () => {
     });
 });
 
-const response = {
-  item_templates: [
-    {
-      name: 'food',
-      slots_ids: ['steak', 'pizza', 'yoghurt'],
-    },
-    {
-      name: 'drink',
-      slot_ids: ['yoghurt', 'water', 'beer'],
-    },
-    {
-      name: 'activities',
-      slot_ids: ['sport', 'recreational'],
-    },
-  ],
-  slots: [],
+const templates = {
+  next_page_after: null,
   attachments: [],
   thumbnails: [],
   classification_nodes: [],
+  slots: [],
+  item_templates: [
+    {
+      id: null,
+      name: 'food',
+      description: null,
+      ordinal: null,
+      visible: null,
+      user_id: null,
+      updated_at: null,
+      image: null,
+      template_type: null,
+      classification_node_ids: null,
+      slot_ids: null,
+      label: null,
+      background_color: null
+    },
+    {
+      id: null,
+      name: 'drink',
+      description: null,
+      ordinal: null,
+      visible: null,
+      user_id: null,
+      updated_at: null,
+      image: null,
+      template_type: null,
+      classification_node_ids: null,
+      slot_ids: [
+        'yoghurt',
+        'water',
+        'beer'
+      ],
+      label: null,
+      background_color: null
+    },
+    {
+      id: null,
+      name: 'activities',
+      description: null,
+      ordinal: null,
+      visible: null,
+      user_id: null,
+      updated_at: null,
+      image: null,
+      template_type: null,
+      classification_node_ids: null,
+      slot_ids: [
+        'sport',
+        'recreational'
+      ],
+      label: null,
+      background_color: null
+    }
+  ],
+  meta: null
 };
+
+function vaultAPIFactory(environment) {
+  return (authConfig) => ({
+    ItemTemplateApi: {
+      itemTemplatesGet: (classificationScheme, classificationName) => Promise.resolve(templates)
+    }
+  });
+}
