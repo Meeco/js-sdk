@@ -4,7 +4,7 @@ export const noopLogger = () => {};
 export interface IFullLogger {
   error: SimpleLogger;
   warn: SimpleLogger;
-  report: SimpleLogger;
+  log: SimpleLogger;
 }
 
 export type Logger = SimpleLogger | IFullLogger;
@@ -14,7 +14,7 @@ export function toFullLogger(l: Logger): IFullLogger {
     return {
       error: m => l('ERROR: ' + m),
       warn: m => l('WARNING: ' + m),
-      report: l,
+      log: l,
     };
   } else {
     return l;

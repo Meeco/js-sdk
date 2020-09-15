@@ -29,11 +29,11 @@ import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
   private vaultAPIFactory: VaultAPIFactory;
-  private log: IFullLogger;
+  private logger: IFullLogger;
 
   constructor(environment: Environment, log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
-    this.log = toFullLogger(log);
+    this.logger = toFullLogger(log);
   }
 
   /**
@@ -63,7 +63,7 @@ export class ItemService {
   }
 
   public setLogger(logger: Logger) {
-    this.log = toFullLogger(logger);
+    this.logger = toFullLogger(logger);
   }
 
   public async create(vaultAccessToken: string, dek: EncryptionKey, config: ItemCreateData) {
@@ -101,20 +101,20 @@ export class ItemService {
     const targetThumbnailSize = 256;
     const sizeType = `png_${targetThumbnailSize}x${targetThumbnailSize}`;
 
-    this.log.report('Generating image thumbnail');
+    this.logger.log('Generating image thumbnail');
     const jimp = await Jimp.read(file as any);
     const thumbnail: Buffer = await jimp
       .resize(targetThumbnailSize, targetThumbnailSize)
       .getBufferAsync(Jimp.MIME_PNG);
 
-    this.log.report('Encrypting image thumbnail');
+    this.logger.log('Encrypting image thumbnail');
     const encryptedThumbnail = await ItemService.cryppo.encryptWithKey({
       key: auth.data_encryption_key.key,
       data: ItemService.cryppo.binaryBufferToString(thumbnail),
       strategy: ItemService.cryppo.CipherStrategy.AES_GCM,
     });
 
-    this.log.report('Uploading encrypted image thumbnail');
+    this.logger.log('Uploading encrypted image thumbnail');
     let response: ThumbnailResponse;
     try {
       const blob =
@@ -127,7 +127,7 @@ export class ItemService {
         sizeType
       );
     } catch (err) {
-      this.log.report('Error uploading encrypted thumbnail file!');
+      this.logger.log('Error uploading encrypted thumbnail file!');
       throw err;
     }
 
@@ -136,9 +136,9 @@ export class ItemService {
 
   public async attachFile(config: FileAttachmentData, auth: AuthData) {
     const { itemId, label, file, fileName, fileType } = config;
-    this.log.report('Reading file');
+    this.logger.log('Reading file');
 
-    this.log.report('Fetching item');
+    this.logger.log('Fetching item');
     const itemFetchResult = await this.get(
       itemId,
       auth.vault_access_token,
@@ -149,7 +149,7 @@ export class ItemService {
       );
     });
 
-    this.log.report('Encrypting File');
+    this.logger.log('Encrypting File');
     const encryptedFile = await ItemService.cryppo.encryptWithKey({
       key: auth.data_encryption_key.key,
       data: ItemService.cryppo.binaryBufferToString(file),
@@ -158,7 +158,7 @@ export class ItemService {
 
     let uploadedBinary: AttachmentResponse;
     try {
-      this.log.report('Uploading encrypted file');
+      this.logger.log('Uploading encrypted file');
       const blob =
         typeof Blob === 'function'
           ? new Blob([encryptedFile.serialized])
@@ -167,7 +167,7 @@ export class ItemService {
         auth.vault_access_token
       ).AttachmentApi.attachmentsPost(blob as any, fileName, fileType);
     } catch (err) {
-      this.log.report('Upload encrypted file failed - removing temp encrypted version');
+      this.logger.log('Upload encrypted file failed - removing temp encrypted version');
       throw err;
     }
 
@@ -180,7 +180,7 @@ export class ItemService {
       }
     }
 
-    this.log.report('Adding attachment to item');
+    this.logger.log('Adding attachment to item');
     const updated = await this.vaultAPIFactory(auth.vault_access_token).ItemApi.itemsIdPut(
       itemFetchResult.item.id,
       {
@@ -198,7 +198,7 @@ export class ItemService {
       }
     );
 
-    this.log.report('File was successfully attached');
+    this.logger.log('File was successfully attached');
     return updated;
   }
 
@@ -208,7 +208,7 @@ export class ItemService {
   ): Promise<AttachmentDirectUploadUrlResponse> {
     let uploadUrl;
     try {
-      this.log.report('Getting Direct Attachment Upload Url');
+      this.logger.log('Getting Direct Attachment Upload Url');
       const params: PostAttachmentDirectUploadUrlRequest = {
         blob: {
           filename: config.fileName,
@@ -219,7 +219,7 @@ export class ItemService {
       const factory = this.vaultAPIFactory(auth.vault_access_token);
       uploadUrl = await factory.DirectAttachmentsApi.directAttachmentsUploadUrlPost(params);
     } catch (err) {
-      this.log.report('Upload encrypted file failed - removing temp encrypted version');
+      this.logger.log('Upload encrypted file failed - removing temp encrypted version');
       throw err;
     }
     return uploadUrl;
@@ -231,11 +231,11 @@ export class ItemService {
   ): Promise<any> {
     let uploadUrl;
     try {
-      this.log.report('Getting Direct Attachment Info');
+      this.logger.log('Getting Direct Attachment Info');
       const factory = this.vaultAPIFactory(auth.vault_access_token);
       uploadUrl = await factory.DirectAttachmentsApi.directAttachmentsIdGet(config.attachmentId);
     } catch (err) {
-      this.log.report('Upload encrypted file failed - removing temp encrypted version');
+      this.logger.log('Upload encrypted file failed - removing temp encrypted version');
       throw err;
     }
     return uploadUrl;
@@ -276,7 +276,7 @@ export class ItemService {
     vaultAccessToken: string,
     dataEncryptionKey: EncryptionKey
   ) {
-    this.log.report('Downloading attachment');
+    this.logger.log('Downloading attachment');
     return this.downloadAndDecryptFile(
       () => this.vaultAPIFactory(vaultAccessToken).AttachmentApi.attachmentsIdDownloadGet(id),
       dataEncryptionKey
@@ -288,7 +288,7 @@ export class ItemService {
     vaultAccessToken: string,
     dataEncryptionKey: EncryptionKey
   ) {
-    this.log.report('Downloading thumbnail');
+    this.logger.log('Downloading thumbnail');
     return this.downloadAndDecryptFile(
       () => this.vaultAPIFactory(vaultAccessToken).ThumbnailApi.thumbnailsIdGet(id),
       dataEncryptionKey
@@ -296,9 +296,9 @@ export class ItemService {
   }
 
   public async removeSlot(slotId: string, vaultAccessToken: string) {
-    this.log.report('Removing slot');
+    this.logger.log('Removing slot');
     await this.vaultAPIFactory(vaultAccessToken).SlotApi.slotsIdDelete(slotId);
-    this.log.report('Slot successfully removed');
+    this.logger.log('Slot successfully removed');
   }
 
   public async get(id: string, vaultAccessToken: string, dataEncryptionKey: EncryptionKey) {

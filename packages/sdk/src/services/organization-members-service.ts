@@ -7,18 +7,18 @@ import cryppo from './cryppo-service';
  */
 export class OrganizationMembersService {
   private vaultApiFactory: VaultAPIFactory;
-  private log: IFullLogger;
+  private logger: IFullLogger;
 
   // for mocking during testing
   private cryppo = (<any>global).cryppo || cryppo;
 
   constructor(environment: Environment, log: Logger = noopLogger) {
     this.vaultApiFactory = vaultAPIFactory(environment);
-    this.log = toFullLogger(log);
+    this.logger = toFullLogger(log);
   }
 
   public setLogger(logger: Logger) {
-    this.log = toFullLogger(logger);
+    this.logger = toFullLogger(logger);
   }
 
   public async createInvite(
@@ -26,7 +26,7 @@ export class OrganizationMembersService {
     organizationAgentPublicKey: string,
     role: OrganizationMemberRoles = OrganizationMemberRoles.Admin
   ) {
-    this.log.report('Creating invitation request');
+    this.logger.log('Creating invitation request');
     return await this.vaultApiFactory(vaultAccessToken)
       .InvitationApi.invitationsPost({
         public_key: {

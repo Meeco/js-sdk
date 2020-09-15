@@ -19,26 +19,26 @@ export class ConnectionService {
   private cryppo = (<any>global).cryppo || cryppo;
   private vaultApiFactory: VaultAPIFactory;
   private keystoreApiFactory: KeystoreAPIFactory;
-  private log: IFullLogger;
+  private logger: IFullLogger;
 
   constructor(private environment: Environment, log: Logger = noopLogger) {
     this.vaultApiFactory = vaultAPIFactory(environment);
     this.keystoreApiFactory = keystoreAPIFactory(environment);
-    this.log = toFullLogger(log);
+    this.logger = toFullLogger(log);
   }
 
   public setLogger(logger: Logger) {
-    this.log = toFullLogger(logger);
+    this.logger = toFullLogger(logger);
   }
 
   public async createInvitation(name: string, auth: AuthData) {
-    this.log.report('Generating key pair');
+    this.logger.log('Generating key pair');
     const keyPair = await this.createAndStoreKeyPair(auth);
 
-    this.log.report('Encrypting recipient name');
+    this.logger.log('Encrypting recipient name');
     const encryptedName: string = await this.encryptRecipientName(name, auth);
 
-    this.log.report('Sending invitation request');
+    this.logger.log('Sending invitation request');
     return await this.vaultApiFactory(auth)
       .InvitationApi.invitationsPost({
         public_key: {
@@ -53,13 +53,13 @@ export class ConnectionService {
   }
 
   public async acceptInvitation(name: string, invitationToken: string, auth: AuthData) {
-    this.log.report('Generating key pair');
+    this.logger.log('Generating key pair');
     const keyPair = await this.createAndStoreKeyPair(auth);
 
-    this.log.report('Encrypting connection name');
+    this.logger.log('Encrypting connection name');
     const encryptedName: string = await this.encryptRecipientName(name, auth);
 
-    this.log.report('Accepting invitation');
+    this.logger.log('Accepting invitation');
     return await this.vaultApiFactory(auth)
       .ConnectionApi.connectionsPost({
         public_key: {
@@ -85,8 +85,8 @@ export class ConnectionService {
     let existingConnection: { fromUserConnection: Connection; toUserConnection: Connection };
     try {
       // We want to avoid creating keypairs etc. only to find out that the users were connected from the beginning
-      this.log.report('Checking for an existing connection');
-      existingConnection = await findConnectionBetween(from, to, this.environment, this.log.report);
+      this.logger.log('Checking for an existing connection');
+      existingConnection = await findConnectionBetween(from, to, this.environment, this.logger.log);
     } catch (err) {
       // Empty catch because getting 404's is expected if the connection does not exist
     }
@@ -106,7 +106,7 @@ export class ConnectionService {
       from,
       to,
       this.environment,
-      this.log.report
+      this.logger.log
     );
 
     return {
@@ -118,9 +118,9 @@ export class ConnectionService {
   }
 
   public async listConnections(user: AuthData) {
-    this.log.report('Fetching connections');
+    this.logger.log('Fetching connections');
     const result = await this.vaultApiFactory(user).ConnectionApi.connectionsGet();
-    this.log.report('Decrypting connection names');
+    this.logger.log('Decrypting connection names');
     const decryptions = (result.connections || []).map(connection =>
       this.cryppo
         .decryptWithKey({

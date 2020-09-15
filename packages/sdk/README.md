@@ -115,7 +115,7 @@ To log warnings or errors you can pass loggers like so
 {
  error: errorLogFunc,
  warn: warnLogFunc,
- report: baseLogFunc,
+ log: baseLogFunc,
 }
 ```
 
