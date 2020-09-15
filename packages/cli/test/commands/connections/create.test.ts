@@ -40,12 +40,12 @@ function createConnection(config: { to: AuthData, from: AuthData, options: IConn
     },
     toUserConnection: {
       own: {
-        id: 'connection_id',
+        id: 'other_connection_id',
         user_public_key: 'to_user_public',
         encrypted_recipient_name: '[serialized][encrypted]TestFrom[with to_data_encryption_key\u0000\u0000]'
       },
       the_other_user: {
-        id: 'other_connection_id',
+        id: 'connection_id',
         user_public_key: 'from_user_public',
       }
     },
