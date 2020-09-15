@@ -46,8 +46,8 @@ describe('item:create', () => {
 });
 
 function create(vaultAccessToken: string, dataEncryptionKey: string, itemCreateData: ItemCreateData) {
-  let testIdsToUse = ['a', 'b', 'c', 'd', 'e'].reverse();
-  let testNamesToUse = ['Make', 'Model'];
+  const testIdsToUse = ['a', 'b', 'c', 'd', 'e'].reverse();
+  const testNamesToUse = ['Make', 'Model'];
   let slots: any[];
 
   if (itemCreateData.slots && itemCreateData.slots.length) {
