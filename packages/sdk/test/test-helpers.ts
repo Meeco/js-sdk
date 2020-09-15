@@ -74,9 +74,9 @@ export const environment = new Environment({
   keystore
 });
 
-const convertUndefinedObjectValuesRecursive = (obj: Object, replacement: any): Object => {
+const convertUndefinedObjectValuesRecursive = (obj, replacement) => {
   if (Array.isArray(obj)) {
-    const result: Object[] = [];
+    const result: any[] = [];
     obj.forEach(x => {
       if (typeof x === 'object' && x !== null) {
         result.push(convertUndefinedObjectValuesRecursive(x, replacement));
@@ -97,6 +97,6 @@ const convertUndefinedObjectValuesRecursive = (obj: Object, replacement: any): O
     return obj;
   }
 };
-export const replaceUndefinedWithNull = (obj: Object) => {
+export const replaceUndefinedWithNull = (obj) => {
   return convertUndefinedObjectValuesRecursive(obj, null);
 };
