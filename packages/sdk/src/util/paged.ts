@@ -1,3 +1,5 @@
+import { SimpleLogger } from '../util/logger';
+
 type NextPageSpec = string | undefined;
 type NextPageSpecR = string | null;
 
@@ -116,4 +118,13 @@ export function reducePages<T>(pages: T[]): T {
  */
 export function reducePagesTakeLast<T>(pages: T[]): T {
   return pages.reduce(combinePages(false));
+}
+
+export function reportIfTruncated<T extends IPagedResponse>(log: SimpleLogger) {
+  return (pagedResult: T) => {
+    if (resultHasNext(pagedResult)) {
+      log('Some results omitted');
+    }
+    return pagedResult;
+  };
 }

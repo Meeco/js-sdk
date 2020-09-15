@@ -1,4 +1,4 @@
-import { getAllPaged, reducePages, vaultAPIFactory } from '@meeco/sdk';
+import { getAllPaged, reducePages, reportIfTruncated, vaultAPIFactory } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationServiceListConfig } from '../../configs/organization-services-list-config';
 import { authFlags } from '../../flags/auth-flags';
@@ -35,7 +35,9 @@ export default class OrganizationServicesList extends MeecoCommand {
         ? await getAllPaged(cursor =>
             api.organizationsOrganizationIdRequestedServicesGet(organization_id, cursor)
           ).then(reducePages)
-        : await api.organizationsOrganizationIdRequestedServicesGet(organization_id);
+        : await api
+            .organizationsOrganizationIdRequestedServicesGet(organization_id)
+            .then(reportIfTruncated(this.warn));
 
       this.finish();
       this.printYaml(OrganizationServiceListConfig.encodeFromJSON(result.services));

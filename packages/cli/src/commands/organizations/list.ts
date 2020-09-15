@@ -1,4 +1,4 @@
-import { getAllPaged, reducePages, vaultAPIFactory } from '@meeco/sdk';
+import { getAllPaged, reducePages, reportIfTruncated, vaultAPIFactory } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationsListConfig } from '../../configs/organizations-list-config';
@@ -38,7 +38,9 @@ export default class OrganizationsList extends MeecoCommand {
         ? await getAllPaged(cursor =>
             api.OrganizationsForVaultUsersApi.organizationsGet(modeParam, cursor)
           ).then(reducePages)
-        : await api.OrganizationsForVaultUsersApi.organizationsGet(modeParam);
+        : await api.OrganizationsForVaultUsersApi.organizationsGet(modeParam).then(
+            reportIfTruncated(this.warn)
+          );
 
       this.finish();
       this.printYaml(OrganizationsListConfig.encodeFromJSON(result.organizations));

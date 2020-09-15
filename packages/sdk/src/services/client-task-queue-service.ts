@@ -1,7 +1,7 @@
 import { ClientTaskQueueResponse } from '@meeco/vault-api-sdk';
 import { Environment } from '../models/environment';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
-import { Logger, noopLogger } from '../util/logger';
+import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 
 /**
@@ -9,13 +9,15 @@ import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
  */
 export class ClientTaskQueueService {
   private vaultAPIFactory: VaultAPIFactory;
+  private log: IFullLogger;
 
-  constructor(environment: Environment, private log: Logger = noopLogger) {
+  constructor(environment: Environment, log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
+    this.log = toFullLogger(log);
   }
 
   public setLogger(logger: Logger) {
-    this.log = logger;
+    this.log = toFullLogger(logger);
   }
 
   public async list(

@@ -24,7 +24,12 @@ export default class ConnectionsList extends MeecoCommand {
         this.error('Must specify authentication file');
       }
 
-      const service = new ConnectionService(environment, this.updateStatus);
+      const service = new ConnectionService(environment, {
+        error: this.error,
+        warn: this.warn,
+        log: this.updateStatus,
+      });
+
       const result = all
         ? await service.listAll(authConfig.vault_access_token, authConfig.data_encryption_key)
         : await service.list(authConfig.vault_access_token, authConfig.data_encryption_key);
