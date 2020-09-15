@@ -7,9 +7,8 @@ import {
   environment,
   getInputFixture,
   getOutputFixture,
-
-
-  replaceUndefinedWithNull, testUserAuth
+  replaceUndefinedWithNull,
+  testUserAuth
 } from '../test-helpers';
 
 describe('Items update', () => {
