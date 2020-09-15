@@ -90,7 +90,7 @@ const convertUndefinedObjectValuesRecursive = (obj, replacement) => {
     Object.keys(obj).forEach((key) => {
       if (typeof obj[key] === 'undefined') {
         obj[key] = replacement;
-      } else if (typeof obj[key] == 'object' && !Array.isArray(obj[key]) && !(obj[key] instanceof Date)) {
+      } else if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && !(obj[key] instanceof Date)) {
         obj[key] = convertUndefinedObjectValuesRecursive(obj[key], replacement);
       }
     });
