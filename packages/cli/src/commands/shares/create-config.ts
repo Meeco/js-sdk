@@ -1,4 +1,4 @@
-import { fetchConnectionWithId, ItemService } from '@meeco/sdk';
+import { fetchConnectionWithId, ItemService, ShareService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
@@ -11,9 +11,14 @@ export default class SharesCreateConfig extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     itemId: _flags.string({
-      required: true,
+      required: false,
       char: 'i',
-      description: `Item id of the 'from' user to share with the 'to' use`,
+      description: `Item id of the 'from' user to share with the 'to' user`,
+    }),
+    onshareId: _flags.string({
+      required: false,
+      char: 'o',
+      description: `Share ID of the share, which to on-share with the 'to' user`,
     }),
     from: _flags.string({
       required: true,
@@ -37,7 +42,8 @@ export default class SharesCreateConfig extends MeecoCommand {
   async run() {
     try {
       const { flags } = this.parse(this.constructor as typeof SharesCreateConfig);
-      const { from, connectionId, itemId, slotName } = flags;
+      const { from, connectionId, onshareId, slotName } = flags;
+      let { itemId } = flags;
       const environment = await this.readEnvironmentFile();
       const fromUser = await this.readConfigFromFile(AuthConfig, from);
 
@@ -45,9 +51,21 @@ export default class SharesCreateConfig extends MeecoCommand {
         this.error('Both a valid from and to user config file are required');
       }
 
+      if (!(onshareId || itemId)) {
+        this.error('Either a on-share id (-o option) or an item id (-i option) is required');
+      }
+
       await fetchConnectionWithId(fromUser, connectionId, environment, this.updateStatus);
 
       // Ensure the item to share exists first since setting up a first share takes a bit of work
+      if (!itemId) {
+        // The `as string` is safe here as we know that item id is undefined, shareId must be defined
+        // or we would have errored above .
+        itemId = (
+          await new ShareService(environment).getSharedItemIncoming(fromUser, onshareId as string)
+        ).item.id;
+      }
+
       const item = await new ItemService(environment)
         .get(itemId, fromUser.vault_access_token, fromUser.data_encryption_key)
         .catch(err => {
@@ -56,6 +74,7 @@ export default class SharesCreateConfig extends MeecoCommand {
           }
           throw err;
         });
+
       let slotId: string | undefined;
       if (slotName) {
         slotId = item.slots.find(slot => slot.name === slotName)?.id;
