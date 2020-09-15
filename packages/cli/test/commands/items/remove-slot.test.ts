@@ -9,7 +9,7 @@ describe('items:remove-slot', () => {
     .stderr()
     .run(['items:remove-slot', 'my_slot_id', ...testUserAuth, ...testEnvironmentFile])
     .it('removes a slot from an item', ctx => {
-      expect(ctx.stdout.trim()).to.contain('Slot successfully removed');
+      expect(ctx.stdout.trim()).to.contain('Slot successfully deleted');
     });
 });
 
