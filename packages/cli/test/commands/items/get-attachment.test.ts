@@ -1,11 +1,4 @@
-import {
-  binaryBufferToString,
-  CipherStrategy,
-  encryptWithKey,
-  stringAsBinaryBuffer,
-} from '@meeco/cryppo';
-import { EncryptionKey } from '@meeco/sdk';
-import { AttachmentApi } from '@meeco/vault-api-sdk';
+import { ItemService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import * as fileUtils from '../../../src/util/file';
 import { customTest, testEnvironmentFile, testUserAuth } from '../../test-helpers';
@@ -31,21 +24,7 @@ describe('items:get-attachment', () => {
       written = true;
       return Promise.resolve();
     }))
-    .stub(AttachmentApi.prototype, 'attachmentsIdDownloadGet', <any>(id => {
-      expect(id).to.eql('my_attachment_id');
-      return Promise.resolve({
-        async arrayBuffer() {
-          const pixelString = binaryBufferToString(singleBluePixel);
-          const dek = EncryptionKey.fromSerialized('bXlfZ2VuZXJhdGVkX2Rlaw==');
-          const encryptedPixel = await encryptWithKey({
-            data: pixelString,
-            key: dek.key,
-            strategy: CipherStrategy.AES_GCM,
-          });
-          return stringAsBinaryBuffer(encryptedPixel.serialized);
-        },
-      });
-    }))
+    .stub(ItemService.prototype, 'downloadAttachment', downloadAttachment as any)
     .stdout()
     .stderr()
     .run([
@@ -66,21 +45,7 @@ describe('items:get-attachment', () => {
         code: 'EEXIST',
       });
     }))
-    .stub(AttachmentApi.prototype, 'attachmentsIdDownloadGet', <any>(id => {
-      expect(id).to.eql('my_attachment_id');
-      return Promise.resolve({
-        async arrayBuffer() {
-          const pixelString = binaryBufferToString(singleBluePixel);
-          const dek = EncryptionKey.fromSerialized('bXlfZ2VuZXJhdGVkX2Rlaw==');
-          const encryptedPixel = await encryptWithKey({
-            data: pixelString,
-            key: dek.key,
-            strategy: CipherStrategy.AES_GCM,
-          });
-          return stringAsBinaryBuffer(encryptedPixel.serialized);
-        },
-      });
-    }))
+    .stub(ItemService.prototype, 'downloadAttachment', downloadAttachment as any)
     .stdout()
     .stderr()
     .run([
@@ -104,21 +69,7 @@ describe('items:get-attachment', () => {
         code: 'OTHER',
       });
     }))
-    .stub(AttachmentApi.prototype, 'attachmentsIdDownloadGet', <any>(id => {
-      expect(id).to.eql('my_attachment_id');
-      return Promise.resolve({
-        async arrayBuffer() {
-          const pixelString = binaryBufferToString(singleBluePixel);
-          const dek = EncryptionKey.fromSerialized('bXlfZ2VuZXJhdGVkX2Rlaw==');
-          const encryptedPixel = await encryptWithKey({
-            data: pixelString,
-            key: dek.key,
-            strategy: CipherStrategy.AES_GCM,
-          });
-          return stringAsBinaryBuffer(encryptedPixel.serialized);
-        },
-      });
-    }))
+    .stub(ItemService.prototype, 'downloadAttachment', downloadAttachment as any)
     .stdout()
     .stderr()
     .run([
@@ -132,3 +83,7 @@ describe('items:get-attachment', () => {
     .catch(err => expect(err.message).to.contain('Failed to write to destination file'))
     .it('handles other file write errors');
 });
+
+function downloadAttachment(attachmentId, vaultAccessToken, dataEncryptionKey) {
+  return Promise.resolve(singleBluePixel);
+}

@@ -1,3 +1,4 @@
+import { ItemService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
@@ -6,8 +7,7 @@ describe('items:get', () => {
   customTest
     .stdout()
     .stderr()
-    .mockCryppo()
-    .nock('https://sandbox.meeco.me/vault', mockVault)
+    .stub(ItemService.prototype, 'get', get as any)
     .run(['items:get', 'my-item', ...testUserAuth, ...testEnvironmentFile])
     .it('returns an item with all slots decrypted', ctx => {
       const expected = readFileSync(outputFixture('get-item.output.yaml'), 'utf-8');
@@ -15,60 +15,117 @@ describe('items:get', () => {
     });
 });
 
-const response = {
-  item: {
-    created_at: new Date(0),
-    updated_at: new Date(0),
-    label: 'My Fave Foods',
-    name: 'food',
-    slot_ids: ['steak', 'pizza', 'yoghurt'],
-  },
-  slots: [
-    {
-      id: 'pizza',
-      label: 'Pizza',
-      name: 'pizza',
-      foo: 'bar',
-      slot_type_name: 'key_value',
-      encrypted_value: 'Hawaiian',
-      encrypted: true,
+function get(itemId, vaultAccessToken, dataEncryptionKey) {
+  return Promise.resolve({
+    item: {
+      id: null,
+      own: null,
+      name: 'food',
+      label: 'My Fave Foods',
+      description: null,
       created_at: new Date(0),
+      item_template_id: null,
+      ordinal: null,
+      visible: null,
       updated_at: new Date(0),
+      item_template_label: null,
+      image: null,
+      item_image: null,
+      item_image_background_colour: null,
+      classification_node_ids: null,
+      association_ids: null,
+      associations_to_ids: null,
+      slot_ids: ['steak', 'pizza', 'yoghurt'],
+      me: null,
+      background_color: null,
+      original_id: null,
+      owner_id: null,
+      share_id: null
     },
-    {
-      id: 'steak',
-      label: 'Steak',
-      name: 'steak',
-      foo: 'bar',
-      slot_type_name: 'key_value',
-      encrypted_value: 'Rump',
-      encrypted: true,
-      created_at: new Date(0),
-      updated_at: new Date(0),
-    },
-    {
-      id: 'beer',
-      label: 'Beer',
-      name: 'beer',
-      foo: 'bar',
-      slot_type_name: 'key_value',
-      encrypted_value: 'Session Ale',
-      encrypted: true,
-      created_at: new Date(0),
-      updated_at: new Date(0),
-    },
-  ],
-  associations_to: [],
-  associations: [],
-  attachments: [],
-  classification_nodes: [],
-  thumbnails: [],
-};
-
-function mockVault(api) {
-  api
-    .get('/items/my-item')
-    .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, response);
+    slots: [
+      {
+        id: 'pizza',
+        own: null,
+        share_id: null,
+        name: 'pizza',
+        description: null,
+        encrypted: false,
+        ordinal: null,
+        visible: null,
+        classification_node_ids: null,
+        attachment_id: null,
+        slotable_id: null,
+        slotable_type: null,
+        required: null,
+        updated_at: new Date(0),
+        created_at: new Date(0),
+        slot_type_name: 'key_value',
+        creator: null,
+        encrypted_value: 'Hawaiian',
+        encrypted_value_verification_key: null,
+        value_verification_hash: null,
+        image: null,
+        label: 'Pizza',
+        original_id: null,
+        owner_id: null,
+        value: 'Hawaiian[decrypted with my_generated_dek]'
+      },
+      {
+        id: 'steak',
+        own: null,
+        share_id: null,
+        name: 'steak',
+        description: null,
+        encrypted: false,
+        ordinal: null,
+        visible: null,
+        classification_node_ids: null,
+        attachment_id: null,
+        slotable_id: null,
+        slotable_type: null,
+        required: null,
+        updated_at: new Date(0),
+        created_at: new Date(0),
+        slot_type_name: 'key_value',
+        creator: null,
+        encrypted_value: 'Rump',
+        encrypted_value_verification_key: null,
+        value_verification_hash: null,
+        image: null,
+        label: 'Steak',
+        original_id: null,
+        owner_id: null,
+        value: 'Rump[decrypted with my_generated_dek]'
+      },
+      {
+        id: 'beer',
+        own: null,
+        share_id: null,
+        name: 'beer',
+        description: null,
+        encrypted: false,
+        ordinal: null,
+        visible: null,
+        classification_node_ids: null,
+        attachment_id: null,
+        slotable_id: null,
+        slotable_type: null,
+        required: null,
+        updated_at: new Date(0),
+        created_at: new Date(0),
+        slot_type_name: 'key_value',
+        creator: null,
+        encrypted_value: 'Session Ale',
+        encrypted_value_verification_key: null,
+        value_verification_hash: null,
+        image: null,
+        label: 'Beer',
+        original_id: null,
+        owner_id: null,
+        value: 'Session Ale[decrypted with my_generated_dek]'
+      }
+    ],
+    thumbnails: [],
+    attachments: []
+  });
 }

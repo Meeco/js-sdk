@@ -1,4 +1,4 @@
-import { ItemApi } from '@meeco/vault-api-sdk';
+import { ItemCreateData, ItemService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import {
@@ -6,12 +6,12 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth,
+  testUserAuth
 } from '../../test-helpers';
 
 describe('item:create', () => {
   customTest
-    .stub(ItemApi.prototype, 'itemsPost', createItem as any)
+    .stub(ItemService.prototype, 'create', create as any)
     .stdout()
     .run([
       'items:create',
@@ -29,7 +29,7 @@ describe('item:create', () => {
     });
 
   customTest
-    .stub(ItemApi.prototype, 'itemsPost', createItem as any)
+    .stub(ItemService.prototype, 'create', create as any)
     .mockCryppo()
     .stdout()
     .run([
@@ -45,33 +45,41 @@ describe('item:create', () => {
     });
 });
 
-function createItem({ template_name, item }) {
-  const slot_ids = ['a', 'b', 'c', 'd', 'e'];
-  const update = { ...item };
-  if (template_name === 'vehicle') {
-    update.slots_attributes = [
-      {
-        id: 'a',
-        name: 'Make',
-      },
-      {
-        id: 'b',
-        name: 'Model',
-      },
-    ];
+function create(vaultAccessToken: string, dataEncryptionKey: string, itemCreateData: ItemCreateData) {
+  let testIdsToUse = ['a', 'b', 'c', 'd', 'e'].reverse();
+  let testNamesToUse = ['Make', 'Model'];
+  let slots: any[];
+
+  if (itemCreateData.slots && itemCreateData.slots.length) {
+    slots = itemCreateData.slots.map(slot => {
+      return {
+        name: slot.name,
+        encrypted_value: `[serialized][encrypted]${slot.value}[with my_generated_dek]`,
+        encrypted: true,
+        id: testIdsToUse.pop()
+      }
+    });
+  } else {
+    slots = testNamesToUse.map(name => {
+      return {
+        id: testIdsToUse.pop(),
+        name
+      }
+    });
   }
-  const slots = (update.slots_attributes || []).map((slot, index) => ({
-    ...slot,
-    id: slot_ids[index],
-  }));
-  delete update.slots_attributes;
+
+  const slot_ids = slots.map(slot => slot.id);
+
   return Promise.resolve({
+    associations_to: [],
+    associations: [],
+    classification_nodes: [],
     item: {
       id: 'item-foo',
-      template_name,
-      ...update,
-      slot_ids: slots.map(slot => slot.id),
+      template_name: itemCreateData.template_name,
+      label: itemCreateData.item.label,
+      slot_ids
     },
-    slots,
+    slots
   });
 }

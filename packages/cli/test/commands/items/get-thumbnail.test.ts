@@ -1,11 +1,4 @@
-import {
-  binaryBufferToString,
-  CipherStrategy,
-  encryptWithKey,
-  stringAsBinaryBuffer,
-} from '@meeco/cryppo';
-import { EncryptionKey } from '@meeco/sdk';
-import { ThumbnailApi } from '@meeco/vault-api-sdk';
+import { ItemService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import * as fileUtils from '../../../src/util/file';
 import { customTest, testEnvironmentFile, testUserAuth } from '../../test-helpers';
@@ -31,21 +24,7 @@ describe('items:get-thumbnail', () => {
       written = true;
       return Promise.resolve();
     }))
-    .stub(ThumbnailApi.prototype, 'thumbnailsIdGet', <any>(id => {
-      expect(id).to.eql('my_thumbnail_id');
-      return Promise.resolve({
-        async arrayBuffer() {
-          const pixelString = binaryBufferToString(singleBluePixel);
-          const dek = EncryptionKey.fromSerialized('bXlfZ2VuZXJhdGVkX2Rlaw==');
-          const encryptedPixel = await encryptWithKey({
-            data: pixelString,
-            key: dek.key,
-            strategy: CipherStrategy.AES_GCM,
-          });
-          return stringAsBinaryBuffer(encryptedPixel.serialized);
-        },
-      });
-    }))
+    .stub(ItemService.prototype, 'downloadThumbnail', downloadThumbnail as any)
     .stdout()
     .stderr()
     .run([
@@ -66,21 +45,7 @@ describe('items:get-thumbnail', () => {
         code: 'EEXIST',
       });
     }))
-    .stub(ThumbnailApi.prototype, 'thumbnailsIdGet', <any>(id => {
-      expect(id).to.eql('my_thumbnail_id');
-      return Promise.resolve({
-        async arrayBuffer() {
-          const pixelString = binaryBufferToString(singleBluePixel);
-          const dek = EncryptionKey.fromSerialized('bXlfZ2VuZXJhdGVkX2Rlaw==');
-          const encryptedPixel = await encryptWithKey({
-            data: pixelString,
-            key: dek.key,
-            strategy: CipherStrategy.AES_GCM,
-          });
-          return stringAsBinaryBuffer(encryptedPixel.serialized);
-        },
-      });
-    }))
+    .stub(ItemService.prototype, 'downloadThumbnail', downloadThumbnail as any)
     .stdout()
     .stderr()
     .run([
@@ -104,21 +69,7 @@ describe('items:get-thumbnail', () => {
         code: 'OTHER',
       });
     }))
-    .stub(ThumbnailApi.prototype, 'thumbnailsIdGet', <any>(id => {
-      expect(id).to.eql('my_thumbnail_id');
-      return Promise.resolve({
-        async arrayBuffer() {
-          const pixelString = binaryBufferToString(singleBluePixel);
-          const dek = EncryptionKey.fromSerialized('bXlfZ2VuZXJhdGVkX2Rlaw==');
-          const encryptedPixel = await encryptWithKey({
-            data: pixelString,
-            key: dek.key,
-            strategy: CipherStrategy.AES_GCM,
-          });
-          return stringAsBinaryBuffer(encryptedPixel.serialized);
-        },
-      });
-    }))
+    .stub(ItemService.prototype, 'downloadThumbnail', downloadThumbnail as any)
     .stdout()
     .stderr()
     .run([
@@ -132,3 +83,7 @@ describe('items:get-thumbnail', () => {
     .catch(err => expect(err.message).to.contain('Failed to write to destination file'))
     .it('handles other file write errors');
 });
+
+function downloadThumbnail(thumbnailId, vaultAccessToken, dataEncryptionKey) {
+  return Promise.resolve(singleBluePixel);
+}
