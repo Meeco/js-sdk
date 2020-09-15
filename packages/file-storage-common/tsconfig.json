@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "outDir": "./lib",
+    "noImplicitAny": false,
+    "target": "ES5"
+  },
+  "include": ["./src"]
+}

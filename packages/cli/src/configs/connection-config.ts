@@ -49,7 +49,7 @@ export class ConnectionConfig {
       metadata: {
         invitation_id: payload.invitation.id,
         from_user_connection_id: payload.fromUserConnection.own.id,
-        to_user_connection_id: payload.toUserConnection.the_other_user.id,
+        to_user_connection_id: payload.toUserConnection.own.id,
       },
       spec: {
         ...payload.options,

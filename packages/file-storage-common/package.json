@@ -1,0 +1,34 @@
+{
+  "name": "@meeco/file-storage-common",
+  "version": "0.0.4-beta",
+  "description": "Core module for uploading and downloading encrypted files",
+  "source": "src/index.ts",
+  "types": "./lib/index.d.ts",
+  "browser": "./lib/esm/index.js",
+  "main": "./lib/umd/index.js",
+  "module": "./lib/esm/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" ",
+    "build": "npm run build:types && npm run build:esm && npm run build:umd",
+    "build:types": "tsc -p tsconfig.json --emitDeclarationOnly",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:umd": "tsc -p tsconfig.umd.json",
+    "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
+  },
+  "dependencies": {
+    "@meeco/cryppo": "^0.7.0",
+    "axios": "^0.20.0",
+    "lodash.padstart": "^4.6.1"
+  },
+  "devDependencies": {
+    "@types/lodash.padstart": "^4.6.6",
+    "@types/node": "^10.14.18",
+    "bili": "^4.10.0",
+    "prettier": "~1.19.1",
+    "typescript": "^3.9.6"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

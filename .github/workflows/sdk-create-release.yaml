@@ -5,6 +5,7 @@ on:
     tags:
       - 'releases/sdk/**'
       - '!releases/sdk/**-beta'
+      - '!releases/sdk/**-alpha'
 
 jobs:
   create_sdk_release:

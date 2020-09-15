@@ -1,0 +1,127 @@
+<html>
+  <head>
+    <title>Meeco File Storage Browser - Demo</title>
+  </head>
+  <body>
+    <div class="title">
+      <h6>Meeco File Storage Browser - Demo</h6>
+      <a class="button secondary" href="https://meeco.github.io/js-sdk/">View Documentation</a>
+    </div>
+    <div class="card">
+      <h4>Environment Configuration</h4>
+      <hr />
+      <label for="vaultUrl">Vault API URL:</label>
+      <input
+        placeholder="e.g. https://sandbox.meeco.me/vault"
+        class="full"
+        value=""
+        autocapitalize="off"
+        autocomplete="off"
+        id="vaultUrl"
+      />
+      <label for="dataEncryptionKey">Data Encryption Key (Base64)</label>
+      <input
+        placeholder="e.g. 2rz3mys8L687IfZ9DztgJDe4IyEyIKde7Ae6WsOXV0U="
+        class="full"
+        value=""
+        autocapitalize="off"
+        autocomplete="off"
+        id="dataEncryptionKey"
+      />
+      <label for="subscriptionKey">Meeco Subscription Key:</label>
+      <input
+        placeholder="e.g. aaaaa11111bbbbb22222"
+        class="full"
+        autocapitalize="off"
+        autocomplete="off"
+        id="subscriptionKey"
+      />
+      <label for="vaultAccessToken">Vault Access Token:</label>
+      <input
+        placeholder="e.g. aaaaa11111bbbbb22222"
+        value=""
+        class="full"
+        autocapitalize="off"
+        autocomplete="off"
+        id="vaultAccessToken"
+      />
+      <button id="updateEnvironment">Save</button>
+      <input value="Not set" class="full" disabled id="environmentStatus" />
+    </div>
+
+    <div class="card">
+      <h4>Add Attachment (PNG)</h4>
+      <hr />
+      <input id="attachment" type="file" />
+      <input
+        id="itemId"
+        placeholder="itemId"
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        value=""
+      />
+      <input
+        id="attachmentSlotLabel"
+        placeholder='label e.g. "Video of Dog"'
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        value=""
+      />
+      <input
+        id="videoCodec"
+        placeholder='video codec e.g. video/webm; codecs="vorbis,vp8"'
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        list="availableCodecs"
+      />
+      <datalist id="availableCodecs">
+        <option value='video/mp4; codecs="avc1.640028"; profiles="iso6,avc1,mp41"'
+          >video/mp4; codecs="avc1.640028"; profiles="iso6,avc1,mp41"</option
+        >
+        <option value='video/webm; codecs="vorbis,vp8"'>video/webm; codecs="vorbis,vp8"</option>
+        <option value='video/webm; codecs="vorbis,vp9"'>video/webm; codecs="vorbis,vp9"</option>
+      </datalist>
+      <button type="button" id="attachFile">Attach</button>
+      <progress id="fileUploadProgressBar" value="0" max="100"></progress>
+      <textarea disabled id="attached" rows="10"></textarea>
+    </div>
+
+    <div class="card">
+      <h4>Download Attachment</h4>
+      <hr />
+      <input
+        id="downloadItemId"
+        placeholder="attachmentId"
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        value=""
+      />
+      <input
+        id="downloadSlotId"
+        placeholder="attachmentId"
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        value=""
+      />
+      <button type="button" id="downloadAttachment">Download</button>
+      <progress id="fileDownloadProgressBar" value="0" max="100"></progress>
+      <textarea disabled id="downloadAttachmentDetails" rows="3"></textarea>
+      <video id="streamingVideoContainer" controls width="470">
+        <source />
+        Sorry, your browser doesn't support embedded videos.
+      </video>
+    </div>
+
+    <div class="card">
+      <h4>Event Log</h4>
+      <hr />
+      <sub>Any log events that the SDK output will appear here:</sub>
+      <textarea disabled id="log" rows="5"></textarea>
+    </div>
+  </body>
+</html>

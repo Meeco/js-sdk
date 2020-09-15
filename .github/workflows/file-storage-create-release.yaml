@@ -1,0 +1,37 @@
+name: Release Beta File Storage
+
+on:
+  push:
+    tags:
+      - 'releases/file-storage/**'
+      - '!releases/file-storage/**-beta'
+
+jobs:
+  create_file_storage_release:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npx lerna bootstrap --hoist
+      - run: npx lerna run test
+        env:
+          CI: true
+      # It is currently a dependency
+      - run: npx lerna run build --scope '@meeco/sdk'
+      - run: npx lerna run build --scope '@meeco/{file-storage-common,file-storage-browser}'
+      - name: Publish NPM
+        run: |
+          npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser}' -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
+          npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser}' -- npm config set scope "@meeco"
+          npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser}' -- npm publish --access public
+        env:
+          CI: true
+          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}

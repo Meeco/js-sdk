@@ -1,0 +1,30 @@
+{
+  "name": "@meeco/file-storage-node",
+  "version": "0.0.4-beta",
+  "description": "",
+  "source": "src/index.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\"",
+    "build": "tsc -p tsconfig.build.json",
+    "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
+  },
+  "dependencies": {
+    "@meeco/sdk": "^0.0.12-alpha.2",
+    "@meeco/file-storage-common": "0.0.4-beta",
+    "@meeco/cryppo": "^0.7.0",
+    "file-type": "^15.0.0",
+    "bili": "^4.10.0",
+    "file-saver": "^2.0.2"
+  },
+  "devDependencies": {
+    "typescript": "^3.9.6",
+    "@types/node": "^10.14.18"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

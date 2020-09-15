@@ -44,5 +44,8 @@
 //     .get('/connections/connection-id')
 //     .matchHeader('Authorization', 'from_vault_access')
 //     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-//     .reply(200, { connection: { id: 'connection-id' } });
+//     .reply(200, {
+//       connection: { own: { id: 'connection-id' } },
+//       the_other_user: { id: 'other-connection-id' },
+//     });
 // }

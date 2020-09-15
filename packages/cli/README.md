@@ -206,11 +206,9 @@ once approved it can be access with follwoing command
 - [`meeco connections:create-config`](#meeco-connectionscreate-config)
 - [`meeco connections:list`](#meeco-connectionslist)
 - [`meeco help [COMMAND]`](#meeco-help-command)
-- [`meeco items:attach-file`](#meeco-itemsattach-file)
 - [`meeco items:create`](#meeco-itemscreate)
 - [`meeco items:create-config TEMPLATENAME`](#meeco-itemscreate-config-templatename)
 - [`meeco items:get ITEMID`](#meeco-itemsget-itemid)
-- [`meeco items:get-attachment ATTACHMENTID`](#meeco-itemsget-attachment-attachmentid)
 - [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
 - [`meeco items:list`](#meeco-itemslist)
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
@@ -231,12 +229,7 @@ once approved it can be access with follwoing command
 - [`meeco organizations:list`](#meeco-organizationslist)
 - [`meeco organizations:login`](#meeco-organizationslogin)
 - [`meeco organizations:update`](#meeco-organizationsupdate)
-- [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
-- [`meeco shares:delete SHAREID`](#meeco-sharesdelete-shareid)
-- [`meeco shares:get SHAREID`](#meeco-sharesget-shareid)
-- [`meeco shares:info [FILE]`](#meeco-sharesinfo-file)
-- [`meeco shares:list`](#meeco-shareslist)
 - [`meeco templates:info TEMPLATENAME`](#meeco-templatesinfo-templatename)
 - [`meeco templates:list`](#meeco-templateslist)
 - [`meeco users:create`](#meeco-userscreate)
@@ -333,28 +326,6 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
 
-## `meeco items:attach-file`
-
-Encrypt and attach a file to an item
-
-```
-USAGE
-  $ meeco items:attach-file
-
-OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
-
-  -c, --config=config            (required) file attachment config yaml
-
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-
-EXAMPLES
-  meeco items:attach-file -c ./file-attachment-config.yaml
-```
-
-_See code: [src/commands/items/attach-file.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/attach-file.ts)_
-
 ## `meeco items:create`
 
 Create a new item for a user from a template
@@ -420,31 +391,6 @@ OPTIONS
 ```
 
 _See code: [src/commands/items/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get.ts)_
-
-## `meeco items:get-attachment ATTACHMENTID`
-
-Download and decrypt an attachment by id
-
-```
-USAGE
-  $ meeco items:get-attachment ATTACHMENTID
-
-ARGUMENTS
-  ATTACHMENTID  ID of the attachment to download
-
-OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
-
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-
-  -o, --outputPath=outputPath    (required) output file path
-
-EXAMPLES
-  meeco items:get-attachment my-attachment-id -o ./my-attachment.txt
-```
-
-_See code: [src/commands/items/get-attachment.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get-attachment.ts)_
 
 ## `meeco items:get-thumbnail THUMBNAILID`
 
@@ -886,21 +832,6 @@ EXAMPLE
 
 _See code: [src/commands/organizations/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/update.ts)_
 
-## `meeco shares:create [FILE]`
-
-Share an item between two users
-
-```
-USAGE
-  $ meeco shares:create [FILE]
-
-OPTIONS
-  -c, --config=config            (required) Share config file to use for setting up the share
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-```
-
-_See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_
-
 ## `meeco shares:create-config`
 
 Provide two users and an item id to construct a share config file
@@ -917,78 +848,6 @@ OPTIONS
 ```
 
 _See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create-config.ts)_
-
-## `meeco shares:delete SHAREID`
-
-Delete a share. Both the owner of the shared data and the recipient of the share can delete the share
-
-```
-USAGE
-  $ meeco shares:delete SHAREID
-
-ARGUMENTS
-  SHAREID  ID of the shared item to fetch
-
-OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
-
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-```
-
-_See code: [src/commands/shares/delete.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/delete.ts)_
-
-## `meeco shares:get SHAREID`
-
-Get the item associated with a share, along with the decrypted values
-
-```
-USAGE
-  $ meeco shares:get SHAREID
-
-ARGUMENTS
-  SHAREID  ID of the shared item to fetch
-
-OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
-
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-```
-
-_See code: [src/commands/shares/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/get.ts)_
-
-## `meeco shares:info [FILE]`
-
-View information about the shared encryption space of two users
-
-```
-USAGE
-  $ meeco shares:info [FILE]
-
-OPTIONS
-  -c, --config=config            (required) Connection config file to use getting share information
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-```
-
-_See code: [src/commands/shares/info.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/info.ts)_
-
-## `meeco shares:list`
-
-Get a list of shares for the specified user
-
-```
-USAGE
-  $ meeco shares:list
-
-OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
-                                 default .user.yaml)
-
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-```
-
-_See code: [src/commands/shares/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/list.ts)_
 
 ## `meeco templates:info TEMPLATENAME`
 
