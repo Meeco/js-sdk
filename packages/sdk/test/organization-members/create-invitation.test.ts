@@ -5,7 +5,7 @@ import {
   environment,
   getInputFixture,
   getOutputFixture,
-  testUserAuthFixture
+  testUserAuthFixture,
 } from '../test-helpers';
 
 describe('organization-members:create-invitation', () => {

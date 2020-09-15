@@ -49,7 +49,7 @@ describe('meeco users:create', () => {
 });
 
 function generateUsername() {
-  return Promise.resolve('mocked_generated_username')
+  return Promise.resolve('mocked_generated_username');
 }
 
 function generateSecret() {
@@ -63,6 +63,6 @@ function create(password, secret) {
     keystore_access_token: 'keystore_auth_token',
     passphrase_derived_key: 'ZGVyaXZlZF9rZXlfMTIzLmFzdXBlcnNlY3JldHBhc3NwaHJhc2U=',
     secret,
-    vault_access_token: '[decrypted]encrypted_vault_session_string--PRIVATE_KEY--12324'
+    vault_access_token: '[decrypted]encrypted_vault_session_string--PRIVATE_KEY--12324',
   });
 }

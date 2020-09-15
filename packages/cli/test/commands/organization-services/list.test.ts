@@ -30,7 +30,7 @@ const result = {
       validated_by_id: null,
       agent_id: null,
       validated_at: null,
-      created_at: new Date('2020-07-02T05:47:44.983Z')
+      created_at: new Date('2020-07-02T05:47:44.983Z'),
     },
     {
       id: '00000000-0000-0000-0000-000000000001',
@@ -42,17 +42,17 @@ const result = {
       validated_by_id: null,
       agent_id: null,
       validated_at: null,
-      created_at: new Date('2020-07-02T05:47:44.983Z')
-    }
+      created_at: new Date('2020-07-02T05:47:44.983Z'),
+    },
   ],
   meta: null,
-  next_page_after: null
+  next_page_after: null,
 };
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     OrganizationsManagingServicesApi: {
-      organizationsOrganizationIdRequestedServicesGet: (organizationId) => Promise.resolve(result)
-    }
+      organizationsOrganizationIdRequestedServicesGet: organizationId => Promise.resolve(result),
+    },
   });
 }

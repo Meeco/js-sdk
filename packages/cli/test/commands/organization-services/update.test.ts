@@ -6,7 +6,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('organization-services:update', () => {
@@ -43,28 +43,32 @@ const result = {
     validated_by_id: '49a38f1c-4a92-464e-bed2-cd6ffa428da1',
     agent_id: '706ff9fb-bd58-4707-ba6c-50f97b94718b',
     validated_at: new Date('2020-07-02T01:58:07.313Z'),
-    created_at: new Date('2020-07-02T01:57:42.437Z')
+    created_at: new Date('2020-07-02T01:57:42.437Z'),
   },
   service: {
     id: 'f71272a3-d26b-4b85-9b0b-b3fd24c4ea0a',
     name: 'Sample Service',
     description: 'Sample service description',
     contract: {
-      name: 'sample contract'
+      name: 'sample contract',
     },
     status: 'requested',
     organization_id: 'e2fed464-878b-4d4b-9017-99abc50504ed',
     validated_by_id: null,
     agent_id: null,
     validated_at: null,
-    created_at: new Date('2020-07-02T05:47:44.983Z')
-  }
-}
+    created_at: new Date('2020-07-02T05:47:44.983Z'),
+  },
+};
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     OrganizationsManagingServicesApi: {
-      organizationsOrganizationIdServicesIdPut: (serviceId, organizationId, updateOrganizationServiceParams) => Promise.resolve(result)
-    }
+      organizationsOrganizationIdServicesIdPut: (
+        serviceId,
+        organizationId,
+        updateOrganizationServiceParams
+      ) => Promise.resolve(result),
+    },
   });
 }

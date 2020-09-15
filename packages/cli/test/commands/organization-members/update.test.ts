@@ -20,9 +20,13 @@ describe('organization-members:update', () => {
 });
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     OrganizationsManagingMembersApi: {
-      organizationsOrganizationIdMembersIdPut: (organizationId, memberId, organizationMembersRoleParams) => Promise.resolve()
-    }
+      organizationsOrganizationIdMembersIdPut: (
+        organizationId,
+        memberId,
+        organizationMembersRoleParams
+      ) => Promise.resolve(),
+    },
   });
 }

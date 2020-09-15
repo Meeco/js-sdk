@@ -32,7 +32,7 @@ function list(
         additional_options: {},
         last_state_transition_at: new Date(0),
         report: {},
-        created_at: new Date(0)
+        created_at: new Date(0),
       },
       {
         id: 'b',
@@ -42,8 +42,8 @@ function list(
         additional_options: {},
         last_state_transition_at: new Date(0),
         report: {},
-        created_at: new Date(0)
-      }
+        created_at: new Date(0),
+      },
     ],
   });
 }

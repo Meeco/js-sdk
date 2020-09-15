@@ -5,7 +5,7 @@ import {
   environment,
   getInputFixture,
   getOutputFixture,
-  testUserAuthFixture
+  testUserAuthFixture,
 } from '../test-helpers';
 
 describe('Organizations login', () => {
@@ -14,7 +14,10 @@ describe('Organizations login', () => {
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .it('returns organization agent login information ', async () => {
       const input = getInputFixture('login-organization.input.yaml');
-      const service = new OrganizationsService(environment, testUserAuthFixture.metadata.vault_access_token);
+      const service = new OrganizationsService(
+        environment,
+        testUserAuthFixture.metadata.vault_access_token
+      );
       const result = await service.getLogin(input.spec.id, input.metadata.privateKey);
 
       const expected = getOutputFixture('get-organization-login.output.yaml');

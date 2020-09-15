@@ -89,20 +89,23 @@ const response = {
 };
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     OrganizationsForVaultUsersApi: {
-      organizationsGet: (mode) => {
+      organizationsGet: mode => {
         mode = mode || 'validated';
-        const organizations = mode === 'member'
-          ? response.organizations.filter(f => f.status === 'validated' && f.name === 'Member mode Inc.')
-          : response.organizations.filter(f => f.status === mode);
+        const organizations =
+          mode === 'member'
+            ? response.organizations.filter(
+                f => f.status === 'validated' && f.name === 'Member mode Inc.'
+              )
+            : response.organizations.filter(f => f.status === mode);
         return Promise.resolve({
           organizations,
           services: [],
           meta: null,
-          next_page_after: null
+          next_page_after: null,
         });
-      }
-    }
+      },
+    },
   });
 }

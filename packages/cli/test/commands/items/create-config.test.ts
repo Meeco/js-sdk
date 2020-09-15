@@ -45,7 +45,7 @@ const templates = {
       image: null,
       label: 'Pizza',
       original_id: null,
-      owner_id: null
+      owner_id: null,
     },
     {
       id: 'steak',
@@ -71,7 +71,7 @@ const templates = {
       image: null,
       label: 'Steak',
       original_id: null,
-      owner_id: null
+      owner_id: null,
     },
     {
       id: 'beer',
@@ -97,8 +97,8 @@ const templates = {
       image: null,
       label: 'Beer',
       original_id: null,
-      owner_id: null
-    }
+      owner_id: null,
+    },
   ],
   item_templates: [
     {
@@ -112,22 +112,18 @@ const templates = {
       image: null,
       template_type: null,
       classification_node_ids: null,
-      slot_ids: [
-        'steak',
-        'pizza',
-        'yoghurt'
-      ],
+      slot_ids: ['steak', 'pizza', 'yoghurt'],
       label: null,
-      background_color: null
-    }
+      background_color: null,
+    },
   ],
-  meta: null
+  meta: null,
 };
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     ItemTemplateApi: {
-      itemTemplatesGet: (classificationScheme, classificationName) => Promise.resolve(templates)
-    }
+      itemTemplatesGet: (classificationScheme, classificationName) => Promise.resolve(templates),
+    },
   });
 }

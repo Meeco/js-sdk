@@ -5,7 +5,7 @@ import {
   environment,
   getInputFixture,
   getOutputFixture,
-  testUserAuthFixture
+  testUserAuthFixture,
 } from '../test-helpers';
 
 describe('Organization-services login', () => {

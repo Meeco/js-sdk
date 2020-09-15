@@ -19,9 +19,9 @@ describe('organization-members:list', () => {
 });
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     OrganizationsManagingMembersApi: {
-      organizationsOrganizationIdMembersGet: (organizationId) => {
+      organizationsOrganizationIdMembersGet: organizationId => {
         return Promise.resolve({
           members: [
             {
@@ -30,13 +30,14 @@ function vaultAPIFactory(environment) {
               email: 'owner@meeco.com',
               is_app_logging_enabled: null,
               image: null,
-              role: 'owner'
-            }
+              role: 'owner',
+            },
           ],
           organization: {
             id: 'c3fbac57-1eb8-41c3-a3de-3f946979945d',
             name: 'Meeco',
-            description: 'Meeco gives people and organisations the tools to access, control and create mutual value from personal data. Privately, securely and with explicit consent.',
+            description:
+              'Meeco gives people and organisations the tools to access, control and create mutual value from personal data. Privately, securely and with explicit consent.',
             url: 'https://www.meeco.me/',
             email: 'contact@meeco.me',
             status: 'validated',
@@ -44,12 +45,12 @@ function vaultAPIFactory(environment) {
             validated_by_id: 'e6b42a76-eacf-4e1b-985d-a36f04177e16',
             agent_id: null,
             validated_at: new Date('2020-06-17T02:47:43.861Z'),
-            created_at: new Date('2020-06-05T04:02:11.174Z')
+            created_at: new Date('2020-06-05T04:02:11.174Z'),
           },
           meta: null,
-          next_page_after: null
+          next_page_after: null,
         });
-      }
-    }
+      },
+    },
   });
 }

@@ -45,7 +45,7 @@ const result = {
       image: null,
       label: null,
       original_id: null,
-      owner_id: null
+      owner_id: null,
     },
     {
       id: 'steak',
@@ -71,7 +71,7 @@ const result = {
       image: null,
       label: null,
       original_id: null,
-      owner_id: null
+      owner_id: null,
     },
     {
       id: 'yoghurt',
@@ -97,7 +97,7 @@ const result = {
       image: null,
       label: null,
       original_id: null,
-      owner_id: null
+      owner_id: null,
     },
     {
       id: 'water',
@@ -123,7 +123,7 @@ const result = {
       image: null,
       label: null,
       original_id: null,
-      owner_id: null
+      owner_id: null,
     },
     {
       id: 'beer',
@@ -149,8 +149,8 @@ const result = {
       image: null,
       label: null,
       original_id: null,
-      owner_id: null
-    }
+      owner_id: null,
+    },
   ],
   item_templates: [
     {
@@ -166,7 +166,7 @@ const result = {
       classification_node_ids: null,
       slot_ids: null,
       label: null,
-      background_color: null
+      background_color: null,
     },
     {
       id: null,
@@ -179,22 +179,18 @@ const result = {
       image: null,
       template_type: null,
       classification_node_ids: null,
-      slot_ids: [
-        'yoghurt',
-        'water',
-        'beer'
-      ],
+      slot_ids: ['yoghurt', 'water', 'beer'],
       label: null,
-      background_color: null
-    }
+      background_color: null,
+    },
   ],
-  meta: null
+  meta: null,
 };
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     ItemTemplateApi: {
-      itemTemplatesGet: (classificationScheme, classificationName) => Promise.resolve(result)
-    }
+      itemTemplatesGet: (classificationScheme, classificationName) => Promise.resolve(result),
+    },
   });
 }

@@ -14,9 +14,9 @@ describe('organizations:delete', () => {
 });
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     OrganizationsManagingOrganizationsApi: {
-      organizationsIdDelete: (id) => Promise.resolve()
-    }
+      organizationsIdDelete: id => Promise.resolve(),
+    },
   });
 }

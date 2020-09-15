@@ -5,7 +5,7 @@ import {
   environment,
   getInputFixture,
   getOutputFixture,
-  testUserAuthFixture
+  testUserAuthFixture,
 } from '../test-helpers';
 
 describe('Organizations create', () => {
@@ -14,9 +14,12 @@ describe('Organizations create', () => {
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .it('Requests the creation of a new organization', async () => {
       const input = getInputFixture('create-organization.input.yaml');
-      const service = new OrganizationsService(environment, testUserAuthFixture.metadata.vault_access_token);
+      const service = new OrganizationsService(
+        environment,
+        testUserAuthFixture.metadata.vault_access_token
+      );
       const result = await service.create({
-        ...input.spec
+        ...input.spec,
       });
 
       const expected = getOutputFixture('create-organization.output.yaml');

@@ -6,7 +6,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('organizations:update', () => {
@@ -28,7 +28,7 @@ describe('organizations:update', () => {
 });
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     OrganizationsManagingOrganizationsApi: {
       organizationsIdPut: (organizationId, updateOrganizationParams) => {
         return Promise.resolve({
@@ -43,10 +43,10 @@ function vaultAPIFactory(environment) {
             validated_by_id: null,
             agent_id: null,
             validated_at: null,
-            created_at: new Date('2020-06-23T08:38:32.915Z')
-          }
+            created_at: new Date('2020-06-23T08:38:32.915Z'),
+          },
         });
-      }
-    }
+      },
+    },
   });
 }

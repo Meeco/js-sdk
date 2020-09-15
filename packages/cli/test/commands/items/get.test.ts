@@ -40,7 +40,7 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
       background_color: null,
       original_id: null,
       owner_id: null,
-      share_id: null
+      share_id: null,
     },
     slots: [
       {
@@ -68,7 +68,7 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         label: 'Pizza',
         original_id: null,
         owner_id: null,
-        value: 'Hawaiian[decrypted with my_generated_dek]'
+        value: 'Hawaiian[decrypted with my_generated_dek]',
       },
       {
         id: 'steak',
@@ -95,7 +95,7 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         label: 'Steak',
         original_id: null,
         owner_id: null,
-        value: 'Rump[decrypted with my_generated_dek]'
+        value: 'Rump[decrypted with my_generated_dek]',
       },
       {
         id: 'beer',
@@ -122,10 +122,10 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         label: 'Beer',
         original_id: null,
         owner_id: null,
-        value: 'Session Ale[decrypted with my_generated_dek]'
-      }
+        value: 'Session Ale[decrypted with my_generated_dek]',
+      },
     ],
     thumbnails: [],
-    attachments: []
+    attachments: [],
   });
 }

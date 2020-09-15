@@ -16,9 +16,9 @@ describe('organizations:get', () => {
 });
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     OrganizationsForVaultUsersApi: {
-      organizationsIdGet: (id) => {
+      organizationsIdGet: id => {
         return Promise.resolve({
           organization: {
             id: '00000000-0000-0000-0000-000000000000',
@@ -31,11 +31,11 @@ function vaultAPIFactory(environment) {
             validated_by_id: null,
             agent_id: null,
             validated_at: null,
-            created_at: new Date('2020-06-23T08:38:32.915Z')
+            created_at: new Date('2020-06-23T08:38:32.915Z'),
           },
-          services: []
+          services: [],
         });
-      }
-    }
+      },
+    },
   });
 }

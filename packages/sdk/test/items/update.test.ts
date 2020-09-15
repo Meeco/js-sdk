@@ -8,7 +8,7 @@ import {
   getInputFixture,
   getOutputFixture,
   replaceUndefinedWithNull,
-  testUserAuth
+  testUserAuth,
 } from '../test-helpers';
 
 describe('Items update', () => {
@@ -28,7 +28,9 @@ describe('Items update', () => {
         updateData
       );
 
-      const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture('update-item.output.yaml').spec;
+      const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
+        'update-item.output.yaml'
+      ).spec;
       expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
       expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
     });

@@ -6,7 +6,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('organization-members:create-invitation', () => {
@@ -47,7 +47,7 @@ function createInvite(vaultAccessToken, publicKey, memberRole) {
     integration_data: {
       intent: 'member',
       organization_id: '00000000-0000-0000-0000-000000000000',
-      organization_member_role: 'admin'
-    }
+      organization_member_role: 'admin',
+    },
   });
 }

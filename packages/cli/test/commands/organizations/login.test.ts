@@ -6,7 +6,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('organizations:login', () => {
@@ -34,6 +34,6 @@ function getLogin(organizationId, privateKey) {
     keystore_access_token: '',
     passphrase_derived_key: '',
     secret: '',
-    vault_access_token: '[decrypted]DP2HJmMPgGgExZCAsHDf--PRIVATE_KEY--12324'
+    vault_access_token: '[decrypted]DP2HJmMPgGgExZCAsHDf--PRIVATE_KEY--12324',
   });
 }

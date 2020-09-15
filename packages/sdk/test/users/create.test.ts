@@ -42,10 +42,7 @@ describe('User creation', () => {
       const secretService = new SecretService();
       const username = await userService.generateUsername();
       const secret = await secretService.generateSecret(username);
-      const user = await userService.create(
-        '123.asupersecretpassphrase',
-        secret
-      );
+      const user = await userService.create('123.asupersecretpassphrase', secret);
 
       const expected = getOutputFixture('create-user-generated-username.output.yaml');
       expect(JSON.stringify(user)).to.contain(JSON.stringify(expected.metadata));

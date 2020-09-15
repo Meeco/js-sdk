@@ -6,7 +6,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('items:update', () => {
@@ -30,7 +30,7 @@ describe('items:update', () => {
 
 function update(vaultAccessToken, dataEncryptionKey, updateData) {
   return Promise.resolve({
-    'associations_to': [],
+    associations_to: [],
     associations: [],
     attachments: [],
     classification_nodes: [],
@@ -57,7 +57,7 @@ function update(vaultAccessToken, dataEncryptionKey, updateData) {
       background_color: null,
       original_id: null,
       owner_id: null,
-      share_id: null
+      share_id: null,
     },
     slots: [
       {
@@ -84,16 +84,16 @@ function update(vaultAccessToken, dataEncryptionKey, updateData) {
         image: null,
         label: 'Pizza',
         original_id: null,
-        owner_id: null
-      }
+        owner_id: null,
+      },
     ],
-    thumbnails: []
+    thumbnails: [],
   });
 }
 
 function countOutstandingTasks(vaultAccessToken) {
   return Promise.resolve({
     todo: 2,
-    in_progress: 3
+    in_progress: 3,
   });
 }

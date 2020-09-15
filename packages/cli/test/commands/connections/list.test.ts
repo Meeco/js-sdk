@@ -27,7 +27,7 @@ function listConnections(authConfig) {
           user_image: null,
           user_type: null,
           user_public_key: null,
-          user_keypair_external_id: null
+          user_keypair_external_id: null,
         },
         the_other_user: {
           id: 'abc345',
@@ -36,9 +36,9 @@ function listConnections(authConfig) {
           user_image: null,
           user_type: null,
           user_public_key: null,
-          user_keypair_external_id: null
+          user_keypair_external_id: null,
         },
-      }
+      },
     },
     {
       name: 'Some Encrypted Name[decrypted with my_generated_dek]',
@@ -51,7 +51,7 @@ function listConnections(authConfig) {
           user_image: null,
           user_type: null,
           user_public_key: null,
-          user_keypair_external_id: null
+          user_keypair_external_id: null,
         },
         the_other_user: {
           id: 'def789',
@@ -60,9 +60,9 @@ function listConnections(authConfig) {
           user_image: null,
           user_type: null,
           user_public_key: null,
-          user_keypair_external_id: null
-        }
+          user_keypair_external_id: null,
+        },
       },
-    }
+    },
   ]);
 }

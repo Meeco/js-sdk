@@ -6,7 +6,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('item:create', () => {
@@ -45,7 +45,11 @@ describe('item:create', () => {
     });
 });
 
-function create(vaultAccessToken: string, dataEncryptionKey: string, itemCreateData: ItemCreateData) {
+function create(
+  vaultAccessToken: string,
+  dataEncryptionKey: string,
+  itemCreateData: ItemCreateData
+) {
   const testIdsToUse = ['a', 'b', 'c', 'd', 'e'].reverse();
   const testNamesToUse = ['Make', 'Model'];
   let slots: any[];
@@ -56,15 +60,15 @@ function create(vaultAccessToken: string, dataEncryptionKey: string, itemCreateD
         name: slot.name,
         encrypted_value: `[serialized][encrypted]${slot.value}[with my_generated_dek]`,
         encrypted: true,
-        id: testIdsToUse.pop()
-      }
+        id: testIdsToUse.pop(),
+      };
     });
   } else {
     slots = testNamesToUse.map(name => {
       return {
         id: testIdsToUse.pop(),
-        name
-      }
+        name,
+      };
     });
   }
 
@@ -78,8 +82,8 @@ function create(vaultAccessToken: string, dataEncryptionKey: string, itemCreateD
       id: 'item-foo',
       template_name: itemCreateData.template_name,
       label: itemCreateData.item.label,
-      slot_ids
+      slot_ids,
     },
-    slots
+    slots,
   });
 }

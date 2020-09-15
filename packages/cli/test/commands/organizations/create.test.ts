@@ -6,7 +6,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth
+  testUserAuth,
 } from '../../test-helpers';
 
 describe('organizations:create', () => {
@@ -40,9 +40,9 @@ function create(organizationConfig) {
       validated_by_id: null,
       agent_id: null,
       validated_at: null,
-      created_at: new Date('2020-06-23T08:38:32.915Z')
+      created_at: new Date('2020-06-23T08:38:32.915Z'),
     },
     privateKey: '--PRIVATE_KEY--12324',
-    publicKey: '--PUBLIC_KEY--ABCD'
+    publicKey: '--PUBLIC_KEY--ABCD',
   });
 }

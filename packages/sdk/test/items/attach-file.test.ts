@@ -41,12 +41,9 @@ describe('Items attach-file', () => {
         label: input.spec.label,
         fileName: basename(input.spec.file),
         fileType: mockLookup(input.spec.file),
-        file
+        file,
       });
-      await new ItemService(environment).attachFile(
-        fileAttachmentData,
-        testUserAuth
-      );
+      await new ItemService(environment).attachFile(fileAttachmentData, testUserAuth);
     });
 
   customTest
@@ -61,12 +58,9 @@ describe('Items attach-file', () => {
         label: input.spec.label,
         fileName: basename(input.spec.file),
         fileType: mockLookup(input.spec.file),
-        file
+        file,
       });
-      await new ItemService(environment).attachFile(
-        fileAttachmentData,
-        testUserAuth
-      );
+      await new ItemService(environment).attachFile(fileAttachmentData, testUserAuth);
     });
 });
 

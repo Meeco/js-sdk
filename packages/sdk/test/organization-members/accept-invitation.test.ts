@@ -5,7 +5,7 @@ import {
   environment,
   getInputFixture,
   getOutputFixture,
-  testUserAuthFixture
+  testUserAuthFixture,
 } from '../test-helpers';
 
 describe('Organization-members accept-invitation', () => {
@@ -15,7 +15,10 @@ describe('Organization-members accept-invitation', () => {
     .it('Requests the creation of a new organization member invitation', async () => {
       const input = getInputFixture('accept-organization-members-invitation.input.yaml');
       const service = new OrganizationMembersService(environment);
-      const result = await service.acceptInvite(testUserAuthFixture.metadata.vault_access_token, input.spec.token);
+      const result = await service.acceptInvite(
+        testUserAuthFixture.metadata.vault_access_token,
+        input.spec.token
+      );
 
       const expected = getOutputFixture('accept-organization-members-invitation.output.yaml');
       expect(result.connection).to.eql(expected.spec);

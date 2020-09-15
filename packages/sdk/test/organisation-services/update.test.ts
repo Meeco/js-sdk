@@ -5,7 +5,7 @@ import {
   environment,
   getInputFixture,
   getOutputFixture,
-  testUserAuth
+  testUserAuth,
 } from '../test-helpers';
 
 describe('organization-services:update', () => {

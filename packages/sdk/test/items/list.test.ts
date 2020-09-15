@@ -1,6 +1,12 @@
 import { expect } from '@oclif/test';
 import { ItemService } from '../../src/services/item-service';
-import { customTest, environment, getOutputFixture, replaceUndefinedWithNull, testUserAuth } from '../test-helpers';
+import {
+  customTest,
+  environment,
+  getOutputFixture,
+  replaceUndefinedWithNull,
+  testUserAuth,
+} from '../test-helpers';
 
 describe('Items list', () => {
   customTest

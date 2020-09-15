@@ -47,7 +47,7 @@ function list(vaultAccessToken: string) {
         image: null,
         label: null,
         original_id: null,
-        owner_id: null
+        owner_id: null,
       },
       {
         id: 'add',
@@ -73,8 +73,8 @@ function list(vaultAccessToken: string) {
         image: null,
         label: null,
         original_id: null,
-        owner_id: null
-      }
+        owner_id: null,
+      },
     ],
     items: [
       {
@@ -100,7 +100,7 @@ function list(vaultAccessToken: string) {
         background_color: null,
         original_id: null,
         owner_id: null,
-        share_id: null
+        share_id: null,
       },
       {
         id: 'b',
@@ -125,9 +125,9 @@ function list(vaultAccessToken: string) {
         background_color: null,
         original_id: null,
         owner_id: null,
-        share_id: null
-      }
+        share_id: null,
+      },
     ],
-    meta: null
+    meta: null,
   });
 }

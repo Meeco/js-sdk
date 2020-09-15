@@ -7,10 +7,14 @@ describe('items:create-config', () => {
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .it('builds an item template from an api template name', async () => {
       const service = vaultAPIFactory(environment)(testUserAuth).ItemTemplateApi;
-      const { slots: resultSlots, item_templates: resultItemTemplates } = await service.itemTemplatesGet();
+      const {
+        slots: resultSlots,
+        item_templates: resultItemTemplates,
+      } = await service.itemTemplatesGet();
       const resultTemplate = resultItemTemplates.find(template => template.name === 'food');
       const resultTemplateName = resultTemplate!.name;
-      const resultSlotNames = resultSlots.filter(slot => resultTemplate!.slot_ids.includes(slot.name))
+      const resultSlotNames = resultSlots
+        .filter(slot => resultTemplate!.slot_ids.includes(slot.name))
         .map(slot => slot.name);
 
       const expected = getOutputFixture('create-config-item.output.yaml');

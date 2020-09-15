@@ -5,7 +5,7 @@ import {
   environment,
   getInputFixture,
   getOutputFixture,
-  testUserAuth
+  testUserAuth,
 } from '../test-helpers';
 
 describe('organizations:update', () => {
@@ -17,7 +17,7 @@ describe('organizations:update', () => {
       const result = await vaultAPIFactory(environment)(
         testUserAuth
       ).OrganizationsManagingOrganizationsApi.organizationsIdPut(organization.id, {
-        organization
+        organization,
       });
 
       const expected = getOutputFixture('update-organization.output.yaml');

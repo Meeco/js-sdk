@@ -7,7 +7,7 @@ import {
   environment,
   getInputFixture,
   getOutputFixture,
-  testUserAuth
+  testUserAuth,
 } from '../test-helpers';
 
 describe('Item create', () => {
@@ -42,7 +42,7 @@ describe('Item create', () => {
       const inputSlots: NestedSlotAttributes[] = [];
       input.spec.slots.forEach(x => {
         inputSlots.push({
-          ...x
+          ...x,
         });
       });
 

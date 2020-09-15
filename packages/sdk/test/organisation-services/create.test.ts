@@ -5,7 +5,7 @@ import {
   environment,
   getInputFixture,
   getOutputFixture,
-  testUserAuthFixture
+  testUserAuthFixture,
 } from '../test-helpers';
 
 describe('Organization-services create', () => {
@@ -20,9 +20,12 @@ describe('Organization-services create', () => {
     })
     .it('Requests the creation of a new organization service', async () => {
       const input = getInputFixture('create-organization-service.input.yaml');
-      const service = new OrganizationServicesService(environment, testUserAuthFixture.metadata.vault_access_token);
+      const service = new OrganizationServicesService(
+        environment,
+        testUserAuthFixture.metadata.vault_access_token
+      );
       const result = await service.create('organization_id', {
-        ...input.spec
+        ...input.spec,
       });
 
       const expected = getOutputFixture('create-organization-services.output.yaml');

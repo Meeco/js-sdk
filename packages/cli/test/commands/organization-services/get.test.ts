@@ -22,7 +22,7 @@ describe('organization-services:get', () => {
 });
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     OrganizationsForVaultUsersApi: {
       organizationsOrganizationIdServicesIdGet: (organizationId, serviceId) => {
         return Promise.resolve({
@@ -31,17 +31,17 @@ function vaultAPIFactory(environment) {
             name: 'Sample Service',
             description: 'Sample service description',
             contract: {
-              name: 'sample contract'
+              name: 'sample contract',
             },
             status: 'requested',
             organization_id: 'e2fed464-878b-4d4b-9017-99abc50504ed',
             validated_by_id: null,
             agent_id: null,
             validated_at: null,
-            created_at: new Date('2020-07-02T05:47:44.983Z')
-          }
+            created_at: new Date('2020-07-02T05:47:44.983Z'),
+          },
         });
-      }
-    }
+      },
+    },
   });
 }

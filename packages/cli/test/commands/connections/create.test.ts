@@ -20,7 +20,7 @@ describe('connections:create', () => {
     });
 });
 
-function createConnection(config: { to: AuthData, from: AuthData, options: IConnectionMetadata }) {
+function createConnection(config: { to: AuthData; from: AuthData; options: IConnectionMetadata }) {
   return Promise.resolve({
     invitation: {
       id: 'invitation_id',
@@ -31,27 +31,29 @@ function createConnection(config: { to: AuthData, from: AuthData, options: IConn
       own: {
         id: 'connection_id',
         user_public_key: 'from_user_public',
-        encrypted_recipient_name: '[serialized][encrypted]TestFrom[with to_data_encryption_key\u0000\u0000]',
+        encrypted_recipient_name:
+          '[serialized][encrypted]TestFrom[with to_data_encryption_key\u0000\u0000]',
       },
       the_other_user: {
         id: 'other_connection_id',
         user_public_key: 'to_user_public',
-      }
+      },
     },
     toUserConnection: {
       own: {
         id: 'other_connection_id',
         user_public_key: 'to_user_public',
-        encrypted_recipient_name: '[serialized][encrypted]TestFrom[with to_data_encryption_key\u0000\u0000]'
+        encrypted_recipient_name:
+          '[serialized][encrypted]TestFrom[with to_data_encryption_key\u0000\u0000]',
       },
       the_other_user: {
         id: 'connection_id',
         user_public_key: 'from_user_public',
-      }
+      },
     },
     options: {
       toName: config.options.toName,
-      fromName: config.options.fromName
-    }
-  })
+      fromName: config.options.fromName,
+    },
+  });
 }

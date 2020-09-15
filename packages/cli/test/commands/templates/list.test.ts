@@ -3,7 +3,7 @@ import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import {
   DEFAULT_CLASSIFICATION_NAME,
-  DEFAULT_CLASSIFICATION_SCHEME
+  DEFAULT_CLASSIFICATION_SCHEME,
 } from '../../../src/util/constants';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
@@ -60,7 +60,7 @@ const templates = {
       classification_node_ids: null,
       slot_ids: null,
       label: null,
-      background_color: null
+      background_color: null,
     },
     {
       id: null,
@@ -73,13 +73,9 @@ const templates = {
       image: null,
       template_type: null,
       classification_node_ids: null,
-      slot_ids: [
-        'yoghurt',
-        'water',
-        'beer'
-      ],
+      slot_ids: ['yoghurt', 'water', 'beer'],
       label: null,
-      background_color: null
+      background_color: null,
     },
     {
       id: null,
@@ -92,21 +88,18 @@ const templates = {
       image: null,
       template_type: null,
       classification_node_ids: null,
-      slot_ids: [
-        'sport',
-        'recreational'
-      ],
+      slot_ids: ['sport', 'recreational'],
       label: null,
-      background_color: null
-    }
+      background_color: null,
+    },
   ],
-  meta: null
+  meta: null,
 };
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     ItemTemplateApi: {
-      itemTemplatesGet: (classificationScheme, classificationName) => Promise.resolve(templates)
-    }
+      itemTemplatesGet: (classificationScheme, classificationName) => Promise.resolve(templates),
+    },
   });
 }

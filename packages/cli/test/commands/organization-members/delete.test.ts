@@ -20,9 +20,9 @@ describe('organization-members:delete', () => {
 });
 
 function vaultAPIFactory(environment) {
-  return (authConfig) => ({
+  return authConfig => ({
     OrganizationsManagingMembersApi: {
-      organizationsOrganizationIdMembersIdDelete: (organizationId, id) => Promise.resolve()
-    }
+      organizationsOrganizationIdMembersIdDelete: (organizationId, id) => Promise.resolve(),
+    },
   });
 }

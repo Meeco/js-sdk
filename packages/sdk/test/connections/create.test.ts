@@ -2,7 +2,13 @@ import { expect } from '@oclif/test';
 import * as nock from 'nock';
 import { ConnectionCreateData } from '../../src/models/connection-create-data';
 import { ConnectionService } from '../../src/services/connection-service';
-import { buildTestAuthData, customTest, environment, getInputFixture, getOutputFixture } from '../test-helpers';
+import {
+  buildTestAuthData,
+  customTest,
+  environment,
+  getInputFixture,
+  getOutputFixture,
+} from '../test-helpers';
 
 describe('Connections create', () => {
   customTest
@@ -12,13 +18,13 @@ describe('Connections create', () => {
     .it('creates a connection between two users', async () => {
       const input = getInputFixture('create-connection.input.yaml');
       const fromUser = buildTestAuthData({
-        ...input.spec.from
+        ...input.spec.from,
       });
       const toUser = buildTestAuthData({
-        ...input.spec.to
+        ...input.spec.to,
       });
       const connectionMetadata = {
-        ...input.metadata
+        ...input.metadata,
       };
       const connectionConfig = new ConnectionCreateData(fromUser, toUser, connectionMetadata);
       const result = await new ConnectionService(environment).createConnection(connectionConfig);
@@ -28,7 +34,9 @@ describe('Connections create', () => {
       expect(result.options).to.eql(expected.spec);
       expect(result.invitation.id).to.eql(expected.metadata.invitation_id);
       expect(result.fromUserConnection.own.id).to.eql(expected.metadata.from_user_connection_id);
-      expect(result.toUserConnection.the_other_user.id).to.eql(expected.metadata.to_user_connection_id);
+      expect(result.toUserConnection.the_other_user.id).to.eql(
+        expected.metadata.to_user_connection_id
+      );
     });
 });
 

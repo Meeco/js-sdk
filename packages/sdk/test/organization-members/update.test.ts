@@ -15,7 +15,7 @@ describe('Organization-members update', () => {
         {
           organization_member: {
             role: input.spec.role,
-          }
+          },
         }
       );
     });

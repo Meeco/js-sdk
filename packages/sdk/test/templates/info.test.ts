@@ -1,6 +1,12 @@
 import { expect } from '@oclif/test';
 import { vaultAPIFactory } from '../../src/util/api-factory';
-import { customTest, environment, getOutputFixture, replaceUndefinedWithNull, testUserAuth } from '../test-helpers';
+import {
+  customTest,
+  environment,
+  getOutputFixture,
+  replaceUndefinedWithNull,
+  testUserAuth,
+} from '../test-helpers';
 
 describe('templates:info', () => {
   customTest
@@ -13,11 +19,18 @@ describe('templates:info', () => {
     })
     .it('fetches info about a particular template', async () => {
       const service = vaultAPIFactory(environment)(testUserAuth).ItemTemplateApi;
-      const { slots: resultingSlots, item_templates: resultingTemplates } = await service.itemTemplatesGet();
+      const {
+        slots: resultingSlots,
+        item_templates: resultingTemplates,
+      } = await service.itemTemplatesGet();
 
-      const { slots: expectedSlots, ...expectedTemplate } = getOutputFixture('info-template.output.yaml').spec;
+      const { slots: expectedSlots, ...expectedTemplate } = getOutputFixture(
+        'info-template.output.yaml'
+      ).spec;
       const requiredTemplate = resultingTemplates.find(template => template.name === 'drink')!;
-      const requiredSlots = resultingSlots.filter(slot => requiredTemplate.slot_ids.includes(slot.id));
+      const requiredSlots = resultingSlots.filter(slot =>
+        requiredTemplate.slot_ids.includes(slot.id)
+      );
 
       expect(replaceUndefinedWithNull(requiredTemplate)).to.eql(expectedTemplate);
       expect(replaceUndefinedWithNull(requiredSlots)).to.deep.members(expectedSlots);

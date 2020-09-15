@@ -2,7 +2,7 @@ import {
   binaryBufferToString,
   CipherStrategy,
   encryptWithKey,
-  stringAsBinaryBuffer
+  stringAsBinaryBuffer,
 } from '@meeco/cryppo';
 import { EncryptionKey } from '@meeco/sdk';
 import { AttachmentApi } from '@meeco/vault-api-sdk';

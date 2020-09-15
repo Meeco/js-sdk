@@ -1,6 +1,12 @@
 import { expect } from 'chai';
 import { ConnectionService } from '../../src/services/connection-service';
-import { customTest, environment, getOutputFixture, replaceUndefinedWithNull, testUserAuth } from '../test-helpers';
+import {
+  customTest,
+  environment,
+  getOutputFixture,
+  replaceUndefinedWithNull,
+  testUserAuth,
+} from '../test-helpers';
 
 describe('Connections list', () => {
   customTest

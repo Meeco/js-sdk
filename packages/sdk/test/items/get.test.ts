@@ -1,6 +1,12 @@
 import { expect } from '@oclif/test';
 import { ItemService } from '../../src/services/item-service';
-import { customTest, environment, getOutputFixture, replaceUndefinedWithNull, testUserAuth } from '../test-helpers';
+import {
+  customTest,
+  environment,
+  getOutputFixture,
+  replaceUndefinedWithNull,
+  testUserAuth,
+} from '../test-helpers';
 
 describe('Items get', () => {
   customTest
@@ -13,7 +19,9 @@ describe('Items get', () => {
         testUserAuth.data_encryption_key
       );
 
-      const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture('get-item.output.yaml').spec;
+      const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
+        'get-item.output.yaml'
+      ).spec;
       expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
       expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
     });

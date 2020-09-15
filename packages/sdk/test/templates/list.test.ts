@@ -38,14 +38,20 @@ describe('templates:list', () => {
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, response);
     })
-    .it('fetches a list of available templates scoped to classification scheme and name', async () => {
-      const service = vaultAPIFactory(environment)(testUserAuth).ItemTemplateApi;
-      const result = await service.itemTemplatesGet(DEFAULT_CLASSIFICATION_SCHEME, DEFAULT_CLASSIFICATION_NAME);
-      const requiredTemplateNames = result.item_templates.map(x => x.name);
+    .it(
+      'fetches a list of available templates scoped to classification scheme and name',
+      async () => {
+        const service = vaultAPIFactory(environment)(testUserAuth).ItemTemplateApi;
+        const result = await service.itemTemplatesGet(
+          DEFAULT_CLASSIFICATION_SCHEME,
+          DEFAULT_CLASSIFICATION_NAME
+        );
+        const requiredTemplateNames = result.item_templates.map(x => x.name);
 
-      const expected = getOutputFixture('list-templates.output.yaml');
-      expect(requiredTemplateNames).to.members(expected.spec);
-    });
+        const expected = getOutputFixture('list-templates.output.yaml');
+        expect(requiredTemplateNames).to.members(expected.spec);
+      }
+    );
 });
 
 const response = {

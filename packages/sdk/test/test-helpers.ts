@@ -21,9 +21,7 @@ export const getInputFixture = (fileName: string) => {
 
 export const testUserAuthFixture = getInputFixture('user-auth.input.yaml');
 
-export const customTest = test
-  .register('mockCryppo', _mockCryppo)
-  .register('mockSRP', mockSRP);
+export const customTest = test.register('mockCryppo', _mockCryppo).register('mockSRP', mockSRP);
 
 export function mockSRP() {
   const sandbox = createSandbox();
@@ -49,29 +47,30 @@ export function mockSRP() {
 }
 
 export const buildTestAuthData = (config: {
-  secret?: string,
-  keystore_access_token: string,
-  vault_access_token: string,
-  data_encryption_key: string,
-  key_encryption_key: string,
-  passphrase_derived_key: string
-}) => new AuthData({
-  secret: config.secret || '',
-  keystore_access_token: config.keystore_access_token,
-  data_encryption_key: EncryptionKey.fromSerialized(config.data_encryption_key),
-  key_encryption_key: EncryptionKey.fromSerialized(config.key_encryption_key),
-  passphrase_derived_key: EncryptionKey.fromSerialized(config.passphrase_derived_key),
-  vault_access_token: config.vault_access_token
-});
+  secret?: string;
+  keystore_access_token: string;
+  vault_access_token: string;
+  data_encryption_key: string;
+  key_encryption_key: string;
+  passphrase_derived_key: string;
+}) =>
+  new AuthData({
+    secret: config.secret || '',
+    keystore_access_token: config.keystore_access_token,
+    data_encryption_key: EncryptionKey.fromSerialized(config.data_encryption_key),
+    key_encryption_key: EncryptionKey.fromSerialized(config.key_encryption_key),
+    passphrase_derived_key: EncryptionKey.fromSerialized(config.passphrase_derived_key),
+    vault_access_token: config.vault_access_token,
+  });
 
 export const testUserAuth = buildTestAuthData({
-  ...testUserAuthFixture.metadata
+  ...testUserAuthFixture.metadata,
 });
 
 const { vault, keystore } = getInputFixture('test-environment.input.yaml');
 export const environment = new Environment({
   vault,
-  keystore
+  keystore,
 });
 
 const convertUndefinedObjectValuesRecursive = (obj, replacement) => {
@@ -87,16 +86,20 @@ const convertUndefinedObjectValuesRecursive = (obj, replacement) => {
     return result;
   } else {
     obj = { ...obj };
-    Object.keys(obj).forEach((key) => {
+    Object.keys(obj).forEach(key => {
       if (typeof obj[key] === 'undefined') {
         obj[key] = replacement;
-      } else if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && !(obj[key] instanceof Date)) {
+      } else if (
+        typeof obj[key] === 'object' &&
+        !Array.isArray(obj[key]) &&
+        !(obj[key] instanceof Date)
+      ) {
         obj[key] = convertUndefinedObjectValuesRecursive(obj[key], replacement);
       }
     });
     return obj;
   }
 };
-export const replaceUndefinedWithNull = (obj) => {
+export const replaceUndefinedWithNull = obj => {
   return convertUndefinedObjectValuesRecursive(obj, null);
 };
