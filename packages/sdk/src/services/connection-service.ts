@@ -124,6 +124,14 @@ export class ConnectionService {
     };
   }
 
+  /**
+   * @deprecated Use [list] instead.
+   * @param user
+   */
+  public async listConnections(user: AuthData) {
+    return this.list(user.vault_access_token, user.data_encryption_key);
+  }
+
   public async list(
     vaultAccessToken: string,
     dek: EncryptionKey,
