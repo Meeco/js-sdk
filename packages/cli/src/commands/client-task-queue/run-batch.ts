@@ -4,9 +4,9 @@ import { AuthConfig } from '../../configs/auth-config';
 import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
-export default class ClientTaskQueueRunBatch extends MeecoCommand {
-  static description = 'Load and run a batch of ClientTasks from the queue';
-  static examples = [`meeco client-task-queue:run-batch -a path/to/auth.yaml 10`];
+export default class ClientTaskQueueList extends MeecoCommand {
+  static description = 'Read the client task that client is supposed to perform';
+  static examples = [`meeco client-task-queue:list -a path/to/auth.yaml`];
 
   static flags = {
     ...MeecoCommand.flags,
@@ -24,8 +24,16 @@ export default class ClientTaskQueueRunBatch extends MeecoCommand {
     }),
   };
 
+  static args = [
+    {
+      name: 'numberOfTasks',
+      description: 'number of tasks to fetch and execute',
+      required: true,
+    },
+  ];
+
   async run() {
-    const { flags } = this.parse(this.constructor as typeof ClientTaskQueueRunBatch);
+    const { flags, args } = this.parse(this.constructor as typeof ClientTaskQueueList);
     const { supressChangingState, state, auth } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
@@ -42,15 +50,20 @@ export default class ClientTaskQueueRunBatch extends MeecoCommand {
           'Invalid state provided, state argument value must be one of this: ' + Object.keys(State)
         );
       }
-      const response = await service.list(
+      const numberOfTasks = args.numberOfTasks || 5;
+      const clientTaskList = await service.list(
         authConfig.vault_access_token,
         supressChangingState === 'false' ? false : true,
-        clientTaskQueueState
+        clientTaskQueueState,
+        { perPage: numberOfTasks }
       );
-      this.printYaml({
-        kind: 'ClientTaskQueue',
-        spec: response.client_tasks,
-      });
+
+      const executionResults = await service.executeClientTasks(
+        clientTaskList.client_tasks,
+        authConfig
+      );
+
+      this.printYaml(executionResults);
     } catch (err) {
       await this.handleException(err);
     }
