@@ -181,14 +181,23 @@ export class ShareService {
     shareOptions: PostItemSharesRequestShare
   ): Promise<PostItemSharesRequestShare> {
     const item = await this.getItem(fromUser, itemId);
-    let { slots } = item;
+
+    let sharedItem: any = null;
+    if (item.item.share_id != null) {
+      sharedItem = await this.getSharedItemIncoming(fromUser, item.item.share_id);
+    }
+
+    let { slots } = sharedItem || item;
 
     if (shareOptions.slot_id) {
       slots = slots.filter(slot => slot.id === shareOptions.slot_id);
     }
 
     this.log('Decrypting all slots');
-    const decryptedSlots = await ItemService.decryptAllSlots(slots!, fromUser.data_encryption_key);
+    const decryptedSlots =
+      sharedItem != null
+        ? slots
+        : await ItemService.decryptAllSlots(slots!, fromUser.data_encryption_key);
 
     this.log('Encrypting slots with generate DEK');
     const dek = this.cryppo.generateRandomKey();
@@ -202,6 +211,10 @@ export class ShareService {
       publicKeyPem: shareOptions.public_key,
       data: dek,
     });
+
+    if (sharedItem != null) {
+      slot_values.map(slot_value => (slot_value.value_verification_hash = undefined));
+    }
 
     return {
       ...shareOptions,

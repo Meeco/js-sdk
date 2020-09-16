@@ -30,9 +30,11 @@ import { ShareService } from './share-service';
 export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
   private vaultAPIFactory: VaultAPIFactory;
+  private shareServaice: ShareService;
 
   constructor(environment: Environment, private log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
+    this.shareServaice = new ShareService(environment, log);
   }
 
   /**
@@ -318,8 +320,15 @@ export class ItemService {
     this.log('Slot successfully removed');
   }
 
-  public async get(id: string, vaultAccessToken: string, dataEncryptionKey: EncryptionKey) {
+  public async get(id: string, user: AuthData) {
+    const vaultAccessToken = user.vault_access_token;
+    const dataEncryptionKey = user.data_encryption_key;
+
     const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
+    if (result.item.share_id != null) {
+      return this.shareServaice.getSharedItemIncoming(user, result.item.share_id);
+    }
+
     const slots = await ItemService.decryptAllSlots(result.slots, dataEncryptionKey);
 
     return {
