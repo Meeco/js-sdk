@@ -1,4 +1,5 @@
 import { fetchConnectionWithId, ItemService, ShareService } from '@meeco/sdk';
+import { NestedSlotAttributes, Slot } from '@meeco/vault-api-sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
@@ -57,16 +58,20 @@ export default class SharesCreateConfig extends MeecoCommand {
 
       await fetchConnectionWithId(fromUser, connectionId, environment, this.updateStatus);
 
+      let slots: Array<{name: string, id: string}>
+
       // Ensure the item to share exists first since setting up a first share takes a bit of work
       if (!itemId) {
         // The `as string` is safe here as we know that item id is undefined, shareId must be defined
         // or we would have errored above .
-        itemId = (
-          await new ShareService(environment).getSharedItemIncoming(fromUser, onshareId as string)
-        ).item.id;
-      }
-
-      const item = await new ItemService(environment)
+        const resp = await (await new ShareService(environment).getSharedItemIncoming(fromUser, onshareId as string));
+        // console.log('item.id', resp.item.id)
+        // console.log('share.item_id', resp.share.item_id)
+        // console.log('item.original_id', resp.item.original_id)
+        itemId = resp.item.id
+        slots = resp.slots as Slot[]
+      } else {
+        const resp = await new ItemService(environment)
         .get(itemId, fromUser.vault_access_token, fromUser.data_encryption_key)
         .catch(err => {
           if (err.status === 404) {
@@ -74,10 +79,13 @@ export default class SharesCreateConfig extends MeecoCommand {
           }
           throw err;
         });
+        itemId = resp.item.id
+        slots = resp.slots.map(s => ({name: s.name as string, id: s.id as string}))
+      }
 
       let slotId: string | undefined;
       if (slotName) {
-        slotId = item.slots.find(slot => slot.name === slotName)?.id;
+        slotId = slots.find(slot => slot.name === slotName)?.id;
         if (slotId === undefined) {
           throw new CLIError(`Slot with name '${slotName}' was not found on the item`);
         }
