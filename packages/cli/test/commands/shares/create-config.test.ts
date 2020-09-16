@@ -45,7 +45,9 @@ describe('shares:create-config with slot', () => {
 });
 
 const response = {
-  item: {},
+  item: {
+    id: 'my-item',
+  },
   slots: [
     {
       name: 'my_slot',
@@ -72,7 +74,6 @@ function mockVault(api) {
     .matchHeader('Authorization', 'from_vault_access')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
-      connection: { own: { id: 'connection-id' } },
-      the_other_user: { id: 'other-connection-id' },
+      connection: { own: { id: 'connection-id' }, the_other_user: { id: 'other-connection-id' } },
     });
 }

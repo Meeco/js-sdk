@@ -183,7 +183,7 @@ export class ShareService {
     const item = await this.getItem(fromUser, itemId);
 
     let sharedItem: any = null;
-    if (item.item.share_id != null) {
+    if (item.item && item.item.share_id != null) {
       sharedItem = await this.getSharedItemIncoming(fromUser, item.item.share_id);
     }
 

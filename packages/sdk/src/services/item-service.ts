@@ -158,11 +158,7 @@ export class ItemService {
     this.log('Reading file');
 
     this.log('Fetching item');
-    const itemFetchResult = await this.get(
-      itemId,
-      auth.vault_access_token,
-      auth.data_encryption_key
-    ).catch(err => {
+    const itemFetchResult = await this.get(itemId, auth).catch(err => {
       throw new MeecoServiceError(
         `Unable to find item '${itemId}' - please check that the item exists for the current user.`
       );

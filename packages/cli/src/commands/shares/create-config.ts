@@ -81,7 +81,8 @@ export default class SharesCreateConfig extends MeecoCommand {
           throw err;
         });
         itemId = resp.item.id;
-        slots = resp.slots.map(s => ({ name: s.name as string, id: s.id as string }));
+        slots = resp.slots as Slot[];
+        slots = slots.map(s => ({ name: s.name as string, id: s.id as string }));
       }
 
       let slotId: string | undefined;
