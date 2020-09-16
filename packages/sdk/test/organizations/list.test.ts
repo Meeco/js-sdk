@@ -1,5 +1,7 @@
 import { expect } from '@oclif/test';
 import { vaultAPIFactory } from '../../src/util/api-factory';
+import { getAllPaged, reducePages } from '../../src/util/paged';
+import { MOCK_NEXT_PAGE_AFTER } from '../constants';
 import { customTest, environment, getOutputFixture, testUserAuth } from '../test-helpers';
 
 describe('Organizations list', () => {
@@ -45,8 +47,6 @@ describe('Organizations list', () => {
     });
 
   customTest
-    .stdout()
-    .stderr()
     .nock('https://sandbox.meeco.me/vault', api => {
       api
         .get('/organizations')
@@ -67,6 +67,30 @@ describe('Organizations list', () => {
 
       const expected = getOutputFixture('list-organizations-validated-member.output.yaml');
       expect(JSON.stringify(result)).contains(JSON.stringify(expected.spec));
+    });
+
+  customTest
+    .nock('https://sandbox.meeco.me/vault', api => {
+      api
+        .get('/organizations')
+        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+        .reply(200, responsePart1)
+        .get('/organizations')
+        .query({ next_page_after: MOCK_NEXT_PAGE_AFTER })
+        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+        .reply(200, responsePart2);
+    })
+    .it('shows a list of validated organizations when paginated', async () => {
+      const api = vaultAPIFactory(environment)(testUserAuth).OrganizationsForVaultUsersApi;
+
+      const result = await getAllPaged(cursor => api.organizationsGet(undefined, cursor)).then(
+        reducePages
+      );
+
+      const expected = getOutputFixture('list-organizations-validated.output.yaml');
+      expect(result.organizations).to.eql(expected.spec);
     });
 });
 
@@ -112,4 +136,18 @@ const response = {
       created_at: '2020-06-23T08:38:32.915Z',
     },
   ],
+  services: [],
+  meta: [],
+};
+
+const responsePart1 = {
+  organizations: [response.organizations[1]],
+  services: [],
+  next_page_after: MOCK_NEXT_PAGE_AFTER,
+  meta: [{ next_page_exists: true }],
+};
+
+const responsePart2 = {
+  ...response,
+  organizations: [response.organizations[2]],
 };

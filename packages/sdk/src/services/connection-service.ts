@@ -1,6 +1,7 @@
-import { Connection } from '@meeco/vault-api-sdk';
+import { Connection, ConnectionsResponse } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { ConnectionCreateData } from '../models/connection-create-data';
+import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import cryppo from '../services/cryppo-service';
 import {
@@ -10,7 +11,13 @@ import {
   vaultAPIFactory,
 } from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
-import { Logger, noopLogger } from '../util/logger';
+import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
+import { getAllPaged, resultHasNext } from '../util/paged';
+
+export interface IDecryptedConnection {
+  name: string;
+  connection: Connection;
+}
 
 /**
  * Used for setting up connections between Meeco `User`s to allow the secure sharing of data (see also {@link ShareService})
@@ -19,24 +26,26 @@ export class ConnectionService {
   private cryppo = (<any>global).cryppo || cryppo;
   private vaultApiFactory: VaultAPIFactory;
   private keystoreApiFactory: KeystoreAPIFactory;
+  private logger: IFullLogger;
 
-  constructor(private environment: Environment, private log: Logger = noopLogger) {
+  constructor(private environment: Environment, log: Logger = noopLogger) {
     this.vaultApiFactory = vaultAPIFactory(environment);
     this.keystoreApiFactory = keystoreAPIFactory(environment);
+    this.logger = toFullLogger(log);
   }
 
   public setLogger(logger: Logger) {
-    this.log = logger;
+    this.logger = toFullLogger(logger);
   }
 
   public async createInvitation(name: string, auth: AuthData) {
-    this.log('Generating key pair');
+    this.logger.log('Generating key pair');
     const keyPair = await this.createAndStoreKeyPair(auth);
 
-    this.log('Encrypting recipient name');
+    this.logger.log('Encrypting recipient name');
     const encryptedName: string = await this.encryptRecipientName(name, auth);
 
-    this.log('Sending invitation request');
+    this.logger.log('Sending invitation request');
     return await this.vaultApiFactory(auth)
       .InvitationApi.invitationsPost({
         public_key: {
@@ -51,13 +60,13 @@ export class ConnectionService {
   }
 
   public async acceptInvitation(name: string, invitationToken: string, auth: AuthData) {
-    this.log('Generating key pair');
+    this.logger.log('Generating key pair');
     const keyPair = await this.createAndStoreKeyPair(auth);
 
-    this.log('Encrypting connection name');
+    this.logger.log('Encrypting connection name');
     const encryptedName: string = await this.encryptRecipientName(name, auth);
 
-    this.log('Accepting invitation');
+    this.logger.log('Accepting invitation');
     return await this.vaultApiFactory(auth)
       .ConnectionApi.connectionsPost({
         public_key: {
@@ -83,8 +92,8 @@ export class ConnectionService {
     let existingConnection: { fromUserConnection: Connection; toUserConnection: Connection };
     try {
       // We want to avoid creating keypairs etc. only to find out that the users were connected from the beginning
-      this.log('Checking for an existing connection');
-      existingConnection = await findConnectionBetween(from, to, this.environment, this.log);
+      this.logger.log('Checking for an existing connection');
+      existingConnection = await findConnectionBetween(from, to, this.environment, this.logger.log);
     } catch (err) {
       // Empty catch because getting 404's is expected if the connection does not exist
     }
@@ -104,7 +113,7 @@ export class ConnectionService {
       from,
       to,
       this.environment,
-      this.log
+      this.logger.log
     );
 
     return {
@@ -115,22 +124,69 @@ export class ConnectionService {
     };
   }
 
+  /**
+   * @deprecated Use [list] instead.
+   * @param user
+   */
   public async listConnections(user: AuthData) {
-    this.log('Fetching connections');
-    const result = await this.vaultApiFactory(user).ConnectionApi.connectionsGet();
-    this.log('Decrypting connection names');
+    return this.list(user.vault_access_token, user.data_encryption_key);
+  }
+
+  public async list(
+    vaultAccessToken: string,
+    dek: EncryptionKey,
+    nextPageAfter?: string,
+    perPage?: number
+  ): Promise<IDecryptedConnection[]> {
+    this.logger.log('Fetching connections');
+    const result = await this.vaultApiFactory(vaultAccessToken).ConnectionApi.connectionsGet(
+      nextPageAfter,
+      perPage
+    );
+
+    if (resultHasNext(result) && perPage === undefined) {
+      this.logger.warn('Some results omitted, but page limit was not explicitly set');
+    }
+
+    this.logger.log('Decrypting connection names');
     const decryptions = (result.connections || []).map(connection =>
       this.cryppo
         .decryptWithKey({
           serialized: connection.own.encrypted_recipient_name!,
-          key: user.data_encryption_key.key,
+          key: dek.key,
         })
-        .then(name => ({
+        .then((name: string) => ({
           name,
           connection,
         }))
     );
     return Promise.all(decryptions);
+  }
+
+  public async listAll(
+    vaultAccessToken: string,
+    dek: EncryptionKey
+  ): Promise<IDecryptedConnection[]> {
+    const api = this.vaultApiFactory(vaultAccessToken).ConnectionApi;
+
+    return getAllPaged(cursor => api.connectionsGet(cursor)).then(results => {
+      const responses = results.reduce(
+        (a: Connection[], b: ConnectionsResponse) => a.concat(b.connections),
+        []
+      );
+      const decryptions = responses.map(connection =>
+        this.cryppo
+          .decryptWithKey({
+            serialized: connection.own.encrypted_recipient_name!,
+            key: dek.key,
+          })
+          .then((name: string) => ({
+            name,
+            connection,
+          }))
+      );
+      return Promise.all(decryptions);
+    });
   }
 
   private encryptRecipientName(name: string, user: AuthData) {

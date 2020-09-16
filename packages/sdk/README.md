@@ -42,7 +42,7 @@ You will also need to configure your `compilerOptions` in your `tsconfig.base.js
 
 ## Usage Basics
 
-This is not an exhaustive list of functionatlity - just some basic use-cases. For full usage [see the API docs](https://meeco.github.io/js-sdk/)
+This is not an exhaustive list of functionality - just some basic use-cases. For full usage [see the API docs](https://meeco.github.io/js-sdk/)
 
 All examples expect you have your environment configured.
 
@@ -107,7 +107,19 @@ configureFetch(fetchPolyfill);
 
 ### Loggers
 
-Most services allow a logger to be configured. The default for this is a no-op function (`() => {}`). If you would like to log message to the console, you can pass in `console.log` as the logger. You can pass in any function that takes strings as an argument (for exmaple, if you want to update a progress bar message).
+Most services allow a logger to be configured. The default for this is a no-op function (`() => {}`). If you would like to log message to the console, you can pass in `console.log` as the logger. You can pass in any function that takes strings as an argument (for example, if you want to update a progress bar message).
+
+To log warnings or errors you can pass loggers like so
+
+```javascript
+{
+ error: errorLogFunc,
+ warn: warnLogFunc,
+ log: baseLogFunc,
+}
+```
+
+where each of the logging functions takes a string to print.
 
 ### API Factories
 

@@ -1,11 +1,11 @@
 import { expect } from '@oclif/test';
 import { vaultAPIFactory } from '../../src/util/api-factory';
+import { getAllPaged, reducePagesTakeLast } from '../../src/util/paged';
+import { MOCK_NEXT_PAGE_AFTER } from '../constants';
 import { customTest, environment, getOutputFixture, testUserAuth } from '../test-helpers';
 
 describe('organization-members:list', () => {
   customTest
-    .stdout()
-    .stderr()
     .nock('https://sandbox.meeco.me/vault', api => {
       api
         .get('/organizations/organization_id/members')
@@ -17,6 +17,30 @@ describe('organization-members:list', () => {
       const result = await vaultAPIFactory(environment)(
         testUserAuth
       ).OrganizationsManagingMembersApi.organizationsOrganizationIdMembersGet('organization_id');
+
+      const expected = getOutputFixture('list-organization-members-validated.output.yaml');
+      expect(result.organization).to.eql(expected.spec.organization);
+      expect(result.members).to.deep.members(expected.spec.members);
+    });
+
+  customTest
+    .nock('https://sandbox.meeco.me/vault', api => {
+      api
+        .get('/organizations/organization_id/members')
+        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+        .reply(200, responsePart1)
+        .get('/organizations/organization_id/members')
+        .query({ next_page_after: MOCK_NEXT_PAGE_AFTER })
+        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+        .reply(200, responsePart2);
+    })
+    .it('fetches a list of validated organizations when paginated', async () => {
+      const api = vaultAPIFactory(environment)(testUserAuth).OrganizationsManagingMembersApi;
+      const result = await getAllPaged(cursor =>
+        api.organizationsOrganizationIdMembersGet('organization_id', cursor)
+      ).then(reducePagesTakeLast);
 
       const expected = getOutputFixture('list-organization-members-validated.output.yaml');
       expect(result.organization).to.eql(expected.spec.organization);
@@ -49,5 +73,30 @@ const response = {
       image: null,
       role: 'owner',
     },
+    {
+      id: 'abc123',
+      full_name: 'Jim Bob Jenkins',
+      email: 'jim@email.com',
+      is_app_logging_enabled: null,
+      image: null,
+      role: 'admin',
+    },
   ],
+  meta: [],
+};
+
+const responsePart1 = {
+  ...response,
+  members: [response.members[0]],
+  next_page_after: MOCK_NEXT_PAGE_AFTER,
+  meta: [
+    {
+      next_page_exists: true,
+    },
+  ],
+};
+
+const responsePart2 = {
+  ...response,
+  members: [response.members[1]],
 };

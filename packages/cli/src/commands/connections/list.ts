@@ -1,6 +1,7 @@
 import { ConnectionService } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
 import { authFlags } from '../../flags/auth-flags';
+import { pageFlags } from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ConnectionsList extends MeecoCommand {
@@ -9,11 +10,12 @@ export default class ConnectionsList extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
+    ...pageFlags,
   };
 
   async run() {
     const { flags } = this.parse(ConnectionsList);
-    const { auth } = flags;
+    const { auth, all } = flags;
     try {
       const environment = await this.readEnvironmentFile();
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
@@ -22,8 +24,16 @@ export default class ConnectionsList extends MeecoCommand {
         this.error('Must specify authentication file');
       }
 
-      const service = new ConnectionService(environment, this.updateStatus);
-      const result = await service.listConnections(authConfig);
+      const service = new ConnectionService(environment, {
+        error: this.error,
+        warn: this.warn,
+        log: this.updateStatus,
+      });
+
+      const result = all
+        ? await service.listAll(authConfig.vault_access_token, authConfig.data_encryption_key)
+        : await service.list(authConfig.vault_access_token, authConfig.data_encryption_key);
+
       this.printYaml(result);
     } catch (err) {
       await this.handleException(err);
