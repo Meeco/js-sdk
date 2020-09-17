@@ -7,12 +7,13 @@ import {
   PostItemSharesRequestShare,
   PutItemSharesRequest,
   SharesResponse,
+  ShareWithItemData,
   Slot,
 } from '@meeco/vault-api-sdk';
+import { DecryptedSlot } from '..';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
-import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import {
   KeystoreAPIFactory,
@@ -65,22 +66,6 @@ export class ShareService {
     this.log = logger;
   }
 
-  public async shareSingleSlotFromItem(
-    fromUser: AuthData,
-    connectionId: string,
-    itemId: string,
-    slotId: string,
-    shareOptions: IShareOptions = {
-      sharing_mode: 'owner',
-      acceptance_required: 'acceptance_not_required',
-    }
-  ): Promise<SharesResponse> {
-    return this.shareItem(fromUser, connectionId, itemId, {
-      ...shareOptions,
-      slot_id: slotId,
-    });
-  }
-
   public async shareItem(
     fromUser: AuthData,
     connectionId: string,
@@ -110,32 +95,41 @@ export class ShareService {
     return shareResult;
   }
 
-  public async listShares(user: AuthData, shareType: ShareType.incoming): Promise<SharesResponse> {
-    if (shareType === ShareType.incoming) {
-      return await this.vaultApiFactory(user).SharesApi.incomingSharesGet();
-    } else {
-      return await this.vaultApiFactory(user).SharesApi.outgoingSharesGet();
+  public async listShares(
+    user: AuthData,
+    shareType: ShareType = ShareType.incoming
+  ): Promise<SharesResponse> {
+    switch (shareType) {
+      case ShareType.outgoing:
+        return await this.vaultApiFactory(user).SharesApi.outgoingSharesGet();
+      case ShareType.incoming:
+        return await this.vaultApiFactory(user).SharesApi.incomingSharesGet();
     }
   }
 
   public async acceptIncomingShare(user: AuthData, shareId: string): Promise<GetShareResponse> {
-    return await this.vaultApiFactory(user).SharesApi.incomingSharesIdAcceptPut(shareId);
+    try {
+      return await this.vaultApiFactory(user).SharesApi.incomingSharesIdAcceptPut(shareId);
+    } catch (error) {
+      if ((<Response>error).status === 404) {
+        throw new MeecoServiceError(`Share with id '${shareId}' not found for the specified user`);
+      }
+      throw error;
+    }
   }
 
   public async deleteSharedItem(user: AuthData, shareId: string) {
-    await this.vaultApiFactory(user)
-      .SharesApi.sharesIdDelete(shareId)
-      .catch(err => {
-        if ((<Response>err).status === 404) {
-          throw new MeecoServiceError(
-            `Share with id '${shareId}' not found for the specified user`
-          );
-        }
-        throw err;
-      });
+    try {
+      await this.vaultApiFactory(user).SharesApi.sharesIdDelete(shareId);
+    } catch (error) {
+      if ((<Response>error).status === 404) {
+        throw new MeecoServiceError(`Share with id '${shareId}' not found for the specified user`);
+      }
+      throw error;
+    }
   }
 
-  public async getSharedItemIncoming(user: AuthData, shareId: string) {
+  public async getSharedItemIncoming(user: AuthData, shareId: string): Promise<ShareWithItemData> {
     const shareWithItemData = await this.vaultApiFactory(user)
       .SharesApi.incomingSharesIdItemGet(shareId)
       .catch(err => {
@@ -171,7 +165,7 @@ export class ShareService {
 
     return {
       ...shareWithItemData,
-      slots: decryptedSlots,
+      slots: decryptedSlots as Slot[],
     };
   }
 
@@ -190,14 +184,14 @@ export class ShareService {
     let { slots } = sharedItem || item;
 
     if (shareOptions.slot_id) {
-      slots = slots.filter(slot => slot.id === shareOptions.slot_id);
+      slots = slots.filter((slot: Slot) => slot.id === shareOptions.slot_id);
     }
 
+    // we only need to decrypt slots if, item owner sharing item. otherwise, slots are already decrypted
     this.log('Decrypting all slots');
-    const decryptedSlots =
-      sharedItem != null
-        ? slots
-        : await ItemService.decryptAllSlots(slots!, fromUser.data_encryption_key);
+    const decryptedSlots = sharedItem
+      ? slots
+      : await ItemService.decryptAllSlots(slots!, fromUser.data_encryption_key);
 
     this.log('Encrypting slots with generate DEK');
     const dek = this.cryppo.generateRandomKey();
@@ -212,8 +206,9 @@ export class ShareService {
       data: dek,
     });
 
-    if (sharedItem != null) {
-      slot_values.map(slot_value => (slot_value.value_verification_hash = undefined));
+    // in case of on-share, API requires hash to be null
+    if (sharedItem) {
+      slot_values.forEach(slot_value => (slot_value.value_verification_hash = undefined));
     }
 
     return {
@@ -314,17 +309,17 @@ export class ShareService {
     sharedDataEncryptionKey: EncryptionKey
   ): Promise<EncryptedSlotValue[]> {
     const encryptions = slots
-      .filter(slot => slot.value)
+      .filter(slot => slot.value && slot.id)
       .map(async slot => {
         const encrypted_value = await cryppo
           .encryptWithKey({
-            data: slot.value || '',
+            data: slot.value as string,
             key: sharedDataEncryptionKey.key,
             strategy: this.cryppo.CipherStrategy.AES_GCM,
           })
           .then(result => result.serialized);
 
-        const value_verification_key = await cryppo.generateRandomKey(64);
+        const value_verification_key = cryppo.generateRandomKey(64);
         const encrypted_value_verification_key = await cryppo
           .encryptWithKey({
             data: value_verification_key,
@@ -336,11 +331,11 @@ export class ShareService {
         // this will be replace by cryppo call later
         const value_verification_hash = ShareService.generate_value_verificaiton_hash(
           value_verification_key,
-          slot.value || ''
+          slot.value as string
         );
 
         return {
-          slot_id: slot.id || '',
+          slot_id: slot.id as string,
           encrypted_value,
           encrypted_value_verification_key,
           value_verification_hash,

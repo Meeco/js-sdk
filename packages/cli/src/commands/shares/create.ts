@@ -29,6 +29,11 @@ export default class SharesCreate extends MeecoCommand {
       description:
         'Some shares require that the recipient accepts the terms of the share. \n There are two acceptance_require: acceptance_not_required & acceptance_required \n acceptance_not_required - recipient dont require acceptance  \n acceptance_required - recipient require acceptance before viewing shared item.',
     }),
+    // expiry_date: _flags.string({
+    //   char: 'e',
+    //   description: 'Share expiry date ',
+    //   required: true,
+    // }),
   };
 
   static args = [{ name: 'file' }];

@@ -68,7 +68,7 @@ export class ItemService {
             ShareService.generate_value_verificaiton_hash(decryptedValueVerificationKey, value) ===
             slot.value_verification_hash
               ? value
-              : 'Invalid Value: Faild to verify integrity of slot value';
+              : 'Invalid Value: failed to verify integrity of slot value';
         }
 
         const decrypted = {
@@ -321,6 +321,8 @@ export class ItemService {
     const dataEncryptionKey = user.data_encryption_key;
 
     const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
+
+    // this could be improved, consider finding a way of using only one item get call.
     if (result.item.share_id != null) {
       return this.shareServaice.getSharedItemIncoming(user, result.item.share_id);
     }
