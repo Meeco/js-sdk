@@ -1,0 +1,5 @@
+{
+  "item_id": "test_item_id",
+  "label": "My Secret File",
+  "file": "./my/secret/image.png"
+}

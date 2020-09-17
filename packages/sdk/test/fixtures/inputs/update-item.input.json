@@ -1,0 +1,15 @@
+{
+  "id": "my-item",
+  "label": "My Fave Foods",
+  "name": "my_foods",
+  "slots": [
+    {
+      "name": "pizza",
+      "value": "Supreme"
+    },
+    {
+      "name": "steak",
+      "_destroy": true
+    }
+  ]
+}

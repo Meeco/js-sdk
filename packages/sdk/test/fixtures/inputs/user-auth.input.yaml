@@ -1,7 +1,0 @@
-kind: Authentication
-metadata:
-  keystore_access_token: a2V5c3RvcmVfYXV0aF90b2tlbg==
-  vault_access_token: 2FPN4n5T68xy78i6HHuQ
-  data_encryption_key: bXlfZ2VuZXJhdGVkX2Rlaw==
-  key_encryption_key: bXlfa2V5X2VuY3J5cHRpb25fa2V5
-  passphrase_derived_key: BsKhFEfDtTfDscK6PMOrwr3DiToiwrFbJ2V4OMO7wqFmw55Q
