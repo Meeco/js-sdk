@@ -1,4 +1,5 @@
 import { UserService } from '@meeco/sdk';
+import { flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import userFlags from '../../flags/user-flags';
 import MeecoCommand from '../../util/meeco-command';
@@ -13,6 +14,12 @@ export default class GetUser extends MeecoCommand {
 
   static flags = {
     ...MeecoCommand.flags,
+    user: flags.string({
+      char: 'c',
+      description: '[Deprecated] User config file (if not providing secret and password)',
+      required: false,
+      exclusive: ['password', 'secret'],
+    }),
     ...userFlags,
   };
 
