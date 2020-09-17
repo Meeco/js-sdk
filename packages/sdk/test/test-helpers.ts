@@ -83,33 +83,12 @@ export const environment = new Environment({
   keystore,
 });
 
-const convertUndefinedObjectValuesRecursive = (obj, replacement) => {
-  if (Array.isArray(obj)) {
-    const result: any[] = [];
-    obj.forEach(x => {
-      if (typeof x === 'object' && x !== null) {
-        result.push(convertUndefinedObjectValuesRecursive(x, replacement));
-      } else {
-        result.push(x);
-      }
-    });
-    return result;
-  } else {
-    obj = { ...obj };
-    Object.keys(obj).forEach(key => {
-      if (typeof obj[key] === 'undefined') {
-        obj[key] = replacement;
-      } else if (
-        typeof obj[key] === 'object' &&
-        !Array.isArray(obj[key]) &&
-        !(obj[key] instanceof Date)
-      ) {
-        obj[key] = convertUndefinedObjectValuesRecursive(obj[key], replacement);
-      }
-    });
-    return obj;
-  }
+const undefinedToNullreplacer = (key, value) => {
+  return typeof value === 'undefined' ? null : value;
+};
+const convertUndefinedWithNull = obj => {
+  return JSON.parse(JSON.stringify(obj, undefinedToNullreplacer), dateReviver);
 };
 export const replaceUndefinedWithNull = obj => {
-  return convertUndefinedObjectValuesRecursive(obj, null);
+  return convertUndefinedWithNull(obj);
 };
