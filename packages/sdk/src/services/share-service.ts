@@ -269,14 +269,21 @@ export class ShareService {
         this.log('Decrypting all slots');
         const decryptedSlots = await ItemService.decryptAllSlots(slots!, user.data_encryption_key);
 
+        this.log('Re-Encrypt all slots');
         const slot_values = await this.convertSlotsToEncryptedValuesForShare(
           decryptedSlots,
           EncryptionKey.fromRaw(dek)
         );
 
+        // server create default slots for template
+        const slot_values_with_template_default_slots = this.addMissingTemplateDefaultSlots(
+          decryptedSlots,
+          slot_values
+        );
+
         return {
           share_dek: shareDek,
-          slot_values,
+          slot_values: slot_values_with_template_default_slots,
           share_id: share.id,
         };
       })
@@ -291,11 +298,28 @@ export class ShareService {
     result.map(r => {
       putItemSharesRequest.share_deks?.push(r.share_dek);
       r.slot_values.map(sv => {
+        sv.encrypted_value = sv.encrypted_value === '' ? null : sv.encrypted_value;
         putItemSharesRequest.slot_values?.push({ ...sv, share_id: r.share_id });
       });
     });
 
     return putItemSharesRequest;
+  }
+
+  private addMissingTemplateDefaultSlots(
+    decryptedSlots: DecryptedSlot[],
+    slot_values: EncryptedSlotValue[]
+  ) {
+    decryptedSlots.forEach(ds => {
+      if (!ds.value && !slot_values.find(f => f.slot_id === ds.id)) {
+        slot_values.push({
+          slot_id: ds.id as string,
+          encrypted_value: '',
+        });
+      }
+    });
+
+    return slot_values;
   }
 
   /**
