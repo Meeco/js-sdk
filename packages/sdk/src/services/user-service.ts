@@ -360,4 +360,11 @@ export class UserService {
   public getVaultUser(vaultAccessToken: string) {
     return this.vaultApiFactory(vaultAccessToken).UserApi.meGet();
   }
+
+  public deleteSessions(vaultToken: string, keystoreToken: string) {
+    return Promise.all([
+      this.vaultApiFactory(vaultToken).SessionApi.sessionDelete(),
+      this.keystoreApiFactory(keystoreToken).SessionApi.sessionDelete()
+    ]);
+  }
 }
