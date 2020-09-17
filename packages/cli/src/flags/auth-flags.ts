@@ -8,3 +8,5 @@ export const authFlags = {
     default: '.user.yaml',
   }),
 };
+
+export default authFlags;

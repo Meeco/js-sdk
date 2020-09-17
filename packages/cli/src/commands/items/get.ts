@@ -1,7 +1,7 @@
 import { ItemService } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
 import { ItemConfig } from '../../configs/item-config';
-import { authFlags } from '../../flags/auth-flags';
+import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 import ItemsList from './list';
 

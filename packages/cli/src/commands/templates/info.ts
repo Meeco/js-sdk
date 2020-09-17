@@ -5,7 +5,7 @@ import { CLIError } from '@oclif/errors';
 import { cli } from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
 import { TemplateConfig } from '../../configs/template-config';
-import { authFlags } from '../../flags/auth-flags';
+import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class TemplatesInfo extends MeecoCommand {

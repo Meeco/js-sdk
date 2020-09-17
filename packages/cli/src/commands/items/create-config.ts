@@ -3,7 +3,7 @@ import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
 import { ItemConfig } from '../../configs/item-config';
-import { authFlags } from '../../flags/auth-flags';
+import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ItemsCreateConfig extends MeecoCommand {

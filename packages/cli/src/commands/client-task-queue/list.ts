@@ -1,8 +1,8 @@
 import { ClientTaskQueueService, State } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
-import { authFlags } from '../../flags/auth-flags';
-import { pageFlags } from '../../flags/page-flags';
+import authFlags from '../../flags/auth-flags';
+import pageFlags from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ClientTaskQueueList extends MeecoCommand {

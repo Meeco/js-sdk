@@ -20,3 +20,5 @@ export const userFlags = {
     exclusive: ['user'],
   }),
 };
+
+export default userFlags;

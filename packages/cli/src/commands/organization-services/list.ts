@@ -1,8 +1,8 @@
 import { getAllPaged, reducePages, reportIfTruncated, vaultAPIFactory } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationServiceListConfig } from '../../configs/organization-services-list-config';
-import { authFlags } from '../../flags/auth-flags';
-import { pageFlags } from '../../flags/page-flags';
+import authFlags from '../../flags/auth-flags';
+import pageFlags from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationServicesList extends MeecoCommand {
