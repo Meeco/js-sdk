@@ -1,0 +1,8 @@
+{
+  "id": "f71272a3-d26b-4b85-9b0b-b3fd24c4ea0a",
+  "name": "Sample Service",
+  "description": "Sample service description",
+  "contract": {
+    "name": "sample contract"
+  }
+}

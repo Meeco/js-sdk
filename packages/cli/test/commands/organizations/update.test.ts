@@ -1,3 +1,4 @@
+import * as sdk from '@meeco/sdk';
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
 import {
@@ -10,9 +11,9 @@ import {
 
 describe('organizations:update', () => {
   customTest
+    .stub(sdk, 'vaultAPIFactory', vaultAPIFactory as any)
     .stdout()
     .stderr()
-    .nock('https://sandbox.meeco.me/vault', mockVault)
     .run([
       'organizations:update',
       ...testUserAuth,
@@ -26,33 +27,26 @@ describe('organizations:update', () => {
     });
 });
 
-const response = {
-  organization: {
-    id: '00000000-0000-0000-0000-000000000001',
-    name: 'xyz company',
-    description: 'new description of company',
-    url: 'https://xyzcompany.com',
-    email: 'xyzcompany@abc.com',
-    status: 'requested',
-    requestor_id: '00000000-0000-0000-0000-000000000000',
-    validated_by_id: null,
-    agent_id: null,
-    validated_at: null,
-    created_at: '2020-06-23T08:38:32.915Z',
-  },
-};
-
-function mockVault(api) {
-  api
-    .put('/organizations/00000000-0000-0000-0000-000000000001', {
-      organization: {
-        name: 'xyz company',
-        description: 'new description of company',
-        url: 'https://xyzcompany.com',
-        email: 'xyzcompany@abc.com',
+function vaultAPIFactory(environment) {
+  return authConfig => ({
+    OrganizationsManagingOrganizationsApi: {
+      organizationsIdPut: (organizationId, updateOrganizationParams) => {
+        return Promise.resolve({
+          organization: {
+            id: '00000000-0000-0000-0000-000000000001',
+            name: 'xyz company',
+            description: 'new description of company',
+            url: 'https://xyzcompany.com',
+            email: 'xyzcompany@abc.com',
+            status: 'requested',
+            requestor_id: '00000000-0000-0000-0000-000000000000',
+            validated_by_id: null,
+            agent_id: null,
+            validated_at: null,
+            created_at: new Date('2020-06-23T08:38:32.915Z'),
+          },
+        });
       },
-    })
-    .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, response);
+    },
+  });
 }

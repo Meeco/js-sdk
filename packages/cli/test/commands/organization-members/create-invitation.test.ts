@@ -1,3 +1,4 @@
+import { OrganizationMembersService } from '@meeco/sdk';
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
 import {
@@ -10,9 +11,9 @@ import {
 
 describe('organization-members:create-invitation', () => {
   customTest
+    .stub(OrganizationMembersService.prototype, 'createInvite', createInvite as any)
     .stdout()
     .stderr()
-    .nock('https://sandbox.meeco.me/vault', mockVault)
     .run([
       'organization-members:create-invitation',
       ...testUserAuth,
@@ -29,8 +30,8 @@ describe('organization-members:create-invitation', () => {
     });
 });
 
-const response = {
-  invitation: {
+function createInvite(vaultAccessToken, publicKey, memberRole) {
+  return Promise.resolve({
     id: 'c43595b3-4ab6-4777-b925-95567001f8d2',
     email: null,
     message: null,
@@ -48,20 +49,5 @@ const response = {
       organization_id: '00000000-0000-0000-0000-000000000000',
       organization_member_role: 'admin',
     },
-  },
-};
-
-function mockVault(api) {
-  api
-    .post('/invitations', {
-      public_key: {
-        public_key: '--PUBLIC_KEY--ABCD',
-      },
-      invitation: {
-        organization_member_role: 'admin',
-      },
-    })
-    .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, response);
+  });
 }
