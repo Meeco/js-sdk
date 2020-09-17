@@ -231,7 +231,6 @@ once approved it can be access with follwoing command
 - [`meeco organizations:list`](#meeco-organizationslist)
 - [`meeco organizations:login`](#meeco-organizationslogin)
 - [`meeco organizations:update`](#meeco-organizationsupdate)
-- [`meeco shares:create-config`](#meeco-sharescreate-config)
 - [`meeco templates:info TEMPLATENAME`](#meeco-templatesinfo-templatename)
 - [`meeco templates:list`](#meeco-templateslist)
 - [`meeco users:create`](#meeco-userscreate)
@@ -845,23 +844,6 @@ EXAMPLE
 ```
 
 _See code: [src/commands/organizations/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/update.ts)_
-
-## `meeco shares:create-config`
-
-Provide two users and an item id to construct a share config file
-
-```
-USAGE
-  $ meeco shares:create-config
-
-OPTIONS
-  -c, --connectionId=connectionId  (required) Connection id for the 'to' user
-  -e, --environment=environment    [default: .environment.yaml] environment config file
-  -f, --from=from                  (required) User config file for the 'from' user
-  -i, --itemId=itemId              (required) Item id of the 'from' user to share with the 'to' use
-```
-
-_See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create-config.ts)_
 
 ## `meeco templates:info TEMPLATENAME`
 
