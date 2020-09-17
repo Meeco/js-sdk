@@ -22,7 +22,7 @@ import {
   VaultAPIFactory,
 } from '../util/api-factory';
 import { fetchConnectionWithId } from '../util/find-connection-between';
-import { Logger, noopLogger } from '../util/logger';
+import { noopLogger, SimpleLogger } from '../util/logger';
 import cryppo from './cryppo-service';
 import { ItemService } from './item-service';
 
@@ -43,7 +43,7 @@ export enum ShareType {
  * Connections can be setup via the {@link ConnectionService}
  */
 export class ShareService {
-  constructor(private environment: Environment, private log: Logger = noopLogger) {
+  constructor(private environment: Environment, private log: SimpleLogger = noopLogger) {
     this.keystoreApiFactory = keystoreAPIFactory(environment);
     this.vaultApiFactory = vaultAPIFactory(environment);
   }
@@ -62,7 +62,7 @@ export class ShareService {
     return hmacSha256Digest(value_verification_key, slot_value);
   }
 
-  public setLogger(logger: Logger) {
+  public setLogger(logger: SimpleLogger) {
     this.log = logger;
   }
 

@@ -22,7 +22,7 @@ import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import cryppo from '../services/cryppo-service';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
-import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
+import { IFullLogger, Logger, noopLogger, SimpleLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import { ShareService } from './share-service';
 
@@ -35,7 +35,7 @@ export class ItemService {
   private shareServaice: ShareService;
   private logger: IFullLogger;
 
-  constructor(environment: Environment, log: Logger = noopLogger) {
+  constructor(environment: Environment, log: SimpleLogger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
 
     this.shareServaice = new ShareService(environment, log);
