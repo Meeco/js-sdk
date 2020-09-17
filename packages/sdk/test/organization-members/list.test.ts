@@ -18,9 +18,9 @@ describe('organization-members:list', () => {
         testUserAuth
       ).OrganizationsManagingMembersApi.organizationsOrganizationIdMembersGet('organization_id');
 
-      const expected = getOutputFixture('list-organization-members-validated.output.yaml');
-      expect(result.organization).to.eql(expected.spec.organization);
-      expect(result.members).to.deep.members(expected.spec.members);
+      const expected = getOutputFixture('list-organization-members-validated.output.json');
+      expect(result.organization).to.eql(expected.organization);
+      expect(result.members).to.deep.members(expected.members);
     });
 
   customTest
@@ -42,9 +42,9 @@ describe('organization-members:list', () => {
         api.organizationsOrganizationIdMembersGet('organization_id', cursor)
       ).then(reducePagesTakeLast);
 
-      const expected = getOutputFixture('list-organization-members-validated.output.yaml');
-      expect(result.organization).to.eql(expected.spec.organization);
-      expect(result.members).to.deep.members(expected.spec.members);
+      const expected = getOutputFixture('list-organization-members-validated.output.json');
+      expect(result.organization).to.eql(expected.organization);
+      expect(result.members).to.deep.members(expected.members);
     });
 });
 

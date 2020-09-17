@@ -16,11 +16,11 @@ describe('Items update', () => {
     .mockCryppo()
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .it('Updates the item', async () => {
-      const input = getInputFixture('update-item.input.yaml');
+      const input = getInputFixture('update-item.input.json');
       const updateData = new ItemUpdateData({
-        id: input.spec.id,
-        label: input.spec.label,
-        slots: input.spec.slots,
+        id: input.id,
+        label: input.label,
+        slots: input.slots,
       });
       const result = await new ItemService(environment).update(
         testUserAuth.vault_access_token,
@@ -29,8 +29,8 @@ describe('Items update', () => {
       );
 
       const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
-        'update-item.output.yaml'
-      ).spec;
+        'update-item.output.json'
+      );
       expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
       expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
     });

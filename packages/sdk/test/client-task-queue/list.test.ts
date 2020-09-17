@@ -20,8 +20,8 @@ describe('Client-task-queue list', () => {
         State.Todo
       );
 
-      const expected = getOutputFixture('list-client-task-queue.output.yaml');
-      expect(result.client_tasks).to.deep.members(expected.spec);
+      const expected = getOutputFixture('list-client-task-queue.output.json');
+      expect(result.client_tasks).to.deep.members(expected);
     });
 
   customTest
@@ -49,8 +49,8 @@ describe('Client-task-queue list', () => {
         State.Todo
       );
 
-      const expected = getOutputFixture('list-client-task-queue.output.yaml');
-      expect(result.client_tasks).to.deep.members(expected.spec);
+      const expected = getOutputFixture('list-client-task-queue.output.json');
+      expect(result.client_tasks).to.deep.members(expected);
     });
 });
 

@@ -21,8 +21,8 @@ describe('Organizations list', () => {
         testUserAuth
       ).OrganizationsForVaultUsersApi.organizationsGet();
 
-      const expected = getOutputFixture('list-organizations-validated.output.yaml');
-      expect(result.organizations).to.deep.members(expected.spec);
+      const expected = getOutputFixture('list-organizations-validated.output.json');
+      expect(result.organizations).to.deep.members(expected);
     });
 
   customTest
@@ -42,8 +42,8 @@ describe('Organizations list', () => {
         testUserAuth
       ).OrganizationsForVaultUsersApi.organizationsGet('requested');
 
-      const expected = getOutputFixture('list-organizations-requested.output.yaml');
-      expect(result.organizations).to.eql(expected.spec);
+      const expected = getOutputFixture('list-organizations-requested.output.json');
+      expect(result.organizations).to.eql(expected);
     });
 
   customTest
@@ -65,8 +65,8 @@ describe('Organizations list', () => {
         testUserAuth
       ).OrganizationsForVaultUsersApi.organizationsGet('member');
 
-      const expected = getOutputFixture('list-organizations-validated-member.output.yaml');
-      expect(JSON.stringify(result)).contains(JSON.stringify(expected.spec));
+      const expected = getOutputFixture('list-organizations-validated-member.output.json');
+      expect(JSON.stringify(result)).contains(JSON.stringify(expected));
     });
 
   customTest
@@ -89,8 +89,8 @@ describe('Organizations list', () => {
         reducePages
       );
 
-      const expected = getOutputFixture('list-organizations-validated.output.yaml');
-      expect(result.organizations).to.eql(expected.spec);
+      const expected = getOutputFixture('list-organizations-validated.output.json');
+      expect(result.organizations).to.eql(expected);
     });
 });
 

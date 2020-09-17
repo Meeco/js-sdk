@@ -11,8 +11,8 @@ describe('Organizations get', () => {
         testUserAuth
       ).OrganizationsForVaultUsersApi.organizationsIdGet('id');
 
-      const expected = getOutputFixture('get-organization.output.yaml');
-      expect(result.organization).to.eql(expected.spec);
+      const expected = getOutputFixture('get-organization.output.json');
+      expect(result.organization).to.eql(expected);
     });
 });
 

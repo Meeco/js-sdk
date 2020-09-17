@@ -13,19 +13,15 @@ describe('Organization-services login', () => {
     .mockCryppo()
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .it('returns organization service agent login information ', async () => {
-      const input = getInputFixture('login-organization-service.input.yaml');
+      const input = getInputFixture('login-organization-service.input.json');
       const orgService = new OrganizationServicesService(
         environment,
-        testUserAuthFixture.metadata.vault_access_token
+        testUserAuthFixture.vault_access_token
       );
-      const result = await orgService.getLogin(
-        input.spec.organization_id,
-        input.spec.id,
-        input.metadata.privateKey
-      );
+      const result = await orgService.getLogin(input.organization_id, input.id, input.privateKey);
 
-      const expected = getOutputFixture('get-organization-service-login.output.yaml');
-      expect(JSON.stringify(result)).contains(JSON.stringify(expected.metadata));
+      const expected = getOutputFixture('get-organization-service-login.output.json');
+      expect(JSON.stringify(result)).contains(JSON.stringify(expected));
     });
 });
 

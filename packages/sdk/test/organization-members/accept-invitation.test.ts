@@ -13,15 +13,17 @@ describe('Organization-members accept-invitation', () => {
     .mockCryppo()
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .it('Requests the creation of a new organization member invitation', async () => {
-      const input = getInputFixture('accept-organization-members-invitation.input.yaml');
+      const input = getInputFixture('accept-organization-members-invitation.input.json');
       const service = new OrganizationMembersService(environment);
       const result = await service.acceptInvite(
-        testUserAuthFixture.metadata.vault_access_token,
-        input.spec.token
+        testUserAuthFixture.vault_access_token,
+        input.token
       );
 
-      const expected = getOutputFixture('accept-organization-members-invitation.output.yaml');
-      expect(result.connection).to.eql(expected.spec);
+      const { privateKey, publicKey, ...expectedSpec } = getOutputFixture(
+        'accept-organization-members-invitation.output.json'
+      );
+      expect(result.connection).to.eql(expectedSpec);
     });
 });
 

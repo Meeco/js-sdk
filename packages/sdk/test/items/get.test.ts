@@ -20,8 +20,8 @@ describe('Items get', () => {
       );
 
       const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
-        'get-item.output.yaml'
-      ).spec;
+        'get-item.output.json'
+      );
       expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
       expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
     });

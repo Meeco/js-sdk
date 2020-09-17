@@ -22,10 +22,10 @@ describe('templates:list', () => {
       async () => {
         const service = vaultAPIFactory(environment)(testUserAuth).ItemTemplateApi;
         const result = await service.itemTemplatesGet();
-        const expected = getOutputFixture('list-templates.output.yaml');
+        const expected = getOutputFixture('list-templates.output.json');
 
         const requiredTemplateNames = result.item_templates.map(x => x.name);
-        expect(requiredTemplateNames).to.members(expected.spec);
+        expect(requiredTemplateNames).to.members(expected);
       }
     );
 
@@ -51,8 +51,8 @@ describe('templates:list', () => {
         );
         const requiredTemplateNames = result.item_templates.map(x => x.name);
 
-        const expected = getOutputFixture('list-templates.output.yaml');
-        expect(requiredTemplateNames).to.members(expected.spec);
+        const expected = getOutputFixture('list-templates.output.json');
+        expect(requiredTemplateNames).to.members(expected);
       }
     );
 
@@ -79,8 +79,8 @@ describe('templates:list', () => {
       );
       const requiredTemplateNames = result.item_templates.map(x => x.name);
 
-      const expected = getOutputFixture('list-templates.output.yaml');
-      expect(requiredTemplateNames).to.members(expected.spec);
+      const expected = getOutputFixture('list-templates.output.json');
+      expect(requiredTemplateNames).to.members(expected);
     });
 
   customTest
@@ -106,8 +106,8 @@ describe('templates:list', () => {
       ).then(reducePages);
       const requiredTemplateNames = result.item_templates.map(x => x.name);
 
-      const expected = getOutputFixture('list-templates.output.yaml');
-      expect(requiredTemplateNames).to.members(expected.spec);
+      const expected = getOutputFixture('list-templates.output.json');
+      expect(requiredTemplateNames).to.members(expected);
     });
 });
 

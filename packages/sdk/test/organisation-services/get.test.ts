@@ -14,8 +14,8 @@ describe('Organization-services get', () => {
         'service_id'
       );
 
-      const expected = getOutputFixture('get-organization-service.output.yaml');
-      expect(result.service).to.eql(expected.spec);
+      const expected = getOutputFixture('get-organization-service.output.json');
+      expect(result.service).to.eql(expected);
     });
 });
 

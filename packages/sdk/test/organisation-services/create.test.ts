@@ -19,17 +19,19 @@ describe('Organization-services create', () => {
         .reply(201, response);
     })
     .it('Requests the creation of a new organization service', async () => {
-      const input = getInputFixture('create-organization-service.input.yaml');
+      const input = getInputFixture('create-organization-service.input.json');
       const service = new OrganizationServicesService(
         environment,
-        testUserAuthFixture.metadata.vault_access_token
+        testUserAuthFixture.vault_access_token
       );
       const result = await service.create('organization_id', {
-        ...input.spec,
+        ...input,
       });
 
-      const expected = getOutputFixture('create-organization-services.output.yaml');
-      expect(result.service).to.eql(expected.spec);
+      const { publicKey, privateKey, ...expectedSpec } = getOutputFixture(
+        'create-organization-services.output.json'
+      );
+      expect(result.service).to.eql(expectedSpec);
     });
 });
 

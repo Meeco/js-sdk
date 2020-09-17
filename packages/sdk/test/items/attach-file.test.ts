@@ -34,13 +34,13 @@ describe('Items attach-file', () => {
     .stub(mime, 'lookup', mockLookup)
     .nock('https://sandbox.meeco.me/vault', mockApisForText)
     .it('encrypts and uploads a file to a slot', async () => {
-      const input = getInputFixture('text-file-attachment.input.yaml');
-      const file = await fileUtils.readFileAsBuffer(input.spec.file);
+      const input = getInputFixture('text-file-attachment.input.json');
+      const file = await fileUtils.readFileAsBuffer(input.file);
       const fileAttachmentData = new FileAttachmentData({
-        itemId: input.metadata.item_id,
-        label: input.spec.label,
-        fileName: basename(input.spec.file),
-        fileType: mockLookup(input.spec.file),
+        itemId: input.item_id,
+        label: input.label,
+        fileName: basename(input.file),
+        fileType: mockLookup(input.file),
         file,
       });
       await new ItemService(environment).attachFile(fileAttachmentData, testUserAuth);
@@ -51,13 +51,13 @@ describe('Items attach-file', () => {
     .stub(mime, 'lookup', mockLookup)
     .nock('https://sandbox.meeco.me/vault', mockApisForImage)
     .it('generates and uploads a thumbnail for the binary if it is an image', async () => {
-      const input = getInputFixture('image-file-attachment.input.yaml');
-      const file = await fileUtils.readFileAsBuffer(input.spec.file);
+      const input = getInputFixture('image-file-attachment.input.json');
+      const file = await fileUtils.readFileAsBuffer(input.file);
       const fileAttachmentData = new FileAttachmentData({
-        itemId: input.metadata.item_id,
-        label: input.spec.label,
-        fileName: basename(input.spec.file),
-        fileType: mockLookup(input.spec.file),
+        itemId: input.item_id,
+        label: input.label,
+        fileName: basename(input.file),
+        fileType: mockLookup(input.file),
         file,
       });
       await new ItemService(environment).attachFile(fileAttachmentData, testUserAuth);

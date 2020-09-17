@@ -25,8 +25,8 @@ describe('templates:info', () => {
       } = await service.itemTemplatesGet();
 
       const { slots: expectedSlots, ...expectedTemplate } = getOutputFixture(
-        'info-template.output.yaml'
-      ).spec;
+        'info-template.output.json'
+      );
       const requiredTemplate = resultingTemplates.find(template => template.name === 'drink')!;
       const requiredSlots = resultingSlots.filter(slot =>
         requiredTemplate.slot_ids.includes(slot.id)

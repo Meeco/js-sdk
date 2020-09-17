@@ -17,9 +17,9 @@ describe('items:create-config', () => {
         .filter(slot => resultTemplate!.slot_ids.includes(slot.name))
         .map(slot => slot.name);
 
-      const expected = getOutputFixture('create-config-item.output.yaml');
-      const expectedTemplateName = expected.metadata.template_name;
-      const expectedSlotsNames = expected.spec.slots.map(slot => slot.name);
+      const expected = getOutputFixture('create-config-item.output.json');
+      const expectedTemplateName = expected.template_name;
+      const expectedSlotsNames = expected.slots.map(slot => slot.name);
 
       expect(resultTemplateName).to.equal(expectedTemplateName);
       expect(resultSlotNames).to.members(expectedSlotsNames);

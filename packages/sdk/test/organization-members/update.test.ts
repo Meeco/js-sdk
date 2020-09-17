@@ -6,15 +6,15 @@ describe('Organization-members update', () => {
   customTest
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .it('Updates the organization member', async () => {
-      const input = getInputFixture('update-organization-member.input.yaml');
+      const input = getInputFixture('update-organization-member.input.json');
       await vaultAPIFactory(environment)(
         testUserAuth
       ).OrganizationsManagingMembersApi.organizationsOrganizationIdMembersIdPut(
-        input.spec.organization_id,
-        input.spec.id,
+        input.organization_id,
+        input.id,
         {
           organization_member: {
-            role: input.spec.role,
+            role: input.role,
           },
         }
       );

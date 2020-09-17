@@ -28,8 +28,8 @@ describe('User creation', () => {
         '1.mocked_generated_username.my_secret_key'
       );
 
-      const expected = getOutputFixture('create-user.output.yaml');
-      expect(JSON.stringify(user)).to.contain(JSON.stringify(expected.metadata));
+      const expected = getOutputFixture('create-user.output.json');
+      expect(JSON.stringify(user)).to.contain(JSON.stringify(expected));
     });
 
   customTest
@@ -44,8 +44,8 @@ describe('User creation', () => {
       const secret = await secretService.generateSecret(username);
       const user = await userService.create('123.asupersecretpassphrase', secret);
 
-      const expected = getOutputFixture('create-user-generated-username.output.yaml');
-      expect(JSON.stringify(user)).to.contain(JSON.stringify(expected.metadata));
+      const expected = getOutputFixture('create-user-generated-username.output.json');
+      expect(JSON.stringify(user)).to.contain(JSON.stringify(expected));
     });
 });
 

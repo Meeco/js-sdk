@@ -12,15 +12,15 @@ describe('organization-members:create-invitation', () => {
   customTest
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .it('Requests the creation of a new organization member invitation', async () => {
-      const input = getInputFixture('create-organization-members-invitation.input.yaml');
+      const input = getInputFixture('create-organization-members-invitation.input.json');
       const service = new OrganizationMembersService(environment);
       const result = await service.createInvite(
-        testUserAuthFixture.metadata.vault_access_token,
-        input.metadata.publicKey
+        testUserAuthFixture.vault_access_token,
+        input.publicKey
       );
 
-      const expected = getOutputFixture('create-organization-members-invitation.output.yaml');
-      expect(result).to.eql(expected.spec);
+      const expected = getOutputFixture('create-organization-members-invitation.output.json');
+      expect(result).to.eql(expected);
     });
 });
 

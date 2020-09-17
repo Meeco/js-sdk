@@ -16,8 +16,8 @@ describe('Users get', () => {
         '1.user-1.my_secret_key'
       );
 
-      const expected = getOutputFixture('get-user.output.yaml');
-      expect(JSON.stringify(user)).to.contain(JSON.stringify(expected.metadata));
+      const expected = getOutputFixture('get-user.output.json');
+      expect(JSON.stringify(user)).to.contain(JSON.stringify(expected));
     });
 });
 

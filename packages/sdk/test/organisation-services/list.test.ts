@@ -20,8 +20,8 @@ describe('Organization-services list', () => {
         'organization_id'
       );
 
-      const expected = getOutputFixture('list-organization-services-requested.output.yaml');
-      expect(result.services).to.deep.members(expected.spec);
+      const expected = getOutputFixture('list-organization-services-requested.output.json');
+      expect(result.services).to.deep.members(expected);
     });
 
   customTest
@@ -45,8 +45,8 @@ describe('Organization-services list', () => {
         api.organizationsOrganizationIdRequestedServicesGet('organization_id', cursor)
       ).then(reducePages);
 
-      const expected = getOutputFixture('list-organization-services-requested.output.yaml');
-      expect(result.services).to.deep.members(expected.spec);
+      const expected = getOutputFixture('list-organization-services-requested.output.json');
+      expect(result.services).to.deep.members(expected);
     });
 });
 

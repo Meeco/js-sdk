@@ -13,17 +13,16 @@ describe('Organizations create', () => {
     .mockCryppo()
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .it('Requests the creation of a new organization', async () => {
-      const input = getInputFixture('create-organization.input.yaml');
-      const service = new OrganizationsService(
-        environment,
-        testUserAuthFixture.metadata.vault_access_token
-      );
+      const input = getInputFixture('create-organization.input.json');
+      const service = new OrganizationsService(environment, testUserAuthFixture.vault_access_token);
       const result = await service.create({
-        ...input.spec,
+        ...input,
       });
 
-      const expected = getOutputFixture('create-organization.output.yaml');
-      expect(result.organization).to.eql(expected.spec);
+      const { privateKey, publicKey, ...expectedSpec } = getOutputFixture(
+        'create-organization.output.json'
+      );
+      expect(result.organization).to.eql(expectedSpec);
     });
 });
 

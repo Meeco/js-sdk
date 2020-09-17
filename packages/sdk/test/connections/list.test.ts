@@ -22,7 +22,7 @@ describe('Connections list', () => {
     .it('lists a users connections using listConnections', async () => {
       const connections = await new ConnectionService(environment).listConnections(testUserAuth);
 
-      const expected = getOutputFixture('list-connections.output.yaml');
+      const expected = getOutputFixture('list-connections.output.json');
       expect(replaceUndefinedWithNull(connections)).to.deep.members(expected);
     });
 
@@ -41,7 +41,7 @@ describe('Connections list', () => {
         testUserAuth.data_encryption_key
       );
 
-      const expected = getOutputFixture('list-connections.output.yaml');
+      const expected = getOutputFixture('list-connections.output.json');
       expect(replaceUndefinedWithNull(connections)).to.deep.members(expected);
     });
 
@@ -66,7 +66,7 @@ describe('Connections list', () => {
         testUserAuth.data_encryption_key
       );
 
-      const expected = getOutputFixture('list-connections.output.yaml');
+      const expected = getOutputFixture('list-connections.output.json');
       expect(replaceUndefinedWithNull(connections)).to.deep.members(expected);
     });
 });

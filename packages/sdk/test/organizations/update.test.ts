@@ -12,16 +12,16 @@ describe('organizations:update', () => {
   customTest
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .it('Updates the organization', async () => {
-      const input = getInputFixture('update-organization.input.yaml');
-      const organization = input.spec;
+      const input = getInputFixture('update-organization.input.json');
+      const organization = input;
       const result = await vaultAPIFactory(environment)(
         testUserAuth
       ).OrganizationsManagingOrganizationsApi.organizationsIdPut(organization.id, {
         organization,
       });
 
-      const expected = getOutputFixture('update-organization.output.yaml');
-      expect(result.organization).to.eql(expected.spec);
+      const expected = getOutputFixture('update-organization.output.json');
+      expect(result.organization).to.eql(expected);
     });
 });
 

@@ -16,27 +16,25 @@ describe('Connections create', () => {
     .nock('https://sandbox.meeco.me/vault', stubVault)
     .nock('https://sandbox.meeco.me/keystore', stubKeystore)
     .it('creates a connection between two users', async () => {
-      const input = getInputFixture('create-connection.input.yaml');
+      const input = getInputFixture('create-connection.input.json');
       const fromUser = buildTestAuthData({
-        ...input.spec.from,
+        ...input.from,
       });
       const toUser = buildTestAuthData({
-        ...input.spec.to,
+        ...input.to,
       });
       const connectionMetadata = {
-        ...input.metadata,
+        ...input,
       };
       const connectionConfig = new ConnectionCreateData(fromUser, toUser, connectionMetadata);
       const result = await new ConnectionService(environment).createConnection(connectionConfig);
 
-      const expected = getOutputFixture('create-connection.output.yaml');
-
-      expect(result.options).to.eql(expected.spec);
-      expect(result.invitation.id).to.eql(expected.metadata.invitation_id);
-      expect(result.fromUserConnection.own.id).to.eql(expected.metadata.from_user_connection_id);
-      expect(result.toUserConnection.the_other_user.id).to.eql(
-        expected.metadata.to_user_connection_id
-      );
+      const expected = getOutputFixture('create-connection.output.json');
+      expect(result.options.fromName).to.eql(expected.fromName);
+      expect(result.options.toName).to.eql(expected.toName);
+      expect(result.invitation.id).to.eql(expected.invitation_id);
+      expect(result.fromUserConnection.own.id).to.eql(expected.from_user_connection_id);
+      expect(result.toUserConnection.the_other_user.id).to.eql(expected.to_user_connection_id);
     });
 });
 

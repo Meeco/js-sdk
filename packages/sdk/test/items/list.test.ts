@@ -21,8 +21,8 @@ describe('Items list', () => {
     .it('list items that the user has', async () => {
       const result = await new ItemService(environment).list(testUserAuth.vault_access_token);
 
-      const expected = getOutputFixture('list-items.output.yaml');
-      expect(replaceUndefinedWithNull(result.items)).to.deep.members(expected.spec);
+      const expected = getOutputFixture('list-items.output.json');
+      expect(replaceUndefinedWithNull(result.items)).to.deep.members(expected);
     });
 
   customTest
@@ -41,8 +41,8 @@ describe('Items list', () => {
     .it('list items that the user has', async () => {
       const result = await new ItemService(environment).listAll(testUserAuth.vault_access_token);
 
-      const expected = getOutputFixture('list-items.output.yaml');
-      expect(replaceUndefinedWithNull(result.items)).to.deep.members(expected.spec);
+      const expected = getOutputFixture('list-items.output.json');
+      expect(replaceUndefinedWithNull(result.items)).to.deep.members(expected);
     });
 });
 

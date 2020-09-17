@@ -14,12 +14,12 @@ describe('Item create', () => {
   customTest
     .stub(ItemApi.prototype, 'itemsPost', createItem as any)
     .it('creates an empty item from a template', async () => {
-      const input = getInputFixture('create-item-from-template.input.yaml');
+      const input = getInputFixture('create-item-from-template.input.json');
 
       const itemCreateData = new ItemCreateData({
-        template_name: input.metadata.template_name,
+        template_name: input.template_name,
         slots: [],
-        item: { label: input.spec.label },
+        item: { label: input.label },
       });
       const result = await new ItemService(environment).create(
         testUserAuth.vault_access_token,
@@ -27,8 +27,8 @@ describe('Item create', () => {
         itemCreateData
       );
 
-      const expected = getOutputFixture('create-item-from-template.output.yaml');
-      const { slots, ...expectedItem } = expected.spec;
+      const expected = getOutputFixture('create-item-from-template.output.json');
+      const { slots, ...expectedItem } = expected;
       expect(result.item).to.eql(expectedItem);
       expect(result.slots).to.deep.members(slots);
     });
@@ -37,19 +37,19 @@ describe('Item create', () => {
     .stub(ItemApi.prototype, 'itemsPost', createItem as any)
     .mockCryppo()
     .it('creates an item with slots provided in a config file', async () => {
-      const input = getInputFixture('create-item-with-slots.input.yaml');
+      const input = getInputFixture('create-item-with-slots.input.json');
 
       const inputSlots: NestedSlotAttributes[] = [];
-      input.spec.slots.forEach(x => {
+      input.slots.forEach(x => {
         inputSlots.push({
           ...x,
         });
       });
 
       const itemCreateData = new ItemCreateData({
-        template_name: input.metadata.template_name,
+        template_name: input.template_name,
         slots: inputSlots,
-        item: { label: input.spec.label },
+        item: { label: input.label },
       });
       const result = await new ItemService(environment).create(
         testUserAuth.vault_access_token,
@@ -57,8 +57,8 @@ describe('Item create', () => {
         itemCreateData
       );
 
-      const expected = getOutputFixture('create-item-with-slots.output.yaml');
-      const { slots, ...expectedItem } = expected.spec;
+      const expected = getOutputFixture('create-item-with-slots.output.json');
+      const { slots, ...expectedItem } = expected;
       expect(result.item).to.eql(expectedItem);
       expect(result.slots).to.deep.members(slots);
     });
