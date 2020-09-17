@@ -86,9 +86,6 @@ export const environment = new Environment({
 const undefinedToNullreplacer = (key, value) => {
   return typeof value === 'undefined' ? null : value;
 };
-const convertUndefinedWithNull = obj => {
-  return JSON.parse(JSON.stringify(obj, undefinedToNullreplacer), dateReviver);
-};
 export const replaceUndefinedWithNull = obj => {
-  return convertUndefinedWithNull(obj);
+  return JSON.parse(JSON.stringify(obj, undefinedToNullreplacer), dateReviver);
 };
