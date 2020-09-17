@@ -1,0 +1,7 @@
+{
+  "invitation_id": "invitation_id",
+  "from_user_connection_id": "connection_id",
+  "to_user_connection_id": "other_connection_id",
+  "toName": "TestTo",
+  "fromName": "TestFrom"
+}

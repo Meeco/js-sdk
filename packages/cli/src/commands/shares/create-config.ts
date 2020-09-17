@@ -39,7 +39,7 @@ export default class SharesCreateConfig extends MeecoCommand {
     }),
   };
 
-  static args = [];
+  //   static args = [];
 
   async run() {
     try {

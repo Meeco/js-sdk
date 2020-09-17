@@ -1,6 +1,6 @@
+import { ClientTaskQueueService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
-import { MOCK_NEXT_PAGE_AFTER } from '../../../src/util/constants';
 import {
   customTest,
   outputFixture,
@@ -11,14 +11,7 @@ import {
 
 describe('client-task-queue:list', () => {
   customTest
-    .nock('https://sandbox.meeco.me/vault', api =>
-      api
-        .get('/client_task_queue')
-        .query({ supress_changing_state: true, state: 'todo' })
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, response)
-    )
+    .stub(ClientTaskQueueService.prototype, 'list', list as any)
     .stdout()
     .run(['client-task-queue:list', ...testUserAuth, ...testEnvironmentFile, '-s', 'Todo'])
     .it('list tasks that client must perform', ctx => {
@@ -27,23 +20,7 @@ describe('client-task-queue:list', () => {
     });
 
   customTest
-    .nock('https://sandbox.meeco.me/vault', api =>
-      api
-        .get('/client_task_queue')
-        .query({ supress_changing_state: true, state: 'todo' })
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, responsePart1)
-        .get('/client_task_queue')
-        .query({
-          supress_changing_state: true,
-          state: 'todo',
-          next_page_after: MOCK_NEXT_PAGE_AFTER,
-        })
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, responsePart2)
-    )
+    .stub(ClientTaskQueueService.prototype, 'listAll', listAll as any)
     .stdout()
     .run([
       'client-task-queue:list',
@@ -85,14 +62,10 @@ const response = {
   meta: [],
 };
 
-const responsePart1 = {
-  ...response,
-  client_tasks: [response.client_tasks[0]],
-  next_page_after: MOCK_NEXT_PAGE_AFTER,
-  meta: [{ next_page_exists: true }],
-};
+function list() {
+  return Promise.resolve(response);
+}
 
-const responsePart2 = {
-  ...response,
-  client_tasks: [response.client_tasks[1]],
-};
+function listAll() {
+  return Promise.resolve(response);
+}

@@ -1,0 +1,14 @@
+{
+  "template_name": "food",
+  "label": "",
+  "slots": [
+    {
+      "name": "pizza",
+      "value": ""
+    },
+    {
+      "name": "steak",
+      "value": ""
+    }
+  ]
+}

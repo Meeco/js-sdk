@@ -1,6 +1,6 @@
+import { ConnectionService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
-import { MOCK_NEXT_PAGE_AFTER } from '../../../src/util/constants';
 import {
   customTest,
   outputFixture,
@@ -11,37 +11,8 @@ import {
 
 describe('connections:list', () => {
   customTest
+    .stub(ConnectionService.prototype, 'list', list as any)
     .stdout()
-    .mockCryppo()
-    .nock('https://sandbox.meeco.me/vault', api => {
-      api
-        .get('/connections')
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, {
-          connections: [
-            {
-              own: {
-                id: 'abc123',
-                encrypted_recipient_name: 'Some Encrypted Name',
-              },
-              the_other_user: {
-                id: 'abc345',
-              },
-            },
-            {
-              own: {
-                id: 'def456',
-                encrypted_recipient_name: 'Some Encrypted Name',
-              },
-              the_other_user: {
-                id: 'def789',
-              },
-            },
-          ],
-          meta: [],
-        });
-    })
     .run(['connections:list', ...testUserAuth, ...testEnvironmentFile])
     .it('lists a users connections', ctx => {
       const expected = readFileSync(outputFixture('list-connections.output.yaml'), 'utf-8');
@@ -49,79 +20,70 @@ describe('connections:list', () => {
     });
 
   customTest
+    .stub(ConnectionService.prototype, 'listAll', listAll as any)
     .stdout()
-    .mockCryppo()
-    .nock('https://sandbox.meeco.me/vault', api => {
-      api
-        .get('/connections')
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, {
-          connections: [
-            {
-              own: {
-                id: 'abc123',
-                encrypted_recipient_name: 'Some Encrypted Name',
-              },
-              the_other_user: {
-                id: 'abc345',
-              },
-            },
-          ],
-          meta: [
-            {
-              per_page_from_params: true,
-            },
-            {
-              order: 'item_templates.id asc',
-            },
-            {
-              per_page: 1,
-            },
-            {
-              pagination_cursor: false,
-            },
-            {
-              filter_by_like: false,
-            },
-            {
-              filter_by_classification: false,
-            },
-            {
-              next_page_exists: true,
-            },
-            {
-              records_count: 1,
-            },
-          ],
-          next_page_after: MOCK_NEXT_PAGE_AFTER,
-        })
-        .get('/connections')
-        .query({ next_page_after: MOCK_NEXT_PAGE_AFTER })
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, {
-          connections: [
-            {
-              own: {
-                id: 'def456',
-                encrypted_recipient_name: 'Some Encrypted Name',
-              },
-              the_other_user: {
-                id: 'def789',
-              },
-            },
-          ],
-          meta: [
-            {
-              next_page_exists: false,
-            },
-          ],
-        });
-    })
     .run(['connections:list', ...testUserAuth, ...testEnvironmentFile, ...testGetAll])
     .it('lists all users connections when paginated', ctx => {
       const expected = readFileSync(outputFixture('list-connections.output.yaml'), 'utf-8');
       expect(ctx.stdout).to.contain(expected.trim());
     });
 });
+
+const connections = [
+  {
+    name: 'Some Encrypted Name[decrypted with my_generated_dek]',
+    connection: {
+      own: {
+        id: 'abc123',
+        encrypted_recipient_name: 'Some Encrypted Name',
+        integration_data: null,
+        connection_type: null,
+        user_image: null,
+        user_type: null,
+        user_public_key: null,
+        user_keypair_external_id: null,
+      },
+      the_other_user: {
+        id: 'abc345',
+        connection_type: null,
+        user_id: null,
+        user_image: null,
+        user_type: null,
+        user_public_key: null,
+        user_keypair_external_id: null,
+      },
+    },
+  },
+  {
+    name: 'Some Encrypted Name[decrypted with my_generated_dek]',
+    connection: {
+      own: {
+        id: 'def456',
+        encrypted_recipient_name: 'Some Encrypted Name',
+        integration_data: null,
+        connection_type: null,
+        user_image: null,
+        user_type: null,
+        user_public_key: null,
+        user_keypair_external_id: null,
+      },
+      the_other_user: {
+        id: 'def789',
+        connection_type: null,
+        user_id: null,
+        user_image: null,
+        user_type: null,
+        user_public_key: null,
+        user_keypair_external_id: null,
+      },
+    },
+  },
+];
+
+function list() {
+  return Promise.resolve(connections);
+}
+
+function listAll() {
+  return Promise.resolve(connections);
+}

@@ -1,0 +1,19 @@
+{
+  "id": "c43595b3-4ab6-4777-b925-95567001f8d2",
+  "message": null,
+  "sent_at": null,
+  "invited_user_id": null,
+  "token": "I2aUc0zEU2veqg52QtKbwEsJ1eNIqWlBdjH5FrRIKXg",
+  "outgoing": true,
+  "user_name": "Anonymous User",
+  "user_image": "http://localhost:3000/images/69074548-24cb-403d-828c-09af6002e1c3",
+  "keypair_external_id": null,
+  "encrypted_recipient_name": null,
+  "email": null,
+  "user_email": null,
+  "integration_data": {
+    "intent": "member",
+    "organization_id": "00000000-0000-0000-0000-000000000000",
+    "organization_member_role": "admin"
+  }
+}

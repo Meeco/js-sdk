@@ -1,0 +1,10 @@
+{
+  "name": "SuperData Inc.",
+  "description": "My super data handling organization",
+  "url": "https://superdata.example.com",
+  "email": "admin@superdata.example.com",
+  "contract": {
+    "name": "sample contract"
+  },
+  "public_key": null
+}

@@ -1,3 +1,4 @@
+import { OrganizationsService } from '@meeco/sdk';
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
 import {
@@ -10,10 +11,9 @@ import {
 
 describe('organizations:create', () => {
   customTest
+    .stub(OrganizationsService.prototype, 'create', create as any)
     .stdout()
     .stderr()
-    .mockCryppo()
-    .nock('https://sandbox.meeco.me/vault', mockVault)
     .run([
       'organizations:create',
       ...testUserAuth,
@@ -27,32 +27,22 @@ describe('organizations:create', () => {
     });
 });
 
-const response = {
-  organization: {
-    id: '00000000-0000-0000-0000-000000000000',
-    name: 'SuperData Inc.',
-    description: 'My super data handling organization',
-    url: 'https://superdata.example.com',
-    email: 'admin@superdata.example.com',
-    status: 'requested',
-    requestor_id: '00000000-0000-0000-0000-000000000000',
-    validated_by_id: null,
-    agent_id: null,
-    validated_at: null,
-    created_at: '2020-06-23T08:38:32.915Z',
-  },
-};
-
-function mockVault(api) {
-  api
-    .post('/organizations', {
+function create(organizationConfig) {
+  return Promise.resolve({
+    organization: {
+      id: '00000000-0000-0000-0000-000000000000',
       name: 'SuperData Inc.',
       description: 'My super data handling organization',
       url: 'https://superdata.example.com',
       email: 'admin@superdata.example.com',
-      public_key: '--PUBLIC_KEY--ABCD',
-    })
-    .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, response);
+      status: 'requested',
+      requestor_id: '00000000-0000-0000-0000-000000000000',
+      validated_by_id: null,
+      agent_id: null,
+      validated_at: null,
+      created_at: new Date('2020-06-23T08:38:32.915Z'),
+    },
+    privateKey: '--PRIVATE_KEY--12324',
+    publicKey: '--PUBLIC_KEY--ABCD',
+  });
 }

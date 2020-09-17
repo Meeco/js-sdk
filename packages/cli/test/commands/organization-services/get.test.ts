@@ -1,13 +1,13 @@
+import * as sdk from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 describe('organization-services:get', () => {
   customTest
+    .stub(sdk, 'vaultAPIFactory', vaultAPIFactory as any)
     .stdout()
     .stderr()
-    .mockCryppo()
-    .nock('https://sandbox.meeco.me/vault', mockVault)
     .run([
       'organization-services:get',
       'organization_id',
@@ -21,25 +21,27 @@ describe('organization-services:get', () => {
     });
 });
 
-const response = {
-  service: {
-    id: '00000000-0000-0000-0000-000000000000',
-    name: 'Sample Service',
-    description: 'Sample service description',
-    contract: { name: 'sample contract' },
-    organization_id: 'e2fed464-878b-4d4b-9017-99abc50504ed',
-    validated_by_id: null,
-    validated_at: null,
-    agent_id: null,
-    created_at: '2020-07-02T05:47:44.983Z',
-    status: 'requested',
-  },
-};
-
-function mockVault(api) {
-  api
-    .get('/organizations/organization_id/services/service_id')
-    .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, response);
+function vaultAPIFactory(environment) {
+  return authConfig => ({
+    OrganizationsForVaultUsersApi: {
+      organizationsOrganizationIdServicesIdGet: (organizationId, serviceId) => {
+        return Promise.resolve({
+          service: {
+            id: '00000000-0000-0000-0000-000000000000',
+            name: 'Sample Service',
+            description: 'Sample service description',
+            contract: {
+              name: 'sample contract',
+            },
+            status: 'requested',
+            organization_id: 'e2fed464-878b-4d4b-9017-99abc50504ed',
+            validated_by_id: null,
+            agent_id: null,
+            validated_at: null,
+            created_at: new Date('2020-07-02T05:47:44.983Z'),
+          },
+        });
+      },
+    },
+  });
 }

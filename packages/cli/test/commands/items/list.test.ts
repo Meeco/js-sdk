@@ -1,6 +1,6 @@
+import { ItemService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
-import { MOCK_NEXT_PAGE_AFTER } from '../../../src/util/constants';
 import {
   customTest,
   outputFixture,
@@ -11,13 +11,7 @@ import {
 
 describe('items:list', () => {
   customTest
-    .nock('https://sandbox.meeco.me/vault', api =>
-      api
-        .get('/items')
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, response)
-    )
+    .stub(ItemService.prototype, 'list', list as any)
     .stdout()
     .run(['items:list', ...testUserAuth, ...testEnvironmentFile])
     .it('list items that the user has', ctx => {
@@ -26,18 +20,7 @@ describe('items:list', () => {
     });
 
   customTest
-    .nock('https://sandbox.meeco.me/vault', api =>
-      api
-        .get('/items')
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, responsePart1)
-        .get('/items')
-        .query({ next_page_after: MOCK_NEXT_PAGE_AFTER })
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, responsePart2)
-    )
+    .stub(ItemService.prototype, 'listAll', list as any)
     .stdout()
     .run(['items:list', ...testUserAuth, ...testEnvironmentFile, ...testGetAll])
     .it('lists all items that the user has when paginated', ctx => {
@@ -46,58 +29,122 @@ describe('items:list', () => {
     });
 });
 
+function list(vaultAccessToken: string) {
+  return Promise.resolve(response);
+}
+
 const response = {
-  items: [
-    {
-      id: 'a',
-      name: 'My Car',
-      slot_ids: ['make_model'],
-      created_at: new Date(0),
-      updated_at: new Date(0),
-    },
-    {
-      id: 'b',
-      name: 'My House',
-      slot_ids: ['add'],
-      created_at: new Date(0),
-      updated_at: new Date(0),
-    },
-  ],
+  next_page_after: null,
+  associations: [],
+  associations_to: [],
+  attachments: [],
+  thumbnails: [],
+  classification_nodes: [],
   slots: [
     {
       id: 'make_model',
+      own: null,
+      share_id: null,
       name: 'Make and Model',
-      value: 'Tesla Model S',
-      created_at: new Date(0),
+      description: null,
+      encrypted: null,
+      ordinal: null,
+      visible: null,
+      classification_node_ids: null,
+      attachment_id: null,
+      slotable_id: null,
+      slotable_type: null,
+      required: null,
       updated_at: new Date(0),
+      created_at: new Date(0),
+      slot_type_name: null,
+      creator: null,
+      encrypted_value: null,
+      encrypted_value_verification_key: null,
+      value_verification_hash: null,
+      image: null,
+      label: null,
+      original_id: null,
+      owner_id: null,
     },
     {
       id: 'add',
+      own: null,
+      share_id: null,
       name: 'address',
-      value: '123 Fake Street',
-      created_at: new Date(0),
+      description: null,
+      encrypted: null,
+      ordinal: null,
+      visible: null,
+      classification_node_ids: null,
+      attachment_id: null,
+      slotable_id: null,
+      slotable_type: null,
+      required: null,
       updated_at: new Date(0),
+      created_at: new Date(0),
+      slot_type_name: null,
+      creator: null,
+      encrypted_value: null,
+      encrypted_value_verification_key: null,
+      value_verification_hash: null,
+      image: null,
+      label: null,
+      original_id: null,
+      owner_id: null,
     },
   ],
-  associations_to: [],
-  associations: [],
-  attachments: [],
-  classification_nodes: [],
-  shares: [],
-  thumbnails: [],
+  items: [
+    {
+      id: 'a',
+      own: null,
+      name: 'My Car',
+      label: null,
+      description: null,
+      created_at: new Date(0),
+      item_template_id: null,
+      ordinal: null,
+      visible: null,
+      updated_at: new Date(0),
+      item_template_label: null,
+      image: null,
+      item_image: null,
+      item_image_background_colour: null,
+      classification_node_ids: null,
+      association_ids: null,
+      associations_to_ids: null,
+      slot_ids: ['make_model'],
+      me: null,
+      background_color: null,
+      original_id: null,
+      owner_id: null,
+      share_id: null,
+    },
+    {
+      id: 'b',
+      own: null,
+      name: 'My House',
+      label: null,
+      description: null,
+      created_at: new Date(0),
+      item_template_id: null,
+      ordinal: null,
+      visible: null,
+      updated_at: new Date(0),
+      item_template_label: null,
+      image: null,
+      item_image: null,
+      item_image_background_colour: null,
+      classification_node_ids: null,
+      association_ids: null,
+      associations_to_ids: null,
+      slot_ids: ['add'],
+      me: null,
+      background_color: null,
+      original_id: null,
+      owner_id: null,
+      share_id: null,
+    },
+  ],
   meta: [],
-};
-
-const responsePart1 = {
-  ...response,
-  items: [response.items[0]],
-  slots: [response.slots[0]],
-  next_page_after: MOCK_NEXT_PAGE_AFTER,
-  meta: [{ next_page_exists: true }],
-};
-
-const responsePart2 = {
-  ...response,
-  items: [response.items[1]],
-  slots: [response.slots[1]],
 };

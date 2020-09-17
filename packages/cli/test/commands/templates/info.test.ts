@@ -1,18 +1,13 @@
+import * as sdk from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 describe('templates:info', () => {
   customTest
+    .stub(sdk, 'vaultAPIFactory', vaultAPIFactory as any)
     .stderr()
     .stdout()
-    .nock('https://sandbox.meeco.me/vault', api => {
-      api
-        .get('/item_templates')
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-        .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, response);
-    })
     .run(['templates:info', 'drink', ...testUserAuth, ...testEnvironmentFile])
     .it('fetches info about a particular template', ctx => {
       const expected = readFileSync(outputFixture('info-template.output.yaml'), 'utf-8');
@@ -20,49 +15,182 @@ describe('templates:info', () => {
     });
 });
 
-const response = {
-  item_templates: [
-    {
-      created_at: new Date(0),
-      updated_at: new Date(0),
-      name: 'food',
-      slots_ids: ['steak', 'pizza', 'yoghurt'],
-    },
-    {
-      created_at: new Date(0),
-      updated_at: new Date(0),
-      name: 'drink',
-      slot_ids: ['yoghurt', 'water', 'beer'],
-    },
-  ],
-  slots: [
-    {
-      id: 'pizza',
-      created_at: new Date(0),
-      updated_at: new Date(0),
-    },
-    {
-      id: 'steak',
-      created_at: new Date(0),
-      updated_at: new Date(0),
-    },
-    {
-      id: 'yoghurt',
-      created_at: new Date(0),
-      updated_at: new Date(0),
-    },
-    {
-      id: 'water',
-      created_at: new Date(0),
-      updated_at: new Date(0),
-    },
-    {
-      id: 'beer',
-      created_at: new Date(0),
-      updated_at: new Date(0),
-    },
-  ],
+const result = {
+  next_page_after: null,
   attachments: [],
   thumbnails: [],
   classification_nodes: [],
+  slots: [
+    {
+      id: 'pizza',
+      own: null,
+      share_id: null,
+      name: null,
+      description: null,
+      encrypted: null,
+      ordinal: null,
+      visible: null,
+      classification_node_ids: null,
+      attachment_id: null,
+      slotable_id: null,
+      slotable_type: null,
+      required: null,
+      updated_at: new Date(0),
+      created_at: new Date(0),
+      slot_type_name: null,
+      creator: null,
+      encrypted_value: null,
+      encrypted_value_verification_key: null,
+      value_verification_hash: null,
+      image: null,
+      label: null,
+      original_id: null,
+      owner_id: null,
+    },
+    {
+      id: 'steak',
+      own: null,
+      share_id: null,
+      name: null,
+      description: null,
+      encrypted: null,
+      ordinal: null,
+      visible: null,
+      classification_node_ids: null,
+      attachment_id: null,
+      slotable_id: null,
+      slotable_type: null,
+      required: null,
+      updated_at: new Date(0),
+      created_at: new Date(0),
+      slot_type_name: null,
+      creator: null,
+      encrypted_value: null,
+      encrypted_value_verification_key: null,
+      value_verification_hash: null,
+      image: null,
+      label: null,
+      original_id: null,
+      owner_id: null,
+    },
+    {
+      id: 'yoghurt',
+      own: null,
+      share_id: null,
+      name: null,
+      description: null,
+      encrypted: null,
+      ordinal: null,
+      visible: null,
+      classification_node_ids: null,
+      attachment_id: null,
+      slotable_id: null,
+      slotable_type: null,
+      required: null,
+      updated_at: new Date(0),
+      created_at: new Date(0),
+      slot_type_name: null,
+      creator: null,
+      encrypted_value: null,
+      encrypted_value_verification_key: null,
+      value_verification_hash: null,
+      image: null,
+      label: null,
+      original_id: null,
+      owner_id: null,
+    },
+    {
+      id: 'water',
+      own: null,
+      share_id: null,
+      name: null,
+      description: null,
+      encrypted: null,
+      ordinal: null,
+      visible: null,
+      classification_node_ids: null,
+      attachment_id: null,
+      slotable_id: null,
+      slotable_type: null,
+      required: null,
+      updated_at: new Date(0),
+      created_at: new Date(0),
+      slot_type_name: null,
+      creator: null,
+      encrypted_value: null,
+      encrypted_value_verification_key: null,
+      value_verification_hash: null,
+      image: null,
+      label: null,
+      original_id: null,
+      owner_id: null,
+    },
+    {
+      id: 'beer',
+      own: null,
+      share_id: null,
+      name: null,
+      description: null,
+      encrypted: null,
+      ordinal: null,
+      visible: null,
+      classification_node_ids: null,
+      attachment_id: null,
+      slotable_id: null,
+      slotable_type: null,
+      required: null,
+      updated_at: new Date(0),
+      created_at: new Date(0),
+      slot_type_name: null,
+      creator: null,
+      encrypted_value: null,
+      encrypted_value_verification_key: null,
+      value_verification_hash: null,
+      image: null,
+      label: null,
+      original_id: null,
+      owner_id: null,
+    },
+  ],
+  item_templates: [
+    {
+      id: null,
+      name: 'food',
+      description: null,
+      ordinal: null,
+      visible: null,
+      user_id: null,
+      updated_at: new Date(0),
+      image: null,
+      template_type: null,
+      classification_node_ids: null,
+      slot_ids: null,
+      label: null,
+      background_color: null,
+    },
+    {
+      id: null,
+      name: 'drink',
+      description: null,
+      ordinal: null,
+      visible: null,
+      user_id: null,
+      updated_at: new Date(0),
+      image: null,
+      template_type: null,
+      classification_node_ids: null,
+      slot_ids: ['yoghurt', 'water', 'beer'],
+      label: null,
+      background_color: null,
+    },
+  ],
+  meta: null,
 };
+
+function vaultAPIFactory(environment) {
+  return authConfig => ({
+    ItemTemplateApi: {
+      itemTemplatesGet: (classificationScheme, classificationName) => Promise.resolve(result),
+    },
+  });
+}

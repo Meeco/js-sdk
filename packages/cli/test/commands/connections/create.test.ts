@@ -1,15 +1,13 @@
+import { AuthData, ConnectionService, IConnectionMetadata } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
-import * as nock from 'nock';
 import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('connections:create', () => {
   customTest
     .stdout()
     .stderr()
-    .mockCryppo()
-    .nock('https://sandbox.meeco.me/vault', stubVault)
-    .nock('https://sandbox.meeco.me/keystore', stubKeystore)
+    .stub(ConnectionService.prototype, 'createConnection', createConnection as any)
     .run([
       'connections:create',
       ...testEnvironmentFile,
@@ -22,123 +20,40 @@ describe('connections:create', () => {
     });
 });
 
-function stubVault(api: nock.Scope) {
-  api
-    .post('/invitations', {
-      public_key: {
-        keypair_external_id: 'from_stored_keypair_id',
-        public_key: '--PUBLIC_KEY--ABCD',
-      },
-      invitation: {
-        encrypted_recipient_name: '[serialized][encrypted]TestTo[with from_data_encryption_key]',
-      },
-    })
-    .reply(200, {
-      invitation: {
-        id: 'invitation_id',
-        token: 'invitation_token',
-      },
-    });
-
-  api
-    .get('/connections')
-    .matchHeader('Authorization', 'from_vault_access_token')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .once()
-    .reply(404);
-
-  api
-    .get('/connections')
-    .matchHeader('Authorization', 'from_vault_access_token')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .once()
-    .reply(200, {
-      connections: [
-        {
-          own: {
-            id: 'connection_id',
-            user_public_key: 'from_user_public',
-          },
-          the_other_user: {
-            id: 'other_connection_id',
-            user_public_key: 'to_user_public',
-          },
-        },
-      ],
-    });
-
-  api
-    .get('/connections')
-    .matchHeader('Authorization', 'to_vault_access_token')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, {
-      connections: [
-        {
-          own: {
-            id: 'other_connection_id',
-            user_public_key: 'to_user_public',
-          },
-          the_other_user: {
-            id: 'connection_id',
-            user_public_key: 'from_user_public',
-          },
-        },
-      ],
-    });
-
-  api
-    .post('/connections', {
-      public_key: { keypair_external_id: 'to_stored_keypair_id', public_key: '--PUBLIC_KEY--ABCD' },
-      connection: {
+function createConnection(config: { to: AuthData; from: AuthData; options: IConnectionMetadata }) {
+  return Promise.resolve({
+    invitation: {
+      id: 'invitation_id',
+      token: 'invitation_token',
+      encrypted_recipient_name: '[serialized][encrypted]TestTo[with from_data_encryption_key]',
+    },
+    fromUserConnection: {
+      own: {
+        id: 'connection_id',
+        user_public_key: 'from_user_public',
         encrypted_recipient_name:
           '[serialized][encrypted]TestFrom[with to_data_encryption_key\u0000\u0000]',
-        invitation_token: 'invitation_token',
       },
-    })
-    .reply(200, {
-      connection: {
-        own: {
-          id: 'connection_id',
-          user_public_key: 'to_user_public',
-        },
-        the_other_user: {
-          id: 'other_connection_id',
-          user_public_key: 'from_user_public',
-        },
+      the_other_user: {
+        id: 'other_connection_id',
+        user_public_key: 'to_user_public',
       },
-    });
-}
-
-function stubKeystore(api: nock.Scope) {
-  api
-    .post('/keypairs', {
-      public_key: '--PUBLIC_KEY--ABCD',
-      encrypted_serialized_key:
-        '[serialized][encrypted]--PRIVATE_KEY--12324[with to_key_encryption_key]',
-      metadata: {},
-      external_identifiers: [],
-    })
-    .matchHeader('Authorization', 'to_keystore_access_token')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, {
-      keypair: {
-        id: 'to_stored_keypair_id',
+    },
+    toUserConnection: {
+      own: {
+        id: 'other_connection_id',
+        user_public_key: 'to_user_public',
+        encrypted_recipient_name:
+          '[serialized][encrypted]TestFrom[with to_data_encryption_key\u0000\u0000]',
       },
-    });
-
-  api
-    .post('/keypairs', {
-      public_key: '--PUBLIC_KEY--ABCD',
-      encrypted_serialized_key:
-        '[serialized][encrypted]--PRIVATE_KEY--12324[with from_key_encryption_key]',
-      metadata: {},
-      external_identifiers: [],
-    })
-    .matchHeader('Authorization', 'from_keystore_access_token')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, {
-      keypair: {
-        id: 'from_stored_keypair_id',
+      the_other_user: {
+        id: 'connection_id',
+        user_public_key: 'from_user_public',
       },
-    });
+    },
+    options: {
+      toName: config.options.toName,
+      fromName: config.options.fromName,
+    },
+  });
 }
