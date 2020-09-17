@@ -54,8 +54,6 @@ async function attachFile() {
     return alert('Please enter an item id');
   }
   $set('attached', '');
-  // const file: any = await fileAsBinaryString(blob);
-
   try {
     const privateDek = localStorage.getItem('dataEncryptionKey') || '';
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
@@ -102,7 +100,7 @@ async function attachFile() {
           attachment_attributes: {
             id: attachment.id,
           },
-          value: attachmentDek.key,
+          value: attachmentDek,
         },
       ],
       label: existingItem.label,
@@ -113,7 +111,6 @@ async function attachFile() {
       itemUpdateData
     );
     const slotId = updated.slots.find(slot => slot.attachment_id === attachment.id)?.id;
-    console.log(updated);
     $set('attached', JSON.stringify({ itemId, slotId, attachment }, null, 2));
   } catch (error) {
     $set('attached', `Error (See Action Log for Details)`);

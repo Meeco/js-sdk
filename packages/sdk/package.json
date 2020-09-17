@@ -1,13 +1,13 @@
 {
   "name": "@meeco/sdk",
   "description": "A wrapper library around Meeco's various API SDK's and encryption libraries",
-  "version": "0.0.11-beta",
+  "version": "0.0.12-alpha.2",
   "author": "Meeco",
   "bugs": "https://github.com/Meeco/cli/issues",
   "source": "src/index.ts",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "dependencies": {
     "@meeco/cryppo": "^0.7.1",
     "@meeco/keystore-api-sdk": "0.14.1-beta.1",

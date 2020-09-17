@@ -1,7 +1,8 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { getAllPaged, reducePages, reportIfTruncated, vaultAPIFactory } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationServiceListConfig } from '../../configs/organization-services-list-config';
 import { authFlags } from '../../flags/auth-flags';
+import { pageFlags } from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationServicesList extends MeecoCommand {
@@ -12,13 +13,14 @@ export default class OrganizationServicesList extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
+    ...pageFlags,
   };
 
   static args = [{ name: 'organization_id', required: true }];
 
   async run() {
     const { flags, args } = this.parse(this.constructor as typeof OrganizationServicesList);
-    const { auth } = flags;
+    const { auth, all } = flags;
     const { organization_id } = args;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
@@ -28,11 +30,15 @@ export default class OrganizationServicesList extends MeecoCommand {
     }
     try {
       this.updateStatus('Fetching services');
-      const result = await vaultAPIFactory(environment)(
-        authConfig
-      ).OrganizationsManagingServicesApi.organizationsOrganizationIdRequestedServicesGet(
-        organization_id
-      );
+      const api = vaultAPIFactory(environment)(authConfig).OrganizationsManagingServicesApi;
+      const result = all
+        ? await getAllPaged(cursor =>
+            api.organizationsOrganizationIdRequestedServicesGet(organization_id, cursor)
+          ).then(reducePages)
+        : await api
+            .organizationsOrganizationIdRequestedServicesGet(organization_id)
+            .then(reportIfTruncated(this.warn));
+
       this.finish();
       this.printYaml(OrganizationServiceListConfig.encodeFromJSON(result.services));
     } catch (err) {

@@ -1,0 +1,12 @@
+node_modules/
+.vscode/
+.cache/
+.nyc_output/
+src/
+test/
+coverage/
+demo/
+
+tsconfig.json
+tsconfig.build.json
+

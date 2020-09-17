@@ -1,8 +1,9 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { getAllPaged, reducePages, reportIfTruncated, vaultAPIFactory } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationsListConfig } from '../../configs/organizations-list-config';
 import { authFlags } from '../../flags/auth-flags';
+import { pageFlags } from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationsList extends MeecoCommand {
@@ -13,6 +14,7 @@ export default class OrganizationsList extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
+    ...pageFlags,
     mode: _flags.string({
       char: 'm',
       default: 'validated',
@@ -26,13 +28,20 @@ export default class OrganizationsList extends MeecoCommand {
   async run() {
     try {
       const { flags } = this.parse(this.constructor as typeof OrganizationsList);
-      const { auth, mode } = flags;
+      const { auth, all, mode } = flags;
       const environment = await this.readEnvironmentFile();
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
       this.updateStatus('Fetching ' + mode + ' organizations');
-      const result = await vaultAPIFactory(environment)(
-        authConfig
-      ).OrganizationsForVaultUsersApi.organizationsGet(mode === 'validated' ? undefined : mode);
+      const api = vaultAPIFactory(environment)(authConfig);
+      const modeParam = mode === 'validated' ? undefined : mode;
+      const result = all
+        ? await getAllPaged(cursor =>
+            api.OrganizationsForVaultUsersApi.organizationsGet(modeParam, cursor)
+          ).then(reducePages)
+        : await api.OrganizationsForVaultUsersApi.organizationsGet(modeParam).then(
+            reportIfTruncated(this.warn)
+          );
+
       this.finish();
       this.printYaml(OrganizationsListConfig.encodeFromJSON(result.organizations));
     } catch (err) {

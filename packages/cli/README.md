@@ -62,6 +62,8 @@ USAGE
 
 **NOTE** Most commands require authentication data from one or more users. This can be specified with the `-a <path/to/auth file.yaml>` flag. However, since it is required by almost all commands you can place your auth file at `.user.yaml` and it will be read automatically.
 
+**NOTE** Commands of the form `command:list` are paginated: they will return up to 200 (current default page size) results. To get more than that, use the flag `--all`.
+
 All yaml files beginning with a `.` in the root of the project are git ignored.
 
 ## Basic Flow
@@ -254,6 +256,8 @@ OPTIONS
   -s, --state=state                            [default: Todo] Client Task Queue avalible states:
                                                Todo,InProgress,Done,Failed
 
+  --all                                        Get all possible results from web API, possibly with multiple calls.
+
   --supressChangingState=supressChangingState  [default: true] suppress transitioning tasks in the response to
                                                in_progress: true, false
 
@@ -307,6 +311,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --all                          Get all possible results from web API, possibly with multiple calls.
 ```
 
 _See code: [src/commands/connections/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/connections/list.ts)_
@@ -432,6 +438,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --all                          Get all possible results from web API, possibly with multiple calls.
 
 EXAMPLE
   meeco items:list -a path/to/auth.yaml
@@ -565,6 +573,8 @@ OPTIONS
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
+  --all                          Get all possible results from web API, possibly with multiple calls.
+
 EXAMPLE
   meeco organization-members:list <organization_id>
 ```
@@ -648,6 +658,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --all                          Get all possible results from web API, possibly with multiple calls.
 
 EXAMPLE
   meeco organization-services:list <organization_id>
@@ -784,6 +796,8 @@ OPTIONS
                                          has requested
                                          member - list organizations in which the current user is a member.
 
+  --all                                  Get all possible results from web API, possibly with multiple calls.
+
 EXAMPLE
   meeco organizations:list -m requested
 ```
@@ -889,9 +903,13 @@ OPTIONS
 
   -e, --environment=environment                    [default: .environment.yaml] environment config file
 
+  -l, --label=label                                Search label text
+
   -n, --classificationName=classificationName      Scope templates to a particular classification name
 
   -s, --classificationScheme=classificationScheme  Scope templates to a particular classification scheme
+
+  --all                                            Get all possible results from web API, possibly with multiple calls.
 ```
 
 _See code: [src/commands/templates/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/templates/list.ts)_

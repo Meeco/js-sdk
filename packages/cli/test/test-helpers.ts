@@ -8,6 +8,7 @@ export const inputFixture = (fileName: string) => join(__dirname, 'fixtures', 'i
 export const outputFixture = (fileName: string) => join(__dirname, 'fixtures', 'outputs', fileName);
 export const testUserAuth = ['-a', inputFixture('user-auth.input.yaml')];
 export const testEnvironmentFile = ['-e', inputFixture('test-environment.input.yaml')];
+export const testGetAll = ['--all'];
 
 export const customTest = test
   .register('mockCryppo', _mockCryppo)

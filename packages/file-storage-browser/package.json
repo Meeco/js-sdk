@@ -1,30 +1,37 @@
 {
   "name": "@meeco/file-storage-browser",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.0.4-beta",
+  "description": "Browser module for uploading and downloading encrypted files",
   "source": "src/index.ts",
-  "main": "lib/index.js",
-  "module": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "types": "./lib/index.d.ts",
+  "browser": "./lib/esm/index.js",
+  "main": "./lib/umd/index.js",
+  "module": "./lib/esm/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\"",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "npm run build:types && npm run build:esm && npm run build:umd",
+    "build:types": "tsc -p tsconfig.json --emitDeclarationOnly",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:umd": "tsc -p tsconfig.umd.json",
     "demo": "webpack-dev-server demo",
     "build:demo": "webpack",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
   },
   "dependencies": {
-    "@meeco/sdk": "0.0.11-beta",
-    "@meeco/vault-api-sdk": "0.19.1-beta.2",
-    "@meeco/file-storage-common": "0.0.1",
-    "@meeco/cryppo": "^0.6.2"
+    "@meeco/vault-api-sdk": "^0.19.1-beta.4",
+    "@meeco/file-storage-common": "0.0.4-beta",
+    "@meeco/cryppo": "^0.7.0",
+    "lodash.padstart": "^4.6.1",
+    "axios": "^0.20.0"
   },
   "devDependencies": {
+    "bili": "^4.10.0",
     "typescript": "^3.9.6",
     "webpack": "^4.44.1",
     "webpack-bundle-analyzer": "^3.8.0",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.0",
+    "@meeco/sdk": "^0.0.12-alpha.2"
   },
   "keywords": [],
   "author": "",

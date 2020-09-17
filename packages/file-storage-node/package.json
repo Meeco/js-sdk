@@ -1,6 +1,6 @@
 {
   "name": "@meeco/file-storage-node",
-  "version": "0.0.1",
+  "version": "0.0.4-beta",
   "description": "",
   "source": "src/index.ts",
   "main": "lib/index.js",
@@ -13,8 +13,8 @@
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
   },
   "dependencies": {
-    "@meeco/sdk": "0.0.11-beta",
-    "@meeco/file-storage-common": "0.0.1",
+    "@meeco/sdk": "^0.0.12-alpha.2",
+    "@meeco/file-storage-common": "0.0.4-beta",
     "@meeco/cryppo": "^0.7.0",
     "file-type": "^15.0.0",
     "bili": "^4.10.0",
