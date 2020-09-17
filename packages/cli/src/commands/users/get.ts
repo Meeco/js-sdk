@@ -3,6 +3,7 @@ import { MeResponse } from '@meeco/vault-api-sdk';
 import { flags as _flags } from '@oclif/command';
 import cli from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
+import { UserDataConfig } from '../../configs/user-data-config';
 import userFlags from '../../flags/user-flags';
 import MeecoCommand from '../../util/meeco-command';
 
@@ -57,7 +58,6 @@ export default class GetUser extends MeecoCommand {
         // TODO this duplicates work, would be nice to implement in SDK
         const authResult = await service.get(password, secret);
         result = await service.getVaultUser(authResult.vault_access_token);
-
       } else {
         const authConfig = await this.readConfigFromFile(AuthConfig, auth);
         if (!authConfig) {
@@ -67,7 +67,7 @@ export default class GetUser extends MeecoCommand {
         result = await api.UserApi.meGet();
       }
 
-      this.printYaml(result);
+      this.printYaml(UserDataConfig.encodeFromJSON(result));
     } catch (err) {
       await this.handleException(err);
     }
