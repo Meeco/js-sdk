@@ -1,6 +1,4 @@
 import test from '@oclif/test';
-import { readFileSync } from 'fs';
-import { load } from 'js-yaml';
 import { join } from 'path';
 import { createSandbox } from 'sinon';
 import { AuthData } from '../src/models/auth-data';
@@ -9,17 +7,29 @@ import { Environment } from '../src/models/environment';
 import { SRPSession } from '../src/models/srp-session';
 import { _mockCryppo } from './mock-cryppo';
 
+// Temp soln: rather than using regex, test against keys for now
+const dateKeys = ['validated_at', 'created_at', 'updated_at', 'last_state_transition_at'];
+const dateReviver = (key, value) => {
+  if (typeof value === 'string' && dateKeys.includes(key)) {
+    return new Date(value);
+  }
+  return value;
+};
+const initDateValues = (fixture: any) => {
+  return JSON.parse(JSON.stringify(fixture), dateReviver);
+};
+
 const outputFixture = (fileName: string) => join(__dirname, 'fixtures', 'outputs', fileName);
 export const getOutputFixture = (fileName: string) => {
-  return load(readFileSync(outputFixture(fileName), 'utf-8'));
+  return initDateValues(require(outputFixture(fileName)));
 };
 
 const inputFixture = (fileName: string) => join(__dirname, 'fixtures', 'inputs', fileName);
 export const getInputFixture = (fileName: string) => {
-  return load(readFileSync(inputFixture(fileName), 'utf-8'));
+  return initDateValues(require(inputFixture(fileName)));
 };
 
-export const testUserAuthFixture = getInputFixture('user-auth.input.yaml');
+export const testUserAuthFixture = getInputFixture('user-auth.input.json');
 
 export const customTest = test.register('mockCryppo', _mockCryppo).register('mockSRP', mockSRP);
 
@@ -64,10 +74,10 @@ export const buildTestAuthData = (config: {
   });
 
 export const testUserAuth = buildTestAuthData({
-  ...testUserAuthFixture.metadata,
+  ...testUserAuthFixture,
 });
 
-const { vault, keystore } = getInputFixture('test-environment.input.yaml');
+const { vault, keystore } = getInputFixture('test-environment.input.json');
 export const environment = new Environment({
   vault,
   keystore,
