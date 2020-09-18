@@ -210,9 +210,11 @@ once approved it can be access with follwoing command
 - [`meeco connections:create-config`](#meeco-connectionscreate-config)
 - [`meeco connections:list`](#meeco-connectionslist)
 - [`meeco help [COMMAND]`](#meeco-help-command)
+- [`meeco items:attach-file`](#meeco-itemsattach-file)
 - [`meeco items:create`](#meeco-itemscreate)
 - [`meeco items:create-config TEMPLATENAME`](#meeco-itemscreate-config-templatename)
 - [`meeco items:get ITEMID`](#meeco-itemsget-itemid)
+- [`meeco items:get-attachment ATTACHMENTID`](#meeco-itemsget-attachment-attachmentid)
 - [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
 - [`meeco items:list`](#meeco-itemslist)
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
@@ -340,6 +342,28 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
 
+## `meeco items:attach-file`
+
+Encrypt and attach a file to an item
+
+```
+USAGE
+  $ meeco items:attach-file
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -c, --config=config            (required) file attachment config yaml
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLES
+  meeco items:attach-file -c ./file-attachment-config.yaml
+```
+
+_See code: [src/commands/items/attach-file.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/attach-file.ts)_
+
 ## `meeco items:create`
 
 Create a new item for a user from a template
@@ -405,6 +429,31 @@ OPTIONS
 ```
 
 _See code: [src/commands/items/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get.ts)_
+
+## `meeco items:get-attachment ATTACHMENTID`
+
+Download and decrypt an attachment by id
+
+```
+USAGE
+  $ meeco items:get-attachment ATTACHMENTID
+
+ARGUMENTS
+  ATTACHMENTID  ID of the attachment to download
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  -o, --outputPath=outputPath    (required) output file path
+
+EXAMPLES
+  meeco items:get-attachment my-attachment-id -o ./my-attachment.txt
+```
+
+_See code: [src/commands/items/get-attachment.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get-attachment.ts)_
 
 ## `meeco items:get-thumbnail THUMBNAILID`
 
