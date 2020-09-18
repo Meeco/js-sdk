@@ -1,0 +1,11 @@
+kind: Share
+metadata:
+spec:
+  item_id: from_user_vault_item_to_share_id
+  connection_id: from_user_connection_id
+  slot_id: slot_a
+  from:
+    keystore_access_token: from_user_keystore_access_token
+    vault_access_token: from_user_vault_access_token
+    data_encryption_key: ZnJvbV91c2VyX2RhdGFfZW5jcnlwdGlvbl9rZXk=
+    key_encryption_key: ZnJvbV91c2VyX2tleV9lbmNyeXB0aW9uX2tleQ==

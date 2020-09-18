@@ -13,11 +13,7 @@ describe('Items get', () => {
     .mockCryppo()
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .it('returns an item with all slots decrypted', async () => {
-      const result = await new ItemService(environment).get(
-        'my-item',
-        testUserAuth.vault_access_token,
-        testUserAuth.data_encryption_key
-      );
+      const result = await new ItemService(environment).get('my-item', testUserAuth);
 
       const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
         'get-item.output.json'

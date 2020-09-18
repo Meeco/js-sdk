@@ -29,11 +29,7 @@ export default class ItemsGet extends MeecoCommand {
 
     try {
       this.updateStatus('Fetching item details');
-      const result = await service.get(
-        itemId,
-        authConfig.vault_access_token,
-        authConfig.data_encryption_key
-      );
+      const result = await service.get(itemId, authConfig);
 
       this.printYaml(ItemConfig.encodeFromJSON(result));
     } catch (error) {

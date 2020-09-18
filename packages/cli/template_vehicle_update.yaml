@@ -1,0 +1,14 @@
+kind: Item
+spec:
+  id: ''
+  slots:
+    - name: purchase_date
+      value: ''
+    - name: model_make
+      value: ''
+    - name: type
+      value: ''
+    - name: licence_plate
+      value: ''
+    - name: vin
+      value: ''

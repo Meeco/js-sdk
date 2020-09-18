@@ -22,8 +22,9 @@ import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import cryppo from '../services/cryppo-service';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
-import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
+import { IFullLogger, Logger, noopLogger, SimpleLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
+import { ShareService } from './share-service';
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -31,10 +32,13 @@ import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
   private vaultAPIFactory: VaultAPIFactory;
+  private shareServaice: ShareService;
   private logger: IFullLogger;
 
-  constructor(environment: Environment, log: Logger = noopLogger) {
+  constructor(environment: Environment, log: SimpleLogger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
+
+    this.shareServaice = new ShareService(environment, log);
     this.logger = toFullLogger(log);
   }
 
@@ -47,13 +51,31 @@ export class ItemService {
   ): Promise<DecryptedSlot[]> {
     return Promise.all(
       slots.map(async slot => {
-        const value =
+        let value =
           slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
             ? await this.cryppo.decryptWithKey({
                 key: dataEncryptionKey.key,
                 serialized: slot.encrypted_value,
               })
             : (slot as DecryptedSlot).value;
+
+        if (
+          value != null &&
+          slot.encrypted_value_verification_key != null &&
+          slot.value_verification_hash != null
+        ) {
+          const decryptedValueVerificationKey = await this.cryppo.decryptWithKey({
+            serialized: slot.encrypted_value_verification_key,
+            key: dataEncryptionKey.key,
+          });
+
+          value =
+            ShareService.generate_value_verificaiton_hash(decryptedValueVerificationKey, value) ===
+            slot.value_verification_hash
+              ? value
+              : 'Invalid Value: failed to verify integrity of slot value';
+        }
+
         const decrypted = {
           ...slot,
           encrypted: false,
@@ -141,14 +163,13 @@ export class ItemService {
     this.logger.log('Reading file');
 
     this.logger.log('Fetching item');
-    const itemFetchResult = await this.get(
-      itemId,
-      auth.vault_access_token,
-      auth.data_encryption_key
-    ).catch(err => {
-      throw new MeecoServiceError(
-        `Unable to find item '${itemId}' - please check that the item exists for the current user.`
-      );
+    const itemFetchResult = await this.get(itemId, auth).catch(err => {
+      if ((<Response>err).status === 404) {
+        throw new MeecoServiceError(
+          `Unable to find item '${itemId}' - please check that the item exists for the current user.`
+        );
+      }
+      throw err;
     });
 
     this.logger.log('Encrypting File');
@@ -303,8 +324,17 @@ export class ItemService {
     this.logger.log('Slot successfully removed');
   }
 
-  public async get(id: string, vaultAccessToken: string, dataEncryptionKey: EncryptionKey) {
+  public async get(id: string, user: AuthData) {
+    const vaultAccessToken = user.vault_access_token;
+    const dataEncryptionKey = user.data_encryption_key;
+
     const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
+
+    // this could be improved, consider finding a way of using only one item get call.
+    if (result.item.share_id != null) {
+      return this.shareServaice.getSharedItemIncoming(user, result.item.share_id);
+    }
+
     const slots = await ItemService.decryptAllSlots(result.slots, dataEncryptionKey);
 
     return {

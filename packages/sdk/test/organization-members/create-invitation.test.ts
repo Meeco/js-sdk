@@ -27,7 +27,6 @@ describe('organization-members:create-invitation', () => {
 const response = {
   invitation: {
     id: 'c43595b3-4ab6-4777-b925-95567001f8d2',
-    email: null,
     message: null,
     sent_at: null,
     invited_user_id: null,
@@ -35,8 +34,9 @@ const response = {
     outgoing: true,
     user_name: 'Anonymous User',
     user_image: 'http://localhost:3000/images/69074548-24cb-403d-828c-09af6002e1c3',
-    user_email: '',
     keypair_external_id: null,
+    email: null,
+    user_email: null,
     encrypted_recipient_name: null,
     integration_data: {
       intent: 'member',

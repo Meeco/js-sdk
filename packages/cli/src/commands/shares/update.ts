@@ -3,9 +3,8 @@ import { AuthConfig } from '../../configs/auth-config';
 import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
-export default class SharesDelete extends MeecoCommand {
-  static description =
-    'Delete a share. Both the owner of the shared data and the recipient of the share can delete the share';
+export default class SharesUpdate extends MeecoCommand {
+  static description = 'Update all shares of an item';
 
   static flags = {
     ...MeecoCommand.flags,
@@ -14,17 +13,17 @@ export default class SharesDelete extends MeecoCommand {
 
   static args = [
     {
-      name: 'shareId',
+      name: 'itemId',
       required: true,
-      description: 'ID of the shared item to fetch',
+      description: 'ID of the share to fetch',
     },
   ];
 
   async run() {
-    const { args, flags } = this.parse(this.constructor as typeof SharesDelete);
+    const { args, flags } = this.parse(this.constructor as typeof SharesUpdate);
 
     const { auth } = flags;
-    const { shareId } = args;
+    const { itemId } = args;
     const environment = await this.readEnvironmentFile();
 
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
@@ -35,8 +34,8 @@ export default class SharesDelete extends MeecoCommand {
 
     const service = new ShareService(environment, this.updateStatus);
     try {
-      await service.deleteSharedItem(authConfig, shareId);
-      this.log('Share successfully deleted');
+      const result = await service.updateSharedItem(authConfig, itemId);
+      this.printYaml(result);
     } catch (err) {
       await this.handleException(err);
     }
