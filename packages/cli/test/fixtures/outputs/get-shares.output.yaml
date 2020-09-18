@@ -11,7 +11,7 @@ share:
   keypair_external_id: edff1a41-5cc9-45ef-8800-20948c86fd5c
   encrypted_dek: Rsa4096.omdqu-um6RWbqcCOBwk6-9FVY1tAlkjCD1tU7i1l94vLksE2K4PsuFqbM5QLJdHj7mShKywCCC18LW7ShTj7wXI9L9dRcqVhSZCd4fAS_BK-r0Mi9MeS6284zPjW26KIetu28pIdfUZOLhmiWmSq_xUvbx7wqAahFrHuHfjfl7UKd1lnaWabMQe7GbL0giJWhFliHtTOF2h74nqWnHwYT-sqJLyECacUb3N5p6ySKzv0Vjqf7CWu-lW6rsL0c2_VoRQTBZSBNyWx98Ig3dQHGVYgs1c__94M4w5TLY0QrCZWUcrqlwik7QpJQhCPioQGM32xRMxBi584TfqPQ_KmImAr7H9Rh-EW39fhH_7cqnYpvvZYNl1FYrF4GIvb_EVmqjIILpFLuhtmXuu8NLXUAy2-BpgJteqOLM0sqnMoeayuQQxO1OZJ38GYcHTTUPCoEnRfkTsQMJOuZq7PjC_PpWP1MsG3WfY4haBHvhqN0CcPS-TpcDPqcDwAxaEADHOTvl6WdorTLjO6mV2WLQfrQfMbFQ4Kkrt_YB-gm-_PCw-04o27amg59Tzu3HnPijb27GnfV3yMv_jGiY-_wK98evxNHDbvApk97LQXvLVmyO-_DLlkSnBvByLlf2CZwFOWvxqUTRchlRtjLDX7Cw7GQqBnuzEplP5LZ9QhnLAUQfU=.QQUAAAAA
   terms: null
-  created_at: 1970-01-01
+  created_at: 1970-01-01T00:00:00.000Z
   expires_at: null
 associations_to: []
 associations: []
@@ -23,11 +23,11 @@ item:
   name: bingo
   label: Bingo
   description: null
-  created_at: 1970-01-01
+  created_at: 1970-01-01T00:00:00.000Z
   item_template_id: 3477147f-9764-4ef1-b96a-4042cf126bf7
   ordinal: 0
   visible: true
-  updated_at: 1970-01-01
+  updated_at: 1970-01-01T00:00:00.000Z
   item_template_label: Pet
   image: http://localhost:3000/images/6b2148dd-ac68-4f3b-b91b-f02b23c2f448
   item_image: http://localhost:3000/images/6b2148dd-ac68-4f3b-b91b-f02b23c2f448
@@ -58,8 +58,8 @@ slots:
     slotable_id: c699d58c-428a-42b4-926e-a73645987eb6
     slotable_type: Item
     required: false
-    updated_at: 1970-01-01
-    created_at: 1970-01-01
+    updated_at: 1970-01-01T00:00:00.000Z
+    created_at: 1970-01-01T00:00:00.000Z
     slot_type_name: key_value
     creator: system
     encrypted_value: Aes256Gcm.1_8t6Av7RQg=.QUAAAAAFaXYADAAAAABl_Fw4p0LWHJ7WQh8FYXQAEAAAAABchj_6fbEYtgI_vzvx6nJGAmFkAAUAAABub25lAAA=

@@ -8,6 +8,8 @@ export const inputFixture = (fileName: string) => join(__dirname, 'fixtures', 'i
 export const outputFixture = (fileName: string) => join(__dirname, 'fixtures', 'outputs', fileName);
 export const testUserAuth = ['-a', inputFixture('user-auth.input.yaml')];
 export const testEnvironmentFile = ['-e', inputFixture('test-environment.input.yaml')];
+export const testGetAll = ['--all'];
+export const MOCK_NEXT_PAGE_AFTER = '00856148-6188-4b58-aca1-e15ceb7bbe13';
 
 export const customTest = test
   .register('mockCryppo', _mockCryppo)

@@ -111,7 +111,6 @@ async function attachFile() {
       itemUpdateData
     );
     const slotId = updated.slots.find(slot => slot.attachment_id === attachment.id)?.id;
-    console.log(updated);
     $set('attached', JSON.stringify({ itemId, slotId, attachment }, null, 2));
   } catch (error) {
     $set('attached', `Error (See Action Log for Details)`);

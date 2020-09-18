@@ -1,3 +1,4 @@
+import { OrganizationServicesService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import {
@@ -12,8 +13,7 @@ describe('organization-services:login', () => {
   customTest
     .stdout()
     .stderr()
-    .mockCryppo()
-    .nock('https://sandbox.meeco.me/vault', mockVault)
+    .stub(OrganizationServicesService.prototype, 'getLogin', getLogin as any)
     .run([
       'organization-services:login',
       ...testUserAuth,
@@ -30,17 +30,13 @@ describe('organization-services:login', () => {
     });
 });
 
-const response = {
-  token_type: 'bearer',
-  encrypted_access_token: 'DP2HJmMPgGgExZCAsHDf',
-};
-
-function mockVault(api) {
-  api
-    .post(
-      '/organizations/00000000-0000-0000-0000-000000000011/services/00000000-0000-0000-0000-000000000001/login'
-    )
-    .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, response);
+function getLogin(organizationId, serviceId, privateKey) {
+  return Promise.resolve({
+    data_encryption_key: '',
+    key_encryption_key: '',
+    keystore_access_token: '',
+    passphrase_derived_key: '',
+    secret: '',
+    vault_access_token: '[decrypted]DP2HJmMPgGgExZCAsHDf--PRIVATE_KEY--12324',
+  });
 }

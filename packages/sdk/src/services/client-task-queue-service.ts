@@ -3,6 +3,8 @@ import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
+import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
+import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import cryppo from './cryppo-service';
 import { ItemService } from './item-service';
 import { ShareService } from './share-service';
@@ -18,11 +20,37 @@ export class ClientTaskQueueService {
   private vaultAPIFactory: VaultAPIFactory;
   private cryppo = (<any>global).cryppo || cryppo;
 
-  constructor(private environment: Environment) {
+  private log: IFullLogger;
+
+  constructor(private environment: Environment, log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
+    this.log = toFullLogger(log);
   }
 
-  public list(
+  public setLogger(logger: Logger) {
+    this.log = toFullLogger(logger);
+  }
+
+  public async list(
+    vaultAccessToken: string,
+    supressChangingState: boolean = true,
+    state: State = State.Todo,
+    nextPageAfter?: string,
+    perPage?: number
+  ): Promise<ClientTaskQueueResponse> {
+    const result = await this.vaultAPIFactory(
+      vaultAccessToken
+    ).ClientTaskQueueApi.clientTaskQueueGet(nextPageAfter, perPage, supressChangingState, state);
+
+    if (resultHasNext(result) && perPage === undefined) {
+      // TODO-- should pass a warning logger!
+      this.log.warn('Some results omitted, but page limit was not explicitly set');
+    }
+
+    return result;
+  }
+
+  public async listAll(
     vaultAccessToken: string,
     supressChangingState: boolean = true,
     state: State = State.Todo,
@@ -31,12 +59,10 @@ export class ClientTaskQueueService {
       perPage?: number;
     }
   ): Promise<ClientTaskQueueResponse> {
-    return this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi.clientTaskQueueGet(
-      options?.nextPageAfter,
-      options?.perPage,
-      supressChangingState,
-      state
-    );
+    const api = this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi;
+    return getAllPaged(cursor =>
+      api.clientTaskQueueGet(cursor, undefined, supressChangingState, state)
+    ).then(reducePages);
   }
 
   public async countOutstandingTasks(vaultAccessToken: string): Promise<IOutstandingClientTasks> {

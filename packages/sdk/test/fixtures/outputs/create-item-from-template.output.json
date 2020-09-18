@@ -1,0 +1,19 @@
+{
+  "id": "item-foo",
+  "template_name": "vehicle",
+  "label": "DMC DeLorean",
+  "slot_ids": [
+    "a",
+    "b"
+  ],
+  "slots": [
+    {
+      "id": "a",
+      "name": "Make"
+    },
+    {
+      "id": "b",
+      "name": "Model"
+    }
+  ]
+}

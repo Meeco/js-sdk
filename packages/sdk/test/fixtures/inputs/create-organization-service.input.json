@@ -1,0 +1,6 @@
+{
+  "name": "Twitter Service",
+  "description": "Fetch all twitter data",
+  "contract": null,
+  "public_key": "--PUBLIC_KEY--ABCD"
+}

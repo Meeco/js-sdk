@@ -54,7 +54,6 @@ export async function fileUploadBrowser({
     FileUtils,
     progressUpdateFunc
   );
-  console.log(uploadResult);
   const artifactsFileName = file.name + '.encryption_artifacts';
   if (videoCodec) {
     uploadResult.artifacts['videoCodec'] = videoCodec;

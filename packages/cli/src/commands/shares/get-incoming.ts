@@ -35,8 +35,8 @@ export default class SharesGetIncoming extends MeecoCommand {
 
     const service = new ShareService(environment, this.updateStatus);
     try {
-      const reslut = await service.getSharedItemIncoming(authConfig, shareId);
-      this.printYaml(reslut);
+      const result = await service.getSharedItemIncoming(authConfig, shareId);
+      this.printYaml(result);
     } catch (err) {
       await this.handleException(err);
     }

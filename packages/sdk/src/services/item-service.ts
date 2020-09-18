@@ -3,6 +3,7 @@ import {
   AttachmentDirectUploadUrlResponse,
   AttachmentResponse,
   CreateAttachmentResponse,
+  ItemsResponse,
   PostAttachmentDirectUploadUrlRequest,
   Slot,
   ThumbnailResponse,
@@ -21,7 +22,8 @@ import { DecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import cryppo from '../services/cryppo-service';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
-import { Logger, noopLogger } from '../util/logger';
+import { IFullLogger, Logger, noopLogger, SimpleLogger, toFullLogger } from '../util/logger';
+import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import { ShareService } from './share-service';
 
 /**
@@ -30,9 +32,14 @@ import { ShareService } from './share-service';
 export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
   private vaultAPIFactory: VaultAPIFactory;
+  private shareServaice: ShareService;
+  private logger: IFullLogger;
 
-  constructor(environment: Environment, private log: Logger = noopLogger) {
+  constructor(environment: Environment, log: SimpleLogger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
+
+    this.shareServaice = new ShareService(environment, log);
+    this.logger = toFullLogger(log);
   }
 
   /**
@@ -66,7 +73,7 @@ export class ItemService {
             ShareService.generate_value_verificaiton_hash(decryptedValueVerificationKey, value) ===
             slot.value_verification_hash
               ? value
-              : 'Invalid Value: Faild to verify integrity of slot value';
+              : 'Invalid Value: failed to verify integrity of slot value';
         }
 
         const decrypted = {
@@ -80,7 +87,7 @@ export class ItemService {
   }
 
   public setLogger(logger: Logger) {
-    this.log = logger;
+    this.logger = toFullLogger(logger);
   }
 
   public async create(vaultAccessToken: string, dek: EncryptionKey, config: ItemCreateData) {
@@ -118,20 +125,20 @@ export class ItemService {
     const targetThumbnailSize = 256;
     const sizeType = `png_${targetThumbnailSize}x${targetThumbnailSize}`;
 
-    this.log('Generating image thumbnail');
+    this.logger.log('Generating image thumbnail');
     const jimp = await Jimp.read(file as any);
     const thumbnail: Buffer = await jimp
       .resize(targetThumbnailSize, targetThumbnailSize)
       .getBufferAsync(Jimp.MIME_PNG);
 
-    this.log('Encrypting image thumbnail');
+    this.logger.log('Encrypting image thumbnail');
     const encryptedThumbnail = await ItemService.cryppo.encryptWithKey({
       key: auth.data_encryption_key.key,
       data: ItemService.cryppo.binaryBufferToString(thumbnail),
       strategy: ItemService.cryppo.CipherStrategy.AES_GCM,
     });
 
-    this.log('Uploading encrypted image thumbnail');
+    this.logger.log('Uploading encrypted image thumbnail');
     let response: ThumbnailResponse;
     try {
       const blob =
@@ -144,7 +151,7 @@ export class ItemService {
         sizeType
       );
     } catch (err) {
-      this.log('Error uploading encrypted thumbnail file!');
+      this.logger.log('Error uploading encrypted thumbnail file!');
       throw err;
     }
 
@@ -153,20 +160,19 @@ export class ItemService {
 
   public async attachFile(config: FileAttachmentData, auth: AuthData) {
     const { itemId, label, file, fileName, fileType } = config;
-    this.log('Reading file');
+    this.logger.log('Reading file');
 
-    this.log('Fetching item');
-    const itemFetchResult = await this.get(
-      itemId,
-      auth.vault_access_token,
-      auth.data_encryption_key
-    ).catch(err => {
-      throw new MeecoServiceError(
-        `Unable to find item '${itemId}' - please check that the item exists for the current user.`
-      );
+    this.logger.log('Fetching item');
+    const itemFetchResult = await this.get(itemId, auth).catch(err => {
+      if ((<Response>err).status === 404) {
+        throw new MeecoServiceError(
+          `Unable to find item '${itemId}' - please check that the item exists for the current user.`
+        );
+      }
+      throw err;
     });
 
-    this.log('Encrypting File');
+    this.logger.log('Encrypting File');
     const encryptedFile = await ItemService.cryppo.encryptWithKey({
       key: auth.data_encryption_key.key,
       data: ItemService.cryppo.binaryBufferToString(file),
@@ -175,7 +181,7 @@ export class ItemService {
 
     let uploadedBinary: AttachmentResponse;
     try {
-      this.log('Uploading encrypted file');
+      this.logger.log('Uploading encrypted file');
       const blob =
         typeof Blob === 'function'
           ? new Blob([encryptedFile.serialized])
@@ -184,7 +190,7 @@ export class ItemService {
         auth.vault_access_token
       ).AttachmentApi.attachmentsPost(blob as any, fileName, fileType);
     } catch (err) {
-      this.log('Upload encrypted file failed - removing temp encrypted version');
+      this.logger.log('Upload encrypted file failed - removing temp encrypted version');
       throw err;
     }
 
@@ -197,7 +203,7 @@ export class ItemService {
       }
     }
 
-    this.log('Adding attachment to item');
+    this.logger.log('Adding attachment to item');
     const updated = await this.vaultAPIFactory(auth.vault_access_token).ItemApi.itemsIdPut(
       itemFetchResult.item.id,
       {
@@ -215,7 +221,7 @@ export class ItemService {
       }
     );
 
-    this.log('File was successfully attached');
+    this.logger.log('File was successfully attached');
     return updated;
   }
 
@@ -225,7 +231,7 @@ export class ItemService {
   ): Promise<AttachmentDirectUploadUrlResponse> {
     let uploadUrl;
     try {
-      this.log('Getting Direct Attachment Upload Url');
+      this.logger.log('Getting Direct Attachment Upload Url');
       const params: PostAttachmentDirectUploadUrlRequest = {
         blob: {
           filename: config.fileName,
@@ -236,7 +242,7 @@ export class ItemService {
       const factory = this.vaultAPIFactory(auth.vault_access_token);
       uploadUrl = await factory.DirectAttachmentsApi.directAttachmentsUploadUrlPost(params);
     } catch (err) {
-      this.log('Upload encrypted file failed - removing temp encrypted version');
+      this.logger.log('Upload encrypted file failed - removing temp encrypted version');
       throw err;
     }
     return uploadUrl;
@@ -248,11 +254,11 @@ export class ItemService {
   ): Promise<any> {
     let uploadUrl;
     try {
-      this.log('Getting Direct Attachment Info');
+      this.logger.log('Getting Direct Attachment Info');
       const factory = this.vaultAPIFactory(auth.vault_access_token);
       uploadUrl = await factory.DirectAttachmentsApi.directAttachmentsIdGet(config.attachmentId);
     } catch (err) {
-      this.log('Upload encrypted file failed - removing temp encrypted version');
+      this.logger.log('Upload encrypted file failed - removing temp encrypted version');
       throw err;
     }
     return uploadUrl;
@@ -293,7 +299,7 @@ export class ItemService {
     vaultAccessToken: string,
     dataEncryptionKey: EncryptionKey
   ) {
-    this.log('Downloading attachment');
+    this.logger.log('Downloading attachment');
     return this.downloadAndDecryptFile(
       () => this.vaultAPIFactory(vaultAccessToken).AttachmentApi.attachmentsIdDownloadGet(id),
       dataEncryptionKey
@@ -305,7 +311,7 @@ export class ItemService {
     vaultAccessToken: string,
     dataEncryptionKey: EncryptionKey
   ) {
-    this.log('Downloading thumbnail');
+    this.logger.log('Downloading thumbnail');
     return this.downloadAndDecryptFile(
       () => this.vaultAPIFactory(vaultAccessToken).ThumbnailApi.thumbnailsIdGet(id),
       dataEncryptionKey
@@ -313,13 +319,22 @@ export class ItemService {
   }
 
   public async removeSlot(slotId: string, vaultAccessToken: string) {
-    this.log('Removing slot');
+    this.logger.log('Removing slot');
     await this.vaultAPIFactory(vaultAccessToken).SlotApi.slotsIdDelete(slotId);
-    this.log('Slot successfully removed');
+    this.logger.log('Slot successfully removed');
   }
 
-  public async get(id: string, vaultAccessToken: string, dataEncryptionKey: EncryptionKey) {
+  public async get(id: string, user: AuthData) {
+    const vaultAccessToken = user.vault_access_token;
+    const dataEncryptionKey = user.data_encryption_key;
+
     const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
+
+    // this could be improved, consider finding a way of using only one item get call.
+    if (result.item.share_id != null) {
+      return this.shareServaice.getSharedItemIncoming(user, result.item.share_id);
+    }
+
     const slots = await ItemService.decryptAllSlots(result.slots, dataEncryptionKey);
 
     return {
@@ -344,7 +359,33 @@ export class ItemService {
     return encrypted;
   }
 
-  public list(vaultAccessToken: string) {
-    return this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet();
+  public async list(
+    vaultAccessToken: string,
+    templateIds?: string,
+    nextPageAfter?: string,
+    perPage?: number
+  ) {
+    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet(
+      templateIds,
+      undefined,
+      undefined,
+      nextPageAfter,
+      perPage
+    );
+
+    if (resultHasNext(result) && perPage === undefined) {
+      // TODO - needs a warning logger
+      this.logger.warn('Some results omitted, but page limit was not explicitly set');
+    }
+
+    return result;
+  }
+
+  public async listAll(vaultAccessToken: string, templateIds?: string): Promise<ItemsResponse> {
+    const api = this.vaultAPIFactory(vaultAccessToken).ItemApi;
+
+    return getAllPaged(cursor => api.itemsGet(templateIds, undefined, undefined, cursor)).then(
+      reducePages
+    );
   }
 }

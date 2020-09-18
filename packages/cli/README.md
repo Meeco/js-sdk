@@ -62,6 +62,8 @@ USAGE
 
 **NOTE** Most commands require authentication data from one or more users. This can be specified with the `-a <path/to/auth file.yaml>` flag. However, since it is required by almost all commands you can place your auth file at `.user.yaml` and it will be read automatically.
 
+**NOTE** Commands of the form `command:list` are paginated: they will return up to 200 (current default page size) results. To get more than that, use the flag `--all`.
+
 All yaml files beginning with a `.` in the root of the project are git ignored.
 
 ## Basic Flow
@@ -145,7 +147,7 @@ spec:
 
 4. We can verify the slots contain the correct values by fetching the item again
 
-`meeco items:get -i .my_item.yaml`
+`meeco items:get <item_id> > .my_item.yaml`
 
 ```yaml
 #...
@@ -231,7 +233,13 @@ once approved it can be access with follwoing command
 - [`meeco organizations:list`](#meeco-organizationslist)
 - [`meeco organizations:login`](#meeco-organizationslogin)
 - [`meeco organizations:update`](#meeco-organizationsupdate)
+- [`meeco shares:accept SHAREID`](#meeco-sharesaccept-shareid)
+- [`meeco shares:create [FILE]`](#meeco-sharescreate-file)
 - [`meeco shares:create-config`](#meeco-sharescreate-config)
+- [`meeco shares:delete SHAREID`](#meeco-sharesdelete-shareid)
+- [`meeco shares:get-incoming SHAREID`](#meeco-sharesget-incoming-shareid)
+- [`meeco shares:list`](#meeco-shareslist)
+- [`meeco shares:update ITEMID`](#meeco-sharesupdate-itemid)
 - [`meeco templates:info TEMPLATENAME`](#meeco-templatesinfo-templatename)
 - [`meeco templates:list`](#meeco-templateslist)
 - [`meeco users:create`](#meeco-userscreate)
@@ -253,6 +261,8 @@ OPTIONS
 
   -s, --state=state                            [default: Todo] Client Task Queue avalible states:
                                                Todo,InProgress,Done,Failed
+
+  --all                                        Get all possible results from web API, possibly with multiple calls.
 
   --supressChangingState=supressChangingState  [default: true] suppress transitioning tasks in the response to
                                                in_progress: true, false
@@ -307,6 +317,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --all                          Get all possible results from web API, possibly with multiple calls.
 ```
 
 _See code: [src/commands/connections/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/connections/list.ts)_
@@ -432,6 +444,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --all                          Get all possible results from web API, possibly with multiple calls.
 
 EXAMPLE
   meeco items:list -a path/to/auth.yaml
@@ -565,6 +579,8 @@ OPTIONS
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
+  --all                          Get all possible results from web API, possibly with multiple calls.
+
 EXAMPLE
   meeco organization-members:list <organization_id>
 ```
@@ -648,6 +664,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --all                          Get all possible results from web API, possibly with multiple calls.
 
 EXAMPLE
   meeco organization-services:list <organization_id>
@@ -784,6 +802,8 @@ OPTIONS
                                          has requested
                                          member - list organizations in which the current user is a member.
 
+  --all                                  Get all possible results from web API, possibly with multiple calls.
+
 EXAMPLE
   meeco organizations:list -m requested
 ```
@@ -834,9 +854,58 @@ EXAMPLE
 
 _See code: [src/commands/organizations/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/update.ts)_
 
+## `meeco shares:accept SHAREID`
+
+Accept an incoming share
+
+```
+USAGE
+  $ meeco shares:accept SHAREID
+
+ARGUMENTS
+  SHAREID  ID of the share to accept
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/shares/accept.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/accept.ts)_
+
+## `meeco shares:create [FILE]`
+
+Share an item between two users
+
+```
+USAGE
+  $ meeco shares:create [FILE]
+
+OPTIONS
+  -c, --config=config
+      (required) Share config file to use for setting up the share
+
+  -e, --environment=environment
+      [default: .environment.yaml] environment config file
+
+  -m, --sharing_mode=owner|anyone
+      [default: owner] There are two sharing_mode: owner and anyone
+        owner - non-owner will not be able to on-share a share
+        anyone - anyone allow to on-share a share.
+
+  -t, --acceptance_required=acceptance_not_required|acceptance_required
+      [default: acceptance_not_required] Some shares require that the recipient accepts the terms of the share.
+        There are two acceptance_require: acceptance_not_required & acceptance_required
+        acceptance_not_required - recipient dont require acceptance
+        acceptance_required - recipient require acceptance before viewing shared item.
+```
+
+_See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_
+
 ## `meeco shares:create-config`
 
-Provide two users and an item id to construct a share config file
+Provide two users and either an item id (direct share) or share id (on-share) to construct a share config file
 
 ```
 USAGE
@@ -846,10 +915,93 @@ OPTIONS
   -c, --connectionId=connectionId  (required) Connection id for the 'to' user
   -e, --environment=environment    [default: .environment.yaml] environment config file
   -f, --from=from                  (required) User config file for the 'from' user
-  -i, --itemId=itemId              (required) Item id of the 'from' user to share with the 'to' use
+  -i, --itemId=itemId              Item id of the 'from' user to share with the 'to' user
+  -o, --onshareId=onshareId        Share ID of the share, which to on-share with the 'to' user
+  -s, --slotName=slotName          Name of slot to share (if sharing a single slot)
 ```
 
 _See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create-config.ts)_
+
+## `meeco shares:delete SHAREID`
+
+Delete a share. Both the owner of the shared data and the recipient of the share can delete the share
+
+```
+USAGE
+  $ meeco shares:delete SHAREID
+
+ARGUMENTS
+  SHAREID  ID of the shared item to fetch
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/shares/delete.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/delete.ts)_
+
+## `meeco shares:get-incoming SHAREID`
+
+Read an incoming share together with shared item, slots, and associated other data
+
+```
+USAGE
+  $ meeco shares:get-incoming SHAREID
+
+ARGUMENTS
+  SHAREID  ID of the share to fetch
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/shares/get-incoming.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/get-incoming.ts)_
+
+## `meeco shares:list`
+
+Get a list of incoming or outgoing shares for the specified user
+
+```
+USAGE
+  $ meeco shares:list
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  -t, --type=incoming|outgoing   [default: incoming] There are two type: incoming and Outgoing
+                                 incoming - Read incoming shares as the recipien
+                                 outgoing - Read outgoing shares as the sender.
+```
+
+_See code: [src/commands/shares/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/list.ts)_
+
+## `meeco shares:update ITEMID`
+
+Update all shares of an item
+
+```
+USAGE
+  $ meeco shares:update ITEMID
+
+ARGUMENTS
+  ITEMID  ID of the share to fetch
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config file yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+```
+
+_See code: [src/commands/shares/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/update.ts)_
 
 ## `meeco templates:info TEMPLATENAME`
 
@@ -889,9 +1041,13 @@ OPTIONS
 
   -e, --environment=environment                    [default: .environment.yaml] environment config file
 
+  -l, --label=label                                Search label text
+
   -n, --classificationName=classificationName      Scope templates to a particular classification name
 
   -s, --classificationScheme=classificationScheme  Scope templates to a particular classification scheme
+
+  --all                                            Get all possible results from web API, possibly with multiple calls.
 ```
 
 _See code: [src/commands/templates/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/templates/list.ts)_

@@ -1,4 +1,4 @@
-import { ShareService } from '@meeco/sdk/src';
+import { ShareService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import * as nock from 'nock';
