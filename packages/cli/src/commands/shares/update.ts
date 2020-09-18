@@ -34,8 +34,8 @@ export default class SharesUpdate extends MeecoCommand {
 
     const service = new ShareService(environment, this.updateStatus);
     try {
-      const reslut = await service.updateSharedItem(authConfig, itemId);
-      this.printYaml(reslut);
+      const result = await service.updateSharedItem(authConfig, itemId);
+      this.printYaml(result);
     } catch (err) {
       await this.handleException(err);
     }

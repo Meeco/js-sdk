@@ -164,9 +164,12 @@ export class ItemService {
 
     this.logger.log('Fetching item');
     const itemFetchResult = await this.get(itemId, auth).catch(err => {
-      throw new MeecoServiceError(
-        `Unable to find item '${itemId}' - please check that the item exists for the current user.`
-      );
+      if ((<Response>err).status === 404) {
+        throw new MeecoServiceError(
+          `Unable to find item '${itemId}' - please check that the item exists for the current user.`
+        );
+      }
+      throw err;
     });
 
     this.logger.log('Encrypting File');
