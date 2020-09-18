@@ -1,15 +1,24 @@
 import { ClientTask, ClientTaskQueueResponse } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
+import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
+import cryppo from './cryppo-service';
+import { ItemService } from './item-service';
+import { ShareService } from './share-service';
 
 /**
  * A ClientTask represents a task the client is supposed to perform.
  */
+interface IfailedClientTask extends ClientTask {
+  failureReason: any;
+}
+
 export class ClientTaskQueueService {
   private vaultAPIFactory: VaultAPIFactory;
+  private cryppo = (<any>global).cryppo || cryppo;
 
-  constructor(environment: Environment) {
+  constructor(private environment: Environment) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
   }
 
@@ -68,7 +77,7 @@ export class ClientTaskQueueService {
     }
     const [updateSharesTasksResult]: Array<{
       completedTasks: ClientTask[];
-      failedTasks: ClientTask[];
+      failedTasks: IfailedClientTask[];
     }> = await Promise.all([this.updateSharesClientTasks(itemUpdateSharesTasks, authData)]);
 
     return updateSharesTasksResult;
@@ -77,14 +86,65 @@ export class ClientTaskQueueService {
   public async updateSharesClientTasks(
     listOfClientTasks: ClientTask[],
     authData: AuthData
-  ): Promise<{ completedTasks: ClientTask[]; failedTasks: ClientTask[] }> {
+  ): Promise<{ completedTasks: ClientTask[]; failedTasks: IfailedClientTask[] }> {
     const sharesApi = this.vaultAPIFactory(authData.vault_access_token).SharesApi;
+    const itemsApi = this.vaultAPIFactory(authData.vault_access_token).ItemApi;
 
-    const sharesToUpdate = await Promise.all(
-      listOfClientTasks.map(task => sharesApi.itemsIdSharesGet(task.target_id))
+    const taskReports = await Promise.all(
+      listOfClientTasks.map(async task => {
+        const taskReport = {
+          completedTasks: <ClientTask[]>[],
+          failedTasks: <IfailedClientTask[]>[],
+        };
+        try {
+          const [item, shares] = await Promise.all([
+            itemsApi.itemsIdGet(task.target_id),
+            sharesApi.itemsIdSharesGet(task.target_id),
+          ]);
+          const decryptedSlots = await ItemService.decryptAllSlots(
+            item.slots,
+            authData.data_encryption_key
+          );
+          const dek = this.cryppo.generateRandomKey();
+          const newEncryptedSlots = await new ShareService(
+            this.environment
+          ).convertSlotsToEncryptedValuesForShare(decryptedSlots, EncryptionKey.fromRaw(dek));
+          const nestedSlotValues: any[] = shares.shares.map(share => {
+            return newEncryptedSlots.map(newValue => {
+              return { ...newValue, share_id: share.id };
+            });
+          });
+          const slotValues = [].concat.apply([], nestedSlotValues);
+          const shareDeks = await Promise.all(
+            shares.shares.map(async share => {
+              const encryptedDek = await this.cryppo.encryptWithPublicKey({
+                publicKeyPem: share.public_key,
+                data: dek,
+              });
+              return { share_id: share.id, dek: encryptedDek.serialized };
+            })
+          );
+          const clientTasks = [{ id: task.id, state: 'done', report: task.report }];
+          await sharesApi.itemsIdSharesPut(task.target_id, {
+            slot_values: slotValues,
+            share_deks: shareDeks,
+            client_tasks: clientTasks,
+          });
+          taskReport.completedTasks.push(task);
+        } catch (error) {
+          taskReport.failedTasks.push({ ...task, failureReason: error });
+        }
+        return taskReport;
+      })
     );
 
-    return { completedTasks: [], failedTasks: [] };
+    const combinedTaskReports = taskReports.reduce((accum, current) => {
+      accum.completedTasks.concat(current.completedTasks);
+      accum.failedTasks.concat(current.failedTasks);
+      return accum;
+    });
+
+    return combinedTaskReports;
   }
 }
 

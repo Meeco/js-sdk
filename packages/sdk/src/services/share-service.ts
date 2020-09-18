@@ -216,7 +216,7 @@ export class ShareService {
    * pairs where the key is the slot id and the value is the slot value
    * encrypted with a shared data encryption key.
    */
-  private async convertSlotsToEncryptedValuesForShare(
+  public async convertSlotsToEncryptedValuesForShare(
     slots: DecryptedSlot[],
     sharedDataEncryptionKey: EncryptionKey
   ): Promise<EncryptedSlotValue[]> {
