@@ -12,7 +12,7 @@ import { ShareService } from './share-service';
 /**
  * A ClientTask represents a task the client is supposed to perform.
  */
-interface IfailedClientTask extends ClientTask {
+interface IFailedClientTask extends ClientTask {
   failureReason: any;
 }
 
@@ -35,14 +35,18 @@ export class ClientTaskQueueService {
     vaultAccessToken: string,
     supressChangingState: boolean = true,
     state: State = State.Todo,
-    nextPageAfter?: string,
-    perPage?: number
+    options?: { nextPageAfter?: string; perPage?: number }
   ): Promise<ClientTaskQueueResponse> {
     const result = await this.vaultAPIFactory(
       vaultAccessToken
-    ).ClientTaskQueueApi.clientTaskQueueGet(nextPageAfter, perPage, supressChangingState, state);
+    ).ClientTaskQueueApi.clientTaskQueueGet(
+      options?.nextPageAfter,
+      options?.perPage,
+      supressChangingState,
+      state
+    );
 
-    if (resultHasNext(result) && perPage === undefined) {
+    if (resultHasNext(result) && options?.perPage === undefined) {
       // TODO-- should pass a warning logger!
       this.log.warn('Some results omitted, but page limit was not explicitly set');
     }
@@ -103,7 +107,7 @@ export class ClientTaskQueueService {
     }
     const [updateSharesTasksResult]: Array<{
       completedTasks: ClientTask[];
-      failedTasks: IfailedClientTask[];
+      failedTasks: IFailedClientTask[];
     }> = await Promise.all([this.updateSharesClientTasks(itemUpdateSharesTasks, authData)]);
 
     return updateSharesTasksResult;
@@ -112,7 +116,7 @@ export class ClientTaskQueueService {
   public async updateSharesClientTasks(
     listOfClientTasks: ClientTask[],
     authData: AuthData
-  ): Promise<{ completedTasks: ClientTask[]; failedTasks: IfailedClientTask[] }> {
+  ): Promise<{ completedTasks: ClientTask[]; failedTasks: IFailedClientTask[] }> {
     const sharesApi = this.vaultAPIFactory(authData.vault_access_token).SharesApi;
     const itemsApi = this.vaultAPIFactory(authData.vault_access_token).ItemApi;
 
@@ -120,7 +124,7 @@ export class ClientTaskQueueService {
       listOfClientTasks.map(async task => {
         const taskReport = {
           completedTasks: <ClientTask[]>[],
-          failedTasks: <IfailedClientTask[]>[],
+          failedTasks: <IFailedClientTask[]>[],
         };
         try {
           const [item, shares] = await Promise.all([
