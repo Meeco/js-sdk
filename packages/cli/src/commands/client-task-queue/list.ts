@@ -6,8 +6,8 @@ import { pageFlags } from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ClientTaskQueueList extends MeecoCommand {
-  static description = 'Load and run a batch of ClientTasks from the queue';
-  static examples = [`meeco client-task-queue:run-batch -a path/to/auth.yaml 10`];
+  static description = 'Read the client task that client is supposed to perform';
+  static examples = [`meeco client-task-queue:list -a path/to/auth.yaml`];
 
   static flags = {
     ...MeecoCommand.flags,
@@ -31,7 +31,7 @@ export default class ClientTaskQueueList extends MeecoCommand {
     const { supressChangingState, state, auth, all } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-    const service = new ClientTaskQueueService(environment);
+    const service = new ClientTaskQueueService(environment, this.log);
 
     if (!authConfig) {
       this.error('Must specify a valid auth config file');

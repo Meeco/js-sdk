@@ -5,8 +5,8 @@ import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ClientTaskQueueList extends MeecoCommand {
-  static description = 'Read the client task that client is supposed to perform';
-  static examples = [`meeco client-task-queue:list -a path/to/auth.yaml`];
+  static description = 'Load and run a batch of ClientTasks from the queue';
+  static examples = [`meeco client-task-queue:run-batch -a path/to/auth.yaml 10`];
 
   static flags = {
     ...MeecoCommand.flags,
