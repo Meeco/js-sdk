@@ -5,10 +5,7 @@ import MeecoCommand from '../../util/meeco-command';
 
 export default class LogoutUser extends MeecoCommand {
   static description = 'Log the given user out of both keystore and vault.';
-  static examples = [
-    `meeco users:logout -a path/to/user-auth.yaml`,
-    `meeco users:logout -p My$ecretPassword1 -s 1.xxxxxx.xxxx-xxxxx-xxxxxxx-xxxxx`,
-  ];
+  static examples = [`meeco users:logout -a path/to/user-auth.yaml`];
 
   static flags = {
     ...MeecoCommand.flags,
@@ -20,13 +17,16 @@ export default class LogoutUser extends MeecoCommand {
 
     try {
       const environment = await this.readEnvironmentFile();
-      const service = new UserService(environment, this.updateStatus);
+      const service = new UserService(environment);
       const { auth } = flags;
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
       if (!authConfig) {
         this.error('Must specify a valid auth config file');
       }
-      service.deleteSessions(authConfig.vault_access_token, authConfig.keystore_access_token);
+
+      this.updateStatus('Logging out');
+      await service.deleteSessions(authConfig.vault_access_token, authConfig.keystore_access_token);
+      this.finish();
     } catch (err) {
       await this.handleException(err);
     }
