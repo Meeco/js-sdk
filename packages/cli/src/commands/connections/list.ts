@@ -1,7 +1,7 @@
 import { ConnectionService } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
-import { authFlags } from '../../flags/auth-flags';
-import { pageFlags } from '../../flags/page-flags';
+import authFlags from '../../flags/auth-flags';
+import pageFlags from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ConnectionsList extends MeecoCommand {

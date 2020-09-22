@@ -32,7 +32,7 @@ export async function largeFileUploadNode(
 
   const uploadResult = await directAttachmentUpload(
     {
-      directUploadUrl: uploadUrl.url,
+      directUploadUrl: uploadUrl.attachment_direct_upload_url.url,
       file: filePath,
       encrypt: true,
       options: {},
@@ -57,7 +57,7 @@ export async function largeFileUploadNode(
 
   await directAttachmentUpload(
     {
-      directUploadUrl: artifactsUploadUrl.url,
+      directUploadUrl: artifactsUploadUrl.attachment_direct_upload_url.url,
       file: artifactsFileDir,
       encrypt: false,
       options: {},
@@ -68,10 +68,10 @@ export async function largeFileUploadNode(
 
   const attachedDoc = await service.directAttachmentAttach(
     {
-      blobId: uploadUrl.blob_id,
-      blobKey: uploadUrl.blob_key,
-      artifactsBlobId: artifactsUploadUrl.blob_id,
-      artifactsBlobKey: artifactsUploadUrl.blob_key,
+      blobId: uploadUrl.attachment_direct_upload_url.blob_id,
+      blobKey: uploadUrl.attachment_direct_upload_url.blob_key,
+      artifactsBlobId: artifactsUploadUrl.attachment_direct_upload_url.blob_id,
+      artifactsBlobKey: artifactsUploadUrl.attachment_direct_upload_url.blob_key,
     },
     authConfig
   );

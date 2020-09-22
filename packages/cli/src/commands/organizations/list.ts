@@ -2,8 +2,8 @@ import { getAllPaged, reducePages, reportIfTruncated, vaultAPIFactory } from '@m
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationsListConfig } from '../../configs/organizations-list-config';
-import { authFlags } from '../../flags/auth-flags';
-import { pageFlags } from '../../flags/page-flags';
+import authFlags from '../../flags/auth-flags';
+import pageFlags from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationsList extends MeecoCommand {

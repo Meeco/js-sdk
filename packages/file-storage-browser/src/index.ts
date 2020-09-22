@@ -45,7 +45,7 @@ export async function fileUploadBrowser({
   );
   const uploadResult = await directAttachmentUpload(
     {
-      directUploadUrl: uploadUrl.url,
+      directUploadUrl: uploadUrl.attachment_direct_upload_url.url,
       file,
       encrypt: true,
       options: {},
@@ -76,7 +76,7 @@ export async function fileUploadBrowser({
   );
   await directAttachmentUpload(
     {
-      directUploadUrl: artifactsUploadUrl.url,
+      directUploadUrl: artifactsUploadUrl.attachment_direct_upload_url.url,
       file: artifactsFile,
       encrypt: false,
       options: {},
@@ -86,10 +86,10 @@ export async function fileUploadBrowser({
   );
   const attachedDoc = await directAttachmentAttach(
     {
-      blobId: uploadUrl.blob_id,
-      blobKey: uploadUrl.blob_key,
-      artifactsBlobId: artifactsUploadUrl.blob_id,
-      artifactsBlobKey: artifactsUploadUrl.blob_key,
+      blobId: uploadUrl.attachment_direct_upload_url.blob_id,
+      blobKey: uploadUrl.attachment_direct_upload_url.blob_key,
+      artifactsBlobId: artifactsUploadUrl.attachment_direct_upload_url.blob_id,
+      artifactsBlobKey: artifactsUploadUrl.attachment_direct_upload_url.blob_key,
     },
     authConfig,
     vaultUrl

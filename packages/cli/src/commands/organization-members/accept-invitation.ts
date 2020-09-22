@@ -3,7 +3,7 @@ import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { ConnectionV2Config } from '../../configs/connection-v2-config';
 import { InvitationConfig } from '../../configs/invitation-config';
-import { authFlags } from '../../flags/auth-flags';
+import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationMembersAcceptInvitation extends MeecoCommand {

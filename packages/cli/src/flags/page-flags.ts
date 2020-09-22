@@ -6,3 +6,5 @@ export const pageFlags = {
     default: false,
   }),
 };
+
+export default pageFlags;

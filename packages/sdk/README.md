@@ -165,7 +165,7 @@ In future, if we want to retrieve the user's `AuthData` we need them to provide 
 import { UserService } from '@meeco/sdk';
 
 const userService = new UserService(environment);
-const user = await userService.get(password, secret);
+const user = await userService.getAuthData(password, secret);
 // We have logged the user back in again and have the encryption keys we need
 ```
 
