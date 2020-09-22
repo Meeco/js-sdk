@@ -3,7 +3,7 @@ import { ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
-import { authFlags } from '../../flags/auth-flags';
+import authFlags from '../../flags/auth-flags';
 import { writeFileContents } from '../../util/file';
 import MeecoCommand from '../../util/meeco-command';
 

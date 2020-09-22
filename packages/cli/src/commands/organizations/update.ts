@@ -2,7 +2,7 @@ import { vaultAPIFactory } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationConfig } from '../../configs/organization-config';
-import { authFlags } from '../../flags/auth-flags';
+import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class OrganizationsUpdate extends MeecoCommand {

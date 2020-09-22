@@ -1,8 +1,8 @@
 import { ItemService } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
 import { ItemListConfig } from '../../configs/item-list-config';
-import { authFlags } from '../../flags/auth-flags';
-import { pageFlags } from '../../flags/page-flags';
+import authFlags from '../../flags/auth-flags';
+import pageFlags from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ItemsList extends MeecoCommand {

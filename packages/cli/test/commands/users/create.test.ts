@@ -1,20 +1,9 @@
 import { SecretService, UserService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
-import open from 'cli-ux/lib/open';
 import { readFileSync } from 'fs';
-import * as request from 'node-fetch';
 import { customTest, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
-describe('meeco users:create', () => {
-  (<any>open) = () => {
-    return request('http://localhost:5210/', {
-      method: 'post',
-      body: JSON.stringify({
-        'g-recaptcha-response': 'mock_captcha',
-      }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  };
+describe('users:create', () => {
   customTest
     .stub(UserService.prototype, 'create', create as any)
     .stderr()

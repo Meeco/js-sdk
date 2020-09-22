@@ -1,6 +1,6 @@
 import { ItemService } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
-import { authFlags } from '../../flags/auth-flags';
+import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ItemsRemoveSlot extends MeecoCommand {
