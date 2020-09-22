@@ -55,8 +55,7 @@ slots:
     visible: true
     classification_node_ids: []
     attachment_id: null
-    slotable_id: c699d58c-428a-42b4-926e-a73645987eb6
-    slotable_type: Item
+    item_id: c699d58c-428a-42b4-926e-a73645987eb6
     required: false
     updated_at: 1970-01-01T00:00:00.000Z
     created_at: 1970-01-01T00:00:00.000Z
