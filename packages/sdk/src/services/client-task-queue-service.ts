@@ -2,6 +2,7 @@ import { ClientTask, ClientTaskQueueResponse } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
+import { MeecoServiceError } from '../models/service-error';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
@@ -101,14 +102,14 @@ export class ClientTaskQueueService {
       }
     }
     if (remainingClientTasks.length) {
-      throw new Error(
+      throw new MeecoServiceError(
         `Do not know how to execute ClientTask of type ${remainingClientTasks[0].work_type}`
       );
     }
-    const [updateSharesTasksResult]: Array<{
+    const updateSharesTasksResult: {
       completedTasks: ClientTask[];
       failedTasks: IFailedClientTask[];
-    }> = await Promise.all([this.updateSharesClientTasks(itemUpdateSharesTasks, authData)]);
+    } = await this.updateSharesClientTasks(itemUpdateSharesTasks, authData);
 
     return updateSharesTasksResult;
   }

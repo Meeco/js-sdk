@@ -28,7 +28,8 @@ export default class ClientTaskQueueList extends MeecoCommand {
     {
       name: 'numberOfTasks',
       description: 'number of tasks to fetch and execute',
-      required: true,
+      required: false,
+      default: undefined,
     },
   ];
 
@@ -50,7 +51,7 @@ export default class ClientTaskQueueList extends MeecoCommand {
           'Invalid state provided, state argument value must be one of this: ' + Object.keys(State)
         );
       }
-      const numberOfTasks = args.numberOfTasks || 5;
+      const numberOfTasks = args.numberOfTasks;
       const clientTaskList = await service.list(
         authConfig.vault_access_token,
         supressChangingState === 'false' ? false : true,
