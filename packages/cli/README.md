@@ -258,23 +258,18 @@ USAGE
   $ meeco client-task-queue:list
 
 OPTIONS
-  -a, --auth=auth                              (required) [default: .user.yaml]
-                                               Authorization config yaml file (if
-                                               not using the default .user.yaml)
+  -a, --auth=auth                              (required) [default: .user.yaml] Authorization config yaml file (if not
+                                               using the default .user.yaml)
 
-  -e, --environment=environment                [default: .environment.yaml]
-                                               environment config file
+  -e, --environment=environment                [default: .environment.yaml] environment config file
 
-  -s, --state=state                            [default: Todo] Client Task Queue
-                                               avalible states:
+  -s, --state=state                            [default: Todo] Client Task Queue avalible states:
                                                Todo,InProgress,Done,Failed
 
-  --all                                        Get all possible results from web
-                                               API, possibly with multiple calls.
+  --all                                        Get all possible results from web API, possibly with multiple calls.
 
-  --supressChangingState=supressChangingState  [default: true] suppress
-                                               transitioning tasks in the response
-                                               to in_progress: true, false
+  --supressChangingState=supressChangingState  [default: true] suppress transitioning tasks in the response to
+                                               in_progress: true, false
 
 EXAMPLE
   meeco client-task-queue:list -a path/to/auth.yaml
@@ -291,11 +286,8 @@ USAGE
   $ meeco connections:create
 
 OPTIONS
-  -c, --config=config            (required) Connection config file to use for the
-                                 creation
-
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -c, --config=config            (required) Connection config file to use for the creation
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
 _See code: [src/commands/connections/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/connections/create.ts)_
@@ -309,11 +301,8 @@ USAGE
   $ meeco connections:create-config
 
 OPTIONS
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
-
+  -e, --environment=environment  [default: .environment.yaml] environment config file
   -f, --from=from                (required) User config file for the 'from' user
-
   -t, --to=to                    (required) User config file for the 'to' user
 ```
 
@@ -328,15 +317,12 @@ USAGE
   $ meeco connections:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
-  --all                          Get all possible results from web API, possibly
-                                 with multiple calls.
+  --all                          Get all possible results from web API, possibly with multiple calls.
 ```
 
 _See code: [src/commands/connections/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/connections/list.ts)_
@@ -367,14 +353,12 @@ USAGE
   $ meeco items:attach-file
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
   -c, --config=config            (required) file attachment config yaml
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLES
   meeco items:attach-file -c ./file-attachment-config.yaml
@@ -391,12 +375,10 @@ USAGE
   $ meeco items:create
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -i, --item=item                (required) item yaml file
 
@@ -418,19 +400,14 @@ ARGUMENTS
   TEMPLATENAME  Name of the template to use for the item
 
 OPTIONS
-  -a, --auth=auth                                  (required) [default: .user.yaml]
-                                                   Authorization config yaml file
-                                                   (if not using the default
-                                                   .user.yaml)
+  -a, --auth=auth                                  (required) [default: .user.yaml] Authorization config yaml file (if
+                                                   not using the default .user.yaml)
 
-  -e, --environment=environment                    [default: .environment.yaml]
-                                                   environment config file
+  -e, --environment=environment                    [default: .environment.yaml] environment config file
 
-  -n, --classificationName=classificationName      Scope templates to a particular
-                                                   classification name
+  -n, --classificationName=classificationName      Scope templates to a particular classification name
 
-  -s, --classificationScheme=classificationScheme  Scope templates to a particular
-                                                   classification scheme
+  -s, --classificationScheme=classificationScheme  Scope templates to a particular classification scheme
 
 EXAMPLES
   meeco items:create-config password
@@ -447,12 +424,10 @@ USAGE
   $ meeco items:get ITEMID
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
 _See code: [src/commands/items/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get.ts)_
@@ -469,12 +444,10 @@ ARGUMENTS
   ATTACHMENTID  ID of the attachment to download
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -o, --outputPath=outputPath    (required) output file path
 
@@ -496,12 +469,10 @@ ARGUMENTS
   THUMBNAILID  ID of the thumbnail to download
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -o, --outputPath=outputPath    (required) output file path
 
@@ -520,15 +491,12 @@ USAGE
   $ meeco items:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
-  --all                          Get all possible results from web API, possibly
-                                 with multiple calls.
+  --all                          Get all possible results from web API, possibly with multiple calls.
 
 EXAMPLE
   meeco items:list -a path/to/auth.yaml
@@ -545,12 +513,10 @@ USAGE
   $ meeco items:remove-slot SLOTID
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLES
   meeco items:remove-slot slotId
@@ -567,12 +533,10 @@ USAGE
   $ meeco items:update
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -i, --item=item                (required) item yaml file
 ```
@@ -588,18 +552,16 @@ USAGE
   $ meeco organization-members:accept-invitation
 
 OPTIONS
-  -a, --auth=auth                          (required) [default: .user.yaml]
-                                           Authorization config yaml file (if not
-                                           using the default .user.yaml)
+  -a, --auth=auth                          (required) [default: .user.yaml] Authorization config yaml file (if not using
+                                           the default .user.yaml)
 
-  -e, --environment=environment            [default: .environment.yaml] environment
-                                           config file
+  -e, --environment=environment            [default: .environment.yaml] environment config file
 
   -i, --invitationConfig=invitationConfig  (required) member invitation yaml file
 
 EXAMPLE
-  meeco organization-members:accpet-invitation -i .my-member-invitation.yaml -a
-  .user_2.yaml > .my-org-member-connection.yaml
+  meeco organization-members:accpet-invitation -i .my-member-invitation.yaml -a .user_2.yaml >
+  .my-org-member-connection.yaml
 ```
 
 _See code: [src/commands/organization-members/accept-invitation.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/accept-invitation.ts)_
@@ -616,18 +578,16 @@ ARGUMENTS
   MEMBER_ROLE  [default: admin] Organization member avalible roles: Admin,Owner
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -o, --org=org                  (required) organization yaml file
 
 EXAMPLE
-  meeco organization-members:crate-invitation -o .my-created-organization.yaml -a
-  .my-org-login.yaml > .my-org-member-invitation.yaml
+  meeco organization-members:crate-invitation -o .my-created-organization.yaml -a .my-org-login.yaml >
+  .my-org-member-invitation.yaml
 ```
 
 _See code: [src/commands/organization-members/create-invitation.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/create-invitation.ts)_
@@ -645,12 +605,10 @@ ARGUMENTS
   ID               user ID of the Member
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLE
   meeco organization-members:delete <organization_id> <id>
@@ -667,15 +625,12 @@ USAGE
   $ meeco organization-members:list ORGANIZATION_ID
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
-  --all                          Get all possible results from web API, possibly
-                                 with multiple calls.
+  --all                          Get all possible results from web API, possibly with multiple calls.
 
 EXAMPLE
   meeco organization-members:list <organization_id>
@@ -692,18 +647,12 @@ USAGE
   $ meeco organization-members:update
 
 OPTIONS
-  -a, --auth=auth                                          (required) [default:
-                                                           .user.yaml]
-                                                           Authorization config
-                                                           yaml file (if not using
-                                                           the default .user.yaml)
+  -a, --auth=auth                                          (required) [default: .user.yaml] Authorization config yaml
+                                                           file (if not using the default .user.yaml)
 
-  -e, --environment=environment                            [default:
-                                                           .environment.yaml]
-                                                           environment config file
+  -e, --environment=environment                            [default: .environment.yaml] environment config file
 
-  -m, --organizationMemberConfig=organizationMemberConfig  (required) org member
-                                                           yaml file
+  -m, --organizationMemberConfig=organizationMemberConfig  (required) org member yaml file
 
 EXAMPLE
   meeco organization-members:update -m .my-created-org-member.yaml
@@ -720,19 +669,15 @@ USAGE
   $ meeco organization-services:create ORGANIZATION_ID
 
 OPTIONS
-  -a, --auth=auth
-      (required) [default: .user.yaml] Authorization config yaml file (if not using
-      the default .user.yaml)
+  -a, --auth=auth                                            (required) [default: .user.yaml] Authorization config yaml
+                                                             file (if not using the default .user.yaml)
 
-  -c, --organizationServiceConfig=organizationServiceConfig
-      (required) organization service config file
+  -c, --organizationServiceConfig=organizationServiceConfig  (required) organization service config file
 
-  -e, --environment=environment
-      [default: .environment.yaml] environment config file
+  -e, --environment=environment                              [default: .environment.yaml] environment config file
 
 EXAMPLE
-  meeco organization-services:create <organization_id> -c .my-service-config.yaml >
-  .my-created-service.yaml
+  meeco organization-services:create <organization_id> -c .my-service-config.yaml > .my-created-service.yaml
 ```
 
 _See code: [src/commands/organization-services/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/create.ts)_
@@ -746,16 +691,13 @@ USAGE
   $ meeco organization-services:get ORGANIZATION_ID SERVICE_ID
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLE
-  meeco organization-services:get <organization_id> <service_id> >
-  .my-created-service.yaml
+  meeco organization-services:get <organization_id> <service_id> > .my-created-service.yaml
 ```
 
 _See code: [src/commands/organization-services/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/get.ts)_
@@ -769,15 +711,12 @@ USAGE
   $ meeco organization-services:list ORGANIZATION_ID
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
-  --all                          Get all possible results from web API, possibly
-                                 with multiple calls.
+  --all                          Get all possible results from web API, possibly with multiple calls.
 
 EXAMPLE
   meeco organization-services:list <organization_id>
@@ -794,15 +733,12 @@ USAGE
   $ meeco organization-services:login
 
 OPTIONS
-  -a, --auth=auth
-      (required) [default: .user.yaml] Authorization config yaml file (if not using
-      the default .user.yaml)
+  -a, --auth=auth                                            (required) [default: .user.yaml] Authorization config yaml
+                                                             file (if not using the default .user.yaml)
 
-  -e, --environment=environment
-      [default: .environment.yaml] environment config file
+  -e, --environment=environment                              [default: .environment.yaml] environment config file
 
-  -s, --organizationServiceConfig=organizationServiceConfig
-      (required) service yaml file
+  -s, --organizationServiceConfig=organizationServiceConfig  (required) service yaml file
 
 EXAMPLE
   meeco organization-services:login -s .my-created-service.yaml
@@ -819,15 +755,12 @@ USAGE
   $ meeco organization-services:update ORGANIZATION_ID
 
 OPTIONS
-  -a, --auth=auth
-      (required) [default: .user.yaml] Authorization config yaml file (if not using
-      the default .user.yaml)
+  -a, --auth=auth                                            (required) [default: .user.yaml] Authorization config yaml
+                                                             file (if not using the default .user.yaml)
 
-  -e, --environment=environment
-      [default: .environment.yaml] environment config file
+  -e, --environment=environment                              [default: .environment.yaml] environment config file
 
-  -s, --organizationServiceConfig=organizationServiceConfig
-      (required) service yaml file
+  -s, --organizationServiceConfig=organizationServiceConfig  (required) service yaml file
 
 EXAMPLE
   meeco organization-services:update <organization_id> -s .my-created-service.yaml
@@ -844,18 +777,15 @@ USAGE
   $ meeco organizations:create
 
 OPTIONS
-  -a, --auth=auth                              (required) [default: .user.yaml]
-                                               Authorization config yaml file (if
-                                               not using the default .user.yaml)
+  -a, --auth=auth                              (required) [default: .user.yaml] Authorization config yaml file (if not
+                                               using the default .user.yaml)
 
   -c, --organizationConfig=organizationConfig  (required) organization config file
 
-  -e, --environment=environment                [default: .environment.yaml]
-                                               environment config file
+  -e, --environment=environment                [default: .environment.yaml] environment config file
 
 EXAMPLE
-  meeco organizations:create -c .my-organization-config.yaml >
-  .my-created-organization.yaml
+  meeco organizations:create -c .my-organization-config.yaml > .my-created-organization.yaml
 ```
 
 _See code: [src/commands/organizations/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/organizations/create.ts)_
@@ -872,12 +802,10 @@ ARGUMENTS
   ID  ID of the Organization
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLE
   meeco organizations:delete <organization_id>
@@ -894,12 +822,10 @@ USAGE
   $ meeco organizations:get ID
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLE
   meeco organizations:get <organization_id>
@@ -916,22 +842,18 @@ USAGE
   $ meeco organizations:list
 
 OPTIONS
-  -a, --auth=auth
-      (required) [default: .user.yaml] Authorization config yaml file (if not using
-      the default .user.yaml)
+  -a, --auth=auth                        (required) [default: .user.yaml] Authorization config yaml file (if not using
+                                         the default .user.yaml)
 
-  -e, --environment=environment
-      [default: .environment.yaml] environment config file
+  -e, --environment=environment          [default: .environment.yaml] environment config file
 
-  -m, --mode=validated|requested|member
-      [default: validated] There are three modes: validated, requested and member
-        validated - return all validated organizations
-        requested - list organizations in the requested state that the current user
-      has requested
-        member - list organizations in which the current user is a member.
+  -m, --mode=validated|requested|member  [default: validated] There are three modes: validated, requested and member
+                                         validated - return all validated organizations
+                                         requested - list organizations in the requested state that the current user
+                                         has requested
+                                         member - list organizations in which the current user is a member.
 
-  --all
-      Get all possible results from web API, possibly with multiple calls.
+  --all                                  Get all possible results from web API, possibly with multiple calls.
 
 EXAMPLE
   meeco organizations:list -m requested
@@ -948,12 +870,10 @@ USAGE
   $ meeco organizations:login
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -o, --org=org                  (required) organization yaml file
 
@@ -972,12 +892,10 @@ USAGE
   $ meeco organizations:update
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -o, --org=org                  (required) organization yaml file
 
@@ -999,12 +917,10 @@ ARGUMENTS
   SHAREID  ID of the share to accept
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
 _See code: [src/commands/shares/accept.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/accept.ts)_
@@ -1030,13 +946,10 @@ OPTIONS
         anyone - anyone allow to on-share a share.
 
   -t, --acceptance_required=acceptance_not_required|acceptance_required
-      [default: acceptance_not_required] Some shares require that the recipient
-      accepts the terms of the share.
-        There are two acceptance_require: acceptance_not_required &
-      acceptance_required
+      [default: acceptance_not_required] Some shares require that the recipient accepts the terms of the share.
+        There are two acceptance_require: acceptance_not_required & acceptance_required
         acceptance_not_required - recipient dont require acceptance
-        acceptance_required - recipient require acceptance before viewing shared
-      item.
+        acceptance_required - recipient require acceptance before viewing shared item.
 ```
 
 _See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_
@@ -1051,18 +964,10 @@ USAGE
 
 OPTIONS
   -c, --connectionId=connectionId  (required) Connection id for the 'to' user
-
-  -e, --environment=environment    [default: .environment.yaml] environment config
-                                   file
-
+  -e, --environment=environment    [default: .environment.yaml] environment config file
   -f, --from=from                  (required) User config file for the 'from' user
-
-  -i, --itemId=itemId              Item id of the 'from' user to share with the
-                                   'to' user
-
-  -o, --onshareId=onshareId        Share ID of the share, which to on-share with
-                                   the 'to' user
-
+  -i, --itemId=itemId              Item id of the 'from' user to share with the 'to' user
+  -o, --onshareId=onshareId        Share ID of the share, which to on-share with the 'to' user
   -s, --slotName=slotName          Name of slot to share (if sharing a single slot)
 ```
 
@@ -1080,12 +985,10 @@ ARGUMENTS
   SHAREID  ID of the shared item to fetch
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
 _See code: [src/commands/shares/delete.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/delete.ts)_
@@ -1102,12 +1005,10 @@ ARGUMENTS
   SHAREID  ID of the share to fetch
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
 _See code: [src/commands/shares/get-incoming.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/get-incoming.ts)_
@@ -1121,15 +1022,12 @@ USAGE
   $ meeco shares:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
-  -t, --type=incoming|outgoing   [default: incoming] There are two type: incoming
-                                 and Outgoing
+  -t, --type=incoming|outgoing   [default: incoming] There are two type: incoming and Outgoing
                                  incoming - Read incoming shares as the recipien
                                  outgoing - Read outgoing shares as the sender.
 ```
@@ -1148,12 +1046,10 @@ ARGUMENTS
   ITEMID  ID of the share to fetch
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
 _See code: [src/commands/shares/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/update.ts)_
@@ -1167,19 +1063,14 @@ USAGE
   $ meeco templates:info TEMPLATENAME
 
 OPTIONS
-  -a, --auth=auth                                  (required) [default: .user.yaml]
-                                                   Authorization config yaml file
-                                                   (if not using the default
-                                                   .user.yaml)
+  -a, --auth=auth                                  (required) [default: .user.yaml] Authorization config yaml file (if
+                                                   not using the default .user.yaml)
 
-  -e, --environment=environment                    [default: .environment.yaml]
-                                                   environment config file
+  -e, --environment=environment                    [default: .environment.yaml] environment config file
 
-  -n, --classificationName=classificationName      Scope templates to a particular
-                                                   classification name
+  -n, --classificationName=classificationName      Scope templates to a particular classification name
 
-  -s, --classificationScheme=classificationScheme  Scope templates to a particular
-                                                   classification scheme
+  -s, --classificationScheme=classificationScheme  Scope templates to a particular classification scheme
 
 EXAMPLE
   meeco templates:info password
@@ -1196,25 +1087,18 @@ USAGE
   $ meeco templates:list
 
 OPTIONS
-  -a, --auth=auth                                  (required) [default: .user.yaml]
-                                                   Authorization config yaml file
-                                                   (if not using the default
-                                                   .user.yaml)
+  -a, --auth=auth                                  (required) [default: .user.yaml] Authorization config yaml file (if
+                                                   not using the default .user.yaml)
 
-  -e, --environment=environment                    [default: .environment.yaml]
-                                                   environment config file
+  -e, --environment=environment                    [default: .environment.yaml] environment config file
 
   -l, --label=label                                Search label text
 
-  -n, --classificationName=classificationName      Scope templates to a particular
-                                                   classification name
+  -n, --classificationName=classificationName      Scope templates to a particular classification name
 
-  -s, --classificationScheme=classificationScheme  Scope templates to a particular
-                                                   classification scheme
+  -s, --classificationScheme=classificationScheme  Scope templates to a particular classification scheme
 
-  --all                                            Get all possible results from
-                                                   web API, possibly with multiple
-                                                   calls.
+  --all                                            Get all possible results from web API, possibly with multiple calls.
 ```
 
 _See code: [src/commands/templates/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/templates/list.ts)_
@@ -1228,14 +1112,11 @@ USAGE
   $ meeco users:create
 
 OPTIONS
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+  -p, --password=password        Password to use for the new user (will be prompted for if not provided)
 
-  -p, --password=password        Password to use for the new user (will be prompted
-                                 for if not provided)
-
-  --port=port                    [default: 5210] Port to listen on for captcha
-                                 response (optional - use if 5210 is reserved)
+  --port=port                    [default: 5210] Port to listen on for captcha response (optional - use if 5210 is
+                                 reserved)
 
 EXAMPLE
   meeco users:create -p My$ecretPassword1
@@ -1252,20 +1133,16 @@ USAGE
   $ meeco users:get
 
 OPTIONS
-  -a, --auth=auth                [default: .user.yaml] Authorization config file
-                                 (if not using the default .user.yaml or password)
+  -a, --auth=auth                [default: .user.yaml] Authorization config file (if not using the default .user.yaml or
+                                 password)
 
-  -c, --user=user                [Deprecated] User config file (if not providing
-                                 secret and password)
+  -c, --user=user                [Deprecated] User config file (if not providing secret and password)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
-  -p, --password=password        the password of the user (will be prompted for if
-                                 not provided)
+  -p, --password=password        the password of the user (will be prompted for if not provided)
 
-  -s, --secret=secret            the secret key of the user (will be prompted for
-                                 if not provided)
+  -s, --secret=secret            the secret key of the user (will be prompted for if not provided)
 
 EXAMPLES
   meeco users:get -c path/to/user-config.yaml
@@ -1283,17 +1160,14 @@ USAGE
   $ meeco users:login
 
 OPTIONS
-  -a, --auth=auth                [default: .user.yaml] Authorization config file
-                                 (if not using the default .user.yaml or password)
+  -a, --auth=auth                [default: .user.yaml] Authorization config file (if not using the default .user.yaml or
+                                 password)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
-  -p, --password=password        the password of the user (will be prompted for if
-                                 not provided)
+  -p, --password=password        the password of the user (will be prompted for if not provided)
 
-  -s, --secret=secret            the secret key of the user (will be prompted for
-                                 if not provided)
+  -s, --secret=secret            the secret key of the user (will be prompted for if not provided)
 
 EXAMPLES
   meeco users:get -a path/to/stale-user-auth.yaml
@@ -1311,12 +1185,10 @@ USAGE
   $ meeco users:logout
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization
-                                 config yaml file (if not using the default
-                                 .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment  [default: .environment.yaml] environment config
-                                 file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLE
   meeco users:logout -a path/to/user-auth.yaml
