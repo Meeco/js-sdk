@@ -1,17 +1,29 @@
-import { ClientTaskQueueResponse } from '@meeco/vault-api-sdk';
+import { ClientTask, ClientTaskQueueResponse } from '@meeco/vault-api-sdk';
+import { AuthData } from '../models/auth-data';
+import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
+import { MeecoServiceError } from '../models/service-error';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
+import cryppo from './cryppo-service';
+import { ItemService } from './item-service';
+import { ShareService } from './share-service';
 
 /**
  * A ClientTask represents a task the client is supposed to perform.
  */
+interface IFailedClientTask extends ClientTask {
+  failureReason: any;
+}
+
 export class ClientTaskQueueService {
   private vaultAPIFactory: VaultAPIFactory;
+  private cryppo = (<any>global).cryppo || cryppo;
+
   private log: IFullLogger;
 
-  constructor(environment: Environment, log: Logger = noopLogger) {
+  constructor(private environment: Environment, log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
     this.log = toFullLogger(log);
   }
@@ -24,14 +36,18 @@ export class ClientTaskQueueService {
     vaultAccessToken: string,
     supressChangingState: boolean = true,
     state: State = State.Todo,
-    nextPageAfter?: string,
-    perPage?: number
+    options?: { nextPageAfter?: string; perPage?: number }
   ): Promise<ClientTaskQueueResponse> {
     const result = await this.vaultAPIFactory(
       vaultAccessToken
-    ).ClientTaskQueueApi.clientTaskQueueGet(nextPageAfter, perPage, supressChangingState, state);
+    ).ClientTaskQueueApi.clientTaskQueueGet(
+      options?.nextPageAfter,
+      options?.perPage,
+      supressChangingState,
+      state
+    );
 
-    if (resultHasNext(result) && perPage === undefined) {
+    if (resultHasNext(result) && options?.perPage === undefined) {
       // TODO-- should pass a warning logger!
       this.log.warn('Some results omitted, but page limit was not explicitly set');
     }
@@ -42,7 +58,11 @@ export class ClientTaskQueueService {
   public async listAll(
     vaultAccessToken: string,
     supressChangingState: boolean = true,
-    state: State = State.Todo
+    state: State = State.Todo,
+    options?: {
+      nextPageAfter?: string;
+      perPage?: number;
+    }
   ): Promise<ClientTaskQueueResponse> {
     const api = this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi;
     return getAllPaged(cursor =>
@@ -63,6 +83,99 @@ export class ClientTaskQueueService {
       todo: todoTasks.client_tasks.length,
       in_progress: inProgressTasks.client_tasks.length,
     };
+  }
+
+  public async executeClientTasks(
+    listOfClientTasks: ClientTask[],
+    authData: AuthData
+  ): Promise<{ completedTasks: ClientTask[]; failedTasks: ClientTask[] }> {
+    const remainingClientTasks: ClientTask[] = [];
+    const itemUpdateSharesTasks: ClientTask[] = [];
+    for (const task of listOfClientTasks) {
+      switch (task.work_type) {
+        case 'update_item_shares':
+          itemUpdateSharesTasks.push(task);
+          break;
+        default:
+          remainingClientTasks.push(task);
+          break;
+      }
+    }
+    if (remainingClientTasks.length) {
+      throw new MeecoServiceError(
+        `Do not know how to execute ClientTask of type ${remainingClientTasks[0].work_type}`
+      );
+    }
+    const updateSharesTasksResult: {
+      completedTasks: ClientTask[];
+      failedTasks: IFailedClientTask[];
+    } = await this.updateSharesClientTasks(itemUpdateSharesTasks, authData);
+
+    return updateSharesTasksResult;
+  }
+
+  public async updateSharesClientTasks(
+    listOfClientTasks: ClientTask[],
+    authData: AuthData
+  ): Promise<{ completedTasks: ClientTask[]; failedTasks: IFailedClientTask[] }> {
+    const sharesApi = this.vaultAPIFactory(authData.vault_access_token).SharesApi;
+    const itemsApi = this.vaultAPIFactory(authData.vault_access_token).ItemApi;
+
+    const taskReports = await Promise.all(
+      listOfClientTasks.map(async task => {
+        const taskReport = {
+          completedTasks: <ClientTask[]>[],
+          failedTasks: <IFailedClientTask[]>[],
+        };
+        try {
+          const [item, shares] = await Promise.all([
+            itemsApi.itemsIdGet(task.target_id),
+            sharesApi.itemsIdSharesGet(task.target_id),
+          ]);
+          const decryptedSlots = await ItemService.decryptAllSlots(
+            item.slots,
+            authData.data_encryption_key
+          );
+          const dek = this.cryppo.generateRandomKey();
+          const newEncryptedSlots = await new ShareService(
+            this.environment
+          ).convertSlotsToEncryptedValuesForShare(decryptedSlots, EncryptionKey.fromRaw(dek));
+          const nestedSlotValues: any[] = shares.shares.map(share => {
+            return newEncryptedSlots.map(newValue => {
+              return { ...newValue, share_id: share.id };
+            });
+          });
+          const slotValues = [].concat.apply([], nestedSlotValues);
+          const shareDeks = await Promise.all(
+            shares.shares.map(async share => {
+              const encryptedDek = await this.cryppo.encryptWithPublicKey({
+                publicKeyPem: share.public_key,
+                data: dek,
+              });
+              return { share_id: share.id, dek: encryptedDek.serialized };
+            })
+          );
+          const clientTasks = [{ id: task.id, state: 'done', report: task.report }];
+          await sharesApi.itemsIdSharesPut(task.target_id, {
+            slot_values: slotValues,
+            share_deks: shareDeks,
+            client_tasks: clientTasks,
+          });
+          taskReport.completedTasks.push(task);
+        } catch (error) {
+          taskReport.failedTasks.push({ ...task, failureReason: error });
+        }
+        return taskReport;
+      })
+    );
+
+    const combinedTaskReports = taskReports.reduce((accum, current) => {
+      accum.completedTasks.concat(current.completedTasks);
+      accum.failedTasks.concat(current.failedTasks);
+      return accum;
+    });
+
+    return combinedTaskReports;
   }
 }
 
