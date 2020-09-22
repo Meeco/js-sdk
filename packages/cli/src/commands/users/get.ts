@@ -1,4 +1,4 @@
-import { UserService, vaultAPIFactory } from '@meeco/sdk';
+import { UserService } from '@meeco/sdk';
 import { MeResponse } from '@meeco/vault-api-sdk';
 import { flags as _flags } from '@oclif/command';
 import cli from 'cli-ux';
@@ -55,16 +55,13 @@ export default class GetUser extends MeecoCommand {
           }
         }
 
-        // TODO this duplicates work, would be nice to implement in SDK
-        const authResult = await service.get(password, secret);
-        result = await service.getVaultUser(authResult.vault_access_token);
+        result = await service.getVaultToken(password, secret).then(service.getVaultUser);
       } else {
         const authConfig = await this.readConfigFromFile(AuthConfig, auth);
         if (!authConfig) {
           this.error('Must specify a valid auth config file');
         }
-        const api = vaultAPIFactory(environment)(authConfig);
-        result = await api.UserApi.meGet();
+        result = await service.getVaultUser(authConfig.vault_access_token);
       }
 
       this.printYaml(UserDataConfig.encodeFromJSON(result));

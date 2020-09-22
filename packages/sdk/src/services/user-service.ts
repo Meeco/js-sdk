@@ -357,6 +357,16 @@ export class UserService {
     });
   }
 
+  public async getKeystoreToken(userPassword: string, secret: string) {
+    return this.loginKeystoreViaSRP(userPassword, secret);
+  }
+
+  public async getVaultToken(userPassword: string, secret: string) {
+    return this.loginKeystoreViaSRP(userPassword, secret)
+      .then(token => this.requestExternalAdmissionTokens(token))
+      .then(({ vault_api_admission_token }) => vault_api_admission_token);
+  }
+
   public getVaultUser(vaultAccessToken: string) {
     return this.vaultApiFactory(vaultAccessToken).UserApi.meGet();
   }
@@ -364,7 +374,7 @@ export class UserService {
   public deleteSessions(vaultToken: string, keystoreToken: string) {
     return Promise.all([
       this.vaultApiFactory(vaultToken).SessionApi.sessionDelete(),
-      this.keystoreApiFactory(keystoreToken).SessionApi.sessionDelete()
+      this.keystoreApiFactory(keystoreToken).SessionApi.sessionDelete(),
     ]);
   }
 }
