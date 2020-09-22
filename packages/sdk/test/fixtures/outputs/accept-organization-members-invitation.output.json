@@ -19,6 +19,7 @@
   "the_other_user": {
     "id": "b0d1988f-b404-4402-8040-33f0201dc725",
     "connection_type": "member",
+    "integration_data": null,
     "user_id": "8da5ebf9-39bf-45ae-b131-fa85e2d88101",
     "user_image": null,
     "user_type": "organization_agent",

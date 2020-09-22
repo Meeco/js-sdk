@@ -15,6 +15,7 @@
       "the_other_user": {
         "id": "abc345",
         "connection_type": null,
+        "integration_data": null,
         "user_id": null,
         "user_image": null,
         "user_type": null,
@@ -39,6 +40,7 @@
       "the_other_user": {
         "id": "def789",
         "connection_type": null,
+        "integration_data": null,
         "user_id": null,
         "user_image": null,
         "user_type": null,
