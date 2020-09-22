@@ -206,6 +206,7 @@ once approved it can be access with follwoing command
 <!-- commands -->
 
 - [`meeco client-task-queue:list`](#meeco-client-task-queuelist)
+- [`meeco client-task-queue:run-batch [NUMBEROFTASKS]`](#meeco-client-task-queuerun-batch-numberoftasks)
 - [`meeco connections:create`](#meeco-connectionscreate)
 - [`meeco connections:create-config`](#meeco-connectionscreate-config)
 - [`meeco connections:list`](#meeco-connectionslist)
@@ -276,6 +277,35 @@ EXAMPLE
 ```
 
 _See code: [src/commands/client-task-queue/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/list.ts)_
+
+## `meeco client-task-queue:run-batch [NUMBEROFTASKS]`
+
+Load and run a batch of ClientTasks from the queue
+
+```
+USAGE
+  $ meeco client-task-queue:run-batch [NUMBEROFTASKS]
+
+ARGUMENTS
+  NUMBEROFTASKS  number of tasks to fetch and execute
+
+OPTIONS
+  -a, --auth=auth                              (required) [default: .user.yaml] Authorization config yaml file (if not
+                                               using the default .user.yaml)
+
+  -e, --environment=environment                [default: .environment.yaml] environment config file
+
+  -s, --state=state                            [default: Todo] Client Task Queue avalible states:
+                                               Todo,InProgress,Done,Failed
+
+  --supressChangingState=supressChangingState  [default: true] suppress transitioning tasks in the response to
+                                               in_progress: true, false
+
+EXAMPLE
+  meeco client-task-queue:run-batch -a path/to/auth.yaml 10
+```
+
+_See code: [src/commands/client-task-queue/run-batch.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/run-batch.ts)_
 
 ## `meeco connections:create`
 
