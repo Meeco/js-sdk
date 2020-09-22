@@ -11,8 +11,8 @@ import {
 
 describe('users:get', () => {
   customTest
-    .stub(UserService.prototype, 'getVaultToken', getVaultToken as any)
-    .stub(UserService.prototype, 'getVaultUser', getVaultUser as any)
+    .stub(UserService.prototype, 'getOrCreateVaultToken', getVaultToken as any)
+    .stub(UserService.prototype, 'getUser', getUser as any)
     .stderr()
     .stdout()
     .run(['users:get', '-c', inputFixture('get-user.input.yaml'), ...testEnvironmentFile])
@@ -25,8 +25,8 @@ describe('users:get', () => {
     );
 
   customTest
-    .stub(UserService.prototype, 'getVaultToken', getVaultToken as any)
-    .stub(UserService.prototype, 'getVaultUser', getVaultUser as any)
+    .stub(UserService.prototype, 'getOrCreateVaultToken', getVaultToken as any)
+    .stub(UserService.prototype, 'getUser', getUser as any)
     .stderr()
     .stdout()
     .run([
@@ -43,7 +43,7 @@ describe('users:get', () => {
     });
 
   customTest
-    .stub(UserService.prototype, 'getVaultUser', getVaultUser as any)
+    .stub(UserService.prototype, 'getUser', getUser as any)
     .stderr()
     .stdout()
     .run(['users:get', ...testUserAuth, ...testEnvironmentFile])
@@ -59,7 +59,7 @@ function getVaultToken(password, secret) {
   );
 }
 
-function getVaultUser(token) {
+function getUser(token) {
   return Promise.resolve({
     user: {
       id: '68a2cdb3-4a9d-42ac-83e7-d7e4967143a0',

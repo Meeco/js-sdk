@@ -25,7 +25,10 @@ export default class LogoutUser extends MeecoCommand {
       }
 
       this.updateStatus('Logging out');
-      await service.deleteSessions(authConfig.vault_access_token, authConfig.keystore_access_token);
+      await service.deleteSessionTokens(
+        authConfig.vault_access_token,
+        authConfig.keystore_access_token
+      );
       this.finish();
     } catch (err) {
       await this.handleException(err);

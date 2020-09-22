@@ -172,7 +172,7 @@ export class UserService {
       privateKeyPem: keyPair.privateKey,
       serialized: session.encrypted_session_authentication_string,
     });
-    const userResponse = await this.getVaultUser(decryptedVaultSessionToken);
+    const userResponse = await this.getUser(decryptedVaultSessionToken);
     return {
       user: userResponse.user,
       token: decryptedVaultSessionToken,
@@ -314,9 +314,16 @@ export class UserService {
   }
 
   /**
-   * Given a user's passphrase and secret - fetch all data required to interact with Meeco's APIs on their behalf such as encryption keys
+   * @deprecated use {@link getAuthData} instead.
    */
   public async get(userPassword: string, secret: string): Promise<AuthData> {
+    return this.getAuthData(userPassword, secret);
+  }
+
+  /**
+   * Given a user's passphrase and secret - fetch all data required to interact with Meeco's APIs on their behalf such as encryption keys
+   */
+  public async getAuthData(userPassword: string, secret: string): Promise<AuthData> {
     this.log('Deriving keys');
     const derivedKey = await this.keyGen.derivePDKFromSecret(userPassword, secret);
     const sessionAuthenticationToken = await this.loginKeystoreViaSRP(userPassword, secret);
@@ -357,24 +364,66 @@ export class UserService {
     });
   }
 
-  public async getKeystoreToken(userPassword: string, secret: string) {
+  /**
+   * Creates a Keystore token for the user.
+   * @param userPassword
+   * @param secret
+   */
+  public async createKeystoreToken(userPassword: string, secret: string) {
+    // This method abstracts the login method type,
+    // Better to do that than make the following method public.
     return this.loginKeystoreViaSRP(userPassword, secret);
   }
 
-  public async getVaultToken(userPassword: string, secret: string) {
-    return this.loginKeystoreViaSRP(userPassword, secret)
-      .then(token => this.requestExternalAdmissionTokens(token))
-      .then(({ vault_api_admission_token }) => vault_api_admission_token);
+  /**
+   * Create a new Vault session or get the token for an existing session.
+   * @param userPassword
+   * @param secret
+   */
+  public async getOrCreateVaultToken(userPassword: string, secret: string) {
+    this.log('Deriving keys');
+    // TODO - this is quite similar to getAuthData, only it doesn't download the DEK
+    // Could factor out the differences.
+    const sessionAuthenticationToken = await this.loginKeystoreViaSRP(userPassword, secret);
+    const derivedKey = await this.keyGen.derivePDKFromSecret(userPassword, secret);
+    const encryptedKek = await this.getKeyEncryptionKey(sessionAuthenticationToken);
+    const kek = await this.cryppo.decryptWithKey({
+      serialized: encryptedKek.serialized_key_encryption_key,
+      key: derivedKey,
+    });
+
+    const keyPair = await this.requestKeyPair(sessionAuthenticationToken);
+    const decryptedPrivateKey = await this.cryppo.decryptWithKey({
+      serialized: keyPair.encrypted_serialized_key,
+      key: kek,
+    });
+    const vaultUser = await this.getVaultSession({
+      privateKey: decryptedPrivateKey,
+      publicKey: keyPair.public_key,
+    });
+
+    return vaultUser.token;
   }
 
+  /**
+   * @deprecated Use {@link getUser} instead.
+   * @param vaultAccessToken
+   */
   public getVaultUser(vaultAccessToken: string) {
+    return this.getUser(vaultAccessToken);
+  }
+
+  public getUser(vaultAccessToken: string) {
     return this.vaultApiFactory(vaultAccessToken).UserApi.meGet();
   }
 
-  public deleteSessions(vaultToken: string, keystoreToken: string) {
+  /**
+   * Invalidate all of the provided tokens.
+   */
+  public async deleteSessionTokens(vaultToken?: string, keystoreToken?: string): Promise<void> {
     return Promise.all([
-      this.vaultApiFactory(vaultToken).SessionApi.sessionDelete(),
-      this.keystoreApiFactory(keystoreToken).SessionApi.sessionDelete(),
-    ]);
+      vaultToken ? this.vaultApiFactory(vaultToken).SessionApi.sessionDelete() : null,
+      keystoreToken ? this.keystoreApiFactory(keystoreToken).SessionApi.sessionDelete() : null,
+    ]).then(); // elide the individual responses
   }
 }

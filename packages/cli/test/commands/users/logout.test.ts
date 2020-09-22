@@ -4,7 +4,7 @@ import { customTest, testEnvironmentFile, testUserAuth } from '../../test-helper
 
 describe('users:logout', () => {
   customTest
-    .stub(UserService.prototype, 'deleteSessions', deleteTokens as any)
+    .stub(UserService.prototype, 'deleteSessionTokens', deleteTokens as any)
     .stderr()
     .stdout()
     .run(['users:logout', ...testUserAuth, ...testEnvironmentFile])
