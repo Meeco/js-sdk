@@ -84,7 +84,7 @@ export async function directAttachmentAttach(
     vault_access_token: string;
   },
   vaultUrl,
-  fetchApi: any
+  fetchApi?: any
 ): Promise<CreateAttachmentResponse> {
   const configParams = { basePath: vaultUrl, apiKey: auth.vault_access_token };
   if (fetchApi) {
@@ -109,7 +109,7 @@ export async function getDirectAttachmentInfo(
     vault_access_token: string;
   },
   vaultUrl: string,
-  fetchApi: any
+  fetchApi?: any
 ): Promise<any> {
   const configParams = { basePath: vaultUrl, apiKey: auth.vault_access_token };
   if (fetchApi) {
