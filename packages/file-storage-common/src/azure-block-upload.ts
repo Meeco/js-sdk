@@ -1,5 +1,5 @@
 import * as Cryppo from '@meeco/cryppo';
-import padStart from 'lodash.padstart';
+import * as padStart from 'lodash.padstart';
 import { isRunningOnWeb } from './app';
 import { BlobStorage } from './services/Azure';
 import ThreadPool from './ThreadPool';

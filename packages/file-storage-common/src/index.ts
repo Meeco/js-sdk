@@ -52,7 +52,8 @@ export async function directAttachmentUploadUrl(
     data_encryption_key: string;
     vault_access_token: string;
   },
-  vaultUrl: string
+  vaultUrl: string,
+  fetchApi?: any
 ): Promise<AttachmentDirectUploadUrlResponse> {
   let uploadUrl;
   try {
@@ -63,9 +64,11 @@ export async function directAttachmentUploadUrl(
         byte_size: config.fileSize,
       },
     };
-    const api = new DirectAttachmentsApi(
-      new Configuration({ basePath: vaultUrl, apiKey: auth.vault_access_token })
-    );
+    const configParams = { basePath: vaultUrl, apiKey: auth.vault_access_token };
+    if (fetchApi) {
+      configParams['fetchApi'] = fetchApi;
+    }
+    const api = new DirectAttachmentsApi(new Configuration(configParams));
 
     uploadUrl = await api.directAttachmentsUploadUrlPost(params);
   } catch (err) {
@@ -80,11 +83,14 @@ export async function directAttachmentAttach(
     data_encryption_key: string;
     vault_access_token: string;
   },
-  vaultUrl
+  vaultUrl,
+  fetchApi: any
 ): Promise<CreateAttachmentResponse> {
-  const api = new DirectAttachmentsApi(
-    new Configuration({ basePath: vaultUrl, apiKey: auth.vault_access_token })
-  );
+  const configParams = { basePath: vaultUrl, apiKey: auth.vault_access_token };
+  if (fetchApi) {
+    configParams['fetchApi'] = fetchApi;
+  }
+  const api = new DirectAttachmentsApi(new Configuration(configParams));
   const attachment = await api.directAttachmentsPost({
     blob: {
       blob_id: config.blobId,
@@ -102,11 +108,14 @@ export async function getDirectAttachmentInfo(
     data_encryption_key: string;
     vault_access_token: string;
   },
-  vaultUrl: string
+  vaultUrl: string,
+  fetchApi: any
 ): Promise<any> {
-  const api = new DirectAttachmentsApi(
-    new Configuration({ basePath: vaultUrl, apiKey: auth.vault_access_token })
-  );
+  const configParams = { basePath: vaultUrl, apiKey: auth.vault_access_token };
+  if (fetchApi) {
+    configParams['fetchApi'] = fetchApi;
+  }
+  const api = new DirectAttachmentsApi(new Configuration(configParams));
   return await api.directAttachmentsIdGet(config.attachmentId);
 }
 

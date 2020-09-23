@@ -18,7 +18,8 @@
     "@meeco/cryppo": "^0.7.0",
     "file-type": "^15.0.0",
     "bili": "^4.10.0",
-    "file-saver": "^2.0.2"
+    "file-saver": "^2.0.2",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
     "typescript": "^3.9.6",
