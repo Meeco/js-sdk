@@ -151,7 +151,9 @@ export async function fileDownloadBrowser({
     );
     buffer = Buffer.from(downloaded);
   }
-  return new File([buffer], fileName);
+  return new File([buffer], fileName, {
+    type: attachmentInfo.attachment.content_type,
+  });
 }
 
 async function largeFileDownloadBrowser(
