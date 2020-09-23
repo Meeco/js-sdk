@@ -19,7 +19,7 @@
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
   },
   "dependencies": {
-    "@meeco/vault-api-sdk": "^0.19.1-beta.4",
+    "@meeco/vault-api-sdk": "^0.19.1-beta.6",
     "@meeco/file-storage-common": "0.0.5-beta",
     "@meeco/cryppo": "^0.7.0",
     "lodash.padstart": "^4.6.1",

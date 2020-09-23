@@ -210,7 +210,9 @@ function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl
   };
   return fetch(`${vaultUrl}/direct/attachments/${id}/download_url?type=${type}`, options).then(
     res => {
-      return res.json();
+      return res.json().then(result => {
+        return result.attachment_direct_download_url;
+      });
     }
   );
 }
