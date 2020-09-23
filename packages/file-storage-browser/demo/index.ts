@@ -26,14 +26,22 @@ function updateEnvironment() {
   const dataEncryptionKey = $get('dataEncryptionKey');
   const subscriptionKey = $get('subscriptionKey');
   const vaultAccessToken = $get('vaultAccessToken');
+  const keyEncryptionKey = $get('keyEncryptionKey') || '';
+  const keystoreAccessToken = $get('keystoreAccessToken') || '';
+  const passphraseDerivedKey = $get('passphraseDerivedKey') || '';
+  const secret = $get('secret') || '';
 
   localStorage.setItem('vaultUrl', vaultUrl);
   localStorage.setItem('dataEncryptionKey', dataEncryptionKey);
   localStorage.setItem('subscriptionKey', subscriptionKey);
   localStorage.setItem('vaultAccessToken', vaultAccessToken);
+  localStorage.setItem('keyEncryptionKey', keyEncryptionKey);
+  localStorage.setItem('keystoreAccessToken', keystoreAccessToken);
+  localStorage.setItem('passphraseDerivedKey', passphraseDerivedKey);
+  localStorage.setItem('secret', secret);
 
   if (!vaultUrl || !dataEncryptionKey) {
-    return $set('environmentStatus', 'Error: Please configure all environment fields');
+    return $set('environmentStatus', 'Error: Please ccconfigure all environment fields');
   }
 
   $set('environmentStatus', 'Saved');
@@ -41,6 +49,7 @@ function updateEnvironment() {
 
 $('attachFile').addEventListener('click', attachFile, false);
 $('downloadAttachment').addEventListener('click', downloadAttachment);
+$('updateEnvironment').addEventListener('click', updateEnvironment);
 
 async function attachFile() {
   const [file] = ($('attachment') as any).files;
@@ -60,6 +69,11 @@ async function attachFile() {
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
 
+    const keyEncryptionKey = localStorage.getItem('keyEncryptionKey') || '';
+    const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
+    const passphraseDerivedKey = localStorage.getItem('passphraseDerivedKey') || '';
+    const secret = localStorage.getItem('secret') || '';
+
     const progressUpdateFunc = (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => {
       $set('fileUploadProgressBar', percentageComplete.toString());
     };
@@ -76,12 +90,18 @@ async function attachFile() {
       },
     });
 
+    // itemService now accepts authdata, as user could fetch shared item and not its own item through this endpoint.
+    // therefore it requires additional information about auth
     const itemService = new ItemService(environment);
-    const itemFetchResult = await itemService.get(
-      itemId,
-      vaultAccessToken,
-      EncryptionKey.fromSerialized(privateDek)
-    );
+    const itemFetchResult = await itemService.get(itemId, {
+      data_encryption_key: EncryptionKey.fromSerialized(privateDek),
+      vault_access_token: vaultAccessToken,
+      key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+      keystore_access_token: keystoreAccessToken,
+      passphrase_derived_key: EncryptionKey.fromSerialized(passphraseDerivedKey),
+      secret,
+    });
+
     const { attachment, dek: attachmentDek } = await fileUploadBrowser({
       file,
       vaultUrl,
@@ -132,6 +152,12 @@ async function downloadAttachment() {
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
+
+    const keyEncryptionKey = localStorage.getItem('keyEncryptionKey') || '';
+    const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
+    const passphraseDerivedKey = localStorage.getItem('passphraseDerivedKey') || '';
+    const secret = localStorage.getItem('secret') || '';
+
     let isSteamingMedia = false;
     const progressUpdateFunc = (
       chunkBuffer: ArrayBuffer | null,
@@ -188,13 +214,18 @@ async function downloadAttachment() {
       },
     });
 
+    // itemService now accepts authdata, as user could fetch shared item and not its own item through this endpoint.
+    // therefore it requires additional information about auth
     const itemService = new ItemService(environment);
-    const itemFetchResult = await itemService.get(
-      itemId,
-      vaultAccessToken,
-      EncryptionKey.fromSerialized(dek)
-    );
-    const attachmentSlot: any = itemFetchResult.slots.find(slot => slot.id === slotId); // return type from the vault-api-sdk is wrong thus the type to any
+    const itemFetchResult: any = await itemService.get(itemId, {
+      data_encryption_key: EncryptionKey.fromSerialized(dek),
+      vault_access_token: vaultAccessToken,
+      key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+      keystore_access_token: keystoreAccessToken,
+      passphrase_derived_key: EncryptionKey.fromSerialized(passphraseDerivedKey),
+      secret,
+    });
+    const attachmentSlot = itemFetchResult.slots.find(slot => slot.id === slotId); // return type from the vault-api-sdk is wrong thus the type to any
 
     const downloadedFile = await fileDownloadBrowser({
       attachmentId: attachmentSlot?.attachment_id,
