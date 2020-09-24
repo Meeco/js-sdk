@@ -41,7 +41,7 @@ function updateEnvironment() {
   localStorage.setItem('secret', secret);
 
   if (!vaultUrl || !dataEncryptionKey) {
-    return $set('environmentStatus', 'Error: Please ccconfigure all environment fields');
+    return $set('environmentStatus', 'Error: Please configure all environment fields');
   }
 
   $set('environmentStatus', 'Saved');
