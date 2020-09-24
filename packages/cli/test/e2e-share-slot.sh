@@ -41,8 +41,10 @@ echo "connection id: ${connectionId}"
 echo "Share slot licence_plate only"
 run shares:create-config --from .Alice.yaml --connectionId $connectionId -i $itemId -s licence_plate > .share_Alice_Bob.yaml
 
+dateAFter30Days=$(date +'%Y-%m-%d' -d "30 day")
+
 echo "Share the card to 'Bob'"
-run shares:create -c .share_Alice_Bob.yaml > .share_Alice_Bob.created.yaml
+run shares:create -c .share_Alice_Bob.yaml -d $dateAFter30Days > .share_Alice_Bob.created.yaml
 
 bobsShareId=$(cat .share_Alice_Bob.created.yaml | yq -r '.shares[0].id')
 echo "bob's share id: ${bobsShareId}"

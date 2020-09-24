@@ -6,7 +6,6 @@ import sinon from 'sinon';
 import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('shares:create', () => {
-  const constantDate = new Date(0);
   const value_verification_hash =
     '925c874c3345fd71f24fafb7231432749cd8761b93e455da68187e666c25d341';
   customTest
@@ -18,9 +17,17 @@ describe('shares:create', () => {
       'generate_value_verificaiton_hash',
       sinon.stub().returns(value_verification_hash)
     )
-    .stub(ShareService, 'Date', sinon.stub().returns(constantDate))
     .nock('https://sandbox.meeco.me/vault', stubVault(false))
-    .run(['shares:create', '-c', inputFixture('create-share.input.yaml'), ...testEnvironmentFile])
+    .run([
+      'shares:create',
+      '-c',
+      inputFixture('create-share.input.yaml'),
+      '-m',
+      'anyone',
+      '-d',
+      '2020-12-31',
+      ...testEnvironmentFile,
+    ])
     .it('can setup sharing between two users', ctx => {
       const expected = readFileSync(outputFixture('create-share.output.yaml'), 'utf-8');
       expect(ctx.stdout.trim()).to.contain(expected.trim());
@@ -46,6 +53,8 @@ describe('shares:create one slot', () => {
       'shares:create',
       '-c',
       inputFixture('create-share-oneslot.input.yaml'),
+      '-d',
+      '2020-12-31',
       ...testEnvironmentFile,
     ])
     .it('can setup sharing between two users', ctx => {
@@ -114,7 +123,8 @@ function stubVault(shareSingleSlot: boolean) {
         .post('/items/from_user_vault_item_to_share_id/shares', {
           shares: [
             {
-              sharing_mode: 'owner',
+              expires_at: '2020-12-30T13:00:00.000Z',
+              sharing_mode: 'anyone',
               acceptance_required: 'acceptance_not_required',
               recipient_id: 'to_user_id',
               public_key: 'to_user_public_key',
@@ -161,7 +171,7 @@ function stubVault(shareSingleSlot: boolean) {
                 '[serialized][rsa_encrypted]randomly_generated_key[with to_user_public_key]',
               terms: '',
               created_at: new Date(0),
-              expires_at: new Date(0),
+              expires_at: '2020-12-30T13:00:00.000Z',
             },
           ],
         });
@@ -170,6 +180,7 @@ function stubVault(shareSingleSlot: boolean) {
         .post('/items/from_user_vault_item_to_share_id/shares', {
           shares: [
             {
+              expires_at: '2020-12-30T13:00:00.000Z',
               sharing_mode: 'owner',
               acceptance_required: 'acceptance_not_required',
               slot_id: 'slot_a',
@@ -210,7 +221,7 @@ function stubVault(shareSingleSlot: boolean) {
                 '[serialized][rsa_encrypted]randomly_generated_key[with to_user_public_key]',
               terms: '',
               created_at: new Date(0),
-              expires_at: new Date(0),
+              expires_at: '2020-12-30T13:00:00.000Z',
             },
           ],
         });
