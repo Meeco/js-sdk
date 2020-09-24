@@ -1,5 +1,4 @@
 import * as Cryppo from '@meeco/cryppo';
-import * as padStart from 'lodash.padstart';
 import { isRunningOnWeb } from './app';
 import { BlobStorage } from './services/Azure';
 import ThreadPool from './ThreadPool';
@@ -154,7 +153,7 @@ export class AzureBlockUpload {
               ? (nBlock + 1) * this.blockSize
               : this.fileSize;
 
-          const blockID: any = base64(`${this.blockIDPrefix}${padStart(nBlock, 5)}`);
+          const blockID: any = base64(`${this.blockIDPrefix}${nBlock.toString().padStart(5)}`);
           blockIDList.push(blockID);
 
           const blockBuffer: any = await this.fileUtilsLib.readBlock(this.file, from, to);
