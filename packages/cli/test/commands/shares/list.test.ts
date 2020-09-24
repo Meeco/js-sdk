@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 describe('shares:list', () => {
-  const constantDate = new Date(0);
+  const constantDate = new Date(1);
 
   // Incoming shares
   customTest

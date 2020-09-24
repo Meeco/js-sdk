@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('shares:create', () => {
-  const constantDate = new Date(0);
+  const constantDate = new Date(1);
   const value_verification_hash =
     '925c874c3345fd71f24fafb7231432749cd8761b93e455da68187e666c25d341';
   customTest
@@ -28,7 +28,7 @@ describe('shares:create', () => {
 });
 
 describe('shares:create one slot', () => {
-  const constantDate = new Date(0);
+  const constantDate = new Date(1);
   const value_verification_hash =
     '925c874c3345fd71f24fafb7231432749cd8761b93e455da68187e666c25d341';
   customTest
@@ -160,8 +160,8 @@ function stubVault(shareSingleSlot: boolean) {
               encrypted_dek:
                 '[serialized][rsa_encrypted]randomly_generated_key[with to_user_public_key]',
               terms: '',
-              created_at: new Date(0),
-              expires_at: new Date(0),
+              created_at: new Date(1),
+              expires_at: new Date(1),
             },
           ],
         });
@@ -209,8 +209,8 @@ function stubVault(shareSingleSlot: boolean) {
               encrypted_dek:
                 '[serialized][rsa_encrypted]randomly_generated_key[with to_user_public_key]',
               terms: '',
-              created_at: new Date(0),
-              expires_at: new Date(0),
+              created_at: new Date(1),
+              expires_at: new Date(1),
             },
           ],
         });

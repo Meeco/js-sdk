@@ -5,14 +5,14 @@ spec:
     work_type: update_share
     target_id: share_item_id_a
     additional_options: {}
-    last_state_transition_at: 1970-01-01T00:00:00.000Z
+    last_state_transition_at: 1970-01-01T00:00:00.001Z
     report: {}
-    created_at: 1970-01-01T00:00:00.000Z
+    created_at: 1970-01-01T00:00:00.001Z
   - id: b
     state: todo
     work_type: update_share
     target_id: share_item_id_b
     additional_options: {}
-    last_state_transition_at: 1970-01-01T00:00:00.000Z
+    last_state_transition_at: 1970-01-01T00:00:00.001Z
     report: {}
-    created_at: 1970-01-01T00:00:00.000Z
+    created_at: 1970-01-01T00:00:00.001Z
