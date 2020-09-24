@@ -1,6 +1,6 @@
 import { ShareService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
-import { isAfter, isValid, parse } from 'date-fns';
+import { isAfter, isValid, parse, parseISO } from 'date-fns';
 import { ShareConfig } from '../../configs/share-config';
 import MeecoCommand from '../../util/meeco-command';
 export default class SharesCreate extends MeecoCommand {
@@ -31,7 +31,7 @@ export default class SharesCreate extends MeecoCommand {
     }),
     expiry_date: _flags.string({
       char: 'd',
-      description: 'Share expiry date: YYYY-MM-DD e.g. 2020-12-31',
+      description: 'Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31',
       required: false,
     }),
   };
@@ -46,10 +46,15 @@ export default class SharesCreate extends MeecoCommand {
       const environment = await this.readEnvironmentFile();
       const share = await this.readConfigFromFile(ShareConfig, config);
 
-      const parseDate = parse(expiry_date || '', 'yyyy-MM-dd', new Date());
+      let parseDate: Date | undefined;
+
       if (expiry_date) {
+        parseDate = parse(expiry_date!, 'yyyy-MM-dd', new Date());
         if (!isValid(parseDate)) {
-          this.error('Invalid Share Expiry Date');
+          parseDate = parseISO(expiry_date!);
+        }
+        if (!isValid(parseDate)) {
+          this.error('Invalid Share Expiry Date - please provide either yyyy-MM-dd or ISO format');
         } else if (isAfter(new Date(), parseDate)) {
           this.error('Share Expiry Date must be future date');
         }

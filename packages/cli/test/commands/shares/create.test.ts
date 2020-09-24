@@ -27,7 +27,7 @@ describe('shares:create', () => {
       '-m',
       'anyone',
       '-d',
-      '2020-12-31',
+      '2020-12-30T13:00:00.000Z',
       ...testEnvironmentFile,
     ])
     .it('can setup sharing between two users', ctx => {
@@ -56,7 +56,7 @@ describe('shares:create one slot', () => {
       '-c',
       inputFixture('create-share-oneslot.input.yaml'),
       '-d',
-      '2020-12-31',
+      '2020-12-30T13:00:00.000Z',
       ...testEnvironmentFile,
     ])
     .it('can setup sharing between two users', ctx => {
