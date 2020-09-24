@@ -1,11 +1,8 @@
 import { ShareService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
+import { isAfter, isValid, parse } from 'date-fns';
 import { ShareConfig } from '../../configs/share-config';
 import MeecoCommand from '../../util/meeco-command';
-
-// tslint:disable-next-line: ordered-imports
-import moment = require('moment');
-
 export default class SharesCreate extends MeecoCommand {
   static description = 'Share an item between two users';
 
@@ -49,10 +46,13 @@ export default class SharesCreate extends MeecoCommand {
       const environment = await this.readEnvironmentFile();
       const share = await this.readConfigFromFile(ShareConfig, config);
 
-      if (expiry_date && !moment(expiry_date, 'YYYY-MM-DD').isValid()) {
-        this.error('Invalid Share Expiry Date');
-      } else if (expiry_date && !moment(expiry_date).isAfter()) {
-        this.error('Share Expiry Date must be future date');
+      const parseDate = parse(expiry_date || '', 'yyyy-MM-dd', new Date());
+      if (expiry_date) {
+        if (!isValid(parseDate)) {
+          this.error('Invalid Share Expiry Date');
+        } else if (isAfter(new Date(), parseDate)) {
+          this.error('Share Expiry Date must be future date');
+        }
       }
 
       if (!share) {
@@ -61,7 +61,7 @@ export default class SharesCreate extends MeecoCommand {
 
       const service = new ShareService(environment, this.updateStatus);
       const result = await service.shareItem(share.from, share.connectionId, share.itemId, {
-        expires_at: expiry_date ? moment(expiry_date, 'YYYY-MM-DD').toDate() : undefined,
+        expires_at: expiry_date ? parseDate : undefined,
         sharing_mode,
         acceptance_required,
         ...(share.slotId ? { slot_id: share.slotId } : {}),

@@ -6,6 +6,7 @@ import sinon from 'sinon';
 import { customTest, inputFixture, outputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('shares:create', () => {
+  const constantDate = new Date(0);
   const value_verification_hash =
     '925c874c3345fd71f24fafb7231432749cd8761b93e455da68187e666c25d341';
   customTest
@@ -17,6 +18,7 @@ describe('shares:create', () => {
       'generate_value_verificaiton_hash',
       sinon.stub().returns(value_verification_hash)
     )
+    .stub(ShareService, 'Date', sinon.stub().returns(constantDate))
     .nock('https://sandbox.meeco.me/vault', stubVault(false))
     .run([
       'shares:create',
@@ -171,7 +173,7 @@ function stubVault(shareSingleSlot: boolean) {
                 '[serialized][rsa_encrypted]randomly_generated_key[with to_user_public_key]',
               terms: '',
               created_at: new Date(0),
-              expires_at: '2020-12-30T13:00:00.000Z',
+              expires_at: new Date(0),
             },
           ],
         });
@@ -221,7 +223,7 @@ function stubVault(shareSingleSlot: boolean) {
                 '[serialized][rsa_encrypted]randomly_generated_key[with to_user_public_key]',
               terms: '',
               created_at: new Date(0),
-              expires_at: '2020-12-30T13:00:00.000Z',
+              expires_at: new Date(0),
             },
           ],
         });
