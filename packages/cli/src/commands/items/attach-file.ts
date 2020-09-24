@@ -46,11 +46,10 @@ export default class ItemsAttachFile extends MeecoCommand {
       const itemFetchResult = await itemService.get(fileConfig.itemId, authConfig);
 
       const filePath = fileConfig.file;
-      let file: Buffer, fileName: string, fileType: string;
       try {
-        file = await readFileAsBuffer(filePath);
-        fileName = basename(filePath);
-        fileType = lookup(filePath) || 'application/octet-stream';
+        await readFileAsBuffer(filePath);
+        basename(filePath);
+        lookup(filePath);
       } catch (err) {
         throw new CLIError(
           `Failed to read file '${filePath}' - please check that the file exists and is readable`
