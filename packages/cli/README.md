@@ -967,6 +967,9 @@ OPTIONS
   -c, --config=config
       (required) Share config file to use for setting up the share
 
+  -d, --expiry_date=expiry_date
+      Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
+
   -e, --environment=environment
       [default: .environment.yaml] environment config file
 
