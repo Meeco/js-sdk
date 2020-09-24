@@ -8,6 +8,7 @@ import {
   getDirectAttachmentInfo,
 } from '@meeco/file-storage-common';
 import { Environment } from '@meeco/sdk';
+import { Configuration, DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as FileType from 'file-type';
 import * as fs from 'fs';
 import nodeFetch from 'node-fetch';
@@ -171,21 +172,9 @@ export async function largeFileDownloadNode(attachmentID, dek, token, vaultUrl) 
   return { byteArray, direct_download };
 }
 
-function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl: string) {
-  const options = {
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: 'Bearer ' + token,
-    },
-    method: 'GET',
-  };
-
-  return fetch(`${vaultUrl}/direct/attachments/${id}/download_url?type=${type}`, options).then(
-    res => {
-      return res.json().then(result => {
-        return result.attachment_direct_download_url;
-      });
-    }
-  );
+async function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl: string) {
+  const configParams = { basePath: vaultUrl, apiKey: token, fetchApi: nodeFetch };
+  const api = new DirectAttachmentsApi(new Configuration(configParams));
+  const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
+  return result.attachment_direct_download_url;
 }

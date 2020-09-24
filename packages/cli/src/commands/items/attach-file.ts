@@ -84,7 +84,11 @@ export default class ItemsAttachFile extends MeecoCommand {
         itemUpdateData
       );
 
-      this.printYaml({ attachment: uploadedFile.attachment, ...updated });
+      this.printYaml({
+        attachment: uploadedFile.attachment,
+        slots: updated.slots.filter(slot => slot.attachment_id === uploadedFile.attachment.id),
+        item: updated.item,
+      });
     } catch (err) {
       await this.handleException(err);
     }
