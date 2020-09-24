@@ -7,7 +7,6 @@ import {
   downloadAttachment,
   getDirectAttachmentInfo,
 } from '@meeco/file-storage-common';
-import { Environment } from '@meeco/sdk';
 import { Configuration, DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as FileType from 'file-type';
 import * as fs from 'fs';
@@ -101,7 +100,11 @@ export async function largeFileUploadNode(
 
 export async function fileDownloadNode(
   attachmentId: string,
-  environment: Environment,
+  environment: {
+    vault: {
+      url: string;
+    };
+  },
   authConfig: {
     data_encryption_key: string;
     vault_access_token: string;
