@@ -20,7 +20,16 @@ describe('shares:create', () => {
     )
     .stub(ShareService, 'Date', sinon.stub().returns(constantDate))
     .nock('https://sandbox.meeco.me/vault', stubVault(false))
-    .run(['shares:create', '-c', inputFixture('create-share.input.yaml'), ...testEnvironmentFile])
+    .run([
+      'shares:create',
+      '-c',
+      inputFixture('create-share.input.yaml'),
+      '-m',
+      'anyone',
+      '-d',
+      '2020-12-30T13:00:00.000Z',
+      ...testEnvironmentFile,
+    ])
     .it('can setup sharing between two users', ctx => {
       const expected = readFileSync(outputFixture('create-share.output.yaml'), 'utf-8');
       expect(ctx.stdout.trim()).to.contain(expected.trim());
@@ -46,6 +55,8 @@ describe('shares:create one slot', () => {
       'shares:create',
       '-c',
       inputFixture('create-share-oneslot.input.yaml'),
+      '-d',
+      '2020-12-30T13:00:00.000Z',
       ...testEnvironmentFile,
     ])
     .it('can setup sharing between two users', ctx => {
@@ -114,7 +125,8 @@ function stubVault(shareSingleSlot: boolean) {
         .post('/items/from_user_vault_item_to_share_id/shares', {
           shares: [
             {
-              sharing_mode: 'owner',
+              expires_at: '2020-12-30T13:00:00.000Z',
+              sharing_mode: 'anyone',
               acceptance_required: 'acceptance_not_required',
               recipient_id: 'to_user_id',
               public_key: 'to_user_public_key',
@@ -170,6 +182,7 @@ function stubVault(shareSingleSlot: boolean) {
         .post('/items/from_user_vault_item_to_share_id/shares', {
           shares: [
             {
+              expires_at: '2020-12-30T13:00:00.000Z',
               sharing_mode: 'owner',
               acceptance_required: 'acceptance_not_required',
               slot_id: 'slot_a',
