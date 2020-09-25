@@ -25,7 +25,7 @@ jobs:
           CI: true
       # It is currently a dependency
       - run: npx lerna run build --scope '@meeco/sdk'
-      - run: npx lerna run build --scope '@meeco/{file-storage-common,file-storage-browser}'
+      - run: npx lerna run build --scope '@meeco/{file-storage-common,file-storage-browser,file-storage-node}'
       - name: Publish NPM
         run: |
           npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser}' -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
