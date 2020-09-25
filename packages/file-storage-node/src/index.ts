@@ -139,7 +139,7 @@ export async function fileDownloadNode(
       authConfig.data_encryption_key,
       environment.vault.url
     );
-    buffer = Buffer.from(downloaded);
+    buffer = Buffer.from(downloaded as string);
   }
   return { fileName, buffer };
 }

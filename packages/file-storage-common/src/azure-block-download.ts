@@ -37,7 +37,7 @@ export class AzureBlockDownload {
           encryptionArtifact
         );
 
-        byteNumbers = new Uint8Array(Cryppo.stringAsBinaryBuffer(str));
+        byteNumbers = new Uint8Array(Cryppo.stringAsBinaryBuffer(str || ''));
       }
       return new Promise(resolve => {
         resolve(byteNumbers || data);

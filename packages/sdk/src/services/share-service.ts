@@ -360,8 +360,8 @@ export class ShareService {
 
         return {
           slot_id: slot.id as string,
-          encrypted_value,
-          encrypted_value_verification_key,
+          encrypted_value: encrypted_value as string,
+          encrypted_value_verification_key: encrypted_value_verification_key || undefined,
           value_verification_hash,
         };
       });
