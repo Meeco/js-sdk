@@ -40,14 +40,14 @@ describe('templates:info', () => {
 const response = {
   item_templates: [
     {
-      created_at: new Date(0),
-      updated_at: new Date(0),
+      created_at: new Date(1),
+      updated_at: new Date(1),
       name: 'food',
       slots_ids: ['steak', 'pizza', 'yoghurt'],
     },
     {
-      created_at: new Date(0),
-      updated_at: new Date(0),
+      created_at: new Date(1),
+      updated_at: new Date(1),
       name: 'drink',
       slot_ids: ['yoghurt', 'water', 'beer'],
     },
@@ -55,28 +55,28 @@ const response = {
   slots: [
     {
       id: 'pizza',
-      created_at: new Date(0),
-      updated_at: new Date(0),
+      created_at: new Date(1),
+      updated_at: new Date(1),
     },
     {
       id: 'steak',
-      created_at: new Date(0),
-      updated_at: new Date(0),
+      created_at: new Date(1),
+      updated_at: new Date(1),
     },
     {
       id: 'yoghurt',
-      created_at: new Date(0),
-      updated_at: new Date(0),
+      created_at: new Date(1),
+      updated_at: new Date(1),
     },
     {
       id: 'water',
-      created_at: new Date(0),
-      updated_at: new Date(0),
+      created_at: new Date(1),
+      updated_at: new Date(1),
     },
     {
       id: 'beer',
-      created_at: new Date(0),
-      updated_at: new Date(0),
+      created_at: new Date(1),
+      updated_at: new Date(1),
     },
   ],
   attachments: [],

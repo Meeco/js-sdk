@@ -1,6 +1,6 @@
 {
   "name": "@meeco/file-storage-common",
-  "version": "0.0.6-beta",
+  "version": "0.0.8-beta",
   "description": "Core module for uploading and downloading encrypted files",
   "source": "src/index.ts",
   "types": "./lib/index.d.ts",
@@ -18,11 +18,9 @@
   },
   "dependencies": {
     "@meeco/cryppo": "^0.7.0",
-    "axios": "^0.20.0",
-    "lodash.padstart": "^4.6.1"
+    "axios": "^0.20.0"
   },
   "devDependencies": {
-    "@types/lodash.padstart": "^4.6.6",
     "@types/node": "^10.14.18",
     "bili": "^4.10.0",
     "prettier": "~1.19.1",

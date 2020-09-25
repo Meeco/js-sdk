@@ -25,12 +25,12 @@ jobs:
           CI: true
       # It is currently a dependency
       - run: npx lerna run build --scope '@meeco/sdk'
-      - run: npx lerna run build --scope '@meeco/{file-storage-common,file-storage-browser}'
+      - run: npx lerna run build --scope '@meeco/{file-storage-common,file-storage-browser,file-storage-node}'
       - name: Publish NPM
         run: |
-          npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser}' -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
-          npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser}' -- npm config set scope "@meeco"
-          npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser}' -- npm publish --access public --tag beta
+          npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser,file-storage-node}' -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
+          npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser,file-storage-node}' -- npm config set scope "@meeco"
+          npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser,file-storage-node}' -- npm publish --access public --tag beta
         env:
           CI: true
           NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}

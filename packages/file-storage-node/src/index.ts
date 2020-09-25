@@ -1,35 +1,47 @@
 import * as Cryppo from '@meeco/cryppo';
 import {
   AzureBlockDownload,
+  directAttachmentAttach,
   directAttachmentUpload,
+  directAttachmentUploadUrl,
+  downloadAttachment,
   getDirectAttachmentInfo,
 } from '@meeco/file-storage-common';
-import { AuthData, Environment, ItemService } from '@meeco/sdk';
+import { Configuration, DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as FileType from 'file-type';
 import * as fs from 'fs';
+import nodeFetch from 'node-fetch';
 import * as path from 'path';
 import * as FileUtils from './FileUtils.node';
 
 export async function largeFileUploadNode(
   filePath,
-  environment: Environment,
-  authConfig
-): Promise<any> {
+  environment: {
+    vault: {
+      url: string;
+      subscription_key: string;
+    };
+  },
+  authConfig: {
+    data_encryption_key: string;
+    vault_access_token: string;
+  }
+): Promise<{ attachment: any; dek: string }> {
   const fileStats = fs.statSync(filePath);
   const fileType = (await FileType.fromFile(filePath))?.mime.toString();
   const fileName = path.basename(filePath);
 
-  const service = new ItemService(environment);
-
-  const uploadUrl = await service.directAttachmentUploadUrl(
+  const uploadUrl = await directAttachmentUploadUrl(
     {
       fileSize: fileStats.size,
       fileType: fileType ? fileType : '',
       fileName,
     },
-    authConfig
+    authConfig,
+    environment.vault.url,
+    nodeFetch
   );
-
+  const dek = Cryppo.generateRandomKey();
   const uploadResult = await directAttachmentUpload(
     {
       directUploadUrl: uploadUrl.attachment_direct_upload_url.url,
@@ -37,22 +49,27 @@ export async function largeFileUploadNode(
       encrypt: true,
       options: {},
     },
-    authConfig,
+    {
+      data_encryption_key: dek,
+      vault_access_token: authConfig.vault_access_token,
+    },
     FileUtils
   );
 
   const artifactsFileName = fileName + '.encryption_artifacts';
-  const artifactsFileDir = `./tmp/${artifactsFileName}`;
+  const artifactsFileDir = `./${artifactsFileName}`;
   fs.writeFileSync(artifactsFileDir, JSON.stringify(uploadResult.artifacts));
   const artifactsFileStats = fs.statSync(artifactsFileDir);
 
-  const artifactsUploadUrl = await service.directAttachmentUploadUrl(
+  const artifactsUploadUrl = await directAttachmentUploadUrl(
     {
       fileName: artifactsFileName,
       fileType: 'application/json',
       fileSize: artifactsFileStats.size,
     },
-    authConfig
+    authConfig,
+    environment.vault.url,
+    nodeFetch
   );
 
   await directAttachmentUpload(
@@ -66,34 +83,43 @@ export async function largeFileUploadNode(
     FileUtils
   );
 
-  const attachedDoc = await service.directAttachmentAttach(
+  const attachedDoc = await directAttachmentAttach(
     {
       blobId: uploadUrl.attachment_direct_upload_url.blob_id,
       blobKey: uploadUrl.attachment_direct_upload_url.blob_key,
       artifactsBlobId: artifactsUploadUrl.attachment_direct_upload_url.blob_id,
       artifactsBlobKey: artifactsUploadUrl.attachment_direct_upload_url.blob_key,
     },
-    authConfig
+    authConfig,
+    environment.vault.url,
+    nodeFetch
   );
 
-  return attachedDoc;
+  return { attachment: attachedDoc.attachment, dek };
 }
 
 export async function fileDownloadNode(
   attachmentId: string,
-  environment: Environment,
-  authConfig: AuthData,
-  logFunction: any
+  environment: {
+    vault: {
+      url: string;
+    };
+  },
+  authConfig: {
+    data_encryption_key: string;
+    vault_access_token: string;
+  },
+  attachmentDek?: string,
+  logFunction?: any
 ): Promise<{ fileName: string; buffer: Buffer }> {
-  const service = new ItemService(environment, logFunction);
-
   const attachmentInfo = await getDirectAttachmentInfo(
     { attachmentId },
     {
-      data_encryption_key: authConfig.data_encryption_key.key,
+      data_encryption_key: authConfig.data_encryption_key,
       vault_access_token: authConfig.vault_access_token,
     },
-    environment.vault.url
+    environment.vault.url,
+    nodeFetch
   );
   let buffer: Buffer;
   const fileName: string = attachmentInfo.attachment.filename;
@@ -101,17 +127,17 @@ export async function fileDownloadNode(
     // was uploaded in chunks
     const downloaded = await largeFileDownloadNode(
       attachmentId,
-      authConfig.data_encryption_key,
+      attachmentDek,
       authConfig.vault_access_token,
       environment.vault.url
     );
     buffer = downloaded.byteArray;
   } else {
-    // was not uploaded in chunks
-    const downloaded = await service.downloadAttachment(
+    const downloaded = await downloadAttachment(
       attachmentId,
       authConfig.vault_access_token,
-      authConfig.data_encryption_key
+      authConfig.data_encryption_key,
+      environment.vault.url
     );
     buffer = Buffer.from(downloaded);
   }
@@ -149,19 +175,9 @@ export async function largeFileDownloadNode(attachmentID, dek, token, vaultUrl) 
   return { byteArray, direct_download };
 }
 
-function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl: string) {
-  const options = {
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Authorization: 'Bearer ' + token,
-    },
-    method: 'GET',
-  };
-
-  return fetch(`${vaultUrl}/direct/attachments/${id}/download_url?type=${type}`, options).then(
-    res => {
-      return res.json();
-    }
-  );
+async function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl: string) {
+  const configParams = { basePath: vaultUrl, apiKey: token, fetchApi: nodeFetch };
+  const api = new DirectAttachmentsApi(new Configuration(configParams));
+  const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
+  return result.attachment_direct_download_url;
 }

@@ -5,11 +5,11 @@ spec:
   name: food
   label: My Fave Foods
   description: null
-  created_at: 1970-01-01T00:00:00.000Z
+  created_at: 1970-01-01T00:00:00.001Z
   item_template_id: null
   ordinal: null
   visible: null
-  updated_at: 1970-01-01T00:00:00.000Z
+  updated_at: 1970-01-01T00:00:00.001Z
   item_template_label: null
   image: null
   item_image: null
@@ -39,8 +39,8 @@ spec:
       attachment_id: null
       item_id: null
       required: null
-      updated_at: 1970-01-01T00:00:00.000Z
-      created_at: 1970-01-01T00:00:00.000Z
+      updated_at: 1970-01-01T00:00:00.001Z
+      created_at: 1970-01-01T00:00:00.001Z
       slot_type_name: key_value
       creator: null
       encrypted_value: Hawaiian
@@ -63,8 +63,8 @@ spec:
       attachment_id: null
       item_id: null
       required: null
-      updated_at: 1970-01-01T00:00:00.000Z
-      created_at: 1970-01-01T00:00:00.000Z
+      updated_at: 1970-01-01T00:00:00.001Z
+      created_at: 1970-01-01T00:00:00.001Z
       slot_type_name: key_value
       creator: null
       encrypted_value: Rump
@@ -87,8 +87,8 @@ spec:
       attachment_id: null
       item_id: null
       required: null
-      updated_at: 1970-01-01T00:00:00.000Z
-      created_at: 1970-01-01T00:00:00.000Z
+      updated_at: 1970-01-01T00:00:00.001Z
+      created_at: 1970-01-01T00:00:00.001Z
       slot_type_name: key_value
       creator: null
       encrypted_value: Session Ale

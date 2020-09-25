@@ -45,9 +45,9 @@ const listOfClientTasks = [
     work_type: 'update_item_shares',
     target_id: itemId,
     additional_options: {},
-    last_state_transition_at: new Date(0),
+    last_state_transition_at: new Date(1),
     report: {},
-    created_at: new Date(0),
+    created_at: new Date(1),
   },
 ];
 const itemResponse = {

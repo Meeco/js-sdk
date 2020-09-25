@@ -38,8 +38,8 @@ describe('Items update', () => {
 
 const response = {
   item: {
-    created_at: new Date(0),
-    updated_at: new Date(0),
+    created_at: new Date(1),
+    updated_at: new Date(1),
     label: 'My Fave Foods',
     name: 'food',
     slot_ids: ['pizza'],
@@ -53,8 +53,8 @@ const response = {
       slot_type_name: 'key_value',
       encrypted_value: 'Supreme',
       encrypted: true,
-      created_at: new Date(0),
-      updated_at: new Date(0),
+      created_at: new Date(1),
+      updated_at: new Date(1),
     },
   ],
   associations_to: [],
