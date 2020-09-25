@@ -28,7 +28,7 @@ describe('Items get-attachment', () => {
             key: dek.key,
             strategy: CipherStrategy.AES_GCM,
           });
-          return stringAsBinaryBuffer(encryptedPixel.serialized);
+          return stringAsBinaryBuffer(encryptedPixel.serialized as string);
         },
       });
     }))
