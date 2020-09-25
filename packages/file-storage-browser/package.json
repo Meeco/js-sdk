@@ -1,6 +1,6 @@
 {
   "name": "@meeco/file-storage-browser",
-  "version": "0.0.7-beta",
+  "version": "0.0.8-beta",
   "description": "Browser module for uploading and downloading encrypted files",
   "source": "src/index.ts",
   "types": "./lib/index.d.ts",
@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@meeco/vault-api-sdk": "^0.19.1-beta.6",
-    "@meeco/file-storage-common": "0.0.7-beta",
+    "@meeco/file-storage-common": "0.0.8-beta",
     "@meeco/cryppo": "^0.7.0",
     "axios": "^0.20.0"
   },
