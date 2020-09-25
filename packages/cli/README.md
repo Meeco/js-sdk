@@ -215,7 +215,7 @@ once approved it can be access with follwoing command
 - [`meeco items:create`](#meeco-itemscreate)
 - [`meeco items:create-config TEMPLATENAME`](#meeco-itemscreate-config-templatename)
 - [`meeco items:get ITEMID`](#meeco-itemsget-itemid)
-- [`meeco items:get-attachment ATTACHMENTID`](#meeco-itemsget-attachment-attachmentid)
+- [`meeco items:get-attachment ITEMID SLOTID`](#meeco-itemsget-attachment-itemid-slotid)
 - [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
 - [`meeco items:list`](#meeco-itemslist)
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
@@ -462,16 +462,17 @@ OPTIONS
 
 _See code: [src/commands/items/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get.ts)_
 
-## `meeco items:get-attachment ATTACHMENTID`
+## `meeco items:get-attachment ITEMID SLOTID`
 
 Download and decrypt an attachment by id
 
 ```
 USAGE
-  $ meeco items:get-attachment ATTACHMENTID
+  $ meeco items:get-attachment ITEMID SLOTID
 
 ARGUMENTS
-  ATTACHMENTID  ID of the attachment to download
+  ITEMID  ID of the item the attachment slot is a part of
+  SLOTID  ID of the slot the attachment is attached to
 
 OPTIONS
   -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
@@ -482,7 +483,7 @@ OPTIONS
   -o, --outputPath=outputPath    (required) output file path
 
 EXAMPLES
-  meeco items:get-attachment my-attachment-id -o ./my-attachment.txt
+  meeco items:get-attachment my-attachment-item-id my-attachment-slot-id -o ./my-attachment.txt
 ```
 
 _See code: [src/commands/items/get-attachment.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get-attachment.ts)_
