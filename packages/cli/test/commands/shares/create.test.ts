@@ -80,6 +80,7 @@ function stubVault(shareSingleSlot: boolean) {
             id: 'slot_a',
             encrypted: true,
             encrypted_value: 'aes.slot_a',
+            own: true,
           },
           ...(shareSingleSlot
             ? []
@@ -88,6 +89,7 @@ function stubVault(shareSingleSlot: boolean) {
                   id: 'slot_b',
                   encrypted: true,
                   encrypted_value: 'aes.slot_b',
+                  own: true,
                 },
               ]),
         ],
