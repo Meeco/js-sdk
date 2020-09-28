@@ -47,7 +47,8 @@
       "label": "Pizza",
       "original_id": null,
       "owner_id": null,
-      "value": "Hawaiian[decrypted with my_generated_dek]"
+      "value": "Hawaiian[decrypted with my_generated_dek]",
+      "value_verification_key": null
     },
     {
       "id": "steak",
@@ -73,7 +74,8 @@
       "label": "Steak",
       "original_id": null,
       "owner_id": null,
-      "value": "Rump[decrypted with my_generated_dek]"
+      "value": "Rump[decrypted with my_generated_dek]",
+      "value_verification_key": null
     },
     {
       "id": "beer",
@@ -99,7 +101,8 @@
       "label": "Beer",
       "original_id": null,
       "owner_id": null,
-      "value": "Session Ale[decrypted with my_generated_dek]"
+      "value": "Session Ale[decrypted with my_generated_dek]",
+      "value_verification_key": null
     }
   ],
   "thumbnails": [],
