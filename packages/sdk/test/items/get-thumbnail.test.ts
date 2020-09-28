@@ -28,7 +28,7 @@ describe('items:get-thumbnail', () => {
             key: dek.key,
             strategy: CipherStrategy.AES_GCM,
           });
-          return stringAsBinaryBuffer(encryptedPixel.serialized);
+          return stringAsBinaryBuffer(encryptedPixel.serialized as string);
         },
       });
     }))

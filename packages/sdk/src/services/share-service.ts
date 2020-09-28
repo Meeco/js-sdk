@@ -24,7 +24,7 @@ import {
 import { fetchConnectionWithId } from '../util/find-connection-between';
 import { noopLogger, SimpleLogger } from '../util/logger';
 import cryppo from './cryppo-service';
-import { ItemService } from './item-service';
+import { IDecryptedSlot, ItemService } from './item-service';
 
 interface IShareOptions extends PostItemSharesRequestShare {
   expires_at?: Date;
@@ -206,11 +206,6 @@ export class ShareService {
       data: dek,
     });
 
-    // in case of on-share, API requires hash to be null
-    if (sharedItem) {
-      slot_values.forEach(slot_value => (slot_value.value_verification_hash = undefined));
-    }
-
     return {
       ...shareOptions,
       slot_values,
@@ -329,7 +324,7 @@ export class ShareService {
    * encrypted with a shared data encryption key.
    */
   public async convertSlotsToEncryptedValuesForShare(
-    slots: DecryptedSlot[],
+    slots: IDecryptedSlot[],
     sharedDataEncryptionKey: EncryptionKey
   ): Promise<EncryptedSlotValue[]> {
     const encryptions = slots
@@ -343,26 +338,31 @@ export class ShareService {
           })
           .then(result => result.serialized);
 
-        const value_verification_key = cryppo.generateRandomKey(64);
-        const encrypted_value_verification_key = await cryppo
+        const valueVerificationKey = slot.own
+          ? cryppo.generateRandomKey(64)
+          : slot.value_verification_key;
+
+        const encryptedValueVerificationKey = await cryppo
           .encryptWithKey({
-            data: value_verification_key,
+            data: valueVerificationKey as string,
             key: sharedDataEncryptionKey.key,
             strategy: this.cryppo.CipherStrategy.AES_GCM,
           })
           .then(result => result.serialized);
 
         // this will be replace by cryppo call later
-        const value_verification_hash = ShareService.generate_value_verificaiton_hash(
-          value_verification_key,
-          slot.value as string
-        );
+        const valueVerificationHash = slot.own
+          ? ShareService.generate_value_verificaiton_hash(
+              valueVerificationKey as string,
+              slot.value as string
+            )
+          : undefined;
 
         return {
           slot_id: slot.id as string,
-          encrypted_value,
-          encrypted_value_verification_key,
-          value_verification_hash,
+          encrypted_value: encrypted_value as string,
+          encrypted_value_verification_key: encryptedValueVerificationKey || undefined,
+          value_verification_hash: valueVerificationHash,
         };
       });
     return Promise.all(encryptions);

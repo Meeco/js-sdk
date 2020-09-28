@@ -26,6 +26,11 @@ import { IFullLogger, Logger, noopLogger, SimpleLogger, toFullLogger } from '../
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import { ShareService } from './share-service';
 
+export interface IDecryptedSlot extends Slot {
+  value_verification_key?: string;
+  value?: string;
+}
+
 /**
  * Used for fetching and sending `Items` to and from the Vault.
  */
@@ -48,7 +53,7 @@ export class ItemService {
   public static decryptAllSlots(
     slots: Slot[],
     dataEncryptionKey: EncryptionKey
-  ): Promise<DecryptedSlot[]> {
+  ): Promise<IDecryptedSlot[]> {
     return Promise.all(
       slots.map(async slot => {
         let value =
@@ -59,19 +64,19 @@ export class ItemService {
               })
             : (slot as DecryptedSlot).value;
 
-        if (
-          value != null &&
-          slot.encrypted_value_verification_key != null &&
-          slot.value_verification_hash != null
-        ) {
-          const decryptedValueVerificationKey = await this.cryppo.decryptWithKey({
+        let decryptedValueVerificationKey: string | undefined;
+
+        if (value != null && !slot.own && slot.encrypted_value_verification_key != null) {
+          decryptedValueVerificationKey = await this.cryppo.decryptWithKey({
             serialized: slot.encrypted_value_verification_key,
             key: dataEncryptionKey.key,
           });
 
           value =
-            ShareService.generate_value_verificaiton_hash(decryptedValueVerificationKey, value) ===
-            slot.value_verification_hash
+            ShareService.generate_value_verificaiton_hash(
+              decryptedValueVerificationKey as string,
+              value
+            ) === slot.value_verification_hash
               ? value
               : 'Invalid Value: failed to verify integrity of slot value';
         }
@@ -80,6 +85,7 @@ export class ItemService {
           ...slot,
           encrypted: false,
           value,
+          value_verification_key: decryptedValueVerificationKey,
         };
         return decrypted;
       })

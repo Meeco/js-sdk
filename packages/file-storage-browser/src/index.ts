@@ -150,7 +150,7 @@ export async function fileDownloadBrowser({
       authConfig.data_encryption_key,
       vaultUrl
     );
-    buffer = Buffer.from(downloaded);
+    buffer = Buffer.from(downloaded as string);
   }
   return new File([buffer], fileName, {
     type: attachmentInfo.attachment.content_type,
