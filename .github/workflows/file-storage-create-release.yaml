@@ -1,4 +1,4 @@
-name: Release Beta File Storage
+name: File Storage Create Release
 
 on:
   push:
