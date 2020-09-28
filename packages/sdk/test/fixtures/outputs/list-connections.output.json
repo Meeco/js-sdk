@@ -1,6 +1,6 @@
 [
   {
-    "name": "Some Encrypted Name[decrypted with my_generated_dek]",
+    "recipient_name": "Some Encrypted Name[decrypted with my_generated_dek]",
     "connection": {
       "own": {
         "id": "abc123",
@@ -25,13 +25,13 @@
     }
   },
   {
-    "name": "Some Encrypted Name[decrypted with my_generated_dek]",
+    "recipient_name": "Some Encrypted Name[decrypted with my_generated_dek]",
     "connection": {
       "own": {
         "id": "def456",
         "encrypted_recipient_name": "Some Encrypted Name",
-        "integration_data": null,
         "connection_type": null,
+        "integration_data": null,
         "user_image": null,
         "user_type": null,
         "user_public_key": null,

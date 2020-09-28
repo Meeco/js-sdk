@@ -31,7 +31,7 @@ describe('connections:list', () => {
 
 const connections = [
   {
-    name: 'Some Encrypted Name[decrypted with my_generated_dek]',
+    recipient_name: 'Some Encrypted Name[decrypted with my_generated_dek]',
     connection: {
       own: {
         id: 'abc123',
@@ -55,7 +55,7 @@ const connections = [
     },
   },
   {
-    name: 'Some Encrypted Name[decrypted with my_generated_dek]',
+    recipient_name: 'Some Encrypted Name[decrypted with my_generated_dek]',
     connection: {
       own: {
         id: 'def456',

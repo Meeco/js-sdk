@@ -150,15 +150,20 @@ export class ConnectionService {
 
     this.logger.log('Decrypting connection names');
     const decryptions = (result.connections || []).map(connection =>
-      this.cryppo
-        .decryptWithKey({
-          serialized: connection.own.encrypted_recipient_name!,
-          key: dek.key,
-        })
-        .then((name: string) => ({
-          name,
-          connection,
-        }))
+      connection.own.encrypted_recipient_name
+        ? this.cryppo
+            .decryptWithKey({
+              serialized: connection.own.encrypted_recipient_name!,
+              key: dek.key,
+            })
+            .then((name: string) => ({
+              recipient_name: name,
+              connection,
+            }))
+        : {
+            recipient_name: null,
+            connection,
+          }
     );
     return Promise.all(decryptions);
   }
@@ -175,15 +180,20 @@ export class ConnectionService {
         []
       );
       const decryptions = responses.map(connection =>
-        this.cryppo
-          .decryptWithKey({
-            serialized: connection.own.encrypted_recipient_name!,
-            key: dek.key,
-          })
-          .then((name: string) => ({
-            name,
-            connection,
-          }))
+        connection.own.encrypted_recipient_name
+          ? this.cryppo
+              .decryptWithKey({
+                serialized: connection.own.encrypted_recipient_name!,
+                key: dek.key,
+              })
+              .then((name: string) => ({
+                recipient_name: name,
+                connection,
+              }))
+          : {
+              recipient_name: null,
+              connection,
+            }
       );
       return Promise.all(decryptions);
     });
