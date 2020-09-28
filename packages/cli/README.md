@@ -617,7 +617,7 @@ OPTIONS
   -o, --org=org                  (required) organization yaml file
 
 EXAMPLE
-  meeco organization-members:crate-invitation -o .my-created-organization.yaml -a .my-org-login.yaml >
+  meeco organization-members:create-invitation -o .my-created-organization.yaml -a .my-org-login.yaml >
   .my-org-member-invitation.yaml
 ```
 
@@ -1204,8 +1204,8 @@ OPTIONS
   -s, --secret=secret            the secret key of the user (will be prompted for if not provided)
 
 EXAMPLES
-  meeco users:get -a path/to/stale-user-auth.yaml
-  meeco users:get -p My$ecretPassword1 -s 1.xxxxxx.xxxx-xxxxx-xxxxxxx-xxxxx
+  meeco users:login -a path/to/stale-user-auth.yaml
+  meeco users:login -p My$ecretPassword1 -s 1.xxxxxx.xxxx-xxxxx-xxxxxxx-xxxxx
 ```
 
 _See code: [src/commands/users/login.ts](https://github.com/Meeco/cli/blob/master/src/commands/users/login.ts)_
