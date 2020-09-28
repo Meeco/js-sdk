@@ -9,8 +9,8 @@ export default class LoginUser extends MeecoCommand {
   static description =
     'Refresh tokens for Keystore and Vault for the given user. Outputs an Authorization config file for use with future commands.';
   static examples = [
-    `meeco users:get -a path/to/stale-user-auth.yaml`,
-    `meeco users:get -p My$ecretPassword1 -s 1.xxxxxx.xxxx-xxxxx-xxxxxxx-xxxxx`,
+    `meeco users:login -a path/to/stale-user-auth.yaml`,
+    `meeco users:login -p My$ecretPassword1 -s 1.xxxxxx.xxxx-xxxxx-xxxxxxx-xxxxx`,
   ];
 
   static flags = {
