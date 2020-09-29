@@ -139,7 +139,7 @@ export class AzureBlockUpload {
         ad: 'none',
         at,
         range,
-        encryption_stratergy: Cryppo.CipherStrategy.AES_GCM,
+        encryption_strategy: Cryppo.CipherStrategy.AES_GCM,
         size: this.fileSize,
       };
 
