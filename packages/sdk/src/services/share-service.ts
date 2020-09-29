@@ -130,16 +130,10 @@ export class ShareService {
   }
 
   public async getSharedItemIncoming(user: AuthData, shareId: string): Promise<ShareWithItemData> {
-    const shareWithItemData = await this.vaultApiFactory(user)
-      .SharesApi.incomingSharesIdItemGet(shareId)
-      .catch(err => {
-        if ((<Response>err).status === 404) {
-          throw new MeecoServiceError(
-            `Share with id '${shareId}' not found for the specified user`
-          );
-        }
-        throw err;
-      });
+    // API throws 404 for different reasons, therefor should not categories error as share not found only
+    const shareWithItemData = await this.vaultApiFactory(user).SharesApi.incomingSharesIdItemGet(
+      shareId
+    );
 
     if (shareWithItemData.share.acceptance_required === 'acceptance_required') {
       return shareWithItemData;
