@@ -192,10 +192,13 @@ const templateDetails = await service.getTemplate(availableTemplates.item_templa
 Once we've selected a template we can create our first item.
 
 ```ts
-import { ItemService } from '@meeco/sdk';
-
+import { ItemService, UserService } from '@meeco/sdk';
+// Get the user's Auth Data
+const service = new UserService();
+const authData = await userService.getAuthData(password, secret);
+// Create the item
 const service = new ItemService(environment);
-const item = await service.create(user.vault_access_token, user.data_encryption_key, {
+const item = await service.create(user.vault_access_token, authData, {
   template_name: availableTemplates.item_templates[0].name,
   item: {
     label: 'My Car',
@@ -216,17 +219,15 @@ const item = await service.create(user.vault_access_token, user.data_encryption_
 We can also fetch a list of a user's items or get details about a specific item in a manner similar to templates:
 
 ```ts
-import { ItemService } from '@meeco/sdk';
-
-const service = new ItemService(environment);
+import { ItemService, UserService } from '@meeco/sdk';
+// Get the user's Auth Data
+const service = new UserService();
+const authData = await userService.getAuthData(password, secret);
 // Get the user's items
+const service = new ItemService(environment);
 const items = await service.list(user.vault_access_token);
 // Get more details about a particular item
-const itemDetails = await service.get(
-  items[0].id,
-  user.vault_access_token,
-  user.data_encryption_key
-);
+const itemDetails = await service.get(items[0].id, authData);
 ```
 
 ### Connecting Users and Sharing Data
