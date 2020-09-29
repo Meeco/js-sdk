@@ -34,7 +34,7 @@ export default class ClientTaskQueueRunBatch extends MeecoCommand {
   ];
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof ClientTaskQueueList);
+    const { flags, args } = this.parse(this.constructor as typeof ClientTaskQueueRunBatch);
     const { supressChangingState, state, auth } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);

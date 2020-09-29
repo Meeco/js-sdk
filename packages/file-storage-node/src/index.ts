@@ -8,8 +8,8 @@ import {
   getDirectAttachmentInfo,
 } from '@meeco/file-storage-common';
 import { Configuration, DirectAttachmentsApi } from '@meeco/vault-api-sdk';
-import * as FileType from 'file-type';
 import * as fs from 'fs';
+import * as mfe from 'mime-file-extension';
 import nodeFetch from 'node-fetch';
 import * as path from 'path';
 import * as FileUtils from './FileUtils.node';
@@ -28,7 +28,7 @@ export async function largeFileUploadNode(
   }
 ): Promise<{ attachment: any; dek: string }> {
   const fileStats = fs.statSync(filePath);
-  const fileType = (await FileType.fromFile(filePath))?.mime.toString();
+  const fileType = mfe.getMimeType(path.extname(filePath));
   const fileName = path.basename(filePath);
 
   const uploadUrl = await directAttachmentUploadUrl(
