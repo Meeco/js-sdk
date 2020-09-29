@@ -35,7 +35,7 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 
 # Dev Set up
 
-After cloning the repo, run `npm install` to install dependencies. You can then run the meeco command as below.
+After cloning the repo, run `npm install` at the root of the js-sdk to install dependencies and link the packages together (https://lerna.js.org/). You can then run the meeco command as below.
 
 ## The `meeco` command
 
@@ -79,7 +79,7 @@ Create your first user:
 
 - `meeco users:create -p <password> > .user.yaml`
 
-Note: this will open a browser with a Captcha to be solved.
+Note: this will open a browser with a Captcha to be solved if captcha is enabled for the environment you are working against.
 
 Or - if you have an existing account (e.g if you would like to set up on a new computer) - you can fetch your user by providing your password and secret
 
@@ -164,6 +164,12 @@ slots:
 
 1. You can retrive all TODO tasks with `meeco client-task-queue:list`.
 2. You can also retrive different taks are in different state. e.g. Todo, InProgress, Done, Failed by providing STATE input. e.g `meeco client-task-queue:list -s InProgress`
+
+## 7. Perform tasks in the Client Task Queue
+
+1. You can run a batch of tasks in the client-task queue by running the command `meeco client-task-queue:run-batch`
+   - if you add a number to the end of the command like `meeco client-task-queue:run-batch 20` it will run up to that many tasks in a batch otherwise it will default to the
+     server page default of 200.
 
 ## Organization Flow
 
