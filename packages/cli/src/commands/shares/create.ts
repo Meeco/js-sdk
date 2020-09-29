@@ -19,9 +19,8 @@ export default class SharesCreate extends MeecoCommand {
       default: false,
       description: 'Allow all recipients of this share to share it again',
     }),
-    accept: _flags.boolean({
+    accept: _flags.string({
       required: false,
-      default: false,
       description: 'Share recipient must accept terms before viewing shared item.',
     }),
     expiry_date: _flags.string({
@@ -30,6 +29,10 @@ export default class SharesCreate extends MeecoCommand {
       required: false,
     }),
   };
+
+  static examples = [
+    `meeco shares:create -c share.yaml --accept "Don't tell Mum!" --expiry_date "2020-12-31"`
+  ]
 
   static args = [{ name: 'file' }];
 
@@ -61,12 +64,14 @@ export default class SharesCreate extends MeecoCommand {
 
       const service = new ShareService(environment, this.updateStatus);
       const sharing_mode = onshare ? SharingMode.anyone : SharingMode.owner;
-      const acceptance_required = accept ? AcceptanceStatus.required : AcceptanceStatus.notRequired;
+      const acceptance_required =
+        (accept && (accept !== '')) ? AcceptanceStatus.required : AcceptanceStatus.notRequired;
 
       const result = await service.shareItem(share.from, share.connectionId, share.itemId, {
         expires_at: expiry_date ? parseDate : undefined,
         sharing_mode,
         acceptance_required,
+        terms: accept,
         ...(share.slotId ? { slot_id: share.slotId } : {}),
       });
       this.printYaml(result);
