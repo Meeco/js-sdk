@@ -25,6 +25,7 @@ export async function largeFileUploadNode(
   authConfig: {
     data_encryption_key: string;
     vault_access_token: string;
+    delegate_id?: string;
   }
 ): Promise<{ attachment: any; dek: string }> {
   const fileStats = fs.statSync(filePath);
@@ -52,6 +53,7 @@ export async function largeFileUploadNode(
     {
       data_encryption_key: dek,
       vault_access_token: authConfig.vault_access_token,
+      delegate_id: authConfig.delegate_id,
     },
     FileUtils
   );
@@ -108,16 +110,14 @@ export async function fileDownloadNode(
   authConfig: {
     data_encryption_key: string;
     vault_access_token: string;
+    delegate_id?: string;
   },
   attachmentDek?: string,
   logFunction?: any
 ): Promise<{ fileName: string; buffer: Buffer }> {
   const attachmentInfo = await getDirectAttachmentInfo(
     { attachmentId },
-    {
-      data_encryption_key: authConfig.data_encryption_key,
-      vault_access_token: authConfig.vault_access_token,
-    },
+    authConfig,
     environment.vault.url,
     nodeFetch
   );
@@ -133,12 +133,7 @@ export async function fileDownloadNode(
     );
     buffer = downloaded.byteArray;
   } else {
-    const downloaded = await downloadAttachment(
-      attachmentId,
-      authConfig.vault_access_token,
-      authConfig.data_encryption_key,
-      environment.vault.url
-    );
+    const downloaded = await downloadAttachment(attachmentId, authConfig, environment.vault.url);
     buffer = Buffer.from(downloaded as string);
   }
   return { fileName, buffer };
@@ -161,7 +156,7 @@ export async function largeFileDownloadNode(attachmentID, dek, token, vaultUrl) 
   for (let index = 0; index < encrypted_artifact.range.length; index++) {
     const block: any = await client.start(
       dek,
-      encrypted_artifact.encryption_stratergy,
+      encrypted_artifact.encryption_strategy,
       {
         iv: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,

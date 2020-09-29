@@ -15,13 +15,15 @@ export async function fileUploadBrowser({
   vaultUrl,
   vaultAccessToken,
   subscriptionKey,
+  delegateId,
   videoCodec,
   progressUpdateFunc = null,
 }: {
   file: File;
   vaultUrl: string;
   vaultAccessToken: string;
-  subscriptionKey: string;
+  subscriptionKey?: string;
+  delegateId?: string;
   videoCodec?: string;
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
@@ -34,6 +36,7 @@ export async function fileUploadBrowser({
   const authConfig = {
     data_encryption_key: dek,
     vault_access_token: vaultAccessToken,
+    delegate_id: delegateId,
   };
   const uploadUrl = await directAttachmentUploadUrl(
     {
@@ -104,13 +107,15 @@ export async function fileDownloadBrowser({
   vaultUrl,
   vaultAccessToken,
   subscriptionKey,
+  delegateId,
   progressUpdateFunc = null,
 }: {
   attachmentId: string;
   dek: string;
   vaultUrl: string;
   vaultAccessToken: string;
-  subscriptionKey: string;
+  delegateId?: string;
+  subscriptionKey?: string;
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
     | null;
@@ -121,6 +126,7 @@ export async function fileDownloadBrowser({
   const authConfig = {
     data_encryption_key: dek,
     vault_access_token: vaultAccessToken,
+    delegate_id: delegateId,
   };
   const environment = {
     vault: {
@@ -144,12 +150,7 @@ export async function fileDownloadBrowser({
     buffer = downloaded.byteArray;
   } else {
     // was not uploaded in chunks
-    const downloaded = await downloadAttachment(
-      attachmentId,
-      authConfig.vault_access_token,
-      authConfig.data_encryption_key,
-      vaultUrl
-    );
+    const downloaded = await downloadAttachment(attachmentId, authConfig, vaultUrl);
     buffer = Buffer.from(downloaded as string);
   }
   return new File([buffer], fileName, {
@@ -184,7 +185,7 @@ async function largeFileDownloadBrowser(
   for (let index = 0; index < encrypted_artifact.range.length; index++) {
     const block: any = await client.start(
       dek,
-      encrypted_artifact.encryption_stratergy,
+      encrypted_artifact.encryption_strategy,
       {
         iv: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,
