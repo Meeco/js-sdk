@@ -4,7 +4,7 @@ import { AuthConfig } from '../../configs/auth-config';
 import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
-export default class ClientTaskQueueList extends MeecoCommand {
+export default class ClientTaskQueueRunBatch extends MeecoCommand {
   static description = 'Load and run a batch of ClientTasks from the queue';
   static examples = [`meeco client-task-queue:run-batch -a path/to/auth.yaml 10`];
 

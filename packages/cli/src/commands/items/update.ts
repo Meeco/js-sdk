@@ -6,12 +6,18 @@ import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ItemsUpdate extends MeecoCommand {
-  static description = `Update an item from the vault`;
+  static description = `Update an item from the vault. For more detail, refers to README.md Update an Item section`;
+  static examples = [`meeco items:update -i path/to/updated-item-config.yaml -a path/to/auth.yaml`];
 
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
-    item: _flags.string({ char: 'i', required: true, description: 'item yaml file' }),
+    item: _flags.string({
+      char: 'i',
+      required: true,
+      description:
+        'Updated item yaml file. For more detail, refers to README.md Update an Item section',
+    }),
   };
 
   async run() {
