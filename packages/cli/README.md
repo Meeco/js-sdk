@@ -97,14 +97,14 @@ If you would prefer to provide a configuration file with your credentials, suppl
 1. Create your first item: `meeco items:create -i .my_item_config.yaml -a .user.yaml`
 1. You can check the item was created with `meeco items:list` or `meeco items:get <itemId>`
 
-## 3. Create a Second User and Connect
+### 3. Create a Second User and Connect
 
 1. Create your second user: `meeco users:create -p <password> > .user_2.yaml`
 1. Make a connection config file between your two users: `meeco connections:create-config --from .user.yaml --to .user_2.yaml > .connection_config.yaml`
    - Edit this file to add connection names as appropriate
 1. Create the connection between the two users: `meeco connections:create -c .connection_config.yaml`
 
-## 4. Share an Item Between Connected Users
+### 4. Share an Item Between Connected Users
 
 1. Ensure users are connected first (see above)
 2. Select an item from user 1 to share to user 2
@@ -118,7 +118,7 @@ You can fetch the incoming and outgoing shares info with `meeco shares:list inco
 
 You can delete shared item as either first or second user with `meeco shares:delete -a .user_2.yaml <share_id>`
 
-## 5. Update an Item
+### 5. Update an Item
 
 Items can be updated in a similar way they are created. The best way to get a starting template file
 is to fetch your existing item and pipe it to a file
@@ -160,7 +160,32 @@ slots:
   #...
 ```
 
-## 6. Review Client Task Queue - A ClientTask represents a task the client is supposed to perform
+### 6. Attach file to an Item slot
+
+1. create a file attachment config yaml.
+
+```yaml
+kind: FileAttachment
+metadata:
+  item_id: 1b20e75f-d0da-4f9c-ae19-257ba802ab94 # item id
+spec:
+  label: 'My Secret File' # slot lable
+  file: './image.jpg' # file to attach location
+```
+
+2. Now we can run attach file command with file-attachment-config:
+
+`meeco items:attach-file -c ./file-attachment-config.yaml`
+
+3. We can verify the attachment slot by fetching the item again
+
+`meeco items:get <item_id> > .my_item.yaml`
+
+4. We can also download uploaded attachment
+
+`meeco items:get-attachment my-attachment-item-id my-attachment-slot-id -o ./image.jpg`
+
+### 7. Review Client Task Queue - A ClientTask represents a task the client is supposed to perform
 
 1. You can retrive all TODO tasks with `meeco client-task-queue:list`.
 2. You can also retrive different taks are in different state. e.g. Todo, InProgress, Done, Failed by providing STATE input. e.g `meeco client-task-queue:list -s InProgress`
