@@ -588,7 +588,7 @@ _See code: [src/commands/items/remove-slot.ts](https://github.com/Meeco/cli/blob
 
 ## `meeco items:update`
 
-Update an item from the vault
+Update an item from the vault. For more detail, refers to README.md Update an Item section
 
 ```
 USAGE
@@ -600,7 +600,11 @@ OPTIONS
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
-  -i, --item=item                (required) item yaml file
+  -i, --item=item                (required) Updated item yaml file. For more detail, refers to README.md Update an Item
+                                 section
+
+EXAMPLE
+  meeco items:update -i path/to/updated-item-config.yaml -a path/to/auth.yaml
 ```
 
 _See code: [src/commands/items/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/update.ts)_
