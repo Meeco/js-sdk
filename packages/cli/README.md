@@ -414,8 +414,11 @@ USAGE
   $ meeco items:attach-file
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
+
   -c, --config=config            (required) file attachment config yaml
+
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLES
@@ -503,8 +506,11 @@ ARGUMENTS
   SLOTID  ID of the slot the attachment is attached to
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
+
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
   -o, --outputPath=outputPath    (required) output file path
 
 EXAMPLES
@@ -620,7 +626,8 @@ OPTIONS
   -i, --invitationConfig=invitationConfig  (required) member invitation yaml file
 
 EXAMPLE
-  meeco organization-members:accept-invitation -i .my-member-invitation.yaml -a .user_2.yaml > .my-org-member-connection.yaml
+  meeco organization-members:accept-invitation -i .my-member-invitation.yaml -a .user_2.yaml >
+  .my-org-member-connection.yaml
 ```
 
 _See code: [src/commands/organization-members/accept-invitation.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/accept-invitation.ts)_
@@ -993,19 +1000,25 @@ USAGE
   $ meeco shares:create [FILE]
 
 OPTIONS
-  -c, --config=config                                                    (required) Share config file to use for setting up the share
-  -d, --expiry_date=expiry_date                                          Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
-  -e, --environment=environment                                          [default: .environment.yaml] environment config file
+  -c, --config=config
+      (required) Share config file to use for setting up the share
 
-  -m, --sharing_mode=owner|anyone                                        [default: owner] There are two sharing_mode: owner and anyone
-                                                                         owner - non-owner will not be able to on-share a share
-                                                                         anyone - anyone allow to on-share a share.
+  -d, --expiry_date=expiry_date
+      Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
 
-  -t, --acceptance_required=acceptance_not_required|acceptance_required  [default: acceptance_not_required] Some shares require that the recipient accepts the
-                                                                         terms of the share.
-                                                                         There are two acceptance_require: acceptance_not_required & acceptance_required
-                                                                         acceptance_not_required - recipient dont require acceptance
-                                                                         acceptance_required - recipient require acceptance before viewing shared item.
+  -e, --environment=environment
+      [default: .environment.yaml] environment config file
+
+  -m, --sharing_mode=owner|anyone
+      [default: owner] There are two sharing_mode: owner and anyone
+        owner - non-owner will not be able to on-share a share
+        anyone - anyone allow to on-share a share.
+
+  -t, --acceptance_required=acceptance_not_required|acceptance_required
+      [default: acceptance_not_required] Some shares require that the recipient accepts the terms of the share.
+        There are two acceptance_require: acceptance_not_required & acceptance_required
+        acceptance_not_required - recipient dont require acceptance
+        acceptance_required - recipient require acceptance before viewing shared item.
 ```
 
 _See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_
