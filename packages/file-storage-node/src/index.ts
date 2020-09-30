@@ -25,7 +25,7 @@ export async function largeFileUploadNode(
   authConfig: {
     data_encryption_key: string;
     vault_access_token: string;
-    delegate_id?: string;
+    delegation_id?: string;
   }
 ): Promise<{ attachment: any; dek: string }> {
   const fileStats = fs.statSync(filePath);
@@ -60,7 +60,7 @@ export async function largeFileUploadNode(
     {
       data_encryption_key: dek,
       vault_access_token: authConfig.vault_access_token,
-      delegate_id: authConfig.delegate_id,
+      delegation_id: authConfig.delegation_id,
     },
     FileUtils
   );
@@ -117,7 +117,7 @@ export async function fileDownloadNode(
   authConfig: {
     data_encryption_key: string;
     vault_access_token: string;
-    delegate_id?: string;
+    delegation_id?: string;
   },
   attachmentDek?: string,
   logFunction?: any

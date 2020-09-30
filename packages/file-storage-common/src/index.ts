@@ -16,7 +16,7 @@ export { BlobStorage } from './services/Azure';
 export interface IFileStorageAuthConfiguration {
   data_encryption_key: string;
   vault_access_token: string;
-  delegate_id?: string;
+  delegation_id?: string;
 }
 
 export async function directAttachmentUpload(
@@ -98,7 +98,7 @@ export async function getDirectAttachmentInfo(
   vaultUrl: string,
   fetchApi?: any
 ): Promise<any> {
-  const headers = auth.delegate_id ? { 'Meeco-Delegate-Id': auth.delegate_id } : undefined;
+  const headers = auth.delegation_id ? { 'Meeco-Delegation-Id': auth.delegation_id } : undefined;
   const configParams: ConfigurationParameters = {
     basePath: vaultUrl,
     apiKey: auth.vault_access_token,
@@ -142,7 +142,7 @@ function buildApiConfig(
   vaultUrl: string,
   fetchApi?: any
 ): Configuration {
-  const headers = auth.delegate_id ? { 'Meeco-Delegate-Id': auth.delegate_id } : undefined;
+  const headers = auth.delegation_id ? { 'Meeco-Delegation-Id': auth.delegation_id } : undefined;
   const configParams: ConfigurationParameters = {
     basePath: vaultUrl,
     apiKey: auth.vault_access_token,
