@@ -34,7 +34,7 @@ const response = {
     outgoing: true,
     user_name: 'Anonymous User',
     user_image: 'http://localhost:3000/images/69074548-24cb-403d-828c-09af6002e1c3',
-    keypair_external_id: null,
+    keypair_external_id: 'org-agent-keypair',
     email: null,
     user_email: null,
     encrypted_recipient_name: null,
@@ -50,6 +50,7 @@ function mockVault(api) {
   api
     .post('/invitations', {
       public_key: {
+        keypair_external_id: 'org-agent-keypair',
         public_key: '--PUBLIC_KEY--ABCD',
       },
       invitation: {
