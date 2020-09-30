@@ -1,4 +1,3 @@
-import { hmacSha256Digest } from '@meeco/cryppo/dist/src/digests/hmac-digest';
 import {
   EncryptedSlotValue,
   GetItemSharesResponseShares,
@@ -23,6 +22,7 @@ import {
 } from '../util/api-factory';
 import { fetchConnectionWithId } from '../util/find-connection-between';
 import { noopLogger, SimpleLogger } from '../util/logger';
+import { valueVerificationHash } from '../util/value-verification';
 import cryppo from './cryppo-service';
 import { IDecryptedSlot, ItemService } from './item-service';
 
@@ -68,10 +68,6 @@ export class ShareService {
   private cryppo = (<any>global).cryppo || cryppo;
   private keystoreApiFactory: KeystoreAPIFactory;
   private vaultApiFactory: VaultAPIFactory;
-
-  static generate_value_verification_hash(value_verification_key: string, slot_value: string) {
-    return hmacSha256Digest(value_verification_key, slot_value);
-  }
 
   public setLogger(logger: SimpleLogger) {
     this.log = logger;
@@ -243,7 +239,11 @@ export class ShareService {
     const itemShares = await this.vaultApiFactory(user).SharesApi.itemsIdSharesGet(itemId);
 
     // prepare request body
-    const putItemSharesRequest = await this.createPutItemSharesRequestBody(itemShares.shares, slots, user);
+    const putItemSharesRequest = await this.createPutItemSharesRequestBody(
+      itemShares.shares,
+      slots,
+      user
+    );
 
     // put items/{id}/shares
     return await this.vaultApiFactory(user).SharesApi.itemsIdSharesPut(
@@ -362,18 +362,15 @@ export class ShareService {
           .then(result => result.serialized);
 
         // this will be replace by cryppo call later
-        const valueVerificationHash = slot.own
-          ? ShareService.generate_value_verification_hash(
-              valueVerificationKey as string,
-              slot.value as string
-            )
+        const verificationHash = slot.own
+          ? valueVerificationHash(valueVerificationKey as string, slot.value as string)
           : undefined;
 
         return {
           slot_id: slot.id as string,
           encrypted_value: encrypted_value as string,
           encrypted_value_verification_key: encryptedValueVerificationKey || undefined,
-          value_verification_hash: valueVerificationHash,
+          value_verification_hash: verificationHash,
         };
       });
     return Promise.all(encryptions);
