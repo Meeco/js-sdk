@@ -15,7 +15,7 @@ export async function fileUploadBrowser({
   vaultUrl,
   vaultAccessToken,
   subscriptionKey,
-  delegateId,
+  delegationId,
   videoCodec,
   progressUpdateFunc = null,
 }: {
@@ -23,7 +23,7 @@ export async function fileUploadBrowser({
   vaultUrl: string;
   vaultAccessToken: string;
   subscriptionKey?: string;
-  delegateId?: string;
+  delegationId?: string;
   videoCodec?: string;
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
@@ -36,7 +36,7 @@ export async function fileUploadBrowser({
   const authConfig = {
     data_encryption_key: dek,
     vault_access_token: vaultAccessToken,
-    delegate_id: delegateId,
+    delegation_id: delegationId,
   };
   const uploadUrl = await directAttachmentUploadUrl(
     {
@@ -107,14 +107,14 @@ export async function fileDownloadBrowser({
   vaultUrl,
   vaultAccessToken,
   subscriptionKey,
-  delegateId,
+  delegationId,
   progressUpdateFunc = null,
 }: {
   attachmentId: string;
   dek: string;
   vaultUrl: string;
   vaultAccessToken: string;
-  delegateId?: string;
+  delegationId?: string;
   subscriptionKey?: string;
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
@@ -126,7 +126,7 @@ export async function fileDownloadBrowser({
   const authConfig = {
     data_encryption_key: dek,
     vault_access_token: vaultAccessToken,
-    delegate_id: delegateId,
+    delegation_id: delegationId,
   };
   const environment = {
     vault: {
