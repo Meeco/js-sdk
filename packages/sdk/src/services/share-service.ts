@@ -136,11 +136,42 @@ export class ShareService {
     }
   }
 
-  public async getSharedItemIncoming(user: AuthData, shareId: string): Promise<ShareWithItemData> {
-    // API throws 404 for different reasons, therefor should not categories error as share not found only
-    const shareWithItemData = await this.vaultApiFactory(user).SharesApi.incomingSharesIdItemGet(
-      shareId
-    );
+  /**
+   * Get a Share record and the Item it references with all Slots decrypted.
+   * @param user
+   * @param shareId
+   * @param shareType
+   */
+  public async getSharedItem(
+    user: AuthData,
+    shareId: string,
+    shareType: ShareType = ShareType.incoming
+  ): Promise<ShareWithItemData> {
+    const shareAPI = this.vaultApiFactory(user).SharesApi;
+
+    let shareWithItemData: ShareWithItemData;
+    switch (shareType) {
+      case ShareType.incoming:
+        shareWithItemData = await shareAPI.incomingSharesIdItemGet(shareId).catch(err => {
+          if ((<Response>err).status === 404) {
+            throw new MeecoServiceError(
+              `Share with id '${shareId}' not found for the specified user`
+            );
+          }
+          throw err;
+        });
+        break;
+      case ShareType.outgoing:
+        shareWithItemData = await shareAPI.outgoingSharesIdGet(shareId).then(async response => {
+          const share = response.share;
+          const item = await this.getItem(user, share.item_id);
+          return {
+            share,
+            ...item,
+          };
+        });
+        break;
+    }
 
     if (shareWithItemData.share.acceptance_required === AcceptanceStatus.required) {
       return shareWithItemData;
@@ -155,19 +186,23 @@ export class ShareService {
       key: user.key_encryption_key.key,
     });
 
-    const dek = await this.cryppo.decryptSerializedWithPrivateKey({
-      privateKeyPem: decryptedPrivateKey,
-      serialized: shareWithItemData.share.encrypted_dek,
-    });
+    const dek = await this.cryppo
+      .decryptSerializedWithPrivateKey({
+        privateKeyPem: decryptedPrivateKey,
+        serialized: shareWithItemData.share.encrypted_dek,
+      })
+      .then(key => EncryptionKey.fromRaw(key));
 
-    const key = EncryptionKey.fromRaw(dek);
-
-    const decryptedSlots = await ItemService.decryptAllSlots(shareWithItemData.slots, key);
+    const decryptedSlots = await ItemService.decryptAllSlots(shareWithItemData.slots, dek);
 
     return {
       ...shareWithItemData,
       slots: decryptedSlots as Slot[],
     };
+  }
+
+  public async getSharedItemIncoming(user: AuthData, shareId: string): Promise<ShareWithItemData> {
+    return this.getSharedItem(user, shareId, ShareType.incoming);
   }
 
   private async shareItemFromVaultItem(
