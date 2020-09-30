@@ -1,7 +1,7 @@
 import { hmacSha256Digest } from '@meeco/cryppo/dist/src/digests/hmac-digest';
 import {
   EncryptedSlotValue,
-  GetItemSharesResponse,
+  GetItemSharesResponseShares,
   GetShareResponse,
   ItemsIdSharesShareDeks,
   PostItemSharesRequestShare,
@@ -26,11 +26,22 @@ import { noopLogger, SimpleLogger } from '../util/logger';
 import cryppo from './cryppo-service';
 import { IDecryptedSlot, ItemService } from './item-service';
 
+export enum SharingMode {
+  owner = 'owner',
+  anyone = 'anyone',
+}
+
+/** The API may return accepted or rejected, but those are set via their own API calls. */
+export enum AcceptanceStatus {
+  required = 'acceptance_required',
+  notRequired = 'acceptance_not_required',
+}
+
 interface IShareOptions extends PostItemSharesRequestShare {
   expires_at?: Date;
   terms?: string;
-  sharing_mode: string;
-  acceptance_required: string;
+  sharing_mode: SharingMode;
+  acceptance_required: AcceptanceStatus;
 }
 
 export enum ShareType {
@@ -135,7 +146,7 @@ export class ShareService {
       shareId
     );
 
-    if (shareWithItemData.share.acceptance_required === 'acceptance_required') {
+    if (shareWithItemData.share.acceptance_required === AcceptanceStatus.required) {
       return shareWithItemData;
     }
 
@@ -216,9 +227,15 @@ export class ShareService {
     return item;
   }
 
+  /**
+   * Updates the shared copy of an item with new data in the actual item.
+   * @param user
+   * @param itemId
+   */
   public async updateSharedItem(user: AuthData, itemId: string) {
     const { item, slots } = await this.getItem(user, itemId);
-    if (item.own === false) {
+
+    if (!item.own) {
       throw new MeecoServiceError(`Only Item owner can update shared Item.`);
     }
 
@@ -226,7 +243,7 @@ export class ShareService {
     const itemShares = await this.vaultApiFactory(user).SharesApi.itemsIdSharesGet(itemId);
 
     // prepare request body
-    const putItemSharesRequest = await this.createPutItemSharesRequestBody(itemShares, slots, user);
+    const putItemSharesRequest = await this.createPutItemSharesRequestBody(itemShares.shares, slots, user);
 
     // put items/{id}/shares
     return await this.vaultApiFactory(user).SharesApi.itemsIdSharesPut(
@@ -236,13 +253,13 @@ export class ShareService {
   }
 
   private async createPutItemSharesRequestBody(
-    itemShares: GetItemSharesResponse,
+    shares: GetItemSharesResponseShares[],
     slots: Slot[],
     user: AuthData
   ): Promise<PutItemSharesRequest> {
     const result: any = await Promise.all(
-      itemShares.shares.map(async share => {
-        this.log('Encrypting slots with generate DEK');
+      shares.map(async share => {
+        this.log('Encrypting slots with generated DEK');
         const dek = this.cryppo.generateRandomKey();
 
         const encryptedDek = await this.cryppo.encryptWithPublicKey({
