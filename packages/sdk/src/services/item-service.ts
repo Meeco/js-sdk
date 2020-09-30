@@ -37,13 +37,13 @@ export interface IDecryptedSlot extends Slot {
 export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
   private vaultAPIFactory: VaultAPIFactory;
-  private shareServaice: ShareService;
+  private shareService: ShareService;
   private logger: IFullLogger;
 
   constructor(environment: Environment, log: SimpleLogger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
 
-    this.shareServaice = new ShareService(environment, log);
+    this.shareService = new ShareService(environment, log);
     this.logger = toFullLogger(log);
   }
 
@@ -73,7 +73,7 @@ export class ItemService {
           });
 
           value =
-            ShareService.generate_value_verificaiton_hash(
+            ShareService.generate_value_verification_hash(
               decryptedValueVerificationKey as string,
               value
             ) === slot.value_verification_hash
@@ -338,7 +338,7 @@ export class ItemService {
 
     // this could be improved, consider finding a way of using only one item get call.
     if (result.item.share_id != null) {
-      return this.shareServaice.getSharedItemIncoming(user, result.item.share_id);
+      return this.shareService.getSharedItemIncoming(user, result.item.share_id);
     }
 
     const slots = await ItemService.decryptAllSlots(result.slots, dataEncryptionKey);

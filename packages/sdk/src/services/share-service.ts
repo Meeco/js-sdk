@@ -58,7 +58,7 @@ export class ShareService {
   private keystoreApiFactory: KeystoreAPIFactory;
   private vaultApiFactory: VaultAPIFactory;
 
-  static generate_value_verificaiton_hash(value_verification_key: string, slot_value: string) {
+  static generate_value_verification_hash(value_verification_key: string, slot_value: string) {
     return hmacSha256Digest(value_verification_key, slot_value);
   }
 
@@ -346,7 +346,7 @@ export class ShareService {
 
         // this will be replace by cryppo call later
         const valueVerificationHash = slot.own
-          ? ShareService.generate_value_verificaiton_hash(
+          ? ShareService.generate_value_verification_hash(
               valueVerificationKey as string,
               slot.value as string
             )
