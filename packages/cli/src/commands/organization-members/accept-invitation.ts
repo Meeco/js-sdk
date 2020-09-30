@@ -1,4 +1,4 @@
-import { OrganizationMembersService } from '@meeco/sdk';
+import { ConnectionService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { ConnectionV2Config } from '../../configs/connection-v2-config';
@@ -44,15 +44,14 @@ export default class OrganizationMembersAcceptInvitation extends MeecoCommand {
     }
     try {
       this.updateStatus('Creating organization members connection');
-      const service = new OrganizationMembersService(environment, this.updateStatus);
-      const result = await service.acceptInvite(authConfig!.vault_access_token, invitation.token);
+      const service = new ConnectionService(environment, {
+        error: this.error,
+        warn: this.warn,
+        log: this.updateStatus,
+      });
+      const result = await service.acceptInvitation('', invitation.token, authConfig);
       this.finish();
-      this.printYaml(
-        ConnectionV2Config.encodeFromJSON(result.connection, {
-          privateKey: result.privateKey,
-          publicKey: result.publicKey,
-        })
-      );
+      this.printYaml(ConnectionV2Config.encodeFromJSON(result));
     } catch (err) {
       await this.handleException(err);
     }
