@@ -29,8 +29,15 @@ export async function largeFileUploadNode(
   }
 ): Promise<{ attachment: any; dek: string }> {
   const fileStats = fs.statSync(filePath);
-  const fileType = mfe.getMimeType(path.extname(filePath));
+  let fileType: string;
   const fileName = path.basename(filePath);
+
+  try {
+    fileType = mfe.getMimeType(path.extname(filePath));
+  } catch {
+    // when file type is unknown, default it to 'text/plain'
+    fileType = 'text/plain';
+  }
 
   const uploadUrl = await directAttachmentUploadUrl(
     {
