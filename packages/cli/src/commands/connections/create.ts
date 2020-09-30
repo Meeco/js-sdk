@@ -10,7 +10,7 @@ export default class ConnectionsCreate extends MeecoCommand {
     ...MeecoCommand.flags,
     config: _flags.string({
       char: 'c',
-      description: 'Connection config file to use for the creation',
+      description: 'Config file describing new connection',
       required: true,
     }),
   };

@@ -347,7 +347,7 @@ USAGE
   $ meeco connections:create
 
 OPTIONS
-  -c, --config=config            (required) Connection config file to use for the creation
+  -c, --config=config            (required) Config file describing new connection
   -e, --environment=environment  [default: .environment.yaml] environment config file
 ```
 
@@ -414,11 +414,8 @@ USAGE
   $ meeco items:attach-file
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
-                                 default .user.yaml)
-
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
   -c, --config=config            (required) file attachment config yaml
-
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
 EXAMPLES
@@ -506,11 +503,8 @@ ARGUMENTS
   SLOTID  ID of the slot the attachment is attached to
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
-                                 default .user.yaml)
-
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
   -e, --environment=environment  [default: .environment.yaml] environment config file
-
   -o, --outputPath=outputPath    (required) output file path
 
 EXAMPLES
@@ -626,8 +620,7 @@ OPTIONS
   -i, --invitationConfig=invitationConfig  (required) member invitation yaml file
 
 EXAMPLE
-  meeco organization-members:accpet-invitation -i .my-member-invitation.yaml -a .user_2.yaml >
-  .my-org-member-connection.yaml
+  meeco organization-members:accept-invitation -i .my-member-invitation.yaml -a .user_2.yaml > .my-org-member-connection.yaml
 ```
 
 _See code: [src/commands/organization-members/accept-invitation.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-members/accept-invitation.ts)_
@@ -1000,25 +993,19 @@ USAGE
   $ meeco shares:create [FILE]
 
 OPTIONS
-  -c, --config=config
-      (required) Share config file to use for setting up the share
+  -c, --config=config                                                    (required) Share config file to use for setting up the share
+  -d, --expiry_date=expiry_date                                          Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
+  -e, --environment=environment                                          [default: .environment.yaml] environment config file
 
-  -d, --expiry_date=expiry_date
-      Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
+  -m, --sharing_mode=owner|anyone                                        [default: owner] There are two sharing_mode: owner and anyone
+                                                                         owner - non-owner will not be able to on-share a share
+                                                                         anyone - anyone allow to on-share a share.
 
-  -e, --environment=environment
-      [default: .environment.yaml] environment config file
-
-  -m, --sharing_mode=owner|anyone
-      [default: owner] There are two sharing_mode: owner and anyone
-        owner - non-owner will not be able to on-share a share
-        anyone - anyone allow to on-share a share.
-
-  -t, --acceptance_required=acceptance_not_required|acceptance_required
-      [default: acceptance_not_required] Some shares require that the recipient accepts the terms of the share.
-        There are two acceptance_require: acceptance_not_required & acceptance_required
-        acceptance_not_required - recipient dont require acceptance
-        acceptance_required - recipient require acceptance before viewing shared item.
+  -t, --acceptance_required=acceptance_not_required|acceptance_required  [default: acceptance_not_required] Some shares require that the recipient accepts the
+                                                                         terms of the share.
+                                                                         There are two acceptance_require: acceptance_not_required & acceptance_required
+                                                                         acceptance_not_required - recipient dont require acceptance
+                                                                         acceptance_required - recipient require acceptance before viewing shared item.
 ```
 
 _See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_
@@ -1035,9 +1022,9 @@ OPTIONS
   -c, --connectionId=connectionId  (required) Connection id for the 'to' user
   -e, --environment=environment    [default: .environment.yaml] environment config file
   -f, --from=from                  (required) User config file for the 'from' user
-  -i, --itemId=itemId              Item id of the 'from' user to share with the 'to' user
-  -o, --onshareId=onshareId        Share ID of the share, which to on-share with the 'to' user
-  -s, --slotName=slotName          Name of slot to share (if sharing a single slot)
+  -i, --itemId=itemId              ID of the Item to share with the 'to' user
+  -o, --onshareId=onshareId        ID of the Share to on-share
+  -s, --slotName=slotName          Name of slot to share, if sharing a single slot
 ```
 
 _See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create-config.ts)_
@@ -1051,7 +1038,7 @@ USAGE
   $ meeco shares:delete SHAREID
 
 ARGUMENTS
-  SHAREID  ID of the shared item to fetch
+  SHAREID  ID of the share to delete
 
 OPTIONS
   -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
@@ -1096,23 +1083,23 @@ OPTIONS
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
-  -t, --type=incoming|outgoing   [default: incoming] There are two type: incoming and Outgoing
-                                 incoming - Read incoming shares as the recipien
-                                 outgoing - Read outgoing shares as the sender.
+  -t, --type=incoming|outgoing   [default: incoming] There are two types: incoming and outgoing
+                                 incoming - Items shared with you
+                                 outgoing - Items you have shared
 ```
 
 _See code: [src/commands/shares/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/list.ts)_
 
 ## `meeco shares:update ITEMID`
 
-Update all shares of an item
+Update all shared copies of an Item with the data in the original
 
 ```
 USAGE
   $ meeco shares:update ITEMID
 
 ARGUMENTS
-  ITEMID  ID of the share to fetch
+  ITEMID  ID of the shared Item to update
 
 OPTIONS
   -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the

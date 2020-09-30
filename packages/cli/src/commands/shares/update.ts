@@ -4,7 +4,7 @@ import { authFlags } from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class SharesUpdate extends MeecoCommand {
-  static description = 'Update all shares of an item';
+  static description = 'Update all shared copies of an Item with the data in the original';
 
   static flags = {
     ...MeecoCommand.flags,
@@ -15,7 +15,7 @@ export default class SharesUpdate extends MeecoCommand {
     {
       name: 'itemId',
       required: true,
-      description: 'ID of the share to fetch',
+      description: 'ID of the shared Item to update',
     },
   ];
 
