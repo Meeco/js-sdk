@@ -1,9 +1,9 @@
 kind: Share
 metadata: {}
 spec:
-  item_id: my-item
-  slot_id: slot123
-  connection_id: connection-id
+  item_id: item-foo
+  slot_id: a
+  connection_id: connection_id
   from:
     secret: 1.from.secret
     keystore_access_token: from_keystore_access
