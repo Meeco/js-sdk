@@ -15,7 +15,7 @@ describe('shares:create', () => {
     .mockCryppo()
     .stub(
       ShareService,
-      'generate_value_verificaiton_hash',
+      'generate_value_verification_hash',
       sinon.stub().returns(value_verification_hash)
     )
     .stub(ShareService, 'Date', sinon.stub().returns(constantDate))
@@ -46,7 +46,7 @@ describe('shares:create one slot', () => {
     .mockCryppo()
     .stub(
       ShareService,
-      'generate_value_verificaiton_hash',
+      'generate_value_verification_hash',
       sinon.stub().returns(value_verification_hash)
     )
     .stub(ShareService, 'Date', sinon.stub().returns(constantDate))
@@ -59,7 +59,7 @@ describe('shares:create one slot', () => {
       '2020-12-30T13:00:00.000Z',
       ...testEnvironmentFile,
     ])
-    .it('can setup sharing between two users', ctx => {
+    .it('can share a single slot', ctx => {
       const expected = readFileSync(outputFixture('create-share-oneslot.output.yaml'), 'utf-8');
       expect(ctx.stdout.trim()).to.contain(expected.trim());
     });

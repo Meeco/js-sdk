@@ -15,7 +15,7 @@ describe('shares:get-incoming', () => {
     .mockCryppo()
     .stub(
       ShareService,
-      'generate_value_verificaiton_hash',
+      'generate_value_verification_hash',
       sinon.stub().returns(value_verification_hash)
     )
     .nock('https://sandbox.meeco.me/vault', mockVault)

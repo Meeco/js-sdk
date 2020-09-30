@@ -15,12 +15,12 @@ export default class SharesCreateConfig extends MeecoCommand {
     itemId: _flags.string({
       required: false,
       char: 'i',
-      description: `Item id of the 'from' user to share with the 'to' user`,
+      description: `ID of the Item to share with the 'to' user`,
     }),
     onshareId: _flags.string({
       required: false,
       char: 'o',
-      description: `Share ID of the share, which to on-share with the 'to' user`,
+      description: `ID of the Share to on-share`,
     }),
     from: _flags.string({
       required: true,
@@ -35,7 +35,7 @@ export default class SharesCreateConfig extends MeecoCommand {
     slotName: _flags.string({
       required: false,
       char: 's',
-      description: 'Name of slot to share (if sharing a single slot)',
+      description: 'Name of slot to share, if sharing a single slot',
     }),
   };
 

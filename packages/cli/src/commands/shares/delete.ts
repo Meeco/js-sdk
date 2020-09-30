@@ -16,7 +16,7 @@ export default class SharesDelete extends MeecoCommand {
     {
       name: 'shareId',
       required: true,
-      description: 'ID of the shared item to fetch',
+      description: 'ID of the share to delete',
     },
   ];
 

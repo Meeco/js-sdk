@@ -10,7 +10,7 @@ export default class OrganizationMembersAcceptInvitation extends MeecoCommand {
   static description = 'Accept Invitation to become organization member.';
 
   static examples = [
-    `meeco organization-members:accpet-invitation -i .my-member-invitation.yaml -a .user_2.yaml > .my-org-member-connection.yaml`,
+    `meeco organization-members:accept-invitation -i .my-member-invitation.yaml -a .user_2.yaml > .my-org-member-connection.yaml`,
   ];
 
   static flags = {
