@@ -11,7 +11,7 @@ run items:create-config vehicle -a .Alice.yaml > .template_vehicle.yaml
 
 cat .template_vehicle.yaml |
 yq -y '(.spec.label) = "My Vehicle"'|
-yq -y '(.spec.slots[0].value) = "20000101"' | 
+yq -y '(.spec.slots[0].value) = "20000101"' |
 yq -y '(.spec.slots[1].value) = "ABC123"' |
 yq -y '(.spec.slots[2].value) = "Mazda"' |
 yq -y '(.spec.slots[3].value) = "Familia"' |
@@ -36,7 +36,7 @@ echo "connection id alice to bob: ${connectionIdAB}"
 
 echo "Share alice to bob"
 run shares:create-config --from .Alice.yaml --connectionId $connectionIdAB -i $itemId > .share_Alice_Bob.yaml
-run shares:create -c .share_Alice_Bob.yaml -m anyone > .share_Alice_Bob.created.yaml
+run shares:create -c .share_Alice_Bob.yaml --onshare > .share_Alice_Bob.created.yaml
 
 bobsShareId=$(cat .share_Alice_Bob.created.yaml | yq -r '.shares[0].id')
 echo "bob's share id: ${bobsShareId}"
@@ -47,7 +47,7 @@ run shares:get-incoming $bobsShareId -a .Bob.yaml
 echo "Update Item as alice"
 cat template_vehicle_update.yaml |
 yq -y --arg a ${itemId} '(.spec.id) = $a' |
-yq -y '(.spec.slots[0].value) = "30000101"' | 
+yq -y '(.spec.slots[0].value) = "30000101"' |
 yq -y '(.spec.slots[1].value) = "XYZ123"' |
 yq -y '(.spec.slots[2].value) = "Toyota"' |
 yq -y '(.spec.slots[3].value) = "YOOO"' |

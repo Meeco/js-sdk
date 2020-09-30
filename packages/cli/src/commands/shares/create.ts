@@ -1,8 +1,9 @@
-import { ShareService } from '@meeco/sdk';
+import { AcceptanceStatus, ShareService, SharingMode } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { isAfter, isValid, parse, parseISO } from 'date-fns';
 import { ShareConfig } from '../../configs/share-config';
 import MeecoCommand from '../../util/meeco-command';
+
 export default class SharesCreate extends MeecoCommand {
   static description = 'Share an item between two users';
 
@@ -13,21 +14,15 @@ export default class SharesCreate extends MeecoCommand {
       description: 'Share config file to use for setting up the share',
       required: true,
     }),
-    sharing_mode: _flags.string({
-      char: 'm',
-      default: 'owner',
+    onshare: _flags.boolean({
       required: false,
-      options: ['owner', 'anyone'],
-      description:
-        'There are two sharing_mode: owner and anyone \n owner - non-owner will not be able to on-share a share \n anyone - anyone allow to on-share a share.',
+      default: false,
+      description: 'Allow all recipients of this share to share it again',
     }),
-    acceptance_required: _flags.string({
-      char: 't',
-      default: 'acceptance_not_required',
+    accept: _flags.boolean({
       required: false,
-      options: ['acceptance_not_required', 'acceptance_required'],
-      description:
-        'Some shares require that the recipient accepts the terms of the share. \n There are two acceptance_require: acceptance_not_required & acceptance_required \n acceptance_not_required - recipient dont require acceptance  \n acceptance_required - recipient require acceptance before viewing shared item.',
+      default: false,
+      description: 'Share recipient must accept terms before viewing shared item.',
     }),
     expiry_date: _flags.string({
       char: 'd',
@@ -40,7 +35,7 @@ export default class SharesCreate extends MeecoCommand {
 
   async run() {
     const { flags } = this.parse(SharesCreate);
-    const { config, sharing_mode, acceptance_required, expiry_date } = flags;
+    const { config, onshare, accept, expiry_date } = flags;
 
     try {
       const environment = await this.readEnvironmentFile();
@@ -65,6 +60,9 @@ export default class SharesCreate extends MeecoCommand {
       }
 
       const service = new ShareService(environment, this.updateStatus);
+      const sharing_mode = onshare ? SharingMode.anyone : SharingMode.owner;
+      const acceptance_required = accept ? AcceptanceStatus.required : AcceptanceStatus.notRequired;
+
       const result = await service.shareItem(share.from, share.connectionId, share.itemId, {
         expires_at: expiry_date ? parseDate : undefined,
         sharing_mode,

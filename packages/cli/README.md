@@ -1002,25 +1002,11 @@ USAGE
   $ meeco shares:create [FILE]
 
 OPTIONS
-  -c, --config=config
-      (required) Share config file to use for setting up the share
-
-  -d, --expiry_date=expiry_date
-      Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
-
-  -e, --environment=environment
-      [default: .environment.yaml] environment config file
-
-  -m, --sharing_mode=owner|anyone
-      [default: owner] There are two sharing_mode: owner and anyone
-        owner - non-owner will not be able to on-share a share
-        anyone - anyone allow to on-share a share.
-
-  -t, --acceptance_required=acceptance_not_required|acceptance_required
-      [default: acceptance_not_required] Some shares require that the recipient accepts the terms of the share.
-        There are two acceptance_require: acceptance_not_required & acceptance_required
-        acceptance_not_required - recipient dont require acceptance
-        acceptance_required - recipient require acceptance before viewing shared item.
+  -c, --config=config            (required) Share config file to use for setting up the share
+  -d, --expiry_date=expiry_date  Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+  --accept                       Share recipient must accept terms before viewing shared item.
+  --onshare                      Allow all recipients of this share to share it again
 ```
 
 _See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_

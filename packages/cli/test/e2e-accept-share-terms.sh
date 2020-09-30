@@ -39,7 +39,7 @@ echo "Share"
 run shares:create-config --from .Alice.yaml --connectionId $connectionId -i $itemId > .share_Alice_Bob.yaml
 
 echo "Share the card to 'Bob'"
-run shares:create -c .share_Alice_Bob.yaml -t acceptance_required > .share_Alice_Bob.created.yaml
+run shares:create -c .share_Alice_Bob.yaml --accept > .share_Alice_Bob.created.yaml
 
 bobsShareId=$(cat .share_Alice_Bob.created.yaml | yq -r '.shares[0].id')
 echo "bob's share id: ${bobsShareId}"
