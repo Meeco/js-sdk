@@ -54,7 +54,8 @@ export async function directAttachmentUploadUrl(
   config: IDirectAttachmentUploadUrlData,
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
-  fetchApi?: any
+  fetchApi?: any,
+  subscriptionKey?: string
 ): Promise<AttachmentDirectUploadUrlResponse> {
   let uploadUrl;
   try {
@@ -65,7 +66,7 @@ export async function directAttachmentUploadUrl(
         byte_size: config.fileSize,
       },
     };
-    const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
+    const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi, subscriptionKey));
 
     uploadUrl = await api.directAttachmentsUploadUrlPost(params);
   } catch (err) {
@@ -78,9 +79,10 @@ export async function directAttachmentAttach(
   config: IDirectAttachmentAttachData,
   auth: IFileStorageAuthConfiguration,
   vaultUrl,
-  fetchApi?: any
+  fetchApi?: any,
+  subscriptionKey?: string
 ): Promise<CreateAttachmentResponse> {
-  const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
+  const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi, subscriptionKey));
   const attachment = await api.directAttachmentsPost({
     blob: {
       blob_id: config.blobId,
@@ -96,18 +98,10 @@ export async function getDirectAttachmentInfo(
   config: { attachmentId: string },
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
-  fetchApi?: any
+  fetchApi?: any,
+  subscriptionKey?: string
 ): Promise<any> {
-  const headers = auth.delegation_id ? { 'Meeco-Delegation-Id': auth.delegation_id } : undefined;
-  const configParams: ConfigurationParameters = {
-    basePath: vaultUrl,
-    apiKey: auth.vault_access_token,
-    headers,
-  };
-  if (fetchApi) {
-    configParams['fetchApi'] = fetchApi;
-  }
-  const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
+  const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi, subscriptionKey));
   return await api.directAttachmentsIdGet(config.attachmentId);
 }
 
@@ -137,15 +131,26 @@ export async function downloadAndDecryptFile<T extends Blob>(
   return decryptedContents;
 }
 
-function buildApiConfig(
+export function buildApiConfig(
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
-  fetchApi?: any
+  fetchApi?: any,
+  subscriptionKey?: string
 ): Configuration {
-  const headers = auth.delegation_id ? { 'Meeco-Delegation-Id': auth.delegation_id } : undefined;
+  const headers = {};
+  if (auth.delegation_id) {
+    headers['Meeco-Delegation-Id'] = auth.delegation_id;
+  }
+  if (subscriptionKey) {
+    headers['Meeco-Subscription-Key'] = subscriptionKey;
+  }
+  if (auth.vault_access_token) {
+    headers['Authorization'] = auth.vault_access_token;
+  }
+
   const configParams: ConfigurationParameters = {
     basePath: vaultUrl,
-    apiKey: auth.vault_access_token,
+    apiKey: key => headers[key],
     headers,
   };
   if (fetchApi) {
