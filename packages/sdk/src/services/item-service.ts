@@ -30,7 +30,7 @@ import {
 } from '../util/api-factory';
 import { IFullLogger, Logger, noopLogger, SimpleLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
-import { valueVerificationHash } from '../util/value-verification';
+import { verifyHashedValue } from '../util/value-verification';
 
 export interface IDecryptedSlot extends Slot {
   value_verification_key?: string;
@@ -64,7 +64,7 @@ export class ItemService {
   ): Promise<IDecryptedSlot[]> {
     return Promise.all(
       slots.map(async slot => {
-        let value =
+        const value =
           slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
             ? await this.cryppo.decryptWithKey({
                 key: dataEncryptionKey.key,
@@ -80,11 +80,18 @@ export class ItemService {
             key: dataEncryptionKey.key,
           });
 
-          value =
-            valueVerificationHash(decryptedValueVerificationKey as string, value) ===
-            slot.value_verification_hash
-              ? value
-              : 'Invalid Value: failed to verify integrity of slot value';
+          if (
+            slot.value_verification_hash !== null &&
+            !verifyHashedValue(
+              decryptedValueVerificationKey as string,
+              value,
+              slot.value_verification_hash
+            )
+          ) {
+            throw new MeecoServiceError(
+              `Decrypted slot ${slot.name} with value ${value} does not match original value.`
+            );
+          }
         }
 
         const decrypted = {

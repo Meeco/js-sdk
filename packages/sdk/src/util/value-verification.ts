@@ -9,6 +9,6 @@ export function valueVerificationHash(verificationKey: string, value: string) {
   return hmacSha256Digest(verificationKey, value);
 }
 
-export function checkHashedValue(verificationKey: string, value: string, hash: string): boolean {
+export function verifyHashedValue(verificationKey: string, value: string, hash: string): boolean {
   return valueVerificationHash(verificationKey, value) === hash;
 }
