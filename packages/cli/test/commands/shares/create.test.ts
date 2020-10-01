@@ -9,17 +9,14 @@ describe('shares:create', () => {
   const constantDate = new Date(1);
   const value_verification_hash =
     '925c874c3345fd71f24fafb7231432749cd8761b93e455da68187e666c25d341';
+
   customTest
     .stdout()
     .stderr()
     .mockCryppo()
-    .stub(
-      ShareService,
-      'generate_value_verification_hash',
-      sinon.stub().returns(value_verification_hash)
-    )
+    .stub(ShareService, 'valueVerificationHash', sinon.stub().returns(value_verification_hash))
     .stub(ShareService, 'Date', sinon.stub().returns(constantDate))
-    .nock('https://sandbox.meeco.me/vault', stubVault(false))
+    .nock('https://sandbox.meeco.me/vault', stubVault(value_verification_hash, false))
     .run([
       'shares:create',
       '-c',
@@ -33,23 +30,14 @@ describe('shares:create', () => {
       const expected = readFileSync(outputFixture('create-share.output.yaml'), 'utf-8');
       expect(ctx.stdout.trim()).to.contain(expected.trim());
     });
-});
 
-describe('shares:create one slot', () => {
-  const constantDate = new Date(1);
-  const value_verification_hash =
-    '925c874c3345fd71f24fafb7231432749cd8761b93e455da68187e666c25d341';
   customTest
     .stdout()
     .stderr()
     .mockCryppo()
-    .stub(
-      ShareService,
-      'generate_value_verification_hash',
-      sinon.stub().returns(value_verification_hash)
-    )
+    .stub(ShareService, 'valueVerificationHash', sinon.stub().returns(value_verification_hash))
     .stub(ShareService, 'Date', sinon.stub().returns(constantDate))
-    .nock('https://sandbox.meeco.me/vault', stubVault(true))
+    .nock('https://sandbox.meeco.me/vault', stubVault(value_verification_hash, true))
     .run([
       'shares:create',
       '-c',
@@ -64,11 +52,8 @@ describe('shares:create one slot', () => {
     });
 });
 
-function stubVault(shareSingleSlot: boolean) {
+function stubVault(value_verification_hash: string, shareSingleSlot: boolean) {
   return (api: nock.Scope) => {
-    const value_verification_hash =
-      '925c874c3345fd71f24fafb7231432749cd8761b93e455da68187e666c25d341';
-
     api
       .get('/items/from_user_vault_item_to_share_id')
       .matchHeader('Authorization', 'from_user_vault_access_token')

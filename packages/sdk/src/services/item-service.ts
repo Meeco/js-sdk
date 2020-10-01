@@ -42,6 +42,8 @@ export interface IDecryptedSlot extends Slot {
  */
 export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
+  private static verifyHashedValue = (<any>global).verifyHashedValue || verifyHashedValue;
+
   private vaultAPIFactory: VaultAPIFactory;
   private keystoreAPIFactory: KeystoreAPIFactory;
   private logger: IFullLogger;
@@ -82,7 +84,7 @@ export class ItemService {
 
           if (
             slot.value_verification_hash !== null &&
-            !verifyHashedValue(
+            !ItemService.verifyHashedValue(
               decryptedValueVerificationKey as string,
               value,
               slot.value_verification_hash

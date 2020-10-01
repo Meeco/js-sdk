@@ -65,7 +65,11 @@ export class ShareService {
   static Date = global.Date;
 
   // for mocking during testing
+  private static valueVerificationHash =
+    (<any>global).valueVerificationHash || valueVerificationHash;
+
   private cryppo = (<any>global).cryppo || cryppo;
+
   private keystoreApiFactory: KeystoreAPIFactory;
   private vaultApiFactory: VaultAPIFactory;
 
@@ -398,7 +402,7 @@ export class ShareService {
 
         // this will be replace by cryppo call later
         const verificationHash = slot.own
-          ? valueVerificationHash(valueVerificationKey as string, slot.value as string)
+          ? ShareService.valueVerificationHash(valueVerificationKey as string, slot.value as string)
           : undefined;
 
         return {
