@@ -1,16 +1,12 @@
 import { Environment } from '../models/environment';
 import { vaultAPIFactory, VaultAPIFactory } from '../util/api-factory';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
-import cryppo from './cryppo-service';
 /**
  * Manage organization members from the API.
  */
 export class OrganizationMembersService {
   private vaultApiFactory: VaultAPIFactory;
   private logger: IFullLogger;
-
-  // for mocking during testing
-  private cryppo = (<any>global).cryppo || cryppo;
 
   constructor(environment: Environment, log: Logger = noopLogger) {
     this.vaultApiFactory = vaultAPIFactory(environment);
@@ -30,6 +26,7 @@ export class OrganizationMembersService {
     return await this.vaultApiFactory(vaultAccessToken)
       .InvitationApi.invitationsPost({
         public_key: {
+          keypair_external_id: 'org-agent-keypair',
           public_key: organizationAgentPublicKey,
         },
         invitation: {
@@ -37,23 +34,6 @@ export class OrganizationMembersService {
         },
       })
       .then(result => result.invitation);
-  }
-
-  public async acceptInvite(vaultAccessToken: string, invitationToken: string) {
-    const rsaKeyPair = await this.cryppo.generateRSAKeyPair(4096);
-    const result = await this.vaultApiFactory(vaultAccessToken).ConnectionApi.connectionsPost({
-      public_key: {
-        public_key: rsaKeyPair.publicKey,
-      },
-      connection: {
-        invitation_token: invitationToken,
-      },
-    });
-    return {
-      connection: result.connection,
-      privateKey: rsaKeyPair.privateKey,
-      publicKey: rsaKeyPair.publicKey,
-    };
   }
 }
 
