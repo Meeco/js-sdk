@@ -1005,11 +1005,11 @@ OPTIONS
   -c, --config=config            (required) Share config file to use for setting up the share
   -d, --expiry_date=expiry_date  Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
   -e, --environment=environment  [default: .environment.yaml] environment config file
-  --accept=accept                Share recipient must accept terms before viewing shared item.
   --onshare                      Allow all recipients of this share to share it again
+  --terms=terms                  Share recipient must accept terms before viewing shared item.
 
 EXAMPLE
-  meeco shares:create -c share.yaml --accept "Don't tell Mum!" --expiry_date "2020-12-31"
+  meeco shares:create -c share.yaml --terms "Don't tell Mum!" --expiry_date "2020-12-31"
 ```
 
 _See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_
