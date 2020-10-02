@@ -17,11 +17,11 @@ export interface IFileStorageAuthConfiguration {
   data_encryption_key: string;
   vault_access_token: string;
   delegation_id?: string;
+  subscription_key?: string;
 }
 
 export async function directAttachmentUpload(
   config: IDirectAttachmentUploadData,
-  auth: IFileStorageAuthConfiguration,
   fileUtilsLib,
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
@@ -45,7 +45,10 @@ export async function directAttachmentUpload(
     },
     fileUtilsLib
   );
-  await client.start(config.encrypt ? auth.data_encryption_key : null, progressUpdateFunc);
+  await client.start(
+    config.encrypt && config.attachmentDek ? config.attachmentDek : null,
+    progressUpdateFunc
+  );
 
   return result;
 }
@@ -54,8 +57,7 @@ export async function directAttachmentUploadUrl(
   config: IDirectAttachmentUploadUrlData,
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
-  fetchApi?: any,
-  subscriptionKey?: string
+  fetchApi?: any
 ): Promise<AttachmentDirectUploadUrlResponse> {
   let uploadUrl;
   try {
@@ -66,7 +68,7 @@ export async function directAttachmentUploadUrl(
         byte_size: config.fileSize,
       },
     };
-    const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi, subscriptionKey));
+    const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
 
     uploadUrl = await api.directAttachmentsUploadUrlPost(params);
   } catch (err) {
@@ -79,10 +81,9 @@ export async function directAttachmentAttach(
   config: IDirectAttachmentAttachData,
   auth: IFileStorageAuthConfiguration,
   vaultUrl,
-  fetchApi?: any,
-  subscriptionKey?: string
+  fetchApi?: any
 ): Promise<CreateAttachmentResponse> {
-  const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi, subscriptionKey));
+  const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
   const attachment = await api.directAttachmentsPost({
     blob: {
       blob_id: config.blobId,
@@ -98,10 +99,9 @@ export async function getDirectAttachmentInfo(
   config: { attachmentId: string },
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
-  fetchApi?: any,
-  subscriptionKey?: string
+  fetchApi?: any
 ): Promise<any> {
-  const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi, subscriptionKey));
+  const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
   return await api.directAttachmentsIdGet(config.attachmentId);
 }
 
@@ -134,15 +134,14 @@ export async function downloadAndDecryptFile<T extends Blob>(
 export function buildApiConfig(
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
-  fetchApi?: any,
-  subscriptionKey?: string
+  fetchApi?: any
 ): Configuration {
   const headers = {};
   if (auth.delegation_id) {
     headers['Meeco-Delegation-Id'] = auth.delegation_id;
   }
-  if (subscriptionKey) {
-    headers['Meeco-Subscription-Key'] = subscriptionKey;
+  if (auth.subscription_key) {
+    headers['Meeco-Subscription-Key'] = auth.subscription_key;
   }
   if (auth.vault_access_token) {
     headers['Authorization'] = auth.vault_access_token;
@@ -162,8 +161,8 @@ export function buildApiConfig(
 interface IDirectAttachmentUploadData {
   directUploadUrl: string;
   file: File | string;
-  options: any;
   encrypt: boolean;
+  attachmentDek?: string;
 }
 
 interface IDirectAttachmentUploadResponse {

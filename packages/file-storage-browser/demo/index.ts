@@ -105,8 +105,11 @@ async function attachFile() {
     const { attachment, dek: attachmentDek } = await fileUploadBrowser({
       file,
       vaultUrl,
-      vaultAccessToken,
-      subscriptionKey,
+      authConfig: {
+        data_encryption_key: privateDek,
+        vault_access_token: vaultAccessToken,
+        subscription_key: subscriptionKey,
+      },
       videoCodec,
       progressUpdateFunc,
     });
@@ -231,8 +234,11 @@ async function downloadAttachment() {
       attachmentId: attachmentSlot?.attachment_id,
       dek: attachmentSlot?.value,
       vaultUrl,
-      vaultAccessToken,
-      subscriptionKey,
+      authConfig: {
+        data_encryption_key: dek,
+        vault_access_token: vaultAccessToken,
+        subscription_key: subscriptionKey,
+      },
       progressUpdateFunc,
     });
     const fileUrl = URL.createObjectURL(downloadedFile);
