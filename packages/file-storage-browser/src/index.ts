@@ -1,13 +1,14 @@
 import * as Cryppo from '@meeco/cryppo';
 import {
   AzureBlockDownload,
+  buildApiConfig,
   directAttachmentAttach,
   directAttachmentUpload,
   directAttachmentUploadUrl,
   downloadAttachment,
   getDirectAttachmentInfo,
 } from '@meeco/file-storage-common';
-import { Configuration, DirectAttachmentsApi } from '@meeco/vault-api-sdk';
+import { DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as FileUtils from './FileUtils.web';
 
 export async function fileUploadBrowser({
@@ -45,7 +46,9 @@ export async function fileUploadBrowser({
       fileName: file.name,
     },
     authConfig,
-    vaultUrl
+    vaultUrl,
+    undefined,
+    subscriptionKey
   );
   const uploadResult = await directAttachmentUpload(
     {
@@ -76,7 +79,9 @@ export async function fileUploadBrowser({
       fileSize: artifactsFile.size,
     },
     authConfig,
-    vaultUrl
+    vaultUrl,
+    undefined,
+    subscriptionKey
   );
   await directAttachmentUpload(
     {
@@ -96,7 +101,9 @@ export async function fileUploadBrowser({
       artifactsBlobKey: artifactsUploadUrl.attachment_direct_upload_url.blob_key,
     },
     authConfig,
-    vaultUrl
+    vaultUrl,
+    undefined,
+    subscriptionKey
   );
   return { attachment: attachedDoc.attachment, dek };
 }
@@ -135,7 +142,13 @@ export async function fileDownloadBrowser({
     },
   };
 
-  const attachmentInfo = await getDirectAttachmentInfo({ attachmentId }, authConfig, vaultUrl);
+  const attachmentInfo = await getDirectAttachmentInfo(
+    { attachmentId },
+    authConfig,
+    vaultUrl,
+    undefined,
+    subscriptionKey
+  );
   let buffer: Uint8Array;
   const fileName: string = attachmentInfo.attachment.filename;
   if (attachmentInfo.attachment.is_direct_upload) {
@@ -145,7 +158,8 @@ export async function fileDownloadBrowser({
       authConfig.data_encryption_key,
       authConfig.vault_access_token,
       environment.vault.url,
-      progressUpdateFunc
+      progressUpdateFunc,
+      subscriptionKey
     );
     buffer = downloaded.byteArray;
   } else {
@@ -163,15 +177,23 @@ async function largeFileDownloadBrowser(
   dek,
   token,
   vaultUrl,
-  progressUpdateFunc: ((chunkBuffer, percentageComplete, videoCodec?: string) => void) | null
+  progressUpdateFunc: ((chunkBuffer, percentageComplete, videoCodec?: string) => void) | null,
+  subscriptionKey?: string
 ) {
   const direct_download_encrypted_artifact = await getDirectDownloadInfo(
     attachmentID,
     'encryption_artifact_file',
     token,
-    vaultUrl
+    vaultUrl,
+    subscriptionKey
   );
-  const direct_download = await getDirectDownloadInfo(attachmentID, 'binary_file', token, vaultUrl);
+  const direct_download = await getDirectDownloadInfo(
+    attachmentID,
+    'binary_file',
+    token,
+    vaultUrl,
+    subscriptionKey
+  );
   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
   const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
   const encrypted_artifact = JSON.parse(Cryppo.binaryBufferToString(encrypted_artifact_uint8array));
@@ -203,9 +225,24 @@ async function largeFileDownloadBrowser(
   return { byteArray: blocks, direct_download };
 }
 
-async function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl: string) {
-  const configParams = { basePath: vaultUrl, apiKey: token };
-  const api = new DirectAttachmentsApi(new Configuration(configParams));
+async function getDirectDownloadInfo(
+  id: string,
+  type: string,
+  token: string,
+  vaultUrl: string,
+  subscriptionKey?: string
+) {
+  const api = new DirectAttachmentsApi(
+    buildApiConfig(
+      {
+        data_encryption_key: '',
+        vault_access_token: token,
+      },
+      vaultUrl,
+      undefined,
+      subscriptionKey
+    )
+  );
   const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
   return result.attachment_direct_download_url;
 }
