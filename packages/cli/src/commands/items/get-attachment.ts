@@ -56,6 +56,7 @@ export default class ItemsGetAttachment extends MeecoCommand {
         {
           data_encryption_key: authConfig.data_encryption_key.key,
           vault_access_token: authConfig.vault_access_token,
+          subscription_key: environment.vault.subscription_key,
         },
         attachmentSlotValueDek,
         this.updateStatus

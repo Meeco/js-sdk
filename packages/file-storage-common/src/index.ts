@@ -17,11 +17,11 @@ export interface IFileStorageAuthConfiguration {
   data_encryption_key: string;
   vault_access_token: string;
   delegation_id?: string;
+  subscription_key?: string;
 }
 
 export async function directAttachmentUpload(
   config: IDirectAttachmentUploadData,
-  auth: IFileStorageAuthConfiguration,
   fileUtilsLib,
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
@@ -45,7 +45,10 @@ export async function directAttachmentUpload(
     },
     fileUtilsLib
   );
-  await client.start(config.encrypt ? auth.data_encryption_key : null, progressUpdateFunc);
+  await client.start(
+    config.encrypt && config.attachmentDek ? config.attachmentDek : null,
+    progressUpdateFunc
+  );
 
   return result;
 }
@@ -98,15 +101,6 @@ export async function getDirectAttachmentInfo(
   vaultUrl: string,
   fetchApi?: any
 ): Promise<any> {
-  const headers = auth.delegation_id ? { 'Meeco-Delegation-Id': auth.delegation_id } : undefined;
-  const configParams: ConfigurationParameters = {
-    basePath: vaultUrl,
-    apiKey: auth.vault_access_token,
-    headers,
-  };
-  if (fetchApi) {
-    configParams['fetchApi'] = fetchApi;
-  }
   const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
   return await api.directAttachmentsIdGet(config.attachmentId);
 }
@@ -137,15 +131,25 @@ export async function downloadAndDecryptFile<T extends Blob>(
   return decryptedContents;
 }
 
-function buildApiConfig(
+export function buildApiConfig(
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
   fetchApi?: any
 ): Configuration {
-  const headers = auth.delegation_id ? { 'Meeco-Delegation-Id': auth.delegation_id } : undefined;
+  const headers = {};
+  if (auth.delegation_id) {
+    headers['Meeco-Delegation-Id'] = auth.delegation_id;
+  }
+  if (auth.subscription_key) {
+    headers['Meeco-Subscription-Key'] = auth.subscription_key;
+  }
+  if (auth.vault_access_token) {
+    headers['Authorization'] = auth.vault_access_token;
+  }
+
   const configParams: ConfigurationParameters = {
     basePath: vaultUrl,
-    apiKey: auth.vault_access_token,
+    apiKey: key => headers[key],
     headers,
   };
   if (fetchApi) {
@@ -157,8 +161,8 @@ function buildApiConfig(
 interface IDirectAttachmentUploadData {
   directUploadUrl: string;
   file: File | string;
-  options: any;
   encrypt: boolean;
+  attachmentDek?: string;
 }
 
 interface IDirectAttachmentUploadResponse {
