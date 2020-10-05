@@ -1,13 +1,15 @@
 import * as Cryppo from '@meeco/cryppo';
 import {
   AzureBlockDownload,
+  buildApiConfig,
   directAttachmentAttach,
   directAttachmentUpload,
   directAttachmentUploadUrl,
   downloadAttachment,
   getDirectAttachmentInfo,
+  IFileStorageAuthConfiguration,
 } from '@meeco/file-storage-common';
-import { Configuration, DirectAttachmentsApi } from '@meeco/vault-api-sdk';
+import { DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
 import * as mfe from 'mime-file-extension';
 import nodeFetch from 'node-fetch';
@@ -19,14 +21,9 @@ export async function largeFileUploadNode(
   environment: {
     vault: {
       url: string;
-      subscription_key: string;
     };
   },
-  authConfig: {
-    data_encryption_key: string;
-    vault_access_token: string;
-    delegation_id?: string;
-  }
+  authConfig: IFileStorageAuthConfiguration
 ): Promise<{ attachment: any; dek: string }> {
   const fileStats = fs.statSync(filePath);
   let fileType: string;
@@ -55,12 +52,7 @@ export async function largeFileUploadNode(
       directUploadUrl: uploadUrl.attachment_direct_upload_url.url,
       file: filePath,
       encrypt: true,
-      options: {},
-    },
-    {
-      data_encryption_key: dek,
-      vault_access_token: authConfig.vault_access_token,
-      delegation_id: authConfig.delegation_id,
+      attachmentDek: dek,
     },
     FileUtils
   );
@@ -86,9 +78,7 @@ export async function largeFileUploadNode(
       directUploadUrl: artifactsUploadUrl.attachment_direct_upload_url.url,
       file: artifactsFileDir,
       encrypt: false,
-      options: {},
     },
-    authConfig,
     FileUtils
   );
 
@@ -114,11 +104,7 @@ export async function fileDownloadNode(
       url: string;
     };
   },
-  authConfig: {
-    data_encryption_key: string;
-    vault_access_token: string;
-    delegation_id?: string;
-  },
+  authConfig: IFileStorageAuthConfiguration,
   attachmentDek?: string,
   logFunction?: any
 ): Promise<{ fileName: string; buffer: Buffer }> {
@@ -135,7 +121,7 @@ export async function fileDownloadNode(
     const downloaded = await largeFileDownloadNode(
       attachmentId,
       attachmentDek,
-      authConfig.vault_access_token,
+      authConfig,
       environment.vault.url
     );
     buffer = downloaded.byteArray;
@@ -146,14 +132,24 @@ export async function fileDownloadNode(
   return { fileName, buffer };
 }
 
-export async function largeFileDownloadNode(attachmentID, dek, token, vaultUrl) {
+export async function largeFileDownloadNode(
+  attachmentID,
+  dek,
+  authConfig: IFileStorageAuthConfiguration,
+  vaultUrl
+) {
   const direct_download_encrypted_artifact = await getDirectDownloadInfo(
     attachmentID,
     'encryption_artifact_file',
-    token,
+    authConfig,
     vaultUrl
   );
-  const direct_download = await getDirectDownloadInfo(attachmentID, 'binary_file', token, vaultUrl);
+  const direct_download = await getDirectDownloadInfo(
+    attachmentID,
+    'binary_file',
+    authConfig,
+    vaultUrl
+  );
   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
   const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
   const encrypted_artifact = JSON.parse(encrypted_artifact_uint8array.toString('utf-8'));
@@ -177,9 +173,13 @@ export async function largeFileDownloadNode(attachmentID, dek, token, vaultUrl) 
   return { byteArray, direct_download };
 }
 
-async function getDirectDownloadInfo(id: string, type: string, token: string, vaultUrl: string) {
-  const configParams = { basePath: vaultUrl, apiKey: token, fetchApi: nodeFetch };
-  const api = new DirectAttachmentsApi(new Configuration(configParams));
+async function getDirectDownloadInfo(
+  id: string,
+  type: string,
+  authConfig: IFileStorageAuthConfiguration,
+  vaultUrl: string
+) {
+  const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl, nodeFetch));
   const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
   return result.attachment_direct_download_url;
 }
