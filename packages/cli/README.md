@@ -81,13 +81,15 @@ Create your first user:
 
 Note: this will open a browser with a Captcha to be solved if captcha is enabled for the environment you are working against.
 
-Or - if you have an existing account (e.g if you would like to set up on a new computer) - you can fetch your user by providing your password and secret
+Or - if you have an existing account (e.g if you would like to set up on a new computer) - you can fetch your user credentials by providing your password and secret
 
-- `meeco users:get -p <password> -s <secret>` (or `meeco users:get` to be prompted for these).
+- `meeco users:login -p <password> -s <secret>` (or `meeco users:login` to be prompted for these).
 
-If you would prefer to provide a configuration file with your credentials, supply a [User Config](#User) file i.e.
+This also works if your Vault or Keystore token has expired.
 
-- `meeco users:get -c path/to/my-user-config.yaml`
+If you need to get your Vault User Id use:
+
+- `meeco users:get -p <password> -s <secret>`
 
 ### 2. Create an Item
 
@@ -1195,7 +1197,7 @@ _See code: [src/commands/users/create.ts](https://github.com/Meeco/cli/blob/mast
 
 ## `meeco users:get`
 
-Fetch details about Meeco user from the various microservices. Provide either a User config file or password and secret. Outputs an Authorization config file for use with future commands.
+Fetch details about Meeco user from the various microservices.
 
 ```
 USAGE
@@ -1213,8 +1215,7 @@ OPTIONS
 
   -s, --secret=secret            the secret key of the user (will be prompted for if not provided)
 
-EXAMPLES
-  meeco users:get -c path/to/user-config.yaml
+EXAMPLE
   meeco users:get -p My$ecretPassword1 -s 1.xxxxxx.xxxx-xxxxx-xxxxxxx-xxxxx
 ```
 

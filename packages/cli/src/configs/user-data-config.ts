@@ -10,7 +10,7 @@ export interface IUserDataTemplate extends PutMeRequestUser {
 export class UserDataConfig {
   static kind = 'UserData';
 
-  constructor(public readonly userConfig: IUserDataTemplate) { }
+  constructor(public readonly userConfig: IUserDataTemplate) {}
 
   static fromYamlConfig(yamlConfigObj: IYamlConfig<IUserDataTemplate>): UserDataConfig {
     if (yamlConfigObj.kind !== UserDataConfig.kind) {
