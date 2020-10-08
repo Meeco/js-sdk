@@ -10,7 +10,7 @@ export interface IUserDataTemplate extends PutMeRequestUser {
 export class UserDataConfig {
   static kind = 'UserData';
 
-  constructor(public readonly userConfig: IUserDataTemplate) {}
+  constructor(public readonly userConfig: IUserDataTemplate) { }
 
   static fromYamlConfig(yamlConfigObj: IYamlConfig<IUserDataTemplate>): UserDataConfig {
     if (yamlConfigObj.kind !== UserDataConfig.kind) {
@@ -23,17 +23,14 @@ export class UserDataConfig {
   }
 
   static encodeFromJSON(json: MeResponse) {
-    const data = Object.entries(json.user).reduce((acc, [k, v]) => {
-      if (v !== null) {
-        acc[k] = v;
-      }
-      return acc;
-    }, {});
+    const { id, private_dek_external_id, user_type } = json.user;
 
     return {
       kind: UserDataConfig.kind,
       spec: {
-        ...data,
+        id,
+        private_dek_external_id,
+        user_type,
       },
     };
   }
