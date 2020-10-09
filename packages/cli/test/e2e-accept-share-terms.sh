@@ -45,4 +45,4 @@ bobsShareId=$(cat .share_Alice_Bob.created.yaml | yq -r '.shares[0].id')
 echo "bob's share id: ${bobsShareId}"
 
 echo "Accept incoming share as bob"
-yes | run shares:accept -a .Bob.yaml $bobsShareId
+run shares:accept -y -a .Bob.yaml $bobsShareId

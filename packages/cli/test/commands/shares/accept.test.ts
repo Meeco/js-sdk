@@ -9,7 +9,16 @@ describe('shares:accept', () => {
     .stub(cli, 'confirm', () => async () => 'Y')
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .run(['shares:accept', 'share1', ...testUserAuth, ...testEnvironmentFile])
-    .it('builds a share template file from two users and an item', ctx => {
+    .it('accepts a share with terms after confirmation', ctx => {
+      const expected = readFileSync(outputFixture('accept-share.output.yaml'), 'utf-8');
+      expect(ctx.stdout).to.contain(expected);
+    });
+
+  customTest
+    .stdout()
+    .nock('https://sandbox.meeco.me/vault', mockVault)
+    .run(['shares:accept', '-y', 'share1', ...testUserAuth, ...testEnvironmentFile])
+    .it('auto accepts a share with terms', ctx => {
       const expected = readFileSync(outputFixture('accept-share.output.yaml'), 'utf-8');
       expect(ctx.stdout).to.contain(expected);
     });
