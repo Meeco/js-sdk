@@ -39,6 +39,10 @@ const vaultToken = (userAuth: UserAuth) => {
   return typeof userAuth === 'string' ? userAuth : userAuth.vault_access_token;
 };
 
+const delegationId = (userAuth: UserAuth) => {
+  return typeof userAuth !== 'string' && userAuth.delegation_id ? userAuth.delegation_id : '';
+};
+
 const keystoreToken = (userAuth: UserAuth) => {
   return typeof userAuth === 'string' ? userAuth : userAuth.keystore_access_token;
 };
@@ -62,7 +66,8 @@ const vaultAPIKeys = (environment: Environment, userAuth: UserAuth) => (name: st
     'Meeco-Subscription-Key': environment.vault.subscription_key,
     // Must be uppercase
     // prettier-ignore
-    'Authorization': vaultToken(userAuth)
+    'Authorization': vaultToken(userAuth),
+    'Meeco-Delegation-Id': delegationId(userAuth),
   }[name]);
 
 function fetchInterceptor(url, options) {

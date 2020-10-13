@@ -71,6 +71,7 @@ const sharedItemResponse = {
     created_at: new Date(1),
     expires_at: null,
   },
+  item_shared_via_another_share_id: null,
   associations_to: [],
   associations: [],
   attachments: [],
