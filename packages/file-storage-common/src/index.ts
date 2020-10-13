@@ -14,7 +14,7 @@ export { AzureBlockUpload } from './azure-block-upload';
 export { BlobStorage } from './services/Azure';
 
 export interface IFileStorageAuthConfiguration {
-  data_encryption_key: string;
+  data_encryption_key?: string;
   vault_access_token: string;
   delegation_id?: string;
   subscription_key?: string;
