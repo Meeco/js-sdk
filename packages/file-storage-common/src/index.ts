@@ -14,7 +14,7 @@ export { AzureBlockUpload } from './azure-block-upload';
 export { BlobStorage } from './services/Azure';
 
 export interface IFileStorageAuthConfiguration {
-  data_encryption_key: string;
+  data_encryption_key?: string;
   vault_access_token: string;
   delegation_id?: string;
   subscription_key?: string;
@@ -111,6 +111,10 @@ export async function downloadAttachment(
   vaultUrl: string,
   fetchApi?: any
 ) {
+  if (!auth.data_encryption_key) {
+    // this file must have been uploaded with the old form of file upload which needs the user's private DEK
+    throw new Error('auth.data_encryption_key is needed to download this particular file');
+  }
   return downloadAndDecryptFile(
     () => new AttachmentApi(buildApiConfig(auth, vaultUrl, fetchApi)).attachmentsIdDownloadGet(id),
     auth.data_encryption_key
