@@ -13,6 +13,7 @@ share:
   terms: null
   created_at: 1970-01-01T00:00:00.001Z
   expires_at: null
+item_shared_via_another_share_id: null
 associations_to: []
 associations: []
 attachments: []
