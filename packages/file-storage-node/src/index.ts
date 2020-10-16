@@ -9,7 +9,7 @@ import {
   getDirectAttachmentInfo,
   IFileStorageAuthConfiguration,
 } from '@meeco/file-storage-common';
-import { DirectAttachmentsApi } from '@meeco/vault-api-sdk';
+import { DirectAttachmentsApi, ThumbnailApi } from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
 import * as mfe from 'mime-file-extension';
 import nodeFetch from 'node-fetch';
@@ -182,4 +182,41 @@ async function getDirectDownloadInfo(
   const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl, nodeFetch));
   const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
   return result.attachment_direct_download_url;
+}
+
+export async function encryptAndUploadThumbnail({
+  thumbnailFilePath,
+  binaryId,
+  attachmentDek,
+  sizeType,
+  authConfig,
+  vaultUrl,
+}: {
+  thumbnailFilePath: string;
+  binaryId: string;
+  attachmentDek: string;
+  sizeType: string;
+  authConfig: IFileStorageAuthConfiguration;
+  vaultUrl: string;
+}) {
+  const thumbnail = fs.readFileSync(thumbnailFilePath);
+
+  const encryptedThumbnail = await Cryppo.encryptBinaryWithKey({
+    key: attachmentDek,
+    data: Cryppo.binaryBufferToString(thumbnail),
+    strategy: Cryppo.CipherStrategy.AES_GCM,
+  });
+
+  if (!encryptedThumbnail.serialized) {
+    throw new Error('Error encrypting thumbnail file');
+  }
+  const blob =
+    typeof Blob === 'function'
+      ? new Blob([encryptedThumbnail.serialized])
+      : Buffer.from(encryptedThumbnail.serialized, 'binary');
+  const response = await new ThumbnailApi(
+    buildApiConfig(authConfig, vaultUrl, nodeFetch)
+  ).thumbnailsPost(blob as any, binaryId, sizeType);
+
+  return response;
 }
