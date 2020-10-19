@@ -1002,25 +1002,15 @@ USAGE
   $ meeco shares:create [FILE]
 
 OPTIONS
-  -c, --config=config
-      (required) Share config file to use for setting up the share
+  -c, --config=config                                                      (required) Share config file to use for setting up the share
+  -d, --expiry_date=expiry_date                                            Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
+  -e, --environment=environment                                            [default: .environment.yaml] environment config file
 
-  -d, --expiry_date=expiry_date
-      Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
+  -m, --sharing_mode=(owner|anyone)                                        [default: owner] If set to anyone, allows a share recipient to share this Item
+                                                                           again.
 
-  -e, --environment=environment
-      [default: .environment.yaml] environment config file
-
-  -m, --sharing_mode=owner|anyone
-      [default: owner] There are two sharing_mode: owner and anyone
-        owner - non-owner will not be able to on-share a share
-        anyone - anyone allow to on-share a share.
-
-  -t, --acceptance_required=acceptance_not_required|acceptance_required
-      [default: acceptance_not_required] Some shares require that the recipient accepts the terms of the share.
-        There are two acceptance_require: acceptance_not_required & acceptance_required
-        acceptance_not_required - recipient dont require acceptance
-        acceptance_required - recipient require acceptance before viewing shared item.
+  -t, --acceptance_required=(acceptance_required|acceptance_not_required)  [default: acceptance_not_required] If set to 'acceptance_required' then recipient
+                                                                           must accept share terms before decrypting the shared item.
 ```
 
 _See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_
@@ -1093,14 +1083,12 @@ USAGE
   $ meeco shares:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
-                                 default .user.yaml)
+  -a, --auth=auth                 (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -e, --environment=environment   [default: .environment.yaml] environment config file
 
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-
-  -t, --type=incoming|outgoing   [default: incoming] There are two types: incoming and outgoing
-                                 incoming - Items shared with you
-                                 outgoing - Items you have shared
+  -t, --type=(incoming|outgoing)  [default: incoming] There are two types: incoming and outgoing
+                                  incoming - Items shared with you
+                                  outgoing - Items you have shared
 ```
 
 _See code: [src/commands/shares/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/list.ts)_
