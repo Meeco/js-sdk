@@ -1,5 +1,6 @@
 // import * as MeecoAzure from '@meeco/azure-block-upload';
-import { ItemsResponse, Slot } from '@meeco/vault-api-sdk';
+import { Item, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
+import { MeecoServiceError } from '..';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
@@ -7,10 +8,15 @@ import { ItemCreateData } from '../models/item-create-data';
 import { ItemUpdateData } from '../models/item-update-data';
 import { DecryptedSlot } from '../models/local-slot';
 import cryppo from '../services/cryppo-service';
-import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
+import {
+  KeystoreAPIFactory,
+  keystoreAPIFactory,
+  VaultAPIFactory,
+  vaultAPIFactory,
+} from '../util/api-factory';
 import { IFullLogger, Logger, noopLogger, SimpleLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
-import { ShareService } from './share-service';
+import { verifyHashedValue } from '../util/value-verification';
 
 export interface IDecryptedSlot extends Slot {
   value_verification_key?: string;
@@ -22,14 +28,18 @@ export interface IDecryptedSlot extends Slot {
  */
 export class ItemService {
   private static cryppo = (<any>global).cryppo || cryppo;
+  private static verifyHashedValue = (<any>global).verifyHashedValue || verifyHashedValue;
+
   private vaultAPIFactory: VaultAPIFactory;
-  private shareService: ShareService;
+  private keystoreAPIFactory: KeystoreAPIFactory;
   private logger: IFullLogger;
+  // for mocking during testing
+  private cryppo = (<any>global).cryppo || cryppo;
 
   constructor(environment: Environment, log: SimpleLogger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
+    this.keystoreAPIFactory = keystoreAPIFactory(environment);
 
-    this.shareService = new ShareService(environment, log);
     this.logger = toFullLogger(log);
   }
 
@@ -42,7 +52,7 @@ export class ItemService {
   ): Promise<IDecryptedSlot[]> {
     return Promise.all(
       slots.map(async slot => {
-        let value =
+        const value =
           slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
             ? await this.cryppo.decryptWithKey({
                 key: dataEncryptionKey.key,
@@ -58,13 +68,18 @@ export class ItemService {
             key: dataEncryptionKey.key,
           });
 
-          value =
-            ShareService.generate_value_verification_hash(
+          if (
+            slot.value_verification_hash !== null &&
+            !ItemService.verifyHashedValue(
               decryptedValueVerificationKey as string,
-              value
-            ) === slot.value_verification_hash
-              ? value
-              : 'Invalid Value: failed to verify integrity of slot value';
+              value,
+              slot.value_verification_hash
+            )
+          ) {
+            throw new MeecoServiceError(
+              `Decrypted slot ${slot.name} with value ${value} does not match original value.`
+            );
+          }
         }
 
         const decrypted = {
@@ -76,6 +91,16 @@ export class ItemService {
         return decrypted;
       })
     );
+  }
+
+  /**
+   * True if the Item was received via a Share from another user.
+   * In that case, it must be decrypted with the Share DEK, not the user's own DEK.
+   * @param item
+   */
+  public static itemIsFromShare(item: Item): boolean {
+    // this also implies item.own == false
+    return item.share_id != null;
   }
 
   public setLogger(logger: Logger) {
@@ -117,20 +142,39 @@ export class ItemService {
 
   public async get(id: string, user: AuthData) {
     const vaultAccessToken = user.vault_access_token;
-    const dataEncryptionKey = user.data_encryption_key;
+    let dataEncryptionKey = user.data_encryption_key;
 
     const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
+    const { item, slots } = result;
 
-    // this could be improved, consider finding a way of using only one item get call.
-    if (result.item.share_id != null) {
-      return this.shareService.getSharedItemIncoming(user, result.item.share_id);
+    // If the Item is from a share, use the share DEK to decrypt instead.
+    if (ItemService.itemIsFromShare(item) && item.share_id !== null) {
+      const share = await this.vaultAPIFactory(user)
+        .SharesApi.incomingSharesIdGet(item.share_id)
+        .then(response => response.share);
+
+      const keyPairExternal = await this.keystoreAPIFactory(user).KeypairApi.keypairsIdGet(
+        share.keypair_external_id!
+      );
+
+      const decryptedPrivateKey = await this.cryppo.decryptWithKey({
+        serialized: keyPairExternal.keypair.encrypted_serialized_key,
+        key: user.key_encryption_key.key,
+      });
+
+      dataEncryptionKey = await this.cryppo
+        .decryptSerializedWithPrivateKey({
+          privateKeyPem: decryptedPrivateKey,
+          serialized: share.encrypted_dek,
+        })
+        .then(EncryptionKey.fromRaw);
     }
 
-    const slots = await ItemService.decryptAllSlots(result.slots, dataEncryptionKey);
+    const decryptedSlots = await ItemService.decryptAllSlots(slots, dataEncryptionKey);
 
     return {
       ...result,
-      slots,
+      slots: decryptedSlots,
     };
   }
 

@@ -12,7 +12,7 @@ run items:create-config vehicle -a .Alice.yaml > .template_vehicle.yaml
 
 cat .template_vehicle.yaml |
 yq -y '(.spec.label) = "My Vehicle"'|
-yq -y '(.spec.slots[0].value) = "20000101"' | 
+yq -y '(.spec.slots[0].value) = "20000101"' |
 yq -y '(.spec.slots[1].value) = "ABC123"' |
 yq -y '(.spec.slots[2].value) = "Mazda"' |
 yq -y '(.spec.slots[3].value) = "Familia"' |
@@ -39,7 +39,7 @@ echo "item id: ${itemId}"
 echo "connection id: ${connectionId}"
 
 echo "Share slot licence_plate only"
-run shares:create-config --from .Alice.yaml --connectionId $connectionId -i $itemId -s licence_plate > .share_Alice_Bob.yaml
+run shares:create-config --from .Alice.yaml -c .connection_Alice_Bob.created.yaml -i .item_alice.yaml -s licence_plate > .share_Alice_Bob.yaml
 
 dateAFter30Days=$(date +'%Y-%m-%d' -d "30 day")
 

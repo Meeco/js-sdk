@@ -1,36 +1,30 @@
-import { fetchConnectionWithId, ItemService, ShareService } from '@meeco/sdk';
-import { Slot } from '@meeco/vault-api-sdk';
+import { DecryptedSlot, fetchConnectionWithId } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
+import { ExistingConnectionConfig } from '../../configs/existing-connection-config';
 import { ShareConfig } from '../../configs/share-config';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class SharesCreateConfig extends MeecoCommand {
-  static description =
-    'Provide two users and either an item id (direct share) or share id (on-share) to construct a share config file';
+  static description = 'Provide two users and either an item id to construct a share config file';
 
   static flags = {
     ...MeecoCommand.flags,
-    itemId: _flags.string({
-      required: false,
+    item: _flags.string({
+      required: true,
       char: 'i',
-      description: `ID of the Item to share with the 'to' user`,
-    }),
-    onshareId: _flags.string({
-      required: false,
-      char: 'o',
-      description: `ID of the Share to on-share`,
+      description: `Config file for the Item to share with the 'to' user. This may be a shared Item.`,
     }),
     from: _flags.string({
       required: true,
       char: 'f',
       description: `User config file for the 'from' user`,
     }),
-    connectionId: _flags.string({
+    connection: _flags.string({
       required: true,
       char: 'c',
-      description: `Connection id for the 'to' user`,
+      description: `Connection config file`,
     }),
     slotName: _flags.string({
       required: false,
@@ -44,54 +38,36 @@ export default class SharesCreateConfig extends MeecoCommand {
   async run() {
     try {
       const { flags } = this.parse(this.constructor as typeof SharesCreateConfig);
-      const { from, connectionId, onshareId, slotName, itemId } = flags;
+      const { from, connection, slotName, item } = flags;
       const environment = await this.readEnvironmentFile();
       const fromUser = await this.readConfigFromFile(AuthConfig, from);
+      const connectionConfig = await this.readConfigFromFile(ExistingConnectionConfig, connection);
+      const itemConfigFile = await this.readYamlFile(item);
 
-      if (!fromUser || !connectionId) {
-        throw new CLIError('Both a valid from and to user config file are required');
+      if (!fromUser || !connectionConfig || !itemConfigFile) {
+        throw new CLIError('Invalid config file');
       }
 
-      if (!(onshareId || itemId)) {
-        throw new CLIError(
-          `Either a on-share id (-o option) or an item id (-i option) is required`
-        );
-      }
+      const connectionId = connectionConfig.from_user_connection_id;
 
-      // this require refactor, this should return null when connection doesnot exists insted of throwing excepiton
-      await fetchConnectionWithId(fromUser, connectionId, environment, this.updateStatus);
+      await fetchConnectionWithId(fromUser, connectionId, environment, this.updateStatus).then(
+        () => {
+          const slots = (itemConfigFile as any).spec.slots as DecryptedSlot[];
+          const itemId = (itemConfigFile as any).spec.id as string;
 
-      let slots: Slot[];
-      let resp: any;
-      // Ensure the item to share exists first since setting up a first share takes a bit of work
-      if (!itemId) {
-        // The `as string` is safe here as we know that item id is undefined, shareId must be defined
-        // or we would have errored above .
-        resp = await new ShareService(environment).getSharedItemIncoming(
-          fromUser,
-          onshareId as string
-        );
-      } else {
-        resp = await new ItemService(environment).get(itemId, fromUser).catch(err => {
-          if (err.status === 404) {
-            throw new CLIError(`Item with id '${itemId}' was not found on the 'from' user`);
+          let slotId: string | undefined;
+          if (slotName) {
+            slotId = slots.find(slot => slot.name === slotName)?.id;
+            if (slotId === undefined) {
+              throw new CLIError(`Slot with name '${slotName}' was not found on the item`);
+            }
           }
-          throw err;
-        });
-      }
 
-      const foundItemId = resp.item.id;
-      slots = resp.slots as Slot[];
-
-      let slotId: string | undefined;
-      if (slotName) {
-        slotId = slots.find(slot => slot.name === slotName)?.id;
-        if (slotId === undefined) {
-          throw new CLIError(`Slot with name '${slotName}' was not found on the item`);
+          this.printYaml(
+            ShareConfig.encodeFromUsersWithItem(fromUser, connectionId, itemId, slotId)
+          );
+          this.finish();
         }
-      }
-      this.printYaml(
-        ShareConfig.encodeFromUsersWithItem(fromUser, connectionId, foundItemId, slotId)
       );
     } catch (err) {
       await this.handleException(err);

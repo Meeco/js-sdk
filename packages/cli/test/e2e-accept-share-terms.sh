@@ -11,7 +11,7 @@ run items:create-config vehicle -a .Alice.yaml > .template_vehicle.yaml
 
 cat .template_vehicle.yaml |
 yq -y '(.spec.label) = "My Vehicle"'|
-yq -y '(.spec.slots[0].value) = "20000101"' | 
+yq -y '(.spec.slots[0].value) = "20000101"' |
 yq -y '(.spec.slots[1].value) = "ABC123"' |
 yq -y '(.spec.slots[2].value) = "Mazda"' |
 yq -y '(.spec.slots[3].value) = "Familia"' |
@@ -36,13 +36,13 @@ echo "item id: ${itemId}"
 echo "connection id: ${connectionId}"
 
 echo "Share"
-run shares:create-config --from .Alice.yaml --connectionId $connectionId -i $itemId > .share_Alice_Bob.yaml
+run shares:create-config --from .Alice.yaml --connection .connection_Alice_Bob.created.yaml -i .item_alice.yaml > .share_Alice_Bob.yaml
 
 echo "Share the card to 'Bob'"
-run shares:create -c .share_Alice_Bob.yaml -t acceptance_required > .share_Alice_Bob.created.yaml
+run shares:create -c .share_Alice_Bob.yaml --terms "Use it for good" > .share_Alice_Bob.created.yaml
 
 bobsShareId=$(cat .share_Alice_Bob.created.yaml | yq -r '.shares[0].id')
 echo "bob's share id: ${bobsShareId}"
 
 echo "Accept incoming share as bob"
-run shares:accept -a .Bob.yaml $bobsShareId
+run shares:accept -y -a .Bob.yaml $bobsShareId
