@@ -14,6 +14,7 @@ export * from './models/srp-session';
 export * from './models/template-data';
 export * from './services/client-task-queue-service';
 export * from './services/connection-service';
+export * from './services/invitation-service';
 export * from './services/item-service';
 export * from './services/organization-members-service';
 export * from './services/organization-services-service';

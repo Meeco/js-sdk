@@ -1,4 +1,4 @@
-import { ConnectionService } from '@meeco/sdk';
+import { InvitationService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { ConnectionV2Config } from '../../configs/connection-v2-config';
@@ -28,28 +28,28 @@ export default class OrganizationMembersAcceptInvitation extends MeecoCommand {
     const { invitationConfig, auth } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-    const invitatioinConfigFile = await this.readConfigFromFile(InvitationConfig, invitationConfig);
+    const invitationConfigFile = await this.readConfigFromFile(InvitationConfig, invitationConfig);
 
     if (!authConfig) {
       this.error('Valid auth config file must be supplied');
     }
-    if (!invitatioinConfigFile) {
+    if (!invitationConfigFile) {
       this.error('Valid organization config file must be supplied');
     }
 
-    const { invitation } = invitatioinConfigFile;
+    const { invitation } = invitationConfigFile;
 
     if (!invitation.token) {
-      this.error('Organization configuration must have an token (expected at spec.token)');
+      this.error('Organization configuration must have a token (expected at spec.token)');
     }
     try {
       this.updateStatus('Creating organization members connection');
-      const service = new ConnectionService(environment, {
+      const service = new InvitationService(environment, {
         error: this.error,
         warn: this.warn,
         log: this.updateStatus,
       });
-      const result = await service.acceptInvitation('', invitation.token, authConfig);
+      const result = await service.accept('', invitation.token, authConfig);
       this.finish();
       this.printYaml(ConnectionV2Config.encodeFromJSON(result));
     } catch (err) {

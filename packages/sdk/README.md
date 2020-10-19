@@ -234,16 +234,16 @@ const itemDetails = await service.get(items[0].id, authData);
 A big part of Meeco is securely sharing data. In order to share data the users sharing the data must first be Connected.
 
 ```ts
-import { ConnectionService } from '@meeco/sdk';
+import { InvitationService } from '@meeco/sdk';
 
-const connectionService = new ConnectionService(environment);
+const invitationService = new InvitationService(environment);
 
 // Alice's Interaction, sending a connection invitation to Bob
-const invitation = await connectionService.createInvitation('Bob', aliceUser);
+const invitation = await invitationService.create('Bob', aliceUser);
 // It is up to Alice to share `invitation.token` with Bob so he can accept it (e.g. via Email or SMS)
 
 // Bob's interaction - accepting the invitation (providing the token he got from Alice)
-const connection = await connectionService.acceptInvitation('Alice', invitationToken, bobUser);
+const connection = await invitationService.accept('Alice', invitationToken, bobUser);
 ```
 
 Alice and Bob are now connected and can share data. Let's share one of Alice's items with Bob.

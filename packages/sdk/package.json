@@ -81,7 +81,7 @@
     "posttest": "npm run lint && npm run format:check",
     "prepack": "npm run build",
     "start": "npm run demo",
-    "build:typedoc": "typedoc --inputFiles src/index.ts --mode library --out ../../docs/js-sdk --tsconfig tsconfig.json --ignoreCompilerErrors --disableOutputCheck --name 'Meeco SDK Documentation' --toc AuthData,ConnectionService,EncryptionKey,Environment,ItemService,Secrets,Service,TemplatesService,UserService --excludePrivate",
+    "build:typedoc": "typedoc --inputFiles src/index.ts --mode library --out ../../docs/js-sdk --tsconfig tsconfig.json --ignoreCompilerErrors --disableOutputCheck --name 'Meeco SDK Documentation' --toc AuthData,ConnectionService,EncryptionKey,Environment,InvitationService,ItemService,Secrets,Service,TemplatesService,UserService --excludePrivate",
     "build:demo": "webpack --config webpack.config.prod.js",
     "docs": "npm run build:typedoc && npm run build:demo",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\""
