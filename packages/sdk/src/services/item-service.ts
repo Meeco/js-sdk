@@ -147,7 +147,12 @@ export class ItemService extends Service<ItemApi> {
     await this.vaultAPIFactory(vaultAccessToken).SlotApi.slotsIdDelete(slotId);
     this.logger.log('Slot successfully removed');
   }
-
+  /**
+   * Get an Item and decrypt all of its Slots.
+   * Works for both owned and shared Items.
+   * @param id ItemId
+   * @param user
+   */
   public async get(id: string, user: AuthData) {
     const vaultAccessToken = user.vault_access_token;
     let dataEncryptionKey = user.data_encryption_key;
