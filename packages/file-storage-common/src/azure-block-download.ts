@@ -1,5 +1,9 @@
-import * as Cryppo from '@meeco/cryppo';
-import { CipherStrategy } from '@meeco/cryppo';
+import {
+  binaryBufferToString,
+  CipherStrategy,
+  decryptWithKeyUsingArtefacts,
+  stringAsBinaryBuffer,
+} from '@meeco/cryppo';
 import { BlobStorage } from './services/Azure';
 
 export class AzureBlockDownload {
@@ -30,14 +34,14 @@ export class AzureBlockDownload {
       const data = new Uint8Array(block.data);
       let byteNumbers: Uint8Array;
       if (dataEncryptionKey && strategy && encryptionArtifact) {
-        const str = Cryppo.decryptWithKeyUsingArtefacts(
+        const str = decryptWithKeyUsingArtefacts(
           dataEncryptionKey,
-          Cryppo.binaryBufferToString(data),
+          binaryBufferToString(data),
           strategy,
           encryptionArtifact
         );
 
-        byteNumbers = new Uint8Array(Cryppo.stringAsBinaryBuffer(str || ''));
+        byteNumbers = new Uint8Array(stringAsBinaryBuffer(str || ''));
       }
       return new Promise(resolve => {
         resolve(byteNumbers || data);

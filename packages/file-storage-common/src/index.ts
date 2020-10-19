@@ -1,4 +1,11 @@
-import * as Cryppo from '@meeco/cryppo';
+import {
+  binaryBufferToString,
+  CipherStrategy,
+  decryptBinaryWithKey,
+  decryptWithKey,
+  encryptBinaryWithKey,
+  stringAsBinaryBuffer,
+} from '@meeco/cryppo';
 import {
   AttachmentApi,
   AttachmentDirectUploadUrlResponse,
@@ -128,8 +135,8 @@ export async function downloadAndDecryptFile<T extends Blob>(
 ) {
   const result = await download();
   const buffer = await (<any>result).arrayBuffer();
-  const encryptedContents = await Cryppo.binaryBufferToString(buffer);
-  const decryptedContents = await Cryppo.decryptWithKey({
+  const encryptedContents = await binaryBufferToString(buffer);
+  const decryptedContents = await decryptWithKey({
     serialized: encryptedContents,
     key: dataEncryptionKey,
   });
@@ -180,10 +187,10 @@ export async function encryptAndUploadThumbnailCommon({
   vaultUrl: string;
   fetchApi?: any;
 }) {
-  const encryptedThumbnail = await Cryppo.encryptBinaryWithKey({
+  const encryptedThumbnail = await encryptBinaryWithKey({
     key: attachmentDek,
     data: thumbnailBufferString,
-    strategy: Cryppo.CipherStrategy.AES_GCM,
+    strategy: CipherStrategy.AES_GCM,
   });
 
   if (!encryptedThumbnail.serialized) {
@@ -192,7 +199,7 @@ export async function encryptAndUploadThumbnailCommon({
   const blob =
     typeof Blob === 'function'
       ? new Blob([encryptedThumbnail.serialized])
-      : Cryppo.stringAsBinaryBuffer(encryptedThumbnail.serialized);
+      : stringAsBinaryBuffer(encryptedThumbnail.serialized);
   const response = await new ThumbnailApi(
     buildApiConfig(authConfig, vaultUrl, fetchApi)
   ).thumbnailsPost(blob as any, binaryId, sizeType);
@@ -216,15 +223,15 @@ export async function downloadThumbnailCommon({
   const thumbnailApi = await new ThumbnailApi(buildApiConfig(authConfig, vaultUrl, fetchApi));
   const result = await thumbnailApi.thumbnailsIdGet(id);
   const buffer = await (<any>result).arrayBuffer();
-  const encryptedContents = await Cryppo.binaryBufferToString(buffer);
-  const decryptedContents = await Cryppo.decryptBinaryWithKey({
+  const encryptedContents = await binaryBufferToString(buffer);
+  const decryptedContents = await decryptBinaryWithKey({
     serialized: encryptedContents,
     key: dataEncryptionKey,
   });
   if (!decryptedContents) {
     throw new Error('Error decrypting thumbnail file');
   }
-  return Cryppo.stringAsBinaryBuffer(decryptedContents);
+  return stringAsBinaryBuffer(decryptedContents);
 }
 
 export function thumbSizeTypeToMimeExt(

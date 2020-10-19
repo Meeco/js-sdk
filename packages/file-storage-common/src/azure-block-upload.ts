@@ -1,4 +1,10 @@
-import * as Cryppo from '@meeco/cryppo';
+import {
+  binaryBufferToString,
+  CipherStrategy,
+  encryptWithKeyUsingArtefacts,
+  generateRandomKey,
+  stringAsBinaryBuffer,
+} from '@meeco/cryppo';
 import { isRunningOnWeb } from './app';
 import { BlobStorage } from './services/Azure';
 import ThreadPool from './ThreadPool';
@@ -139,7 +145,7 @@ export class AzureBlockUpload {
         ad: 'none',
         at,
         range,
-        encryption_strategy: Cryppo.CipherStrategy.AES_GCM,
+        encryption_strategy: CipherStrategy.AES_GCM,
         size: this.fileSize,
       };
 
@@ -162,12 +168,12 @@ export class AzureBlockUpload {
 
           let encrypt: any = null;
           if (dataEncryptionKey) {
-            const ivArtifact = Cryppo.stringAsBinaryBuffer(Cryppo.generateRandomKey(12));
-            encrypt = Cryppo.encryptWithKeyUsingArtefacts(
+            const ivArtifact = stringAsBinaryBuffer(generateRandomKey(12));
+            encrypt = encryptWithKeyUsingArtefacts(
               dataEncryptionKey,
-              Cryppo.binaryBufferToString(data),
-              Cryppo.CipherStrategy.AES_GCM,
-              Cryppo.binaryBufferToString(ivArtifact)
+              binaryBufferToString(data),
+              CipherStrategy.AES_GCM,
+              binaryBufferToString(ivArtifact)
             );
             artifacts.iv[nBlock] = ivArtifact;
             artifacts.at[nBlock] = encrypt.artifacts.at;
@@ -175,7 +181,7 @@ export class AzureBlockUpload {
 
           await BlobStorage.putBlock(
             this.url,
-            encrypt ? Cryppo.stringAsBinaryBuffer(encrypt.encrypted) : data,
+            encrypt ? stringAsBinaryBuffer(encrypt.encrypted) : data,
             blockID
           );
           const progress = (nBlock + 1) / this.totalBlocks;

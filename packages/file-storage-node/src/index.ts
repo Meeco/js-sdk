@@ -1,4 +1,4 @@
-import * as Cryppo from '@meeco/cryppo';
+import { binaryBufferToString, generateRandomKey } from '@meeco/cryppo';
 import {
   AzureBlockDownload,
   buildApiConfig,
@@ -51,7 +51,7 @@ export async function largeFileUploadNode(
     environment.vault.url,
     nodeFetch
   );
-  const dek = Cryppo.generateRandomKey();
+  const dek = generateRandomKey();
   const uploadResult = await directAttachmentUpload(
     {
       directUploadUrl: uploadUrl.attachment_direct_upload_url.url,
@@ -166,9 +166,9 @@ export async function largeFileDownloadNode(
       dek,
       encrypted_artifact.encryption_strategy,
       {
-        iv: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
+        iv: binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,
-        at: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
+        at: binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
       },
       encrypted_artifact.range[index]
     );
@@ -207,7 +207,7 @@ export async function encryptAndUploadThumbnail({
   const thumbnail = fs.readFileSync(thumbnailFilePath);
 
   return encryptAndUploadThumbnailCommon({
-    thumbnailBufferString: Cryppo.binaryBufferToString(thumbnail),
+    thumbnailBufferString: binaryBufferToString(thumbnail),
     binaryId,
     attachmentDek,
     sizeType,
