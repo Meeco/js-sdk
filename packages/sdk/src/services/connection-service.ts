@@ -1,18 +1,10 @@
-import { Connection, ConnectionsResponse } from '@meeco/vault-api-sdk';
+import { Connection, ConnectionsResponse, Invitation } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { ConnectionCreateData } from '../models/connection-create-data';
 import { EncryptionKey } from '../models/encryption-key';
-import { Environment } from '../models/environment';
-import cryppo from '../services/cryppo-service';
-import {
-  KeystoreAPIFactory,
-  keystoreAPIFactory,
-  VaultAPIFactory,
-  vaultAPIFactory,
-} from '../util/api-factory';
 import { findConnectionBetween } from '../util/find-connection-between';
-import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, resultHasNext } from '../util/paged';
+import Service from './service';
 
 export interface IDecryptedConnection {
   name: string;
@@ -22,31 +14,18 @@ export interface IDecryptedConnection {
 /**
  * Used for setting up connections between Meeco `User`s to allow the secure sharing of data (see also {@link ShareService})
  */
-export class ConnectionService {
-  private cryppo = (<any>global).cryppo || cryppo;
-  private vaultApiFactory: VaultAPIFactory;
-  private keystoreApiFactory: KeystoreAPIFactory;
-  private logger: IFullLogger;
-
-  constructor(private environment: Environment, log: Logger = noopLogger) {
-    this.vaultApiFactory = vaultAPIFactory(environment);
-    this.keystoreApiFactory = keystoreAPIFactory(environment);
-    this.logger = toFullLogger(log);
-  }
-
-  public setLogger(logger: Logger) {
-    this.logger = toFullLogger(logger);
-  }
-
-  public async createInvitation(name: string, auth: AuthData) {
-    this.logger.log('Generating key pair');
-    const keyPair = await this.createAndStoreKeyPair(auth);
+export class ConnectionService extends Service {
+  public async createInvitation(name: string, auth: AuthData): Promise<Invitation> {
+    const keyPair = await this.createAndStoreKeyPair(
+      auth.keystore_access_token,
+      auth.key_encryption_key
+    );
 
     this.logger.log('Encrypting recipient name');
-    const encryptedName: string = await this.encryptRecipientName(name, auth);
+    const encryptedName: string = await this.encryptName(name, auth.data_encryption_key);
 
     this.logger.log('Sending invitation request');
-    return await this.vaultApiFactory(auth)
+    return await this.vaultAPIFactory(auth)
       .InvitationApi.invitationsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,
@@ -59,15 +38,21 @@ export class ConnectionService {
       .then(result => result.invitation);
   }
 
-  public async acceptInvitation(name: string, invitationToken: string, auth: AuthData) {
-    this.logger.log('Generating key pair');
-    const keyPair = await this.createAndStoreKeyPair(auth);
+  public async acceptInvitation(
+    name: string,
+    invitationToken: string,
+    auth: AuthData
+  ): Promise<Connection> {
+    const keyPair = await this.createAndStoreKeyPair(
+      auth.keystore_access_token,
+      auth.key_encryption_key
+    );
 
     this.logger.log('Encrypting connection name');
-    const encryptedName: string = await this.encryptRecipientName(name, auth);
+    const encryptedName: string = await this.encryptName(name, auth.data_encryption_key);
 
     this.logger.log('Accepting invitation');
-    return await this.vaultApiFactory(auth)
+    return await this.vaultAPIFactory(auth)
       .ConnectionApi.connectionsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,
@@ -139,7 +124,7 @@ export class ConnectionService {
     perPage?: number
   ): Promise<IDecryptedConnection[]> {
     this.logger.log('Fetching connections');
-    const result = await this.vaultApiFactory(vaultAccessToken).ConnectionApi.connectionsGet(
+    const result = await this.vaultAPIFactory(vaultAccessToken).ConnectionApi.connectionsGet(
       nextPageAfter,
       perPage
     );
@@ -151,7 +136,7 @@ export class ConnectionService {
     this.logger.log('Decrypting connection names');
     const decryptions = (result.connections || []).map(connection =>
       connection.own.encrypted_recipient_name
-        ? this.cryppo
+        ? Service.cryppo
             .decryptWithKey({
               serialized: connection.own.encrypted_recipient_name!,
               key: dek.key,
@@ -172,7 +157,7 @@ export class ConnectionService {
     vaultAccessToken: string,
     dek: EncryptionKey
   ): Promise<IDecryptedConnection[]> {
-    const api = this.vaultApiFactory(vaultAccessToken).ConnectionApi;
+    const api = this.vaultAPIFactory(vaultAccessToken).ConnectionApi;
 
     return getAllPaged(cursor => api.connectionsGet(cursor)).then(results => {
       const responses = results.reduce(
@@ -181,7 +166,7 @@ export class ConnectionService {
       );
       const decryptions = responses.map(connection =>
         connection.own.encrypted_recipient_name
-          ? this.cryppo
+          ? Service.cryppo
               .decryptWithKey({
                 serialized: connection.own.encrypted_recipient_name!,
                 key: dek.key,
@@ -199,26 +184,27 @@ export class ConnectionService {
     });
   }
 
-  private encryptRecipientName(name: string, user: AuthData) {
-    return this.cryppo
+  private encryptName(name: string, dek: EncryptionKey) {
+    return Service.cryppo
       .encryptWithKey({
         data: name,
-        key: user.data_encryption_key.key,
-        strategy: this.cryppo.CipherStrategy.AES_GCM,
+        key: dek.key,
+        strategy: Service.cryppo.CipherStrategy.AES_GCM,
       })
       .then(result => result.serialized);
   }
 
-  private async createAndStoreKeyPair(user: AuthData) {
-    const keyPair = await this.cryppo.generateRSAKeyPair();
+  private async createAndStoreKeyPair(keystoreToken: string, keyEncryptionKey: EncryptionKey) {
+    this.logger.log('Generating key pair');
+    const keyPair = await Service.cryppo.generateRSAKeyPair();
 
-    const toPrivateKeyEncrypted = await this.cryppo.encryptWithKey({
+    const toPrivateKeyEncrypted = await Service.cryppo.encryptWithKey({
       data: keyPair.privateKey,
-      key: user.key_encryption_key.key,
-      strategy: this.cryppo.CipherStrategy.AES_GCM,
+      key: keyEncryptionKey.key,
+      strategy: Service.cryppo.CipherStrategy.AES_GCM,
     });
 
-    const keystoreStoredKeyPair = await this.keystoreApiFactory(user)
+    const keystoreStoredKeyPair = await this.keystoreAPIFactory(keystoreToken)
       .KeypairApi.keypairsPost({
         public_key: keyPair.publicKey,
         encrypted_serialized_key: toPrivateKeyEncrypted.serialized,

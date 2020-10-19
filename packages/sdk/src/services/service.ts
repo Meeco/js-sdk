@@ -12,14 +12,14 @@ import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
  * Abstract SDK Service.
  */
 export default class Service {
-  protected readonly cryppo = (<any>global).cryppo || cryppo;
-  protected vaultApiFactory: VaultAPIFactory;
-  protected keystoreApiFactory: KeystoreAPIFactory;
+  protected static readonly cryppo = (<any>global).cryppo || cryppo;
+  protected vaultAPIFactory: VaultAPIFactory;
+  protected keystoreAPIFactory: KeystoreAPIFactory;
   protected logger: IFullLogger;
 
   constructor(protected environment: Environment, log: Logger = noopLogger) {
-    this.vaultApiFactory = vaultAPIFactory(environment);
-    this.keystoreApiFactory = keystoreAPIFactory(environment);
+    this.vaultAPIFactory = vaultAPIFactory(environment);
+    this.keystoreAPIFactory = keystoreAPIFactory(environment);
     this.logger = toFullLogger(log);
   }
 

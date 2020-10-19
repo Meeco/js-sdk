@@ -3,20 +3,13 @@ import { Item, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
 import { MeecoServiceError } from '..';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
-import { Environment } from '../models/environment';
 import { ItemCreateData } from '../models/item-create-data';
 import { ItemUpdateData } from '../models/item-update-data';
 import { DecryptedSlot } from '../models/local-slot';
-import cryppo from '../services/cryppo-service';
-import {
-  KeystoreAPIFactory,
-  keystoreAPIFactory,
-  VaultAPIFactory,
-  vaultAPIFactory,
-} from '../util/api-factory';
-import { IFullLogger, Logger, noopLogger, SimpleLogger, toFullLogger } from '../util/logger';
+import { Logger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import { verifyHashedValue } from '../util/value-verification';
+import Service from './service';
 
 export interface IDecryptedSlot extends Slot {
   value_verification_key?: string;
@@ -26,22 +19,8 @@ export interface IDecryptedSlot extends Slot {
 /**
  * Used for fetching and sending `Items` to and from the Vault.
  */
-export class ItemService {
-  private static cryppo = (<any>global).cryppo || cryppo;
+export class ItemService extends Service {
   private static verifyHashedValue = (<any>global).verifyHashedValue || verifyHashedValue;
-
-  private vaultAPIFactory: VaultAPIFactory;
-  private keystoreAPIFactory: KeystoreAPIFactory;
-  private logger: IFullLogger;
-  // for mocking during testing
-  private cryppo = (<any>global).cryppo || cryppo;
-
-  constructor(environment: Environment, log: SimpleLogger = noopLogger) {
-    this.vaultAPIFactory = vaultAPIFactory(environment);
-    this.keystoreAPIFactory = keystoreAPIFactory(environment);
-
-    this.logger = toFullLogger(log);
-  }
 
   /**
    * Updates 'value' to the decrypted 'encrypted_value' and sets 'encrypted' to false.
@@ -54,7 +33,7 @@ export class ItemService {
       slots.map(async slot => {
         const value =
           slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
-            ? await this.cryppo.decryptWithKey({
+            ? await Service.cryppo.decryptWithKey({
                 key: dataEncryptionKey.key,
                 serialized: slot.encrypted_value,
               })
@@ -63,7 +42,7 @@ export class ItemService {
         let decryptedValueVerificationKey: string | undefined;
 
         if (value != null && !slot.own && slot.encrypted_value_verification_key != null) {
-          decryptedValueVerificationKey = await this.cryppo.decryptWithKey({
+          decryptedValueVerificationKey = await Service.cryppo.decryptWithKey({
             serialized: slot.encrypted_value_verification_key,
             key: dataEncryptionKey.key,
           });
@@ -157,12 +136,12 @@ export class ItemService {
         share.keypair_external_id!
       );
 
-      const decryptedPrivateKey = await this.cryppo.decryptWithKey({
+      const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
         serialized: keyPairExternal.keypair.encrypted_serialized_key,
         key: user.key_encryption_key.key,
       });
 
-      dataEncryptionKey = await this.cryppo
+      dataEncryptionKey = await Service.cryppo
         .decryptSerializedWithPrivateKey({
           privateKeyPem: decryptedPrivateKey,
           serialized: share.encrypted_dek,
@@ -182,9 +161,9 @@ export class ItemService {
     const encrypted: any = {
       ...slot,
     };
-    encrypted.encrypted_value = await ItemService.cryppo
+    encrypted.encrypted_value = await Service.cryppo
       .encryptWithKey({
-        strategy: ItemService.cryppo.CipherStrategy.AES_GCM,
+        strategy: Service.cryppo.CipherStrategy.AES_GCM,
         key: dek.key,
         data: slot.value || '',
       })

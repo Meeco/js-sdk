@@ -3,17 +3,17 @@ import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { vaultAPIFactory } from '../util/api-factory';
-import cryppo from './cryppo-service';
+import { Logger, noopLogger } from '../util/logger';
+import Service from './service';
+
 /**
  * Manage organizations from the API.
  */
-export class OrganizationServicesService {
+export class OrganizationServicesService extends Service {
   private api: OrganizationsManagingServicesApi;
 
-  // for mocking during testing
-  private cryppo = (<any>global).cryppo || cryppo;
-
-  constructor(environment: Environment, vaultAccessToken: string) {
+  constructor(environment: Environment, vaultAccessToken: string, log: Logger = noopLogger) {
+    super(environment, log);
     this.api = vaultAPIFactory(environment)(vaultAccessToken).OrganizationsManagingServicesApi;
   }
 
@@ -26,7 +26,7 @@ export class OrganizationServicesService {
       organizationId,
       serviceId
     );
-    const decryptedVaultSessionToken = await this.cryppo.decryptSerializedWithPrivateKey({
+    const decryptedVaultSessionToken = await Service.cryppo.decryptSerializedWithPrivateKey({
       privateKeyPem: privateKey,
       serialized: result.encrypted_access_token,
     });
@@ -41,7 +41,7 @@ export class OrganizationServicesService {
   }
 
   public async create(organizationId: string, service: PostServiceRequest) {
-    const rsaKeyPair = await this.cryppo.generateRSAKeyPair(4096);
+    const rsaKeyPair = await Service.cryppo.generateRSAKeyPair(4096);
     service.public_key = rsaKeyPair.publicKey;
     const result = await this.api.organizationsOrganizationIdServicesPost(organizationId, {
       service,

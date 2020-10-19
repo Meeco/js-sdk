@@ -4,11 +4,9 @@ import {
   ClientTaskQueueResponse,
 } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
-import { Environment } from '../models/environment';
 import { MeecoServiceError } from '../models/service-error';
-import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
-import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
+import Service from './service';
 import { ShareService } from './share-service';
 
 export { ClientTaskQueueGetStateEnum as ClientTaskState } from '@meeco/vault-api-sdk';
@@ -31,20 +29,7 @@ export interface IClientTaskExecResult {
  * A ClientTask describes a set of API actions the client has been requested to perform,
  * usually encrypting some data with their private keys.
  */
-export class ClientTaskQueueService {
-  private vaultAPIFactory: VaultAPIFactory;
-
-  private logger: IFullLogger;
-
-  constructor(private environment: Environment, log: Logger = noopLogger) {
-    this.vaultAPIFactory = vaultAPIFactory(environment);
-    this.logger = toFullLogger(log);
-  }
-
-  public setLogger(logger: Logger) {
-    this.logger = toFullLogger(logger);
-  }
-
+export class ClientTaskQueueService extends Service {
   public getAPI(vaultToken: string) {
     return this.vaultAPIFactory(vaultToken).ClientTaskQueueApi;
   }

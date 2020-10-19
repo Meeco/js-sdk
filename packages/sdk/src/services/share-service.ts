@@ -14,19 +14,12 @@ import {
 import { DecryptedSlot } from '..';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
-import { Environment } from '../models/environment';
 import { MeecoServiceError } from '../models/service-error';
-import {
-  KeystoreAPIFactory,
-  keystoreAPIFactory,
-  vaultAPIFactory,
-  VaultAPIFactory,
-} from '../util/api-factory';
 import { fetchConnectionWithId } from '../util/find-connection-between';
-import { noopLogger, SimpleLogger } from '../util/logger';
 import { valueVerificationHash } from '../util/value-verification';
 import cryppo from './cryppo-service';
 import { IDecryptedSlot, ItemService } from './item-service';
+import Service from './service';
 
 export enum SharingMode {
   owner = 'owner',
@@ -59,11 +52,7 @@ export enum ShareType {
  * Service for sharing data between two connected Meeco users.
  * Connections can be setup via the {@link ConnectionService}
  */
-export class ShareService {
-  constructor(private environment: Environment, private log: SimpleLogger = noopLogger) {
-    this.keystoreApiFactory = keystoreAPIFactory(environment);
-    this.vaultApiFactory = vaultAPIFactory(environment);
-  }
+export class ShareService extends Service {
   /**
    * @visibleForTesting
    * @ignore
@@ -74,30 +63,21 @@ export class ShareService {
   private static valueVerificationHash =
     (<any>global).valueVerificationHash || valueVerificationHash;
 
-  private cryppo = (<any>global).cryppo || cryppo;
-
-  private keystoreApiFactory: KeystoreAPIFactory;
-  private vaultApiFactory: VaultAPIFactory;
-
-  public setLogger(logger: SimpleLogger) {
-    this.log = logger;
-  }
-
   public async shareItem(
     fromUser: AuthData,
     connectionId: string,
     itemId: string,
     shareOptions: IShareOptions
   ): Promise<SharesCreateResponse> {
-    this.log('Fetching connection');
+    this.logger.log('Fetching connection');
     const fromUserConnection = await fetchConnectionWithId(
       fromUser,
       connectionId,
       this.environment,
-      this.log
+      this.logger.log
     );
 
-    this.log('Preparing item to share');
+    this.logger.log('Preparing item to share');
     const share = await this.shareItemFromVaultItem(fromUser, itemId, {
       ...shareOptions,
       recipient_id: fromUserConnection.the_other_user.user_id,
@@ -105,8 +85,8 @@ export class ShareService {
       keypair_external_id: fromUserConnection.the_other_user.user_keypair_external_id!,
     });
 
-    this.log('Sending shared data');
-    const shareResult = await this.vaultApiFactory(fromUser).SharesApi.itemsIdSharesPost(itemId, {
+    this.logger.log('Sending shared data');
+    const shareResult = await this.vaultAPIFactory(fromUser).SharesApi.itemsIdSharesPost(itemId, {
       shares: [share],
     });
     return shareResult;
@@ -118,15 +98,15 @@ export class ShareService {
   ): Promise<IShareIncomingOutGoingReponse> {
     switch (shareType) {
       case ShareType.outgoing:
-        return await this.vaultApiFactory(user).SharesApi.outgoingSharesGet();
+        return await this.vaultAPIFactory(user).SharesApi.outgoingSharesGet();
       case ShareType.incoming:
-        return await this.vaultApiFactory(user).SharesApi.incomingSharesGet();
+        return await this.vaultAPIFactory(user).SharesApi.incomingSharesGet();
     }
   }
 
   public async acceptIncomingShare(user: AuthData, shareId: string): Promise<GetShareResponse> {
     try {
-      return await this.vaultApiFactory(user).SharesApi.incomingSharesIdAcceptPut(shareId);
+      return await this.vaultAPIFactory(user).SharesApi.incomingSharesIdAcceptPut(shareId);
     } catch (error) {
       if ((<Response>error).status === 404) {
         throw new MeecoServiceError(`Share with id '${shareId}' not found for the specified user`);
@@ -137,7 +117,7 @@ export class ShareService {
 
   public async deleteSharedItem(user: AuthData, shareId: string) {
     try {
-      await this.vaultApiFactory(user).SharesApi.sharesIdDelete(shareId);
+      await this.vaultAPIFactory(user).SharesApi.sharesIdDelete(shareId);
     } catch (error) {
       if ((<Response>error).status === 404) {
         throw new MeecoServiceError(`Share with id '${shareId}' not found for the specified user`);
@@ -157,7 +137,7 @@ export class ShareService {
     shareId: string,
     shareType: ShareType = ShareType.incoming
   ): Promise<ShareWithItemData> {
-    const shareAPI = this.vaultApiFactory(user).SharesApi;
+    const shareAPI = this.vaultAPIFactory(user).SharesApi;
 
     let shareWithItemData: ShareWithItemData;
 
@@ -171,19 +151,6 @@ export class ShareService {
           }
           throw err;
         });
-
-        // when item is alrady shared with user using another share, retrive that share and item as
-        // there will be no share item created for requested share, only intent is created.
-        if (shareWithItemData.item_shared_via_another_share_id) {
-          shareWithItemData = await this.vaultApiFactory(user).SharesApi.incomingSharesIdItemGet(
-            shareWithItemData.item_shared_via_another_share_id
-          );
-          const str =
-            'Item was already shared via another share \n' +
-            'Item retrived using existing shareId: ' +
-            shareWithItemData.share.id;
-          this.log(str);
-        }
 
         break;
       case ShareType.outgoing:
@@ -202,29 +169,28 @@ export class ShareService {
       return shareWithItemData;
     }
 
-    // when item is alrady shared with user using another share, retrive that share and item as
+    // When Item is already shared with user using another share, retrieve that share and item as
     // there will be no share item created for requested share, only intent is created.
     if (shareWithItemData.item_shared_via_another_share_id) {
-      shareWithItemData = await this.vaultApiFactory(user).SharesApi.incomingSharesIdItemGet(
+      shareWithItemData = await shareAPI.incomingSharesIdItemGet(
         shareWithItemData.item_shared_via_another_share_id
       );
       const str =
         'Item was already shared via another share \n' +
-        'Item retrived using existing shareId: ' +
-        shareWithItemData.share.id;
-      this.log(str);
+        `Item retrieved using existing shareId: ${shareWithItemData.share.id}`;
+      this.logger.log(str);
     }
 
-    const keyPairExternal = await this.keystoreApiFactory(user).KeypairApi.keypairsIdGet(
+    const keyPairExternal = await this.keystoreAPIFactory(user).KeypairApi.keypairsIdGet(
       shareWithItemData.share.keypair_external_id!
     );
 
-    const decryptedPrivateKey = await this.cryppo.decryptWithKey({
+    const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
       serialized: keyPairExternal.keypair.encrypted_serialized_key,
       key: user.key_encryption_key.key,
     });
 
-    const dek = await this.cryppo
+    const dek = await Service.cryppo
       .decryptSerializedWithPrivateKey({
         privateKeyPem: decryptedPrivateKey,
         serialized: shareWithItemData.share.encrypted_dek,
@@ -262,20 +228,20 @@ export class ShareService {
     }
 
     // we only need to decrypt slots if, item owner sharing item. otherwise, slots are already decrypted
-    this.log('Decrypting all slots');
+    this.logger.log('Decrypting all slots');
     const decryptedSlots = sharedItem
       ? slots
       : await ItemService.decryptAllSlots(slots!, fromUser.data_encryption_key);
 
-    this.log('Encrypting slots with generate DEK');
-    const dek = this.cryppo.generateRandomKey();
+    this.logger.log('Encrypting slots with generate DEK');
+    const dek = Service.cryppo.generateRandomKey();
 
     const slot_values = await this.convertSlotsToEncryptedValuesForShare(
       decryptedSlots,
       EncryptionKey.fromRaw(dek)
     );
 
-    const encryptedDek = await this.cryppo.encryptWithPublicKey({
+    const encryptedDek = await Service.cryppo.encryptWithPublicKey({
       publicKeyPem: shareOptions.public_key,
       data: dek,
     });
@@ -288,7 +254,7 @@ export class ShareService {
   }
 
   private async getItem(fromUser: AuthData, itemId: string) {
-    const item = await this.vaultApiFactory(fromUser).ItemApi.itemsIdGet(itemId);
+    const item = await this.vaultAPIFactory(fromUser).ItemApi.itemsIdGet(itemId);
 
     if (!item) {
       throw new MeecoServiceError(`Item '${itemId}' not found`);
@@ -302,17 +268,17 @@ export class ShareService {
    * @param itemId
    */
   public async updateSharedItem(user: AuthData, itemId: string) {
-    const { item, slots: decryptedSlots } = await new ItemService(this.environment, this.log).get(
-      itemId,
-      user
-    );
+    const { item, slots: decryptedSlots } = await new ItemService(
+      this.environment,
+      this.logger
+    ).get(itemId, user);
 
     if (!item.own) {
       throw new MeecoServiceError(`Only Item owner can update shared Item.`);
     }
 
-    this.log('Retrieving Share Public Keys');
-    const itemShares = await this.vaultApiFactory(
+    this.logger.log('Retrieving Share Public Keys');
+    const itemShares = await this.vaultAPIFactory(
       user.vault_access_token
     ).SharesApi.itemsIdSharesGet(itemId);
 
@@ -322,7 +288,7 @@ export class ShareService {
       decryptedSlots
     );
 
-    return this.vaultApiFactory(user.vault_access_token)
+    return this.vaultAPIFactory(user.vault_access_token)
       .SharesApi.itemsIdSharesPut(itemId, putItemSharesRequest)
       .catch(err => {
         if ((<Response>err).status === 400) {
@@ -339,10 +305,10 @@ export class ShareService {
   ): Promise<PutItemSharesRequest> {
     const result: any = await Promise.all(
       shares.map(async share => {
-        this.log('Encrypting slots with generated DEK');
-        const dek = this.cryppo.generateRandomKey();
+        this.logger.log('Encrypting slots with generated DEK');
+        const dek = Service.cryppo.generateRandomKey();
 
-        const encryptedDek = await this.cryppo.encryptWithPublicKey({
+        const encryptedDek = await Service.cryppo.encryptWithPublicKey({
           publicKeyPem: share.public_key,
           data: dek,
         });
@@ -352,6 +318,7 @@ export class ShareService {
           dek: encryptedDek.serialized,
         };
 
+        this.logger.log('Re-Encrypt all slots');
         const slot_values = await this.convertSlotsToEncryptedValuesForShare(
           decryptedSlots,
           EncryptionKey.fromRaw(dek)
@@ -422,7 +389,7 @@ export class ShareService {
           .encryptWithKey({
             data: slot.value as string,
             key: sharedDataEncryptionKey.key,
-            strategy: this.cryppo.CipherStrategy.AES_GCM,
+            strategy: Service.cryppo.CipherStrategy.AES_GCM,
           })
           .then(result => result.serialized);
 
@@ -434,7 +401,7 @@ export class ShareService {
           .encryptWithKey({
             data: valueVerificationKey as string,
             key: sharedDataEncryptionKey.key,
-            strategy: this.cryppo.CipherStrategy.AES_GCM,
+            strategy: Service.cryppo.CipherStrategy.AES_GCM,
           })
           .then(result => result.serialized);
 
