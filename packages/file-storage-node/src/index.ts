@@ -6,15 +6,19 @@ import {
   directAttachmentUpload,
   directAttachmentUploadUrl,
   downloadAttachment,
+  downloadThumbnailCommon,
+  encryptAndUploadThumbnailCommon,
   getDirectAttachmentInfo,
   IFileStorageAuthConfiguration,
 } from '@meeco/file-storage-common';
-import { DirectAttachmentsApi, ThumbnailApi } from '@meeco/vault-api-sdk';
+import { DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
 import * as mfe from 'mime-file-extension';
 import nodeFetch from 'node-fetch';
 import * as path from 'path';
 import * as FileUtils from './FileUtils.node';
+
+export { ThumbnailType, ThumbnailTypes, thumbSizeTypeToMimeExt } from '@meeco/file-storage-common';
 
 export async function largeFileUploadNode(
   filePath,
@@ -201,24 +205,15 @@ export async function encryptAndUploadThumbnail({
 }) {
   const thumbnail = fs.readFileSync(thumbnailFilePath);
 
-  const encryptedThumbnail = await Cryppo.encryptBinaryWithKey({
-    key: attachmentDek,
-    data: Cryppo.binaryBufferToString(thumbnail),
-    strategy: Cryppo.CipherStrategy.AES_GCM,
+  return encryptAndUploadThumbnailCommon({
+    thumbnailBufferString: Cryppo.binaryBufferToString(thumbnail),
+    binaryId,
+    attachmentDek,
+    sizeType,
+    authConfig,
+    vaultUrl,
+    fetchApi: nodeFetch,
   });
-
-  if (!encryptedThumbnail.serialized) {
-    throw new Error('Error encrypting thumbnail file');
-  }
-  const blob =
-    typeof Blob === 'function'
-      ? new Blob([encryptedThumbnail.serialized])
-      : Cryppo.stringAsBinaryBuffer(encryptedThumbnail.serialized);
-  const response = await new ThumbnailApi(
-    buildApiConfig(authConfig, vaultUrl, nodeFetch)
-  ).thumbnailsPost(blob as any, binaryId, sizeType);
-
-  return response;
 }
 
 export async function downloadThumbnail({
@@ -232,16 +227,11 @@ export async function downloadThumbnail({
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
 }) {
-  const thumbnailApi = await new ThumbnailApi(buildApiConfig(authConfig, vaultUrl, nodeFetch));
-  const result = await thumbnailApi.thumbnailsIdGet(id);
-  const buffer = await (<any>result).arrayBuffer();
-  const encryptedContents = await Cryppo.binaryBufferToString(buffer);
-  const decryptedContents = await Cryppo.decryptBinaryWithKey({
-    serialized: encryptedContents,
-    key: dataEncryptionKey,
+  return downloadThumbnailCommon({
+    id,
+    dataEncryptionKey,
+    vaultUrl,
+    authConfig,
+    fetchApi: nodeFetch,
   });
-  if (!decryptedContents) {
-    throw new Error('Error decrypting thumbnail file');
-  }
-  return decryptedContents;
 }

@@ -1,5 +1,4 @@
-import { stringAsBinaryBuffer } from '@meeco/cryppo';
-import { downloadThumbnail } from '@meeco/file-storage-node';
+import { downloadThumbnail, thumbSizeTypeToMimeExt } from '@meeco/file-storage-node';
 import { ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
@@ -11,7 +10,7 @@ import MeecoCommand from '../../util/meeco-command';
 export default class ItemsGetThumbnail extends MeecoCommand {
   static description = 'Download and decrypt an thumbnail by id';
 
-  static example = `meeco items:get-thumbnail my-thumbnail-id -o ./my-thumbnail.png`;
+  static example = `meeco items:get-thumbnail my-thumbnail-id -o ./`;
 
   static flags = {
     ...MeecoCommand.flags,
@@ -61,6 +60,12 @@ export default class ItemsGetThumbnail extends MeecoCommand {
       }
       const attachmentSlotValueDek = attachmentSlot.value;
 
+      const thumbnailRecord = itemFetchResult.thumbnails.find(
+        thumbnail => thumbnail.id === thumbnailId
+      );
+
+      const { fileExtension } = thumbSizeTypeToMimeExt(thumbnailRecord.size_type);
+
       const file = await downloadThumbnail({
         id: thumbnailId,
         dataEncryptionKey: attachmentSlotValueDek,
@@ -74,15 +79,15 @@ export default class ItemsGetThumbnail extends MeecoCommand {
       if (!file) {
         this.error('No thumbnail file downloaded');
       }
-      await this.writeFile(outputPath, file);
+      await this.writeFile(outputPath + `thumbnail.${fileExtension}`, file);
     } catch (err) {
       await this.handleException(err);
     }
   }
 
-  writeFile(destination: string, decryptedContents: string) {
+  writeFile(destination: string, decryptedContents: Buffer | Uint8Array) {
     this.updateStatus('Writing decrypted file to destination');
-    return writeFileContents(destination, stringAsBinaryBuffer(decryptedContents), {
+    return writeFileContents(destination, decryptedContents, {
       flag: 'wx', // Write if not exists but fail if the file exists
     }).catch(err => {
       if (err.code === 'EEXIST') {

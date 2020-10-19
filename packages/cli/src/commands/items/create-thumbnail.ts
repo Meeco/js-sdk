@@ -1,4 +1,4 @@
-import { encryptAndUploadThumbnail } from '@meeco/file-storage-node';
+import { encryptAndUploadThumbnail, ThumbnailType, ThumbnailTypes } from '@meeco/file-storage-node';
 import { ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
@@ -41,6 +41,10 @@ export default class ThumbnailsCreate extends MeecoCommand {
       }
       if (!thumbnailConfig) {
         this.error('Must specify a valid thumbnail config');
+      }
+      const thumbnailSizeType = thumbnailConfig.sizeType as ThumbnailType;
+      if (!thumbnailSizeType || !ThumbnailTypes.includes(thumbnailSizeType)) {
+        this.error('Please enter a thumbnail size/type');
       }
       const itemService = new ItemService(environment);
       const itemFetchResult: any = await itemService.get(thumbnailConfig.itemId, authConfig);

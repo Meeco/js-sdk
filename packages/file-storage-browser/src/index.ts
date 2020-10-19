@@ -6,11 +6,17 @@ import {
   directAttachmentUpload,
   directAttachmentUploadUrl,
   downloadAttachment,
+  downloadThumbnailCommon,
+  encryptAndUploadThumbnailCommon,
   getDirectAttachmentInfo,
   IFileStorageAuthConfiguration,
 } from '@meeco/file-storage-common';
 import { DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as FileUtils from './FileUtils.web';
+
+export { ThumbnailType, ThumbnailTypes, thumbSizeTypeToMimeExt } from '@meeco/file-storage-common';
+export { downloadThumbnailCommon as downloadThumbnail };
+export { encryptAndUploadThumbnailCommon as encryptAndUploadThumbnail };
 
 export async function fileUploadBrowser({
   file,
