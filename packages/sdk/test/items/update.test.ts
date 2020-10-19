@@ -11,7 +11,7 @@ import {
   testUserAuth,
 } from '../test-helpers';
 
-describe('Items update', () => {
+describe('ItemService.update', () => {
   customTest
     .mockCryppo()
     .nock('https://sandbox.meeco.me/vault', mockVault)
@@ -77,7 +77,6 @@ function mockVault(api: nock.Scope) {
           },
           {
             name: 'steak',
-            encrypted_value: '[serialized][encrypted][with my_generated_dek]',
             _destroy: true,
           },
         ],

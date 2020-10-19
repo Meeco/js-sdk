@@ -171,6 +171,7 @@ export class ShareService extends Service<SharesApi> {
         break;
     }
 
+    // assumes it is incoming share from here
     if (shareWithItemData.share.acceptance_required === AcceptanceStatus.required) {
       return shareWithItemData;
     }
@@ -187,6 +188,7 @@ export class ShareService extends Service<SharesApi> {
       this.logger.log(str);
     }
 
+    // TODO assumes it is still encrypted with the share DEK, not the user's DEK
     const keyPairExternal = await this.keystoreAPIFactory(user).KeypairApi.keypairsIdGet(
       shareWithItemData.share.keypair_external_id!
     );
@@ -203,7 +205,9 @@ export class ShareService extends Service<SharesApi> {
       })
       .then(key => EncryptionKey.fromRaw(key));
 
-    const decryptedSlots = await ItemService.decryptAllSlots(shareWithItemData.slots, dek);
+    const decryptedSlots = await Promise.all(
+      shareWithItemData.slots.map(s => ItemService.decryptSlot(s, dek))
+    );
 
     return {
       ...shareWithItemData,
@@ -237,8 +241,9 @@ export class ShareService extends Service<SharesApi> {
     this.logger.log('Decrypting all slots');
     const decryptedSlots = sharedItem
       ? slots
-      : await ItemService.decryptAllSlots(slots!, fromUser.data_encryption_key);
-
+      : await Promise.all(
+          slots!.map(s => ItemService.decryptSlot(s, fromUser.data_encryption_key))
+        );
     this.logger.log('Encrypting slots with generate DEK');
     const dek = Service.cryppo.generateRandomKey();
 
