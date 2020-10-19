@@ -213,10 +213,35 @@ export async function encryptAndUploadThumbnail({
   const blob =
     typeof Blob === 'function'
       ? new Blob([encryptedThumbnail.serialized])
-      : Buffer.from(encryptedThumbnail.serialized, 'binary');
+      : Cryppo.stringAsBinaryBuffer(encryptedThumbnail.serialized);
   const response = await new ThumbnailApi(
     buildApiConfig(authConfig, vaultUrl, nodeFetch)
   ).thumbnailsPost(blob as any, binaryId, sizeType);
 
   return response;
+}
+
+export async function downloadThumbnail({
+  id,
+  dataEncryptionKey,
+  vaultUrl,
+  authConfig,
+}: {
+  id: string;
+  dataEncryptionKey: string;
+  vaultUrl: string;
+  authConfig: IFileStorageAuthConfiguration;
+}) {
+  const thumbnailApi = await new ThumbnailApi(buildApiConfig(authConfig, vaultUrl, nodeFetch));
+  const result = await thumbnailApi.thumbnailsIdGet(id);
+  const buffer = await (<any>result).arrayBuffer();
+  const encryptedContents = await Cryppo.binaryBufferToString(buffer);
+  const decryptedContents = await Cryppo.decryptBinaryWithKey({
+    serialized: encryptedContents,
+    key: dataEncryptionKey,
+  });
+  if (!decryptedContents) {
+    throw new Error('Error decrypting thumbnail file');
+  }
+  return decryptedContents;
 }
