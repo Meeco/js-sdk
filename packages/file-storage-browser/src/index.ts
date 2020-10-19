@@ -1,4 +1,4 @@
-import * as Cryppo from '@meeco/cryppo';
+import { binaryBufferToString, generateRandomKey } from '@meeco/cryppo';
 import {
   AzureBlockDownload,
   buildApiConfig,
@@ -6,11 +6,17 @@ import {
   directAttachmentUpload,
   directAttachmentUploadUrl,
   downloadAttachment,
+  downloadThumbnailCommon,
+  encryptAndUploadThumbnailCommon,
   getDirectAttachmentInfo,
   IFileStorageAuthConfiguration,
 } from '@meeco/file-storage-common';
 import { DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as FileUtils from './FileUtils.web';
+
+export { ThumbnailType, ThumbnailTypes, thumbSizeTypeToMimeExt } from '@meeco/file-storage-common';
+export { downloadThumbnailCommon as downloadThumbnail };
+export { encryptAndUploadThumbnailCommon as encryptAndUploadThumbnail };
 
 export async function fileUploadBrowser({
   file,
@@ -30,7 +36,7 @@ export async function fileUploadBrowser({
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
-  const dek = Cryppo.generateRandomKey();
+  const dek = generateRandomKey();
   const uploadUrl = await directAttachmentUploadUrl(
     {
       fileSize: file.size,
@@ -161,7 +167,7 @@ async function largeFileDownloadBrowser(
   );
   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
   const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
-  const encrypted_artifact = JSON.parse(Cryppo.binaryBufferToString(encrypted_artifact_uint8array));
+  const encrypted_artifact = JSON.parse(binaryBufferToString(encrypted_artifact_uint8array));
   const videoCodec = encrypted_artifact.videoCodec;
   if (progressUpdateFunc && videoCodec) {
     progressUpdateFunc(null, 0, videoCodec);
@@ -174,9 +180,9 @@ async function largeFileDownloadBrowser(
       dek,
       encrypted_artifact.encryption_strategy,
       {
-        iv: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
+        iv: binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,
-        at: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
+        at: binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
       },
       encrypted_artifact.range[index]
     );
