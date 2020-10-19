@@ -11,11 +11,11 @@ describe('shares:create-config with slot', () => {
       '-f',
       inputFixture('connection-from.input.yaml'),
       '-c',
-      'connection-id',
+      outputFixture('create-connection.output.yaml'),
       '-i',
-      'my-item',
+      outputFixture('create-item-from-template.output.yaml'),
       '-s',
-      'my_slot',
+      'Make',
       ...testEnvironmentFile,
     ])
     .it('builds a share template file from two users and an item', ctx => {
@@ -24,33 +24,9 @@ describe('shares:create-config with slot', () => {
     });
 });
 
-const response = {
-  item: {
-    id: 'my-item',
-  },
-  slots: [
-    {
-      name: 'my_slot',
-      id: 'slot123',
-    },
-  ],
-  associations_to: [],
-  associations: [],
-  attachments: [],
-  classification_nodes: [],
-  shares: [],
-  thumbnails: [],
-};
-
 function mockVault(api) {
   api
-    .get('/items/my-item')
-    .matchHeader('Authorization', 'from_vault_access')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, response);
-
-  api
-    .get('/connections/connection-id')
+    .get('/connections/connection_id')
     .matchHeader('Authorization', 'from_vault_access')
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {

@@ -11,11 +11,11 @@ export default class SharesList extends MeecoCommand {
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
-    type: _flags.string({
+    type: _flags.enum({
       char: 't',
-      default: 'incoming',
+      default: ShareType.incoming,
       required: false,
-      options: ['incoming', 'outgoing'],
+      options: Object.values(ShareType),
       description:
         'There are two types: incoming and outgoing \n incoming - Items shared with you \n outgoing - Items you have shared',
     }),
@@ -35,8 +35,7 @@ export default class SharesList extends MeecoCommand {
     const service = new ShareService(environment, this.updateStatus);
 
     try {
-      const shareType = ShareType[type];
-      const shares = await service.listShares(authConfig, shareType);
+      const shares = await service.listShares(authConfig, type);
       this.printYaml(ShareListConfig.encodeFromJson(shares));
     } catch (err) {
       await this.handleException(err);
