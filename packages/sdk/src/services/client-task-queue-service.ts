@@ -1,5 +1,6 @@
 import {
   ClientTask,
+  ClientTaskQueueApi,
   ClientTaskQueueGetStateEnum as ClientTaskState,
   ClientTaskQueueResponse,
 } from '@meeco/vault-api-sdk';
@@ -29,8 +30,8 @@ export interface IClientTaskExecResult {
  * A ClientTask describes a set of API actions the client has been requested to perform,
  * usually encrypting some data with their private keys.
  */
-export class ClientTaskQueueService extends Service {
-  public getAPI(vaultToken: string) {
+export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
+  public getAPI(vaultToken: string): ClientTaskQueueApi {
     return this.vaultAPIFactory(vaultToken).ClientTaskQueueApi;
   }
 
@@ -46,9 +47,7 @@ export class ClientTaskQueueService extends Service {
     target_id?: string,
     options?: { nextPageAfter?: string; perPage?: number }
   ): Promise<ClientTaskQueueResponse> {
-    const result = await this.vaultAPIFactory(
-      vaultAccessToken
-    ).ClientTaskQueueApi.clientTaskQueueGet(
+    const result = await this.getAPI(vaultAccessToken).clientTaskQueueGet(
       options?.nextPageAfter,
       options?.perPage,
       change_state,

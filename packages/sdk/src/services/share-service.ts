@@ -5,6 +5,7 @@ import {
   ItemsIdSharesShareDeks,
   PostItemSharesRequestShare,
   PutItemSharesRequest,
+  SharesApi,
   SharesCreateResponse,
   SharesIncomingResponse,
   SharesOutgoingResponse,
@@ -52,7 +53,7 @@ export enum ShareType {
  * Service for sharing data between two connected Meeco users.
  * Connections can be setup via the {@link ConnectionService}
  */
-export class ShareService extends Service {
+export class ShareService extends Service<SharesApi> {
   /**
    * @visibleForTesting
    * @ignore
@@ -62,6 +63,10 @@ export class ShareService extends Service {
   // for mocking during testing
   private static valueVerificationHash =
     (<any>global).valueVerificationHash || valueVerificationHash;
+
+  public getAPI(vaultToken: string) {
+    return this.vaultAPIFactory(vaultToken).SharesApi;
+  }
 
   public async shareItem(
     fromUser: AuthData,
@@ -86,7 +91,7 @@ export class ShareService extends Service {
     });
 
     this.logger.log('Sending shared data');
-    const shareResult = await this.vaultAPIFactory(fromUser).SharesApi.itemsIdSharesPost(itemId, {
+    const shareResult = await this.getAPI(fromUser.vault_access_token).itemsIdSharesPost(itemId, {
       shares: [share],
     });
     return shareResult;
@@ -98,15 +103,15 @@ export class ShareService extends Service {
   ): Promise<IShareIncomingOutGoingReponse> {
     switch (shareType) {
       case ShareType.outgoing:
-        return await this.vaultAPIFactory(user).SharesApi.outgoingSharesGet();
+        return await this.getAPI(user.vault_access_token).outgoingSharesGet();
       case ShareType.incoming:
-        return await this.vaultAPIFactory(user).SharesApi.incomingSharesGet();
+        return await this.getAPI(user.vault_access_token).incomingSharesGet();
     }
   }
 
   public async acceptIncomingShare(user: AuthData, shareId: string): Promise<GetShareResponse> {
     try {
-      return await this.vaultAPIFactory(user).SharesApi.incomingSharesIdAcceptPut(shareId);
+      return await this.getAPI(user.vault_access_token).incomingSharesIdAcceptPut(shareId);
     } catch (error) {
       if ((<Response>error).status === 404) {
         throw new MeecoServiceError(`Share with id '${shareId}' not found for the specified user`);
@@ -117,7 +122,7 @@ export class ShareService extends Service {
 
   public async deleteSharedItem(user: AuthData, shareId: string) {
     try {
-      await this.vaultAPIFactory(user).SharesApi.sharesIdDelete(shareId);
+      await this.getAPI(user.vault_access_token).sharesIdDelete(shareId);
     } catch (error) {
       if ((<Response>error).status === 404) {
         throw new MeecoServiceError(`Share with id '${shareId}' not found for the specified user`);
@@ -137,7 +142,7 @@ export class ShareService extends Service {
     shareId: string,
     shareType: ShareType = ShareType.incoming
   ): Promise<ShareWithItemData> {
-    const shareAPI = this.vaultAPIFactory(user).SharesApi;
+    const shareAPI = this.getAPI(user.vault_access_token);
 
     let shareWithItemData: ShareWithItemData;
 

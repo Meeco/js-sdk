@@ -1,12 +1,11 @@
 // import * as MeecoAzure from '@meeco/azure-block-upload';
-import { Item, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
-import { MeecoServiceError } from '..';
+import { Item, ItemApi, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { ItemCreateData } from '../models/item-create-data';
 import { ItemUpdateData } from '../models/item-update-data';
 import { DecryptedSlot } from '../models/local-slot';
-import { Logger, toFullLogger } from '../util/logger';
+import { MeecoServiceError } from '../models/service-error';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import { verifyHashedValue } from '../util/value-verification';
 import Service from './service';
@@ -19,8 +18,18 @@ export interface IDecryptedSlot extends Slot {
 /**
  * Used for fetching and sending `Items` to and from the Vault.
  */
-export class ItemService extends Service {
+export class ItemService extends Service<ItemApi> {
   private static verifyHashedValue = (<any>global).verifyHashedValue || verifyHashedValue;
+
+  /**
+   * True if the Item was received via a Share from another user.
+   * In that case, it must be decrypted with the Share DEK, not the user's own DEK.
+   * @param item
+   */
+  public static itemIsFromShare(item: Item): boolean {
+    // this also implies item.own == false
+    return item.share_id != null;
+  }
 
   /**
    * Updates 'value' to the decrypted 'encrypted_value' and sets 'encrypted' to false.
@@ -72,18 +81,8 @@ export class ItemService extends Service {
     );
   }
 
-  /**
-   * True if the Item was received via a Share from another user.
-   * In that case, it must be decrypted with the Share DEK, not the user's own DEK.
-   * @param item
-   */
-  public static itemIsFromShare(item: Item): boolean {
-    // this also implies item.own == false
-    return item.share_id != null;
-  }
-
-  public setLogger(logger: Logger) {
-    this.logger = toFullLogger(logger);
+  public getAPI(vaultToken: string) {
+    return this.vaultAPIFactory(vaultToken).ItemApi;
   }
 
   public async create(vaultAccessToken: string, dek: EncryptionKey, config: ItemCreateData) {
@@ -91,7 +90,7 @@ export class ItemService extends Service {
       (config.slots || []).map(slot => this.encryptSlot(slot, dek))
     );
 
-    return await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsPost({
+    return await this.getAPI(vaultAccessToken).itemsPost({
       template_name: config.template_name,
       item: {
         label: config.item.label,
@@ -105,7 +104,7 @@ export class ItemService extends Service {
       (config.slots || []).map(slot => this.encryptSlot(slot, dek))
     );
 
-    return await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdPut(config.id, {
+    return await this.getAPI(vaultAccessToken).itemsIdPut(config.id, {
       item: {
         label: config.label,
         slots_attributes,
@@ -123,7 +122,7 @@ export class ItemService extends Service {
     const vaultAccessToken = user.vault_access_token;
     let dataEncryptionKey = user.data_encryption_key;
 
-    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
+    const result = await this.getAPI(vaultAccessToken).itemsIdGet(id);
     const { item, slots } = result;
 
     // If the Item is from a share, use the share DEK to decrypt instead.
@@ -179,7 +178,7 @@ export class ItemService extends Service {
     nextPageAfter?: string,
     perPage?: number
   ) {
-    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet(
+    const result = await this.getAPI(vaultAccessToken).itemsGet(
       templateIds,
       undefined,
       undefined,
@@ -196,7 +195,7 @@ export class ItemService extends Service {
   }
 
   public async listAll(vaultAccessToken: string, templateIds?: string): Promise<ItemsResponse> {
-    const api = this.vaultAPIFactory(vaultAccessToken).ItemApi;
+    const api = this.getAPI(vaultAccessToken);
 
     return getAllPaged(cursor => api.itemsGet(templateIds, undefined, undefined, cursor)).then(
       reducePages

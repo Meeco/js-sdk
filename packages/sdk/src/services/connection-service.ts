@@ -1,4 +1,4 @@
-import { Connection, ConnectionsResponse, Invitation } from '@meeco/vault-api-sdk';
+import { Connection, ConnectionApi, ConnectionsResponse, Invitation } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { ConnectionCreateData } from '../models/connection-create-data';
 import { EncryptionKey } from '../models/encryption-key';
@@ -14,7 +14,11 @@ export interface IDecryptedConnection {
 /**
  * Used for setting up connections between Meeco `User`s to allow the secure sharing of data (see also {@link ShareService})
  */
-export class ConnectionService extends Service {
+export class ConnectionService extends Service<ConnectionApi> {
+  public getAPI(vaultToken: string) {
+    return this.vaultAPIFactory(vaultToken).ConnectionApi;
+  }
+
   public async createInvitation(name: string, auth: AuthData): Promise<Invitation> {
     const keyPair = await this.createAndStoreKeyPair(
       auth.keystore_access_token,
@@ -52,8 +56,8 @@ export class ConnectionService extends Service {
     const encryptedName: string = await this.encryptName(name, auth.data_encryption_key);
 
     this.logger.log('Accepting invitation');
-    return await this.vaultAPIFactory(auth)
-      .ConnectionApi.connectionsPost({
+    return await this.getAPI(auth.vault_access_token)
+      .connectionsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,
           public_key: keyPair.keyPair.publicKey,
@@ -124,10 +128,7 @@ export class ConnectionService extends Service {
     perPage?: number
   ): Promise<IDecryptedConnection[]> {
     this.logger.log('Fetching connections');
-    const result = await this.vaultAPIFactory(vaultAccessToken).ConnectionApi.connectionsGet(
-      nextPageAfter,
-      perPage
-    );
+    const result = await this.getAPI(vaultAccessToken).connectionsGet(nextPageAfter, perPage);
 
     if (resultHasNext(result) && perPage === undefined) {
       this.logger.warn('Some results omitted, but page limit was not explicitly set');
@@ -157,7 +158,7 @@ export class ConnectionService extends Service {
     vaultAccessToken: string,
     dek: EncryptionKey
   ): Promise<IDecryptedConnection[]> {
-    const api = this.vaultAPIFactory(vaultAccessToken).ConnectionApi;
+    const api = this.getAPI(vaultAccessToken);
 
     return getAllPaged(cursor => api.connectionsGet(cursor)).then(results => {
       const responses = results.reduce(

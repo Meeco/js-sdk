@@ -1,3 +1,4 @@
+import { UserApi } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
@@ -10,7 +11,7 @@ import Service from './service';
 /**
  * Create and update Meeco Users.
  */
-export class UserService extends Service {
+export class UserService extends Service<UserApi> {
   // This should be more like `auth:my-user:api-sandbox.meeco.me` but the api does not support it
   static VAULT_PAIR_EXTERNAL_IDENTIFIER = 'auth';
   public readonly vaultKeypairExternalId;
@@ -20,6 +21,10 @@ export class UserService extends Service {
   constructor(environment: Environment, log: Logger = noopLogger) {
     super(environment, log);
     this.vaultKeypairExternalId = UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER;
+  }
+
+  public getAPI(vaultToken: string): UserApi {
+    return this.vaultAPIFactory(vaultToken).UserApi;
   }
 
   private requestKeyPair(keystoreSessionToken: string) {
@@ -129,7 +134,7 @@ export class UserService extends Service {
   ) {
     this.logger.log('Create vault api user');
     // No key required as we're only registering a new user
-    const vaultUserApi = this.vaultAPIFactory('').UserApi;
+    const vaultUserApi = this.getAPI('');
 
     const vaultUser = await vaultUserApi.mePost({
       public_key: keyPair.publicKey,
@@ -171,7 +176,7 @@ export class UserService extends Service {
     keystoreSessionToken: string,
     vaultSessionToken: string
   ) {
-    const vaultUserApi = this.vaultAPIFactory(vaultSessionToken).UserApi;
+    const vaultUserApi = this.getAPI(vaultSessionToken);
 
     const dek = await this.generateAndStoreDataEncryptionKey(
       keyEncryptionKey,
@@ -401,7 +406,7 @@ export class UserService extends Service {
   }
 
   public getUser(vaultAccessToken: string) {
-    return this.vaultAPIFactory(vaultAccessToken).UserApi.meGet();
+    return this.getAPI(vaultAccessToken).meGet();
   }
 
   /**

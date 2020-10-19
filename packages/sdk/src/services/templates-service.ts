@@ -10,16 +10,20 @@ import Service from './service';
  *
  * @deprecated Use [vaultApiFactory] ItemTemplateApi list instead.
  */
-export class TemplatesService extends Service {
+export class TemplatesService extends Service<ItemTemplateApi> {
   private api: ItemTemplateApi;
 
   constructor(environment: Environment, vaultAccessToken: string, log: Logger = noopLogger) {
     super(environment, log);
-    this.api = this.vaultAPIFactory(vaultAccessToken).ItemTemplateApi;
+    this.api = this.getAPI(vaultAccessToken);
   }
 
   public async listTemplates(classificationScheme?: string, classificationName?: string) {
     return await this.api.itemTemplatesGet(classificationScheme, classificationName);
+  }
+
+  public getAPI(vaultToken: string): ItemTemplateApi {
+    return this.vaultAPIFactory(vaultToken).ItemTemplateApi;
   }
 
   /**

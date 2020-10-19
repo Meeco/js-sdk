@@ -2,19 +2,23 @@ import { OrganizationsManagingServicesApi, PostServiceRequest } from '@meeco/vau
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
-import { vaultAPIFactory } from '../util/api-factory';
 import { Logger, noopLogger } from '../util/logger';
 import Service from './service';
 
 /**
  * Manage organizations from the API.
  */
-export class OrganizationServicesService extends Service {
-  private api: OrganizationsManagingServicesApi;
+export class OrganizationServicesService extends Service<OrganizationsManagingServicesApi> {
+  public getAPI(token: string) {
+    return this.vaultAPIFactory(token).OrganizationsManagingServicesApi;
+  }
 
-  constructor(environment: Environment, vaultAccessToken: string, log: Logger = noopLogger) {
+  constructor(
+    environment: Environment,
+    private vaultAccessToken: string,
+    log: Logger = noopLogger
+  ) {
     super(environment, log);
-    this.api = vaultAPIFactory(environment)(vaultAccessToken).OrganizationsManagingServicesApi;
   }
 
   public async getLogin(
@@ -22,10 +26,9 @@ export class OrganizationServicesService extends Service {
     serviceId: string,
     privateKey: string
   ): Promise<AuthData> {
-    const result = await this.api.organizationsOrganizationIdServicesIdLoginPost(
-      organizationId,
-      serviceId
-    );
+    const result = await this.getAPI(
+      this.vaultAccessToken
+    ).organizationsOrganizationIdServicesIdLoginPost(organizationId, serviceId);
     const decryptedVaultSessionToken = await Service.cryppo.decryptSerializedWithPrivateKey({
       privateKeyPem: privateKey,
       serialized: result.encrypted_access_token,
@@ -43,9 +46,12 @@ export class OrganizationServicesService extends Service {
   public async create(organizationId: string, service: PostServiceRequest) {
     const rsaKeyPair = await Service.cryppo.generateRSAKeyPair(4096);
     service.public_key = rsaKeyPair.publicKey;
-    const result = await this.api.organizationsOrganizationIdServicesPost(organizationId, {
-      service,
-    });
+    const result = await this.getAPI(this.vaultAccessToken).organizationsOrganizationIdServicesPost(
+      organizationId,
+      {
+        service,
+      }
+    );
     return {
       service: result.service,
       privateKey: rsaKeyPair.privateKey,

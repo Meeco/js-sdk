@@ -5,23 +5,28 @@ import {
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
-import { vaultAPIFactory } from '../util/api-factory';
 import { Logger, noopLogger } from '../util/logger';
 import Service from './service';
 
 /**
  * Manage organizations from the API.
  */
-export class OrganizationsService extends Service {
-  private api: OrganizationsManagingOrganizationsApi;
+export class OrganizationsService extends Service<OrganizationsManagingOrganizationsApi> {
+  public getAPI(token: string) {
+    return this.vaultAPIFactory(token).OrganizationsManagingOrganizationsApi;
+  }
 
-  constructor(environment: Environment, vaultAccessToken: string, log: Logger = noopLogger) {
+  // TODO this doesn't match the signature of other services!
+  constructor(
+    environment: Environment,
+    private vaultAccessToken: string,
+    log: Logger = noopLogger
+  ) {
     super(environment, log);
-    this.api = vaultAPIFactory(environment)(vaultAccessToken).OrganizationsManagingOrganizationsApi;
   }
 
   public async getLogin(id: string, privateKey: string): Promise<AuthData> {
-    const result = await this.api.organizationsIdLoginPost(id);
+    const result = await this.getAPI(this.vaultAccessToken).organizationsIdLoginPost(id);
     const decryptedVaultSessionToken = await Service.cryppo.decryptSerializedWithPrivateKey({
       privateKeyPem: privateKey,
       serialized: result.encrypted_access_token,
@@ -39,7 +44,7 @@ export class OrganizationsService extends Service {
   public async create(organization: PostOrganizationRequest) {
     const rsaKeyPair = await Service.cryppo.generateRSAKeyPair(4096);
     organization.public_key = rsaKeyPair.publicKey;
-    const result = await this.api.organizationsPost(organization);
+    const result = await this.getAPI(this.vaultAccessToken).organizationsPost(organization);
     return {
       organization: result.organization,
       privateKey: rsaKeyPair.privateKey,
