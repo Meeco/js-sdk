@@ -11,15 +11,15 @@ run items:create-config miksit_profile -a .Alice.yaml > .template_miksit_profile
 
 cat .template_miksit_profile.yaml |
 yq -y '(.spec.label) = "My Profile"' |
-yq -y '(.spec.slots[0].name) = "name"' | 
+yq -y '(.spec.slots[0].name) = "name"' |
 yq -y '(.spec.slots[0].value) = "alice"' |
-yq -y '(.spec.slots[1].name) = "surname"' | 
+yq -y '(.spec.slots[1].name) = "surname"' |
 yq -y '(.spec.slots[1].value) = "smith"' |
-yq -y '(.spec.slots[2].name) = "dob"' | 
+yq -y '(.spec.slots[2].name) = "dob"' |
 yq -y '(.spec.slots[2].value) = "1/1/2000"' |
-yq -y '(.spec.slots[3].name) = "gender"' | 
+yq -y '(.spec.slots[3].name) = "gender"' |
 yq -y '(.spec.slots[3].value) = "female"' |
-yq -y '(.spec.slots[4].name) = "country"' | 
+yq -y '(.spec.slots[4].name) = "country"' |
 yq -y '(.spec.slots[4].value) = "australia"' > .my_miksit_profile.yaml
 
 echo "Create a 'Profile' card for 'Alice'"
@@ -52,7 +52,7 @@ dateAFter30Days=$(date +'%Y-%m-%d' -d "30 day")
 
 echo "Share alice to bob"
 run shares:create-config --from .Alice.yaml --connectionId $connectionIdAB -i $itemId > .share_Alice_Bob.yaml
-run shares:create -c .share_Alice_Bob.yaml -m anyone -d $dateAFter30Days > .share_Alice_Bob.created.yaml
+run shares:create -c .share_Alice_Bob.yaml --onshare -d $dateAFter30Days > .share_Alice_Bob.created.yaml
 
 
 bobsShareId=$(cat .share_Alice_Bob.created.yaml | yq -r '.shares[0].id')
@@ -71,7 +71,7 @@ echo "Share bob to carol (create share)"
 run shares:create -c .share_Bob_Carol.yaml -d $dateAFter29Days > .share_Bob_Carol.created.yaml
 
 
-carolsShareId=$(cat .share_Bob_Carol.created.yaml | yq -r '.shares[0].id') 
+carolsShareId=$(cat .share_Bob_Carol.created.yaml | yq -r '.shares[0].id')
 echo "carol's share id: ${carolsShareId}"
 
 echo "Read share as carol"

@@ -985,10 +985,9 @@ ARGUMENTS
   SHAREID  ID of the share to accept
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
-                                 default .user.yaml)
-
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
   -e, --environment=environment  [default: .environment.yaml] environment config file
+  -y, --yes                      Automatically agree to any terms required by the sharer
 ```
 
 _See code: [src/commands/shares/accept.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/accept.ts)_
@@ -1002,15 +1001,14 @@ USAGE
   $ meeco shares:create [FILE]
 
 OPTIONS
-  -c, --config=config                                                      (required) Share config file to use for setting up the share
-  -d, --expiry_date=expiry_date                                            Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
-  -e, --environment=environment                                            [default: .environment.yaml] environment config file
+  -c, --config=config            (required) Share config file to use for setting up the share
+  -d, --expiry_date=expiry_date  Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+  --onshare                      Allow all recipients of this share to share it again
+  --terms=terms                  Share recipient must accept terms before viewing shared item.
 
-  -m, --sharing_mode=(owner|anyone)                                        [default: owner] If set to anyone, allows a share recipient to share this Item
-                                                                           again.
-
-  -t, --acceptance_required=(acceptance_required|acceptance_not_required)  [default: acceptance_not_required] If set to 'acceptance_required' then recipient
-                                                                           must accept share terms before decrypting the shared item.
+EXAMPLE
+  meeco shares:create -c share.yaml --terms "Don't tell Mum!" --expiry_date "2020-12-31"
 ```
 
 _See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_
