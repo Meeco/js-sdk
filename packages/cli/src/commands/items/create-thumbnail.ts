@@ -71,7 +71,7 @@ export default class ThumbnailsCreate extends MeecoCommand {
         thumbnailFilePath: thumbnailConfig.file,
         binaryId: attachmentSlot.attachment_id,
         attachmentDek: attachmentSlotValueDek,
-        sizeType: thumbnailConfig.sizeType,
+        sizeType: thumbnailSizeType,
         authConfig: {
           vault_access_token: authConfig.vault_access_token,
           subscription_key: environment.vault.subscription_key,

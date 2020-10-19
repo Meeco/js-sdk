@@ -1,4 +1,4 @@
-import { downloadThumbnail, thumbSizeTypeToMimeExt } from '@meeco/file-storage-node';
+import * as fileStorageNode from '@meeco/file-storage-node';
 import { ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
@@ -64,9 +64,9 @@ export default class ItemsGetThumbnail extends MeecoCommand {
         thumbnail => thumbnail.id === thumbnailId
       );
 
-      const { fileExtension } = thumbSizeTypeToMimeExt(thumbnailRecord.size_type);
+      const { fileExtension } = fileStorageNode.thumbSizeTypeToMimeExt(thumbnailRecord.size_type);
 
-      const file = await downloadThumbnail({
+      const file = await fileStorageNode.downloadThumbnail({
         id: thumbnailId,
         dataEncryptionKey: attachmentSlotValueDek,
         vaultUrl: environment.vault.url,

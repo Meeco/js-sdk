@@ -10,6 +10,7 @@ import {
   encryptAndUploadThumbnailCommon,
   getDirectAttachmentInfo,
   IFileStorageAuthConfiguration,
+  ThumbnailType,
 } from '@meeco/file-storage-common';
 import { DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
@@ -199,7 +200,7 @@ export async function encryptAndUploadThumbnail({
   thumbnailFilePath: string;
   binaryId: string;
   attachmentDek: string;
-  sizeType: string;
+  sizeType: ThumbnailType;
   authConfig: IFileStorageAuthConfiguration;
   vaultUrl: string;
 }) {
