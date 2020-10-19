@@ -1,4 +1,11 @@
-import * as Cryppo from '@meeco/cryppo';
+import {
+  binaryBufferToString,
+  CipherStrategy,
+  decryptBinaryWithKey,
+  decryptWithKey,
+  encryptBinaryWithKey,
+  stringAsBinaryBuffer,
+} from '@meeco/cryppo';
 import {
   AttachmentApi,
   AttachmentDirectUploadUrlResponse,
@@ -7,6 +14,7 @@ import {
   CreateAttachmentResponse,
   DirectAttachmentsApi,
   PostAttachmentDirectUploadUrlRequest,
+  ThumbnailApi,
 } from '@meeco/vault-api-sdk';
 import { AzureBlockUpload } from './azure-block-upload';
 export { AzureBlockDownload } from './azure-block-download';
@@ -127,8 +135,8 @@ export async function downloadAndDecryptFile<T extends Blob>(
 ) {
   const result = await download();
   const buffer = await (<any>result).arrayBuffer();
-  const encryptedContents = await Cryppo.binaryBufferToString(buffer);
-  const decryptedContents = await Cryppo.decryptWithKey({
+  const encryptedContents = await binaryBufferToString(buffer);
+  const decryptedContents = await decryptWithKey({
     serialized: encryptedContents,
     key: dataEncryptionKey,
   });
@@ -162,6 +170,90 @@ export function buildApiConfig(
   return new Configuration(configParams);
 }
 
+export async function encryptAndUploadThumbnailCommon({
+  thumbnailBufferString,
+  binaryId,
+  attachmentDek,
+  sizeType,
+  authConfig,
+  vaultUrl,
+  fetchApi,
+}: {
+  thumbnailBufferString: string;
+  binaryId: string;
+  attachmentDek: string;
+  sizeType: ThumbnailType;
+  authConfig: IFileStorageAuthConfiguration;
+  vaultUrl: string;
+  fetchApi?: any;
+}) {
+  const encryptedThumbnail = await encryptBinaryWithKey({
+    key: attachmentDek,
+    data: thumbnailBufferString,
+    strategy: CipherStrategy.AES_GCM,
+  });
+
+  if (!encryptedThumbnail.serialized) {
+    throw new Error('Error encrypting thumbnail file');
+  }
+  const blob =
+    typeof Blob === 'function'
+      ? new Blob([encryptedThumbnail.serialized])
+      : stringAsBinaryBuffer(encryptedThumbnail.serialized);
+  const response = await new ThumbnailApi(
+    buildApiConfig(authConfig, vaultUrl, fetchApi)
+  ).thumbnailsPost(blob as any, binaryId, sizeType);
+
+  return response;
+}
+
+export async function downloadThumbnailCommon({
+  id,
+  dataEncryptionKey,
+  vaultUrl,
+  authConfig,
+  fetchApi,
+}: {
+  id: string;
+  dataEncryptionKey: string;
+  vaultUrl: string;
+  authConfig: IFileStorageAuthConfiguration;
+  fetchApi?: any;
+}) {
+  const thumbnailApi = await new ThumbnailApi(buildApiConfig(authConfig, vaultUrl, fetchApi));
+  const result = await thumbnailApi.thumbnailsIdGet(id);
+  const buffer = await (<any>result).arrayBuffer();
+  const encryptedContents = await binaryBufferToString(buffer);
+  const decryptedContents = await decryptBinaryWithKey({
+    serialized: encryptedContents,
+    key: dataEncryptionKey,
+  });
+  if (!decryptedContents) {
+    throw new Error('Error decrypting thumbnail file');
+  }
+  return stringAsBinaryBuffer(decryptedContents);
+}
+
+export function thumbSizeTypeToMimeExt(
+  sizeTypeString
+): { mimeType: string; fileExtension: string } {
+  let mimeType;
+  let fileExtension;
+  switch (sizeTypeString.split('/')[1]) {
+    case 'jpg':
+      mimeType = 'image/jpg';
+      fileExtension = 'jpg';
+      break;
+    case 'png':
+      mimeType = 'image/png';
+      fileExtension = 'png';
+      break;
+    default:
+      throw new Error('file extension not known');
+  }
+  return { mimeType, fileExtension };
+}
+
 interface IDirectAttachmentUploadData {
   directUploadUrl: string;
   file: File | string;
@@ -191,3 +283,20 @@ export interface IDirectAttachmentAttachData {
   artifactsBlobId: number;
   artifactsBlobKey: string;
 }
+
+export type ThumbnailType =
+  | '128x128/jpg'
+  | '256x256/jpg'
+  | '512x512/jpg'
+  | '128x128/png'
+  | '256x256/png'
+  | '512x512/png';
+
+export const ThumbnailTypes: ThumbnailType[] = [
+  '128x128/jpg',
+  '256x256/jpg',
+  '512x512/jpg',
+  '128x128/png',
+  '256x256/png',
+  '512x512/png',
+];

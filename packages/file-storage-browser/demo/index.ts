@@ -1,5 +1,13 @@
 import { EncryptionKey, Environment, ItemService, ItemUpdateData } from '@meeco/sdk';
-import { fileDownloadBrowser, fileUploadBrowser } from '../src/index';
+import {
+  downloadThumbnail,
+  encryptAndUploadThumbnail,
+  fileDownloadBrowser,
+  fileUploadBrowser,
+  ThumbnailType,
+  ThumbnailTypes,
+  thumbSizeTypeToMimeExt,
+} from '../src/index';
 import './styles.scss';
 
 const $ = id => document.getElementById(id)!;
@@ -50,6 +58,8 @@ function updateEnvironment() {
 $('attachFile').addEventListener('click', attachFile, false);
 $('downloadAttachment').addEventListener('click', downloadAttachment);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
+$('attachThumbnail').addEventListener('click', attachThumbnail);
+$('thumbnailDownload').addEventListener('click', thumbnailDownload);
 
 async function attachFile() {
   const [file] = ($('attachment') as any).files;
@@ -252,6 +262,170 @@ async function downloadAttachment() {
     document.body.removeChild(a);
   } catch (error) {
     $set('downloadAttachmentDetails', `Error (See Action Log for Details)`);
+    return handleException(error);
+  }
+}
+
+async function attachThumbnail() {
+  const [file] = ($('thumbnailAttachmentInput') as any).files;
+  if (!file) {
+    return alert('Please attach file first');
+  }
+  const itemId = $get('thumbnailAddItemId');
+  if (!itemId) {
+    return alert('Please enter an item id');
+  }
+  const slotId = $get('thumbnailAddSlotId');
+  if (!slotId) {
+    return alert('Please enter a slot id');
+  }
+  const sizeType = $get('thumbnailAddSizeType') as ThumbnailType;
+  if (!sizeType || !ThumbnailTypes.includes(sizeType)) {
+    return alert('Please enter a thumbnail size/type');
+  }
+  $set('thumbnailAttachmentInput', '');
+  try {
+    const vaultUrl = localStorage.getItem('vaultUrl') || '';
+    const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
+    const privateDek = localStorage.getItem('dataEncryptionKey') || '';
+    const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const keyEncryptionKey = localStorage.getItem('keyEncryptionKey') || '';
+    const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
+    const passphraseDerivedKey = localStorage.getItem('passphraseDerivedKey') || '';
+    const secret = localStorage.getItem('secret') || '';
+
+    const environment = new Environment({
+      vault: {
+        url: vaultUrl,
+        subscription_key: subscriptionKey,
+      },
+      keystore: {
+        url: '',
+        subscription_key: subscriptionKey,
+        provider_api_key: '',
+      },
+    });
+
+    const itemService = new ItemService(environment);
+    const itemFetchResult: any = await itemService.get(itemId, {
+      data_encryption_key: EncryptionKey.fromSerialized(privateDek),
+      vault_access_token: vaultAccessToken,
+      key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+      keystore_access_token: keystoreAccessToken,
+      passphrase_derived_key: EncryptionKey.fromSerialized(passphraseDerivedKey),
+      secret,
+    });
+    if (!itemFetchResult) {
+      return alert('Item not found');
+    }
+    const attachmentSlot = itemFetchResult.slots.find(slot => slot.id === slotId);
+    if (!attachmentSlot) {
+      return alert('Slot not found');
+    }
+    const attachmentSlotValueDek = attachmentSlot.value;
+    const thumbnailBuffer = await file.arrayBuffer();
+
+    const thumbnail = await encryptAndUploadThumbnail({
+      thumbnailBufferString: thumbnailBuffer,
+      binaryId: attachmentSlot.attachment_id,
+      attachmentDek: attachmentSlotValueDek,
+      sizeType,
+      authConfig: {
+        vault_access_token: vaultAccessToken,
+        subscription_key: subscriptionKey,
+      },
+      vaultUrl,
+    });
+
+    $set('attachedThumbnailOutput', JSON.stringify({ thumbnail }, null, 2));
+  } catch (error) {
+    $set('attached', `Error (See Action Log for Details)`);
+    return handleException(error);
+  }
+}
+
+async function thumbnailDownload() {
+  const itemId = $get('thumbnailDownloadItemId');
+  if (!itemId) {
+    return alert('Please enter an item id');
+  }
+  const slotId = $get('thumbnailDownloadSlotId');
+  if (!slotId) {
+    return alert('Please enter a slot id');
+  }
+  const thumbnailId = $get('thumbnailDownloadThumbnailId');
+  if (!thumbnailId) {
+    return alert('Please enter a thumbnailId');
+  }
+  try {
+    const vaultUrl = localStorage.getItem('vaultUrl') || '';
+    const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
+    const privateDek = localStorage.getItem('dataEncryptionKey') || '';
+    const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const keyEncryptionKey = localStorage.getItem('keyEncryptionKey') || '';
+    const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
+    const passphraseDerivedKey = localStorage.getItem('passphraseDerivedKey') || '';
+    const secret = localStorage.getItem('secret') || '';
+
+    const environment = new Environment({
+      vault: {
+        url: vaultUrl,
+        subscription_key: subscriptionKey,
+      },
+      keystore: {
+        url: '',
+        subscription_key: subscriptionKey,
+        provider_api_key: '',
+      },
+    });
+
+    const itemService = new ItemService(environment);
+    const itemFetchResult: any = await itemService.get(itemId, {
+      data_encryption_key: EncryptionKey.fromSerialized(privateDek),
+      vault_access_token: vaultAccessToken,
+      key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+      keystore_access_token: keystoreAccessToken,
+      passphrase_derived_key: EncryptionKey.fromSerialized(passphraseDerivedKey),
+      secret,
+    });
+    if (!itemFetchResult) {
+      return alert('Item not found');
+    }
+    const attachmentSlot = itemFetchResult.slots.find(slot => slot.id === slotId);
+    if (!attachmentSlot) {
+      return alert('Slot not found');
+    }
+    const attachmentSlotValueDek = attachmentSlot.value;
+
+    const thumbnailRecord = itemFetchResult.thumbnails.find(
+      thumbnail => thumbnail.id === thumbnailId
+    );
+    const { mimeType, fileExtension } = thumbSizeTypeToMimeExt(thumbnailRecord.size_type);
+
+    const fileBuffer = await downloadThumbnail({
+      id: thumbnailId,
+      dataEncryptionKey: attachmentSlotValueDek,
+      vaultUrl: environment.vault.url,
+      authConfig: {
+        vault_access_token: vaultAccessToken,
+        subscription_key: subscriptionKey,
+      },
+    });
+
+    const blob = new Blob([fileBuffer], { type: mimeType });
+    const fileUrl = URL.createObjectURL(blob);
+
+    $('thumbnailDownloadImgOutput').setAttribute('src', fileUrl);
+
+    // add download button, click it then remove it
+    const a = document.createElement('a');
+    a.href = fileUrl;
+    a.download = `thumbnail.${fileExtension}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (error) {
+    $set('attached', `Error (See Action Log for Details)`);
     return handleException(error);
   }
 }
