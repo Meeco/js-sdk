@@ -17,7 +17,7 @@ import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { MeecoServiceError } from '../models/service-error';
 import { fetchConnectionWithId } from '../util/find-connection-between';
-import { valueVerificationHash } from '../util/value-verification';
+import { valueVerificationHash, VALUE_VERIFICATION_KEY_LENGTH } from '../util/value-verification';
 import cryppo from './cryppo-service';
 import { IDecryptedSlot, ItemService } from './item-service';
 import Service from './service';
@@ -390,7 +390,7 @@ export class ShareService extends Service<SharesApi> {
     const encryptions = slots
       .filter(slot => slot.value && slot.id)
       .map(async slot => {
-        const encrypted_value = await cryppo
+        const encrypted_value = await Service.cryppo
           .encryptWithKey({
             data: slot.value as string,
             key: sharedDataEncryptionKey.key,
@@ -399,10 +399,10 @@ export class ShareService extends Service<SharesApi> {
           .then(result => result.serialized);
 
         const valueVerificationKey = slot.own
-          ? cryppo.generateRandomKey(64)
+          ? cryppo.generateRandomKey(VALUE_VERIFICATION_KEY_LENGTH)
           : slot.value_verification_key;
 
-        const encryptedValueVerificationKey = await cryppo
+        const encryptedValueVerificationKey = await Service.cryppo
           .encryptWithKey({
             data: valueVerificationKey as string,
             key: sharedDataEncryptionKey.key,
