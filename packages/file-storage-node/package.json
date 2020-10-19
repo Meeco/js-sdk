@@ -1,6 +1,6 @@
 {
   "name": "@meeco/file-storage-node",
-  "version": "1.1.2",
+  "version": "2.0.1",
   "description": "",
   "source": "src/index.ts",
   "main": "lib/index.js",
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@meeco/cryppo": "^0.9.0",
-    "@meeco/file-storage-common": "^1.1.2",
+    "@meeco/file-storage-common": "^2.0.1",
     "@meeco/vault-api-sdk": "^0.19.0",
     "bili": "^4.10.0",
     "file-saver": "^2.0.2",

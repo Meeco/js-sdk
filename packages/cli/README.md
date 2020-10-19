@@ -81,13 +81,15 @@ Create your first user:
 
 Note: this will open a browser with a Captcha to be solved if captcha is enabled for the environment you are working against.
 
-Or - if you have an existing account (e.g if you would like to set up on a new computer) - you can fetch your user by providing your password and secret
+Or - if you have an existing account (e.g if you would like to set up on a new computer) - you can fetch your user credentials by providing your password and secret
 
-- `meeco users:get -p <password> -s <secret>` (or `meeco users:get` to be prompted for these).
+- `meeco users:login -p <password> -s <secret>` (or `meeco users:login` to be prompted for these).
 
-If you would prefer to provide a configuration file with your credentials, supply a [User Config](#User) file i.e.
+This also works if your Vault or Keystore token has expired.
 
-- `meeco users:get -c path/to/my-user-config.yaml`
+If you need to get your Vault User Id use:
+
+- `meeco users:get -p <password> -s <secret>`
 
 ### 2. Create an Item
 
@@ -983,10 +985,9 @@ ARGUMENTS
   SHAREID  ID of the share to accept
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
-                                 default .user.yaml)
-
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
   -e, --environment=environment  [default: .environment.yaml] environment config file
+  -y, --yes                      Automatically agree to any terms required by the sharer
 ```
 
 _See code: [src/commands/shares/accept.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/accept.ts)_
@@ -1000,25 +1001,14 @@ USAGE
   $ meeco shares:create [FILE]
 
 OPTIONS
-  -c, --config=config
-      (required) Share config file to use for setting up the share
+  -c, --config=config            (required) Share config file to use for setting up the share
+  -d, --expiry_date=expiry_date  Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+  --onshare                      Allow all recipients of this share to share it again
+  --terms=terms                  Share recipient must accept terms before viewing shared item.
 
-  -d, --expiry_date=expiry_date
-      Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
-
-  -e, --environment=environment
-      [default: .environment.yaml] environment config file
-
-  -m, --sharing_mode=owner|anyone
-      [default: owner] There are two sharing_mode: owner and anyone
-        owner - non-owner will not be able to on-share a share
-        anyone - anyone allow to on-share a share.
-
-  -t, --acceptance_required=acceptance_not_required|acceptance_required
-      [default: acceptance_not_required] Some shares require that the recipient accepts the terms of the share.
-        There are two acceptance_require: acceptance_not_required & acceptance_required
-        acceptance_not_required - recipient dont require acceptance
-        acceptance_required - recipient require acceptance before viewing shared item.
+EXAMPLE
+  meeco shares:create -c share.yaml --terms "Don't tell Mum!" --expiry_date "2020-12-31"
 ```
 
 _See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_
@@ -1090,14 +1080,12 @@ USAGE
   $ meeco shares:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
-                                 default .user.yaml)
+  -a, --auth=auth                 (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -e, --environment=environment   [default: .environment.yaml] environment config file
 
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-
-  -t, --type=incoming|outgoing   [default: incoming] There are two types: incoming and outgoing
-                                 incoming - Items shared with you
-                                 outgoing - Items you have shared
+  -t, --type=(incoming|outgoing)  [default: incoming] There are two types: incoming and outgoing
+                                  incoming - Items shared with you
+                                  outgoing - Items you have shared
 ```
 
 _See code: [src/commands/shares/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/list.ts)_
@@ -1194,7 +1182,7 @@ _See code: [src/commands/users/create.ts](https://github.com/Meeco/cli/blob/mast
 
 ## `meeco users:get`
 
-Fetch details about Meeco user from the various microservices. Provide either a User config file or password and secret. Outputs an Authorization config file for use with future commands.
+Fetch details about Meeco user from the various microservices.
 
 ```
 USAGE
@@ -1212,8 +1200,7 @@ OPTIONS
 
   -s, --secret=secret            the secret key of the user (will be prompted for if not provided)
 
-EXAMPLES
-  meeco users:get -c path/to/user-config.yaml
+EXAMPLE
   meeco users:get -p My$ecretPassword1 -s 1.xxxxxx.xxxx-xxxxx-xxxxxxx-xxxxx
 ```
 

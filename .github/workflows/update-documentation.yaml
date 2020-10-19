@@ -2,8 +2,8 @@ name: Update Documentation
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - releases/cli/*
 jobs:
   update_documentation:
     runs-on: ubuntu-latest

@@ -60,6 +60,7 @@ export default class ItemsAttachFile extends MeecoCommand {
       const uploadedFile = await largeFileUploadNode(fileConfig.file, environment, {
         data_encryption_key,
         vault_access_token,
+        subscription_key: environment.vault.subscription_key,
       });
       const label = fileConfig.label;
       const existingItem = itemFetchResult.item;
