@@ -15,11 +15,12 @@ import {
 import { DecryptedSlot } from '..';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
+import { IDecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import { fetchConnectionWithId } from '../util/find-connection-between';
-import { valueVerificationHash, VALUE_VERIFICATION_KEY_LENGTH } from '../util/value-verification';
+import { VALUE_VERIFICATION_KEY_LENGTH, valueVerificationHash } from '../util/value-verification';
 import cryppo from './cryppo-service';
-import { IDecryptedSlot, ItemService } from './item-service';
+import { ItemService } from './item-service';
 import Service from './service';
 
 export enum SharingMode {

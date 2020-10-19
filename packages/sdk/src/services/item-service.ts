@@ -4,16 +4,11 @@ import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { ItemCreateData } from '../models/item-create-data';
 import { ItemUpdateData } from '../models/item-update-data';
-import { DecryptedSlot } from '../models/local-slot';
+import { DecryptedSlot, IDecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import { verifyHashedValue } from '../util/value-verification';
 import Service from './service';
-
-export interface IDecryptedSlot extends Slot {
-  value_verification_key?: string;
-  value?: string;
-}
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -187,7 +182,6 @@ export class ItemService extends Service<ItemApi> {
     );
 
     if (resultHasNext(result) && perPage === undefined) {
-      // TODO - needs a warning logger
       this.logger.warn('Some results omitted, but page limit was not explicitly set');
     }
 
