@@ -1,4 +1,4 @@
-import { ShareService } from '@meeco/sdk';
+import { ItemService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import * as nock from 'nock';
@@ -6,18 +6,11 @@ import sinon from 'sinon';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 describe('shares:get-incoming', () => {
-  const value_verification_hash =
-    '91ab18573ee6dd109f89d819244ce98e654c3c0682ca1f54bb550efc4d6b3c2c';
-
   customTest
     .stdout()
     .stderr()
     .mockCryppo()
-    .stub(
-      ShareService,
-      'generate_value_verification_hash',
-      sinon.stub().returns(value_verification_hash)
-    )
+    .stub(ItemService, 'verifyHashedValue', sinon.stub().returns(true))
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .nock('https://sandbox.meeco.me/keystore', mockKeystore)
     .run([

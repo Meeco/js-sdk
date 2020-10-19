@@ -4,9 +4,8 @@ import {
   Environment,
   ItemService,
   SecretService,
-  UserService
+  UserService,
 } from '../src/index';
-import cryppo from '../src/services/cryppo-service';
 import './styles.scss';
 
 const $ = id => document.getElementById(id)!;
@@ -43,13 +42,13 @@ function updateEnvironment() {
   environment = new Environment({
     vault: {
       url: vaultUrl,
-      subscription_key: subscriptionKey
+      subscription_key: subscriptionKey,
     },
     keystore: {
       url: keystoreUrl,
       subscription_key: subscriptionKey,
-      provider_api_key: ''
-    }
+      provider_api_key: '',
+    },
   });
 
   $set('environmentStatus', 'Saved');
@@ -76,9 +75,6 @@ $('getSecret').addEventListener('click', getSecret);
 $('fetchUserData').addEventListener('click', fetchUserData);
 $('createUser').addEventListener('click', createUser);
 $('getItems').addEventListener('click', getItems);
-$('attachFile').addEventListener('click', attachFile, false);
-$('downloadAttachment').addEventListener('click', downloadAttachment);
-$('downloadThumbnail').addEventListener('click', downloadThumbnail);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 
 async function getUsername() {
@@ -153,113 +149,6 @@ async function getItems() {
     $set('items', `Error (See Action Log for Details)`);
     return handleException(error);
   }
-}
-
-async function attachFile() {
-  if (!STATE.user) {
-    return alert('Please fetch user data above first');
-  }
-
-  const [blob] = ($('attachment') as any).files;
-  if (!blob) {
-    return alert('Please attach file first');
-  }
-  const itemId = $get('itemId');
-  if (!itemId) {
-    return alert('Please enter an item id');
-  }
-  $set('attached', '');
-  const file: any = await fileAsBinaryString(blob);
-
-  try {
-    const attached = await new ItemService(environment, log).attachFile(
-      {
-        file,
-        fileName: 'myfile.png',
-        fileType: 'image/png',
-        itemId,
-        label: 'My File'
-      },
-      STATE.user
-    );
-    $set('attached', JSON.stringify(attached, null, 2));
-  } catch (error) {
-    $set('attached', `Error (See Action Log for Details)`);
-    return handleException(error);
-  }
-}
-
-async function downloadAttachment() {
-  if (!STATE.user) {
-    return alert('Please fetch user data above first');
-  }
-
-  const attachmentId = $get('attachmentId');
-  if (!attachmentId) {
-    return alert('Please enter attachmentId first');
-  }
-
-  $set('downloadAttachmentDetails', '');
-
-  try {
-    const itemService = await new ItemService(environment, log);
-    const attachment = await itemService.downloadAttachment(
-      attachmentId,
-      STATE.user.vault_access_token,
-      STATE.user.data_encryption_key
-    );
-    openToDownload(attachment, 'attachment.png', 'image/png');
-  } catch (error) {
-    $set('downloadAttachmentDetails', `Error (See Action Log for Details)`);
-    return handleException(error);
-  }
-}
-
-async function downloadThumbnail() {
-  if (!STATE.user) {
-    return alert('Please fetch user data above first');
-  }
-
-  const thumbnailId = $get('thumbnailId');
-  if (!thumbnailId) {
-    return alert('Please enter thumbnailId first');
-  }
-
-  $set('downloadThumbnailDetails', '');
-
-  try {
-    const thumbnail = await new ItemService(environment, log).downloadThumbnail(
-      thumbnailId,
-      STATE.user.vault_access_token,
-      STATE.user.data_encryption_key
-    );
-    openToDownload(thumbnail, 'thumb.png', 'image/png');
-  } catch (error) {
-    $set('downloadThumbnailDetails', `Error (See Action Log for Details)`);
-    return handleException(error);
-  }
-}
-
-// Todo - cryppo should possibly take care of this under the hood?
-function fileAsBinaryString(file: Blob): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      resolve(<any>reader.result);
-    };
-    reader.onerror = err => reject(err);
-    reader.readAsArrayBuffer(file);
-  });
-}
-
-function openToDownload(decryptedFileContent: string, fileName: string, contentType: string) {
-  const blob = new Blob([cryppo.stringAsBinaryBuffer(decryptedFileContent)], { type: contentType });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  a.click();
-  window.URL.revokeObjectURL(url);
 }
 
 async function handleException(error) {

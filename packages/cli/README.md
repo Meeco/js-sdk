@@ -96,7 +96,7 @@ If you need to get your Vault User Id use:
 1. Get a list of item templates you can use `meeco templates:list` - you can view more details on a template with `meeco templates:info <template>`
 1. Create an item template file from an item template `meeco items:create-config <template_name> > .my_item_config.yaml`
    - Edit this file to add values for fields as applicable
-1. Create your first item: `meeco items:create -i .my_item_config.yaml -a .user.yaml`
+1. Create your first item: `meeco items:create -i .my_item_config.yaml -a .user.yaml > my_item.yaml`
 1. You can check the item was created with `meeco items:list` or `meeco items:get <itemId>`
 
 ### 3. Create a Second User and Connect
@@ -104,13 +104,13 @@ If you need to get your Vault User Id use:
 1. Create your second user: `meeco users:create -p <password> > .user_2.yaml`
 1. Make a connection config file between your two users: `meeco connections:create-config --from .user.yaml --to .user_2.yaml > .connection_config.yaml`
    - Edit this file to add connection names as appropriate
-1. Create the connection between the two users: `meeco connections:create -c .connection_config.yaml`
+1. Create the connection between the two users: `meeco connections:create -c .connection_config.yaml > .connection.yaml`
 
 ### 4. Share an Item Between Connected Users
 
 1. Ensure users are connected first (see above)
 2. Select an item from user 1 to share to user 2
-3. Create the share template: `meeco shares:create-config --from .user.yaml --connectionId <connection_id_to_share_to> -i <item_id_to_share> > .share_config.yaml`
+3. Create the share template: `meeco shares:create-config --from .user.yaml --connection .connection.yaml -i my_item.yaml > .share_config.yaml`
    (If you only want to share one slot, also add `-s <slot_name>`).
 4. Create the share: `meeco shares:create -c .share_config.yaml`
 
@@ -985,10 +985,9 @@ ARGUMENTS
   SHAREID  ID of the share to accept
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
-                                 default .user.yaml)
-
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
   -e, --environment=environment  [default: .environment.yaml] environment config file
+  -y, --yes                      Automatically agree to any terms required by the sharer
 ```
 
 _See code: [src/commands/shares/accept.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/accept.ts)_
@@ -1002,44 +1001,32 @@ USAGE
   $ meeco shares:create [FILE]
 
 OPTIONS
-  -c, --config=config
-      (required) Share config file to use for setting up the share
+  -c, --config=config            (required) Share config file to use for setting up the share
+  -d, --expiry_date=expiry_date  Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+  --onshare                      Allow all recipients of this share to share it again
+  --terms=terms                  Share recipient must accept terms before viewing shared item.
 
-  -d, --expiry_date=expiry_date
-      Share expiry date either ISO-8601 or yyyy-MM-dd short format e.g. 2020-12-31
-
-  -e, --environment=environment
-      [default: .environment.yaml] environment config file
-
-  -m, --sharing_mode=owner|anyone
-      [default: owner] There are two sharing_mode: owner and anyone
-        owner - non-owner will not be able to on-share a share
-        anyone - anyone allow to on-share a share.
-
-  -t, --acceptance_required=acceptance_not_required|acceptance_required
-      [default: acceptance_not_required] Some shares require that the recipient accepts the terms of the share.
-        There are two acceptance_require: acceptance_not_required & acceptance_required
-        acceptance_not_required - recipient dont require acceptance
-        acceptance_required - recipient require acceptance before viewing shared item.
+EXAMPLE
+  meeco shares:create -c share.yaml --terms "Don't tell Mum!" --expiry_date "2020-12-31"
 ```
 
 _See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create.ts)_
 
 ## `meeco shares:create-config`
 
-Provide two users and either an item id (direct share) or share id (on-share) to construct a share config file
+Provide two users and either an item id to construct a share config file
 
 ```
 USAGE
   $ meeco shares:create-config
 
 OPTIONS
-  -c, --connectionId=connectionId  (required) Connection id for the 'to' user
-  -e, --environment=environment    [default: .environment.yaml] environment config file
-  -f, --from=from                  (required) User config file for the 'from' user
-  -i, --itemId=itemId              ID of the Item to share with the 'to' user
-  -o, --onshareId=onshareId        ID of the Share to on-share
-  -s, --slotName=slotName          Name of slot to share, if sharing a single slot
+  -c, --connection=connection    (required) Connection config file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+  -f, --from=from                (required) User config file for the 'from' user
+  -i, --item=item                (required) Config file for the Item to share with the 'to' user. This may be a shared Item.
+  -s, --slotName=slotName        Name of slot to share, if sharing a single slot
 ```
 
 _See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create-config.ts)_
@@ -1093,14 +1080,12 @@ USAGE
   $ meeco shares:list
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
-                                 default .user.yaml)
+  -a, --auth=auth                 (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -e, --environment=environment   [default: .environment.yaml] environment config file
 
-  -e, --environment=environment  [default: .environment.yaml] environment config file
-
-  -t, --type=incoming|outgoing   [default: incoming] There are two types: incoming and outgoing
-                                 incoming - Items shared with you
-                                 outgoing - Items you have shared
+  -t, --type=(incoming|outgoing)  [default: incoming] There are two types: incoming and outgoing
+                                  incoming - Items shared with you
+                                  outgoing - Items you have shared
 ```
 
 _See code: [src/commands/shares/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/list.ts)_
