@@ -36,7 +36,7 @@ echo "item id: ${itemId}"
 echo "connection id: ${connectionId}"
 
 echo "Share"
-run shares:create-config --from .Alice.yaml --connectionId $connectionId -i $itemId > .share_Alice_Bob.yaml
+run shares:create-config --from .Alice.yaml --connection .connection_Alice_Bob.created.yaml -i .item_alice.yaml > .share_Alice_Bob.yaml
 
 echo "Share the card to 'Bob'"
 run shares:create -c .share_Alice_Bob.yaml --terms "Use it for good" > .share_Alice_Bob.created.yaml

@@ -37,5 +37,5 @@ echo "connection id alice to bob: ${connectionIdAB}"
 dateAFter30Days=$(date +'%Y-%m-%d' -d "30 day")
 
 echo "Share alice to bob"
-run shares:create-config --from .Alice.yaml --connectionId $connectionIdAB -i $itemId > .share_Alice_Bob.yaml
-run shares:create -c .share_Alice_Bob.yaml --onshare -d $dateAFter30Days > .share_Alice_Bob.created.yaml
+run shares:create-config --from .Alice.yaml --connection .connection_Alice_Bob.created.yaml -i .item_alice.yaml > .share_Alice_Bob.yaml
+run shares:create -c .share_Alice_Bob.yaml -m anyone -d $dateAFter30Days > .share_Alice_Bob.created.yaml

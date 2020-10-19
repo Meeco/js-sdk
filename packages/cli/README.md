@@ -96,7 +96,7 @@ If you need to get your Vault User Id use:
 1. Get a list of item templates you can use `meeco templates:list` - you can view more details on a template with `meeco templates:info <template>`
 1. Create an item template file from an item template `meeco items:create-config <template_name> > .my_item_config.yaml`
    - Edit this file to add values for fields as applicable
-1. Create your first item: `meeco items:create -i .my_item_config.yaml -a .user.yaml`
+1. Create your first item: `meeco items:create -i .my_item_config.yaml -a .user.yaml > my_item.yaml`
 1. You can check the item was created with `meeco items:list` or `meeco items:get <itemId>`
 
 ### 3. Create a Second User and Connect
@@ -104,13 +104,13 @@ If you need to get your Vault User Id use:
 1. Create your second user: `meeco users:create -p <password> > .user_2.yaml`
 1. Make a connection config file between your two users: `meeco connections:create-config --from .user.yaml --to .user_2.yaml > .connection_config.yaml`
    - Edit this file to add connection names as appropriate
-1. Create the connection between the two users: `meeco connections:create -c .connection_config.yaml`
+1. Create the connection between the two users: `meeco connections:create -c .connection_config.yaml > .connection.yaml`
 
 ### 4. Share an Item Between Connected Users
 
 1. Ensure users are connected first (see above)
 2. Select an item from user 1 to share to user 2
-3. Create the share template: `meeco shares:create-config --from .user.yaml --connectionId <connection_id_to_share_to> -i <item_id_to_share> > .share_config.yaml`
+3. Create the share template: `meeco shares:create-config --from .user.yaml --connection .connection.yaml -i my_item.yaml > .share_config.yaml`
    (If you only want to share one slot, also add `-s <slot_name>`).
 4. Create the share: `meeco shares:create -c .share_config.yaml`
 
@@ -1015,19 +1015,18 @@ _See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/mas
 
 ## `meeco shares:create-config`
 
-Provide two users and either an item id (direct share) or share id (on-share) to construct a share config file
+Provide two users and either an item id to construct a share config file
 
 ```
 USAGE
   $ meeco shares:create-config
 
 OPTIONS
-  -c, --connectionId=connectionId  (required) Connection id for the 'to' user
-  -e, --environment=environment    [default: .environment.yaml] environment config file
-  -f, --from=from                  (required) User config file for the 'from' user
-  -i, --itemId=itemId              ID of the Item to share with the 'to' user
-  -o, --onshareId=onshareId        ID of the Share to on-share
-  -s, --slotName=slotName          Name of slot to share, if sharing a single slot
+  -c, --connection=connection    (required) Connection config file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+  -f, --from=from                (required) User config file for the 'from' user
+  -i, --item=item                (required) Config file for the Item to share with the 'to' user. This may be a shared Item.
+  -s, --slotName=slotName        Name of slot to share, if sharing a single slot
 ```
 
 _See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/create-config.ts)_

@@ -46,12 +46,12 @@ export class ConnectionConfig {
   }) {
     return {
       kind: ConnectionConfig.kind,
-      metadata: {
+      spec: {
         invitation_id: payload.invitation.id,
         from_user_connection_id: payload.fromUserConnection.own.id,
         to_user_connection_id: payload.toUserConnection.own.id,
       },
-      spec: {
+      metadata: {
         ...payload.options,
       },
     };
