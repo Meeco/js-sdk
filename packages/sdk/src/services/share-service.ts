@@ -5,7 +5,9 @@ import {
   ItemsIdSharesShareDeks,
   PostItemSharesRequestShare,
   PutItemSharesRequest,
-  SharesResponse,
+  SharesCreateResponse,
+  SharesIncomingResponse,
+  SharesOutgoingResponse,
   ShareWithItemData,
   Slot,
 } from '@meeco/vault-api-sdk';
@@ -43,6 +45,10 @@ interface IShareOptions extends PostItemSharesRequestShare {
   sharing_mode: SharingMode;
   acceptance_required: AcceptanceStatus;
 }
+
+export interface IShareIncomingOutGoingReponse
+  extends SharesOutgoingResponse,
+    SharesIncomingResponse {}
 
 export enum ShareType {
   incoming = 'incoming',
@@ -82,7 +88,7 @@ export class ShareService {
     connectionId: string,
     itemId: string,
     shareOptions: IShareOptions
-  ): Promise<SharesResponse> {
+  ): Promise<SharesCreateResponse> {
     this.log('Fetching connection');
     const fromUserConnection = await fetchConnectionWithId(
       fromUser,
@@ -109,7 +115,7 @@ export class ShareService {
   public async listShares(
     user: AuthData,
     shareType: ShareType = ShareType.incoming
-  ): Promise<SharesResponse> {
+  ): Promise<IShareIncomingOutGoingReponse> {
     switch (shareType) {
       case ShareType.outgoing:
         return await this.vaultApiFactory(user).SharesApi.outgoingSharesGet();
@@ -154,6 +160,7 @@ export class ShareService {
     const shareAPI = this.vaultApiFactory(user).SharesApi;
 
     let shareWithItemData: ShareWithItemData;
+
     switch (shareType) {
       case ShareType.incoming:
         shareWithItemData = await shareAPI.incomingSharesIdItemGet(shareId).catch(err => {
@@ -164,6 +171,20 @@ export class ShareService {
           }
           throw err;
         });
+
+        // when item is alrady shared with user using another share, retrive that share and item as
+        // there will be no share item created for requested share, only intent is created.
+        if (shareWithItemData.item_shared_via_another_share_id) {
+          shareWithItemData = await this.vaultApiFactory(user).SharesApi.incomingSharesIdItemGet(
+            shareWithItemData.item_shared_via_another_share_id
+          );
+          const str =
+            'Item was already shared via another share \n' +
+            'Item retrived using existing shareId: ' +
+            shareWithItemData.share.id;
+          this.log(str);
+        }
+
         break;
       case ShareType.outgoing:
         shareWithItemData = await shareAPI.outgoingSharesIdGet(shareId).then(async response => {
@@ -179,6 +200,19 @@ export class ShareService {
 
     if (shareWithItemData.share.acceptance_required === AcceptanceStatus.required) {
       return shareWithItemData;
+    }
+
+    // when item is alrady shared with user using another share, retrive that share and item as
+    // there will be no share item created for requested share, only intent is created.
+    if (shareWithItemData.item_shared_via_another_share_id) {
+      shareWithItemData = await this.vaultApiFactory(user).SharesApi.incomingSharesIdItemGet(
+        shareWithItemData.item_shared_via_another_share_id
+      );
+      const str =
+        'Item was already shared via another share \n' +
+        'Item retrived using existing shareId: ' +
+        shareWithItemData.share.id;
+      this.log(str);
     }
 
     const keyPairExternal = await this.keystoreApiFactory(user).KeypairApi.keypairsIdGet(

@@ -12,6 +12,7 @@ export class AuthData {
   public passphrase_derived_key: EncryptionKey;
   public secret: string;
   public vault_access_token: string;
+  public delegation_id?: string;
 
   constructor(config: {
     data_encryption_key: EncryptionKey;

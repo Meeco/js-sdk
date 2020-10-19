@@ -66,3 +66,20 @@ echo "carol's share id: ${carolsShareId}"
 
 echo "Read share as carol"
 run shares:get-incoming $carolsShareId -a .Carol.yaml
+
+echo "Create connection between Alice and Carol"
+run connections:create-config --from .Alice.yaml --to .Carol.yaml > .connection_Alice_Carol.yaml
+run connections:create -c .connection_Alice_Carol.yaml > .connection_Alice_Carol.created.yaml
+
+connectionIdAC=$(cat .connection_Alice_Carol.created.yaml | yq -r .metadata.from_user_connection_id)
+
+echo "Share alice to Carol"
+run shares:create-config --from .Alice.yaml --connection .connection_Alice_Carol.created.yaml -i .item_alice.yaml > .share_Alice_Carol.yaml
+run shares:create -c .share_Alice_Carol.yaml --onshare true -d $dateAFter30Days > .share_Alice_Carol.created.yaml
+
+carolsShareId2=$(cat .share_Alice_Carol.created.yaml | yq -r '.shares[0].id') 
+echo "carol's share id: ${carolsShareId2}"
+
+echo "Read share as carol share 2 with same item"
+run shares:get-incoming $carolsShareId2 -a .Carol.yaml
+
