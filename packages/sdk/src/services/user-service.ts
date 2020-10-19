@@ -4,7 +4,7 @@ import { Environment } from '../models/environment';
 import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import { SRPSession } from '../models/srp-session';
 import { Logger, noopLogger } from '../util/logger';
-import { SecretService } from './secret-service';
+import Secrets from '../util/secrets';
 import Service from './service';
 
 /**
@@ -15,12 +15,11 @@ export class UserService extends Service {
   static VAULT_PAIR_EXTERNAL_IDENTIFIER = 'auth';
   public readonly vaultKeypairExternalId;
 
-  private keyGen: SecretService;
+  private keyGen = Secrets;
 
   constructor(environment: Environment, log: Logger = noopLogger) {
     super(environment, log);
     this.vaultKeypairExternalId = UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER;
-    this.keyGen = new SecretService();
   }
 
   private requestKeyPair(keystoreSessionToken: string) {

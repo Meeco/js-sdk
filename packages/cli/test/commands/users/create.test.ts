@@ -1,4 +1,4 @@
-import { SecretService, UserService } from '@meeco/sdk';
+import { Secrets, UserService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import { customTest, outputFixture, testEnvironmentFile } from '../../test-helpers';
@@ -22,7 +22,7 @@ describe('users:create', () => {
     });
 
   customTest
-    .stub(SecretService.prototype, 'generateSecret', generateSecret as any)
+    .stub(Secrets, 'generateSecret', generateSecret as any)
     .stub(UserService.prototype, 'generateUsername', generateUsername as any)
     .stub(UserService.prototype, 'create', create as any)
     .stderr()

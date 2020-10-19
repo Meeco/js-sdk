@@ -3,7 +3,7 @@ import {
   configureFetch,
   Environment,
   ItemService,
-  SecretService,
+  Secrets,
   UserService,
 } from '../src/index';
 import './styles.scss';
@@ -93,7 +93,7 @@ async function getSecret() {
   if (!username) {
     return alert('Generating a secret requires a username');
   }
-  const secret = await new SecretService().generateSecret(username);
+  const secret = await Secrets.generateSecret(username);
   $set('secret', secret);
 }
 
