@@ -35,20 +35,15 @@ echo "Setup a connection between 'Bob' and 'Carol'"
 run connections:create-config --from .Bob.yaml --to .Carol.yaml > .connection_Bob_Carol.yaml
 run connections:create -c .connection_Bob_Carol.yaml > .connection_Bob_Carol.created.yaml
 
-connectionIdAB=$(cat .connection_Alice_Bob.created.yaml | yq -r .metadata.from_user_connection_id)
-connectionIdBC=$(cat .connection_Bob_Carol.created.yaml | yq -r .metadata.from_user_connection_id)
-
 itemId=$(cat .item_alice.yaml | yq -r .spec.id)
 
 echo "item id: ${itemId}"
-echo "connection id alice to bob: ${connectionIdAB}"
-echo "connection id bob to carol: ${connectionIdBC}"
 
 dateAFter30Days=$(date +'%Y-%m-%d' -d "30 day")
 
 echo "Share alice to bob"
 run shares:create-config --from .Alice.yaml --connection .connection_Alice_Bob.created.yaml -i .item_alice.yaml > .share_Alice_Bob.yaml
-run shares:create -c .share_Alice_Bob.yaml -m anyone -d $dateAFter30Days > .share_Alice_Bob.created.yaml
+run shares:create -c .share_Alice_Bob.yaml --onshare true -d $dateAFter30Days > .share_Alice_Bob.created.yaml
 
 bobsShareId=$(cat .share_Alice_Bob.created.yaml | yq -r '.shares[0].id')
 echo "bob's share id: ${bobsShareId}"
@@ -56,10 +51,11 @@ echo "bob's share id: ${bobsShareId}"
 # we need to get the item spec
 run shares:get-incoming $bobsShareId -a .Bob.yaml > .shared_item_with_share_Bob.yaml
 bobsItemId=$(cat .shared_item_with_share_Bob.yaml | yq -r '.item.id')
-run items:get $bobItemId > .shared_item_Bob.yaml
+echo "bob's item id: ${bobsItemId}"
+run items:get $bobsItemId -a .Bob.yaml > .shared_item_Bob.yaml
 
 echo "Share bob to carol (create config)"
-run shares:create-config --from .Bob.yaml --connection .connection_Bob_Carol.created.yaml -i $bobItemId > .share_Bob_Carol.yaml
+run shares:create-config --from .Bob.yaml --connection .connection_Bob_Carol.created.yaml -i .shared_item_Bob.yaml > .share_Bob_Carol.yaml
 
 dateAFter29Days=$(date +'%Y-%m-%d' -d "29 day")
 echo "Share bob to carol (create share)"
@@ -69,4 +65,4 @@ carolsShareId=$(cat .share_Bob_Carol.created.yaml | yq -r '.shares[0].id')
 echo "carol's share id: ${carolsShareId}"
 
 echo "Read share as carol"
-run shares:get-incoming $bobsShareId -a .Carol.yaml
+run shares:get-incoming $carolsShareId -a .Carol.yaml

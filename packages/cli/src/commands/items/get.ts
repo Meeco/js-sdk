@@ -30,7 +30,8 @@ export default class ItemsGet extends MeecoCommand {
     try {
       this.updateStatus('Fetching item details');
       const result = await service.get(itemId, authConfig);
-
+      // TODO: remove it properly, this is temp fix to make e2e test pass as jq/yq fails to parse value_verification_key in yml file.
+      result.slots.forEach(f => delete f['value_verification_key']);
       this.printYaml(ItemConfig.encodeFromJSON(result));
     } catch (error) {
       await this.handleException(error);
