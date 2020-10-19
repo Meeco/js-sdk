@@ -1,4 +1,4 @@
-import * as Cryppo from '@meeco/cryppo';
+import { binaryBufferToString, generateRandomKey } from '@meeco/cryppo';
 import {
   AzureBlockDownload,
   buildApiConfig,
@@ -6,8 +6,11 @@ import {
   directAttachmentUpload,
   directAttachmentUploadUrl,
   downloadAttachment,
+  downloadThumbnailCommon,
+  encryptAndUploadThumbnailCommon,
   getDirectAttachmentInfo,
   IFileStorageAuthConfiguration,
+  ThumbnailType,
 } from '@meeco/file-storage-common';
 import { DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
@@ -15,6 +18,8 @@ import * as mfe from 'mime-file-extension';
 import nodeFetch from 'node-fetch';
 import * as path from 'path';
 import * as FileUtils from './FileUtils.node';
+
+export { ThumbnailType, ThumbnailTypes, thumbSizeTypeToMimeExt } from '@meeco/file-storage-common';
 
 export async function largeFileUploadNode(
   filePath,
@@ -46,7 +51,7 @@ export async function largeFileUploadNode(
     environment.vault.url,
     nodeFetch
   );
-  const dek = Cryppo.generateRandomKey();
+  const dek = generateRandomKey();
   const uploadResult = await directAttachmentUpload(
     {
       directUploadUrl: uploadUrl.attachment_direct_upload_url.url,
@@ -161,9 +166,9 @@ export async function largeFileDownloadNode(
       dek,
       encrypted_artifact.encryption_strategy,
       {
-        iv: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
+        iv: binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,
-        at: Cryppo.binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
+        at: binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
       },
       encrypted_artifact.range[index]
     );
@@ -182,4 +187,52 @@ async function getDirectDownloadInfo(
   const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl, nodeFetch));
   const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
   return result.attachment_direct_download_url;
+}
+
+export async function encryptAndUploadThumbnail({
+  thumbnailFilePath,
+  binaryId,
+  attachmentDek,
+  sizeType,
+  authConfig,
+  vaultUrl,
+}: {
+  thumbnailFilePath: string;
+  binaryId: string;
+  attachmentDek: string;
+  sizeType: ThumbnailType;
+  authConfig: IFileStorageAuthConfiguration;
+  vaultUrl: string;
+}) {
+  const thumbnail = fs.readFileSync(thumbnailFilePath);
+
+  return encryptAndUploadThumbnailCommon({
+    thumbnailBufferString: binaryBufferToString(thumbnail),
+    binaryId,
+    attachmentDek,
+    sizeType,
+    authConfig,
+    vaultUrl,
+    fetchApi: nodeFetch,
+  });
+}
+
+export async function downloadThumbnail({
+  id,
+  dataEncryptionKey,
+  vaultUrl,
+  authConfig,
+}: {
+  id: string;
+  dataEncryptionKey: string;
+  vaultUrl: string;
+  authConfig: IFileStorageAuthConfiguration;
+}) {
+  return downloadThumbnailCommon({
+    id,
+    dataEncryptionKey,
+    vaultUrl,
+    authConfig,
+    fetchApi: nodeFetch,
+  });
 }

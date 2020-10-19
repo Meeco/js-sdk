@@ -35,6 +35,7 @@
         autocapitalize="off"
         autocomplete="off"
         id="subscriptionKey"
+        value=""
       />
       <label for="vaultAccessToken">Vault Access Token:</label>
       <input
@@ -50,7 +51,7 @@
     </div>
 
     <div class="card">
-      <h4>Add Attachment (PNG)</h4>
+      <h4>Add Attachment</h4>
       <hr />
       <input id="attachment" type="file" />
       <input
@@ -115,6 +116,77 @@
         <source />
         Sorry, your browser doesn't support embedded videos.
       </video>
+    </div>
+
+    <div class="card">
+      <h4>Add Thumbnail</h4>
+      <hr />
+      <input id="thumbnailAttachmentInput" type="file" />
+      <input
+        id="thumbnailAddItemId"
+        placeholder="itemId"
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        value=""
+      />
+      <input
+        id="thumbnailAddSlotId"
+        placeholder="slotId"
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        value=""
+      />
+      <input
+        id="thumbnailAddSizeType"
+        placeholder="thumbnail size/type"
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        list="availableSizeTypes"
+      />
+      <datalist id="availableSizeTypes">
+        <option value="128x128/jpg">128x128/jpg</option>
+        <option value="256x256/jpg">256x256/jpg</option>
+        <option value="512x512/jpg">512x512/jpg</option>
+        <option value="128x128/png">128x128/png</option>
+        <option value="256x256/png">256x256/png</option>
+        <option value="512x512/png">512x512/png</option>
+      </datalist>
+      <button type="button" id="attachThumbnail">Attach</button>
+      <textarea disabled id="attachedThumbnailOutput" rows="10"></textarea>
+    </div>
+
+    <div class="card">
+      <h4>Download Thumbnail</h4>
+      <hr />
+      <input
+        id="thumbnailDownloadItemId"
+        placeholder="itemId"
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        value=""
+      />
+      <input
+        id="thumbnailDownloadSlotId"
+        placeholder="slotId"
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        value=""
+      />
+      <input
+        id="thumbnailDownloadThumbnailId"
+        placeholder="thumbnailId"
+        type="text"
+        autocapitalize="off"
+        autocomplete="off"
+        value=""
+      />
+      <button type="button" id="thumbnailDownload">Download</button>
+      <img id="thumbnailDownloadImgOutput"></img>
     </div>
 
     <div class="card">
