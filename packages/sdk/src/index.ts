@@ -2,7 +2,6 @@
  * The publicly exposed API
  */
 export * from './models/auth-data';
-export * from './models/connection-create-data';
 export * from './models/encryption-key';
 export * from './models/environment';
 export * from './models/file-attachment-data';
@@ -19,6 +18,7 @@ export * from './services/item-service';
 export * from './services/organization-members-service';
 export * from './services/organization-services-service';
 export * from './services/organizations-service';
+export * from './services/service';
 export * from './services/share-service';
 export * from './services/templates-service';
 export * from './services/user-service';

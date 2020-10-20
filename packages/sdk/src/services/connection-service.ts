@@ -1,5 +1,5 @@
 import { Connection, ConnectionApi, ConnectionsResponse } from '@meeco/vault-api-sdk';
-import { ConnectionCreateData } from '../models/connection-create-data';
+import { AuthData } from '../models/auth-data';
 import { getAllPaged, resultHasNext } from '../util/paged';
 import { InvitationService } from './invitation-service';
 import Service, { IDEK, IPageOptions, IVaultToken } from './service';
@@ -7,6 +7,18 @@ import Service, { IDEK, IPageOptions, IVaultToken } from './service';
 export interface IDecryptedConnection {
   name: string;
   connection: Connection;
+}
+
+export interface IConnectionMetadata {
+  toName: string;
+  fromName: string;
+}
+
+// tslint:disable-next-line:interface-name
+export interface ConnectionCreateData {
+  from: AuthData;
+  to: AuthData;
+  options: IConnectionMetadata;
 }
 
 /**
@@ -20,7 +32,7 @@ export class ConnectionService extends Service<ConnectionApi> {
   /**
    * Note this only works if we have authentication data for both connecting users.
    * For more typical use cases you should manually call {@link InvitationService.create}
-   * as one user and {@link acceptInvitation} as the other user.
+   * as one user and {@link InvitationService.accept} as the other user.
    */
   public async createConnection(config: ConnectionCreateData) {
     const { to, from, options } = config;
