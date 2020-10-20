@@ -2,7 +2,6 @@ import { Connection, ConnectionApi, ConnectionsResponse } from '@meeco/vault-api
 import { AuthData } from '../models/auth-data';
 import { ConnectionCreateData } from '../models/connection-create-data';
 import { EncryptionKey } from '../models/encryption-key';
-import { findConnectionBetween } from '../util/find-connection-between';
 import { getAllPaged, resultHasNext } from '../util/paged';
 import { InvitationService } from './invitation-service';
 import Service, { IPageOptions } from './service';
@@ -28,11 +27,14 @@ export class ConnectionService extends Service<ConnectionApi> {
   public async createConnection(config: ConnectionCreateData) {
     const { to, from, options } = config;
 
-    let existingConnection: { fromUserConnection: Connection; toUserConnection: Connection };
+    let existingConnection: {
+      fromUserConnection: Connection;
+      toUserConnection: Connection;
+    };
     try {
       // We want to avoid creating keypairs etc. only to find out that the users were connected from the beginning
       this.logger.log('Checking for an existing connection');
-      existingConnection = await findConnectionBetween(from, to, this.environment, this.logger.log);
+      existingConnection = await this.findConnectionBetween(from, to);
     } catch (err) {
       // Empty catch because getting 404's is expected if the connection does not exist
     }
@@ -50,12 +52,7 @@ export class ConnectionService extends Service<ConnectionApi> {
     // Now the connection has been created we need to re-fetch the original user's connection.
     // We might as well fetch both to ensure it's connected both ways correctly.
 
-    const { fromUserConnection, toUserConnection } = await findConnectionBetween(
-      from,
-      to,
-      this.environment,
-      this.logger.log
-    );
+    const { fromUserConnection, toUserConnection } = await this.findConnectionBetween(from, to);
 
     return {
       invitation,
@@ -137,5 +134,57 @@ export class ConnectionService extends Service<ConnectionApi> {
       );
       return Promise.all(decryptions);
     });
+  }
+  /**
+   * @deprecated Use `get` instead.
+   */
+  public async fetchConnectionWithId(user: AuthData, connectionId: string): Promise<Connection> {
+    return this.get(user, connectionId);
+  }
+
+  public async get(user: AuthData, connectionId: string): Promise<Connection> {
+    this.logger.log('Fetching user connection');
+    const response = await this.getAPI(user.vault_access_token).connectionsIdGet(connectionId);
+    const connection = response.connection;
+
+    if (!connection || !connection.own.id) {
+      throw new Error(`Conncetion ${connectionId} not found.`);
+    }
+
+    return connection;
+  }
+
+  /**
+   * Helper to find connection between two users (if one exists)
+   */
+  public async findConnectionBetween(fromUser: AuthData, toUser: AuthData) {
+    this.logger.log('Fetching from user connections');
+    const fromUserConnections = await this.getAPI(fromUser.vault_access_token).connectionsGet();
+
+    this.logger.log('Fetching to user connections');
+    const toUserConnections = await this.getAPI(toUser.vault_access_token).connectionsGet();
+
+    const sharedConnections = fromUserConnections.connections!.filter(
+      fromConnection =>
+        !!toUserConnections.connections!.find(
+          toConnection =>
+            fromConnection.own.user_public_key === toConnection.the_other_user.user_public_key
+        )
+    );
+
+    if (sharedConnections.length < 1) {
+      throw new Error('Users are not connected. Please set up a connection first.');
+    }
+    const [fromUserConnection] = sharedConnections;
+    const toUserConnection = toUserConnections.connections!.find(
+      toConnection =>
+        fromUserConnection.own.user_public_key === toConnection.the_other_user.user_public_key
+    );
+
+    if (!toUserConnection) {
+      throw new Error('To user connection not found. Invitation may not have been accepted');
+    }
+
+    return { fromUserConnection, toUserConnection };
   }
 }

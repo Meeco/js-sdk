@@ -12,12 +12,11 @@ import {
   ShareWithItemData,
   Slot,
 } from '@meeco/vault-api-sdk';
-import { DecryptedSlot } from '..';
+import { ConnectionService, DecryptedSlot } from '..';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { IDecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
-import { fetchConnectionWithId } from '../util/find-connection-between';
 import { VALUE_VERIFICATION_KEY_LENGTH, valueVerificationHash } from '../util/value-verification';
 import cryppo from './cryppo-service';
 import { ItemService } from './item-service';
@@ -78,13 +77,10 @@ export class ShareService extends Service<SharesApi> {
     itemId: string,
     shareOptions: IShareOptions
   ): Promise<SharesCreateResponse> {
-    this.logger.log('Fetching connection');
-    const fromUserConnection = await fetchConnectionWithId(
-      fromUser,
-      connectionId,
+    const fromUserConnection = await new ConnectionService(
       this.environment,
-      this.logger.log
-    );
+      this.logger
+    ).fetchConnectionWithId(fromUser, connectionId);
 
     this.logger.log('Preparing item to share');
     const share = await this.shareItemFromVaultItem(fromUser, itemId, {
