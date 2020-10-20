@@ -59,7 +59,7 @@ export default class GetUser extends MeecoCommand {
         if (!authConfig) {
           this.error('Must specify a valid auth config file');
         }
-        result = await service.getUser(authConfig.vault_access_token);
+        result = await service.getUser(authConfig);
       }
 
       this.printYaml(UserDataConfig.encodeFromJSON(result));

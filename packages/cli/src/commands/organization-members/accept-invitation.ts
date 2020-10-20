@@ -49,7 +49,7 @@ export default class OrganizationMembersAcceptInvitation extends MeecoCommand {
         warn: this.warn,
         log: this.updateStatus,
       });
-      const result = await service.accept('', invitation.token, authConfig);
+      const result = await service.accept(authConfig, '', invitation.token);
       this.finish();
       this.printYaml(ConnectionV2Config.encodeFromJSON(result));
     } catch (err) {

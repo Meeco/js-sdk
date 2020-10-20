@@ -21,11 +21,7 @@ describe('Item create', () => {
         slots: [],
         item: { label: input.label },
       });
-      const result = await new ItemService(environment).create(
-        testUserAuth.vault_access_token,
-        testUserAuth.data_encryption_key,
-        itemCreateData
-      );
+      const result = await new ItemService(environment).create(testUserAuth, itemCreateData);
 
       const expected = getOutputFixture('create-item-from-template.output.json');
       const { slots, ...expectedItem } = expected;
@@ -51,11 +47,7 @@ describe('Item create', () => {
         slots: inputSlots,
         item: { label: input.label },
       });
-      const result = await new ItemService(environment).create(
-        testUserAuth.vault_access_token,
-        testUserAuth.data_encryption_key,
-        itemCreateData
-      );
+      const result = await new ItemService(environment).create(testUserAuth, itemCreateData);
 
       const expected = getOutputFixture('create-item-with-slots.output.json');
       const { slots, ...expectedItem } = expected;

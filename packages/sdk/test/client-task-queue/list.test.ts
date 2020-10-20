@@ -15,9 +15,9 @@ describe('ClientTaskService.list', () => {
         .reply(200, response)
     )
     .it('list tasks that the client must perform', async () => {
-      const result = await new ClientTaskQueueService(
-        environment
-      ).list(testUserAuth.vault_access_token, true, [ClientTaskQueueGetStateEnum.Todo]);
+      const result = await new ClientTaskQueueService(environment).list(testUserAuth, true, [
+        ClientTaskQueueGetStateEnum.Todo,
+      ]);
 
       const expected = getOutputFixture('list-client-task-queue.output.json');
       expect(result.client_tasks).to.deep.members(expected);
@@ -44,9 +44,9 @@ describe('ClientTaskService.listAll', () => {
         .reply(200, responsePart2)
     )
     .it('list all tasks for client when paginated', async () => {
-      const result = await new ClientTaskQueueService(
-        environment
-      ).listAll(testUserAuth.vault_access_token, true, [ClientTaskQueueGetStateEnum.Todo]);
+      const result = await new ClientTaskQueueService(environment).listAll(testUserAuth, true, [
+        ClientTaskQueueGetStateEnum.Todo,
+      ]);
 
       const expected = getOutputFixture('list-client-task-queue.output.json');
       expect(result).to.deep.members(expected);

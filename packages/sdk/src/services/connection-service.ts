@@ -1,10 +1,8 @@
 import { Connection, ConnectionApi, ConnectionsResponse } from '@meeco/vault-api-sdk';
-import { AuthData } from '../models/auth-data';
 import { ConnectionCreateData } from '../models/connection-create-data';
-import { EncryptionKey } from '../models/encryption-key';
 import { getAllPaged, resultHasNext } from '../util/paged';
 import { InvitationService } from './invitation-service';
-import Service, { IPageOptions } from './service';
+import Service, { IDEK, IPageOptions, IVaultToken } from './service';
 
 export interface IDecryptedConnection {
   name: string;
@@ -46,8 +44,8 @@ export class ConnectionService extends Service<ConnectionApi> {
 
     const invitations = new InvitationService(this.environment);
 
-    const invitation = await invitations.create(options.toName, from);
-    await invitations.accept(options.fromName, invitation.token, to);
+    const invitation = await invitations.create(from, options.toName);
+    await invitations.accept(to, options.fromName, invitation.token);
 
     // Now the connection has been created we need to re-fetch the original user's connection.
     // We might as well fetch both to ensure it's connected both ways correctly.
@@ -66,17 +64,18 @@ export class ConnectionService extends Service<ConnectionApi> {
    * @deprecated Use {@link list} instead.
    * @param user
    */
-  public async listConnections(user: AuthData) {
-    return this.list(user.vault_access_token, user.data_encryption_key);
+  public async listConnections(credentials: IVaultToken & IDEK) {
+    return this.list(credentials);
   }
 
   public async list(
-    vaultAccessToken: string,
-    dek: EncryptionKey,
+    credentials: IVaultToken & IDEK,
     options?: IPageOptions
   ): Promise<IDecryptedConnection[]> {
+    const { vault_access_token, data_encryption_key } = credentials;
+
     this.logger.log('Fetching connections');
-    const result = await this.getAPI(vaultAccessToken).connectionsGet(
+    const result = await this.getAPI(vault_access_token).connectionsGet(
       options?.nextPageAfter,
       options?.perPage
     );
@@ -91,7 +90,7 @@ export class ConnectionService extends Service<ConnectionApi> {
         ? Service.cryppo
             .decryptWithKey({
               serialized: connection.own.encrypted_recipient_name!,
-              key: dek.key,
+              key: data_encryption_key.key,
             })
             .then((name: string) => ({
               recipient_name: name,
@@ -105,11 +104,9 @@ export class ConnectionService extends Service<ConnectionApi> {
     return Promise.all(decryptions);
   }
 
-  public async listAll(
-    vaultAccessToken: string,
-    dek: EncryptionKey
-  ): Promise<IDecryptedConnection[]> {
-    const api = this.getAPI(vaultAccessToken);
+  public async listAll(credentials: IVaultToken & IDEK): Promise<IDecryptedConnection[]> {
+    const { vault_access_token, data_encryption_key } = credentials;
+    const api = this.getAPI(vault_access_token);
 
     return getAllPaged(cursor => api.connectionsGet(cursor)).then(results => {
       const responses = results.reduce(
@@ -121,7 +118,7 @@ export class ConnectionService extends Service<ConnectionApi> {
           ? Service.cryppo
               .decryptWithKey({
                 serialized: connection.own.encrypted_recipient_name!,
-                key: dek.key,
+                key: data_encryption_key.key,
               })
               .then((name: string) => ({
                 recipient_name: name,
@@ -138,13 +135,18 @@ export class ConnectionService extends Service<ConnectionApi> {
   /**
    * @deprecated Use `get` instead.
    */
-  public async fetchConnectionWithId(user: AuthData, connectionId: string): Promise<Connection> {
-    return this.get(user, connectionId);
+  public async fetchConnectionWithId(
+    credentials: IVaultToken,
+    connectionId: string
+  ): Promise<Connection> {
+    return this.get(credentials, connectionId);
   }
 
-  public async get(user: AuthData, connectionId: string): Promise<Connection> {
+  public async get(credentials: IVaultToken, connectionId: string): Promise<Connection> {
     this.logger.log('Fetching user connection');
-    const response = await this.getAPI(user.vault_access_token).connectionsIdGet(connectionId);
+    const response = await this.getAPI(credentials.vault_access_token).connectionsIdGet(
+      connectionId
+    );
     const connection = response.connection;
 
     if (!connection || !connection.own.id) {
@@ -157,7 +159,7 @@ export class ConnectionService extends Service<ConnectionApi> {
   /**
    * Helper to find connection between two users (if one exists)
    */
-  public async findConnectionBetween(fromUser: AuthData, toUser: AuthData) {
+  public async findConnectionBetween(fromUser: IVaultToken, toUser: IVaultToken) {
     this.logger.log('Fetching from user connections');
     const fromUserConnections = await this.getAPI(fromUser.vault_access_token).connectionsGet();
 

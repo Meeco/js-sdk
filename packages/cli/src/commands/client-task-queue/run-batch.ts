@@ -54,17 +54,15 @@ export default class ClientTaskQueueRunBatch extends MeecoCommand {
         tasks = await service.listAll(authConfig.vault_access_token, false, [state]);
       } else if (limit) {
         tasks = await service
-          .list(authConfig.vault_access_token, false, [state], undefined, {
+          .list(authConfig, false, [state], undefined, {
             nextPageAfter: limit.toString(),
           })
           .then(r => r.client_tasks);
       } else {
-        tasks = await service
-          .list(authConfig.vault_access_token, true, [state])
-          .then(r => r.client_tasks);
+        tasks = await service.list(authConfig, true, [state]).then(r => r.client_tasks);
       }
 
-      const executionResults = await service.execute(tasks, authConfig);
+      const executionResults = await service.execute(authConfig, tasks);
 
       this.printYaml(executionResults);
     } catch (err) {

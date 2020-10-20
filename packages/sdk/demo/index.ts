@@ -143,7 +143,7 @@ async function getItems() {
   }
   $set('items', '');
   try {
-    const items = await new ItemService(environment, log).list(STATE.user.vault_access_token);
+    const items = await new ItemService(environment, log).list(STATE.user);
     $set('items', JSON.stringify(items, null, 2));
   } catch (error) {
     $set('items', `Error (See Action Log for Details)`);

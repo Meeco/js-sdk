@@ -4,12 +4,9 @@ import {
   ClientTaskQueueGetStateEnum as ClientTaskState,
   ClientTaskQueueResponse,
 } from '@meeco/vault-api-sdk';
-import { AuthData } from '../models/auth-data';
 import { MeecoServiceError } from '../models/service-error';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
-import Service from './service';
-import { ItemService } from './item-service';
-import Service, { IPageOptions } from './service';
+import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 import { ShareService } from './share-service';
 
 export { ClientTaskQueueGetStateEnum as ClientTaskState } from '@meeco/vault-api-sdk';
@@ -43,13 +40,13 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
    * @param target_id Filter results by target_id.
    */
   public async list(
-    vaultAccessToken: string,
+    credentials: IVaultToken,
     change_state: boolean = false,
     states: ClientTaskState[] = [ClientTaskState.Todo],
     target_id?: string,
     options?: IPageOptions
   ): Promise<ClientTaskQueueResponse> {
-    const result = await this.getAPI(vaultAccessToken).clientTaskQueueGet(
+    const result = await this.getAPI(credentials.vault_access_token).clientTaskQueueGet(
       options?.nextPageAfter,
       options?.perPage,
       change_state,
@@ -65,12 +62,12 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
   }
 
   public async listAll(
-    vaultAccessToken: string,
+    credentials: IVaultToken,
     change_state: boolean = false,
     states: ClientTaskState[] = [ClientTaskState.Todo],
     target_id?: string
   ): Promise<ClientTask[]> {
-    const api = this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi;
+    const api = this.vaultAPIFactory(credentials.vault_access_token).ClientTaskQueueApi;
     return getAllPaged(cursor =>
       api.clientTaskQueueGet(cursor, undefined, change_state, target_id, states)
     )
@@ -82,8 +79,8 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
    * Count all tasks that have state either 'todo' or 'in_progress'.
    * May make multiple API calls, depending on number of tasks.
    */
-  public async countOutstandingTasks(vaultAccessToken: string): Promise<IOutstandingClientTasks> {
-    const allTasks = await this.listAll(vaultAccessToken, false, [
+  public async countOutstandingTasks(credentials: IVaultToken): Promise<IOutstandingClientTasks> {
+    const allTasks = await this.listAll(credentials, false, [
       ClientTaskState.Todo,
       ClientTaskState.InProgress,
     ]);
@@ -113,7 +110,10 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
    * @param tasks ClientTasks to be executed. Each must have state 'todo' or 'failed'.
    * @param authData
    */
-  public async execute(tasks: ClientTask[], authData: AuthData): Promise<IClientTaskExecResult> {
+  public async execute(
+    credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
+    tasks: ClientTask[]
+  ): Promise<IClientTaskExecResult> {
     this.logger.log(`Executing ${tasks.length} tasks`);
 
     for (const task of tasks) {
@@ -131,8 +131,8 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
     }
 
     const updateSharesTasksResult: IClientTaskExecResult = await this.updateSharesClientTasks(
-      tasks,
-      authData
+      credentials,
+      tasks
     );
 
     return updateSharesTasksResult;
@@ -145,8 +145,8 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
    * @param authData
    */
   private async updateSharesClientTasks(
-    tasks: ClientTask[],
-    authData: AuthData
+    credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
+    tasks: ClientTask[]
   ): Promise<IClientTaskExecResult> {
     const shareService = new ShareService(this.environment, this.logger.log);
 
@@ -157,7 +157,7 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
 
     const runTask = async (task: ClientTask) => {
       try {
-        await shareService.updateSharedItem(authData, task.target_id);
+        await shareService.updateSharedItem(credentials, task.target_id);
         task.state = ClientTaskState.Done;
         taskReport.completed.push(task);
       } catch (error) {
@@ -168,7 +168,9 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
     };
 
     // Set all tasks to in_progress
-    await this.vaultAPIFactory(authData.vault_access_token).ClientTaskQueueApi.clientTaskQueuePut({
+    await this.vaultAPIFactory(
+      credentials.vault_access_token
+    ).ClientTaskQueueApi.clientTaskQueuePut({
       client_tasks: tasks.map(({ id }) => ({ id, state: ClientTaskState.InProgress })),
     });
     this.logger.log('Set: in_progress');
@@ -182,7 +184,9 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
       .concat(taskReport.failed)
       .map(({ id, state, report }) => ({ id, state, report }));
 
-    await this.vaultAPIFactory(authData.vault_access_token).ClientTaskQueueApi.clientTaskQueuePut({
+    await this.vaultAPIFactory(
+      credentials.vault_access_token
+    ).ClientTaskQueueApi.clientTaskQueuePut({
       client_tasks: allTasks,
     });
 

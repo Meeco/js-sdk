@@ -12,15 +12,14 @@ import {
   ShareWithItemData,
   Slot,
 } from '@meeco/vault-api-sdk';
-import { ConnectionService, DecryptedSlot } from '..';
-import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
-import { IDecryptedSlot } from '../models/local-slot';
+import { DecryptedSlot, IDecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import { VALUE_VERIFICATION_KEY_LENGTH, valueVerificationHash } from '../util/value-verification';
+import { ConnectionService } from './connection-service';
 import cryppo from './cryppo-service';
 import { ItemService } from './item-service';
-import Service from './service';
+import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
 
 export enum SharingMode {
   owner = 'owner',
@@ -72,18 +71,20 @@ export class ShareService extends Service<SharesApi> {
   }
 
   public async shareItem(
-    fromUser: AuthData,
+    credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
     connectionId: string,
     itemId: string,
     shareOptions: IShareOptions
   ): Promise<SharesCreateResponse> {
-    const fromUserConnection = await new ConnectionService(
-      this.environment,
-      this.logger
-    ).fetchConnectionWithId(fromUser, connectionId);
+    const { vault_access_token } = credentials;
+
+    const fromUserConnection = await new ConnectionService(this.environment, this.logger).get(
+      credentials,
+      connectionId
+    );
 
     this.logger.log('Preparing item to share');
-    const share = await this.shareItemFromVaultItem(fromUser, itemId, {
+    const share = await this.shareItemFromVaultItem(credentials, itemId, {
       ...shareOptions,
       recipient_id: fromUserConnection.the_other_user.user_id,
       public_key: fromUserConnection.the_other_user.user_public_key,
@@ -91,14 +92,14 @@ export class ShareService extends Service<SharesApi> {
     });
 
     this.logger.log('Sending shared data');
-    const shareResult = await this.getAPI(fromUser.vault_access_token).itemsIdSharesPost(itemId, {
+    const shareResult = await this.getAPI(vault_access_token).itemsIdSharesPost(itemId, {
       shares: [share],
     });
     return shareResult;
   }
 
   public async listShares(
-    user: AuthData,
+    user: IVaultToken,
     shareType: ShareType = ShareType.incoming
   ): Promise<IShareIncomingOutGoingReponse> {
     switch (shareType) {
@@ -109,7 +110,7 @@ export class ShareService extends Service<SharesApi> {
     }
   }
 
-  public async acceptIncomingShare(user: AuthData, shareId: string): Promise<GetShareResponse> {
+  public async acceptIncomingShare(user: IVaultToken, shareId: string): Promise<GetShareResponse> {
     try {
       return await this.getAPI(user.vault_access_token).incomingSharesIdAcceptPut(shareId);
     } catch (error) {
@@ -120,7 +121,7 @@ export class ShareService extends Service<SharesApi> {
     }
   }
 
-  public async deleteSharedItem(user: AuthData, shareId: string) {
+  public async deleteSharedItem(user: IVaultToken, shareId: string) {
     try {
       await this.getAPI(user.vault_access_token).sharesIdDelete(shareId);
     } catch (error) {
@@ -138,7 +139,7 @@ export class ShareService extends Service<SharesApi> {
    * @param shareType
    */
   public async getSharedItem(
-    user: AuthData,
+    user: IVaultToken & IKeystoreToken & IKEK & IDEK,
     shareId: string,
     shareType: ShareType = ShareType.incoming
   ): Promise<ShareWithItemData> {
@@ -175,9 +176,9 @@ export class ShareService extends Service<SharesApi> {
 
       // TODO assumes it is still encrypted with the share DEK, not the user's DEK
       // TODO this flow duplicates the ItemService.get flow
-      const keyPairExternal = await this.keystoreAPIFactory(user).KeypairApi.keypairsIdGet(
-        shareWithItemData.share.keypair_external_id!
-      );
+      const keyPairExternal = await this.keystoreAPIFactory(
+        user.keystore_access_token
+      ).KeypairApi.keypairsIdGet(shareWithItemData.share.keypair_external_id!);
 
       const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
         serialized: keyPairExternal.keypair.encrypted_serialized_key,
@@ -205,7 +206,7 @@ export class ShareService extends Service<SharesApi> {
       const itemService = new ItemService(this.environment);
 
       return await shareAPI.outgoingSharesIdGet(shareId).then(async ({ share }) => {
-        const item = await itemService.get(share.item_id, user);
+        const item = await itemService.get(user, share.item_id);
         return {
           share,
           ...item,
@@ -214,16 +215,19 @@ export class ShareService extends Service<SharesApi> {
     }
   }
 
-  public async getSharedItemIncoming(user: AuthData, shareId: string): Promise<ShareWithItemData> {
+  public async getSharedItemIncoming(
+    user: IVaultToken & IKeystoreToken & IKEK & IDEK,
+    shareId: string
+  ): Promise<ShareWithItemData> {
     return this.getSharedItem(user, shareId, ShareType.incoming);
   }
 
   private async shareItemFromVaultItem(
-    fromUser: AuthData,
+    fromUser: IVaultToken & IKeystoreToken & IKEK & IDEK,
     itemId: string,
     shareOptions: PostItemSharesRequestShare
   ): Promise<PostItemSharesRequestShare> {
-    const item = await new ItemService(this.environment).get(itemId, fromUser);
+    const item = await new ItemService(this.environment).get(fromUser, itemId);
 
     let { slots } = item;
 
@@ -256,11 +260,11 @@ export class ShareService extends Service<SharesApi> {
    * @param user
    * @param itemId
    */
-  public async updateSharedItem(user: AuthData, itemId: string) {
+  public async updateSharedItem(user: IVaultToken & IKeystoreToken & IKEK & IDEK, itemId: string) {
     const { item, slots: decryptedSlots } = await new ItemService(
       this.environment,
       this.logger
-    ).get(itemId, user);
+    ).get(user, itemId);
 
     if (!item.own) {
       throw new MeecoServiceError(`Only Item owner can update shared Item.`);

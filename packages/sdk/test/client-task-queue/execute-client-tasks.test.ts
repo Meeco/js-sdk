@@ -1,10 +1,5 @@
-import { ItemService, ShareService } from '@meeco/sdk';
-import {
-  ClientTask,
-  ClientTaskQueueGetStateEnum as ClientTaskState,
-  Item,
-  Slot,
-} from '@meeco/vault-api-sdk';
+import { ClientTaskState, ItemService, ShareService } from '@meeco/sdk';
+import { ClientTask, Item, Slot } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
 import * as nock from 'nock';
 import sinon from 'sinon';
@@ -21,10 +16,9 @@ describe('ClientTaskQueueService.execute', () => {
     .nock('https://sandbox.meeco.me/vault', stubVault)
     .mockCryppo()
     .it('executes and updates ClientTasks', async () => {
-      const result = await new ClientTaskQueueService(environment).execute(
-        [task('a', ClientTaskState.Todo)],
-        testUserAuth
-      );
+      const result = await new ClientTaskQueueService(environment).execute(testUserAuth, [
+        task('a', ClientTaskState.Todo),
+      ]);
 
       expect(result.completed.length).to.equal(1);
       expect(result.failed.length).to.equal(0);
@@ -32,14 +26,14 @@ describe('ClientTaskQueueService.execute', () => {
 
   customTest.it('does not execute in_progress tasks', async () => {
     new ClientTaskQueueService(environment)
-      .execute([task('a', ClientTaskState.InProgress)], testUserAuth)
+      .execute(testUserAuth, [task('a', ClientTaskState.InProgress)])
       .then(() => expect.fail())
       .catch(e => expect(e).to.be.ok);
   });
 
   customTest.it('does not execute done tasks', async () => {
     new ClientTaskQueueService(environment)
-      .execute([task('a', ClientTaskState.Done)], testUserAuth)
+      .execute(testUserAuth, [task('a', ClientTaskState.Done)])
       .then(() => expect.fail())
       .catch(e => expect(e).to.be.ok);
   });
@@ -50,10 +44,9 @@ describe('ClientTaskQueueService.execute', () => {
     .nock('https://sandbox.meeco.me/vault', stubVault)
     .mockCryppo()
     .it('executes failed tasks', async () => {
-      const result = await new ClientTaskQueueService(environment).execute(
-        [task('a', ClientTaskState.Failed)],
-        testUserAuth
-      );
+      const result = await new ClientTaskQueueService(environment).execute(testUserAuth, [
+        task('a', ClientTaskState.Failed),
+      ]);
 
       expect(result.completed.length).to.equal(1);
       expect(result.failed.length).to.equal(0);

@@ -1,24 +1,30 @@
 import { Connection, Invitation, InvitationApi } from '@meeco/vault-api-sdk';
-import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
-import Service from './service';
+import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
 
 export class InvitationService extends Service<InvitationApi> {
   public getAPI(vaultToken: string): InvitationApi {
     return this.vaultAPIFactory(vaultToken).InvitationApi;
   }
 
-  public async create(name: string, auth: AuthData): Promise<Invitation> {
-    const keyPair = await this.createAndStoreKeyPair(
-      auth.keystore_access_token,
-      auth.key_encryption_key
-    );
+  public async create(
+    credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
+    name: string
+  ): Promise<Invitation> {
+    const {
+      vault_access_token,
+      keystore_access_token,
+      key_encryption_key,
+      data_encryption_key,
+    } = credentials;
+
+    const keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
 
     this.logger.log('Encrypting recipient name');
-    const encryptedName: string = await this.encryptName(name, auth.data_encryption_key);
+    const encryptedName: string = await this.encryptName(name, data_encryption_key);
 
     this.logger.log('Sending invitation request');
-    return await this.getAPI(auth.vault_access_token)
+    return await this.getAPI(vault_access_token)
       .invitationsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,
@@ -31,17 +37,24 @@ export class InvitationService extends Service<InvitationApi> {
       .then(result => result.invitation);
   }
 
-  public async accept(name: string, invitationToken: string, auth: AuthData): Promise<Connection> {
-    const keyPair = await this.createAndStoreKeyPair(
-      auth.keystore_access_token,
-      auth.key_encryption_key
-    );
+  public async accept(
+    credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
+    name: string,
+    invitationToken: string
+  ): Promise<Connection> {
+    const {
+      keystore_access_token,
+      vault_access_token,
+      key_encryption_key,
+      data_encryption_key,
+    } = credentials;
+    const keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
 
     this.logger.log('Encrypting connection name');
-    const encryptedName: string = await this.encryptName(name, auth.data_encryption_key);
+    const encryptedName: string = await this.encryptName(name, data_encryption_key);
 
     this.logger.log('Accepting invitation');
-    return await this.vaultAPIFactory(auth)
+    return await this.vaultAPIFactory(vault_access_token)
       .ConnectionApi.connectionsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,

@@ -17,9 +17,9 @@ describe('Organization-members accept-invitation', () => {
     .it('Requests the creation of a new organization member invitation', async () => {
       const input = getInputFixture('accept-organization-members-invitation.input.json');
       const result = await new InvitationService(environment).accept(
+        testUserAuthFixture,
         '',
-        input.token,
-        testUserAuthFixture
+        input.token
       );
 
       const { privateKey, publicKey, ...expectedSpec } = getOutputFixture(

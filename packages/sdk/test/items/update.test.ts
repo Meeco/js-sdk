@@ -22,11 +22,7 @@ describe('ItemService.update', () => {
         label: input.label,
         slots: input.slots,
       });
-      const result = await new ItemService(environment).update(
-        testUserAuth.vault_access_token,
-        testUserAuth.data_encryption_key,
-        updateData
-      );
+      const result = await new ItemService(environment).update(testUserAuth, updateData);
 
       const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
         'update-item.output.json'

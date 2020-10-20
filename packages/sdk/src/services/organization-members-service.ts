@@ -1,6 +1,6 @@
 import { OrganizationsManagingMembersApi } from '@meeco/vault-api-sdk';
 import { OrganizationMemberRoles } from './organizations-service';
-import Service from './service';
+import Service, { IVaultToken } from './service';
 
 /**
  * Manage organization members from the API.
@@ -11,12 +11,12 @@ export class OrganizationMembersService extends Service<OrganizationsManagingMem
   }
 
   public async createInvite(
-    vaultAccessToken: string,
+    credentials: IVaultToken,
     organizationAgentPublicKey: string,
     role: OrganizationMemberRoles = OrganizationMemberRoles.Admin
   ) {
     this.logger.log('Creating invitation request');
-    return await this.vaultAPIFactory(vaultAccessToken)
+    return await this.vaultAPIFactory(credentials.vault_access_token)
       .InvitationApi.invitationsPost({
         public_key: {
           keypair_external_id: 'org-agent-keypair',

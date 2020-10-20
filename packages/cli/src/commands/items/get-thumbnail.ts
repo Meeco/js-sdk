@@ -50,7 +50,7 @@ export default class ItemsGetThumbnail extends MeecoCommand {
       }
 
       const itemService = new ItemService(environment, this.updateStatus);
-      const itemFetchResult: any = await itemService.get(itemId, authConfig);
+      const itemFetchResult: any = await itemService.get(authConfig, itemId);
       if (!itemFetchResult) {
         this.error('Item not found');
       }

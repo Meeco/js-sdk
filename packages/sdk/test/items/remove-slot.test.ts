@@ -11,6 +11,6 @@ describe('Items remove-slot', () => {
         .reply(204)
     )
     .it('removes a slot from an item', async () => {
-      await new ItemService(environment).removeSlot('my_slot_id', testUserAuth.vault_access_token);
+      await new ItemService(environment).removeSlot(testUserAuth, 'my_slot_id');
     });
 });

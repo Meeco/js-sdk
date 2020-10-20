@@ -19,7 +19,7 @@ describe('Items list', () => {
         .reply(200, response)
     )
     .it('list items that the user has', async () => {
-      const result = await new ItemService(environment).list(testUserAuth.vault_access_token);
+      const result = await new ItemService(environment).list(testUserAuth);
 
       const expected = getOutputFixture('list-items.output.json');
       expect(replaceUndefinedWithNull(result.items)).to.deep.members(expected);
@@ -39,7 +39,7 @@ describe('Items list', () => {
         .reply(200, responsePart2)
     )
     .it('list items that the user has', async () => {
-      const result = await new ItemService(environment).listAll(testUserAuth.vault_access_token);
+      const result = await new ItemService(environment).listAll(testUserAuth);
 
       const expected = getOutputFixture('list-items.output.json');
       expect(replaceUndefinedWithNull(result.items)).to.deep.members(expected);

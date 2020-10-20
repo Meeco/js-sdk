@@ -1,6 +1,5 @@
 // import * as MeecoAzure from '@meeco/azure-block-upload';
 import { Item, ItemApi, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
-import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { ItemCreateData } from '../models/item-create-data';
 import { ItemUpdateData } from '../models/item-update-data';
@@ -12,7 +11,7 @@ import {
   valueVerificationHash,
   verifyHashedValue,
 } from '../util/value-verification';
-import Service, { IPageOptions } from './service';
+import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -114,12 +113,14 @@ export class ItemService extends Service<ItemApi> {
     return this.vaultAPIFactory(vaultToken).ItemApi;
   }
 
-  public async create(vaultAccessToken: string, dek: EncryptionKey, config: ItemCreateData) {
+  public async create(credentials: IVaultToken & IDEK, config: ItemCreateData) {
+    const { vault_access_token, data_encryption_key } = credentials;
+
     const slots_attributes = await Promise.all(
-      (config.slots || []).map(slot => ItemService.encryptSlot(slot, dek))
+      (config.slots || []).map(slot => ItemService.encryptSlot(slot, data_encryption_key))
     );
 
-    return await this.getAPI(vaultAccessToken).itemsPost({
+    return await this.getAPI(vault_access_token).itemsPost({
       template_name: config.template_name,
       item: {
         label: config.item.label,
@@ -128,12 +129,14 @@ export class ItemService extends Service<ItemApi> {
     });
   }
 
-  public async update(vaultAccessToken: string, dek: EncryptionKey, config: ItemUpdateData) {
+  public async update(credentials: IVaultToken & IDEK, config: ItemUpdateData) {
     const slots_attributes = await Promise.all(
-      (config.slots || []).map(slot => ItemService.encryptSlot(slot, dek))
+      (config.slots || []).map(slot =>
+        ItemService.encryptSlot(slot, credentials.data_encryption_key)
+      )
     );
 
-    return await this.getAPI(vaultAccessToken).itemsIdPut(config.id, {
+    return await this.getAPI(credentials.vault_access_token).itemsIdPut(config.id, {
       item: {
         label: config.label,
         slots_attributes,
@@ -141,9 +144,9 @@ export class ItemService extends Service<ItemApi> {
     });
   }
 
-  public async removeSlot(slotId: string, vaultAccessToken: string) {
+  public async removeSlot(credentials: IVaultToken, slotId: string) {
     this.logger.log('Removing slot');
-    await this.vaultAPIFactory(vaultAccessToken).SlotApi.slotsIdDelete(slotId);
+    await this.vaultAPIFactory(credentials.vault_access_token).SlotApi.slotsIdDelete(slotId);
     this.logger.log('Slot successfully removed');
   }
   /**
@@ -152,7 +155,7 @@ export class ItemService extends Service<ItemApi> {
    * @param id ItemId
    * @param user
    */
-  public async get(id: string, user: AuthData) {
+  public async get(user: IVaultToken & IKeystoreToken & IDEK & IKEK, id: string) {
     const vaultAccessToken = user.vault_access_token;
     let dataEncryptionKey = user.data_encryption_key;
 
@@ -162,13 +165,13 @@ export class ItemService extends Service<ItemApi> {
     // If the Item is from a share, use the share DEK to decrypt instead.
     // Second condition is for typecheck
     if (ItemService.itemIsFromShare(item) && item.share_id !== null) {
-      const share = await this.vaultAPIFactory(user)
+      const share = await this.vaultAPIFactory(user.vault_access_token)
         .SharesApi.incomingSharesIdGet(item.share_id)
         .then(response => response.share);
 
-      const keyPairExternal = await this.keystoreAPIFactory(user).KeypairApi.keypairsIdGet(
-        share.keypair_external_id!
-      );
+      const keyPairExternal = await this.keystoreAPIFactory(
+        user.keystore_access_token
+      ).KeypairApi.keypairsIdGet(share.keypair_external_id!);
 
       const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
         serialized: keyPairExternal.keypair.encrypted_serialized_key,
@@ -238,8 +241,8 @@ export class ItemService extends Service<ItemApi> {
     }
   }
 
-  public async list(vaultAccessToken: string, templateIds?: string, options?: IPageOptions) {
-    const result = await this.getAPI(vaultAccessToken).itemsGet(
+  public async list(credentials: IVaultToken, templateIds?: string, options?: IPageOptions) {
+    const result = await this.getAPI(credentials.vault_access_token).itemsGet(
       templateIds,
       undefined,
       undefined,
@@ -254,8 +257,8 @@ export class ItemService extends Service<ItemApi> {
     return result;
   }
 
-  public async listAll(vaultAccessToken: string, templateIds?: string): Promise<ItemsResponse> {
-    const api = this.getAPI(vaultAccessToken);
+  public async listAll(credentials: IVaultToken, templateIds?: string): Promise<ItemsResponse> {
+    const api = this.getAPI(credentials.vault_access_token);
 
     return getAllPaged(cursor => api.itemsGet(templateIds, undefined, undefined, cursor)).then(
       reducePages

@@ -51,16 +51,10 @@ export default class ItemsUpdate extends MeecoCommand {
     });
 
     try {
-      const updatedItem = await service.update(
-        authConfig.vault_access_token,
-        authConfig.data_encryption_key,
-        updateData
-      );
+      const updatedItem = await service.update(authConfig, updateData);
       const result = ItemConfig.encodeFromJSON(updatedItem);
 
-      const outstandingTasks = await clientTaskQueueService.countOutstandingTasks(
-        authConfig.vault_access_token
-      );
+      const outstandingTasks = await clientTaskQueueService.countOutstandingTasks(authConfig);
       const numberOfOutstandingTasks = outstandingTasks.todo + outstandingTasks.in_progress;
       const str =
         '# Item updated. There are ' +
