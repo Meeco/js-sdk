@@ -29,8 +29,7 @@ export class ItemService extends Service<ItemApi> {
    * @param item
    */
   public static itemIsFromShare(item: Item): boolean {
-    // this also implies item.own == false
-    return item.share_id != null;
+    return item.own === false || !!item.share_id;
   }
 
   /**
@@ -161,6 +160,7 @@ export class ItemService extends Service<ItemApi> {
     const { item, slots } = result;
 
     // If the Item is from a share, use the share DEK to decrypt instead.
+    // Second condition is for typecheck
     if (ItemService.itemIsFromShare(item) && item.share_id !== null) {
       const share = await this.vaultAPIFactory(user)
         .SharesApi.incomingSharesIdGet(item.share_id)

@@ -77,6 +77,9 @@ function stubVault(value_verification_hash: string, shareSingleSlot: boolean) {
                 },
               ]),
         ],
+        item: {
+          slot_ids: ['slot_a', 'slot_b'],
+        },
         associations_to: [],
         associations: [],
         attachments: [],
