@@ -5,7 +5,7 @@ import { EncryptionKey } from '../models/encryption-key';
 import { findConnectionBetween } from '../util/find-connection-between';
 import { getAllPaged, resultHasNext } from '../util/paged';
 import { InvitationService } from './invitation-service';
-import Service from './service';
+import Service, { IPageOptions } from './service';
 
 export interface IDecryptedConnection {
   name: string;
@@ -76,13 +76,15 @@ export class ConnectionService extends Service<ConnectionApi> {
   public async list(
     vaultAccessToken: string,
     dek: EncryptionKey,
-    nextPageAfter?: string,
-    perPage?: number
+    options?: IPageOptions
   ): Promise<IDecryptedConnection[]> {
     this.logger.log('Fetching connections');
-    const result = await this.getAPI(vaultAccessToken).connectionsGet(nextPageAfter, perPage);
+    const result = await this.getAPI(vaultAccessToken).connectionsGet(
+      options?.nextPageAfter,
+      options?.perPage
+    );
 
-    if (resultHasNext(result) && perPage === undefined) {
+    if (resultHasNext(result) && options?.perPage === undefined) {
       this.logger.warn('Some results omitted, but page limit was not explicitly set');
     }
 

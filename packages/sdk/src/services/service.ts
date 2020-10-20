@@ -8,6 +8,12 @@ import {
 } from '../util/api-factory';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 
+/** Common interface for GET endpoints which are paginated */
+export interface IPageOptions {
+  nextPageAfter?: string;
+  perPage?: number;
+}
+
 /**
  * Abstract SDK Service.
  */

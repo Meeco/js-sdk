@@ -8,6 +8,8 @@ import { AuthData } from '../models/auth-data';
 import { MeecoServiceError } from '../models/service-error';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import Service from './service';
+import { ItemService } from './item-service';
+import Service, { IPageOptions } from './service';
 import { ShareService } from './share-service';
 
 export { ClientTaskQueueGetStateEnum as ClientTaskState } from '@meeco/vault-api-sdk';
@@ -45,7 +47,7 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
     change_state: boolean = false,
     states: ClientTaskState[] = [ClientTaskState.Todo],
     target_id?: string,
-    options?: { nextPageAfter?: string; perPage?: number }
+    options?: IPageOptions
   ): Promise<ClientTaskQueueResponse> {
     const result = await this.getAPI(vaultAccessToken).clientTaskQueueGet(
       options?.nextPageAfter,

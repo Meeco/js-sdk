@@ -12,7 +12,7 @@ import {
   valueVerificationHash,
   verifyHashedValue,
 } from '../util/value-verification';
-import Service from './service';
+import Service, { IPageOptions } from './service';
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -238,21 +238,16 @@ export class ItemService extends Service<ItemApi> {
     }
   }
 
-  public async list(
-    vaultAccessToken: string,
-    templateIds?: string,
-    nextPageAfter?: string,
-    perPage?: number
-  ) {
+  public async list(vaultAccessToken: string, templateIds?: string, options?: IPageOptions) {
     const result = await this.getAPI(vaultAccessToken).itemsGet(
       templateIds,
       undefined,
       undefined,
-      nextPageAfter,
-      perPage
+      options?.nextPageAfter,
+      options?.perPage
     );
 
-    if (resultHasNext(result) && perPage === undefined) {
+    if (resultHasNext(result) && options?.perPage === undefined) {
       this.logger.warn('Some results omitted, but page limit was not explicitly set');
     }
 
