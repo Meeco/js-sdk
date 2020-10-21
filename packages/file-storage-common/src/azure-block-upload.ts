@@ -129,11 +129,13 @@ export class AzureBlockUpload {
   /**
    * Start uploading
    */
+
   async start(
     dataEncryptionKey: string | null,
     progressUpdateFunc?:
       | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
-      | null
+      | null,
+    onCancel: any = null
   ) {
     const p = new Promise((resolve, reject) => {
       const blockIDList: any[] = [];
@@ -151,7 +153,7 @@ export class AzureBlockUpload {
 
       const commit = async () => BlobStorage.putBlockList(this.url, blockIDList, this.fileType);
 
-      const job = async (nBlock: any) => {
+      const job = async (nBlock: any, cancel: any) => {
         try {
           const from = nBlock * this.blockSize;
           const to =
@@ -162,7 +164,15 @@ export class AzureBlockUpload {
           const blockID: any = base64(`${this.blockIDPrefix}${nBlock.toString().padStart(5)}`);
           blockIDList.push(blockID);
 
-          const blockBuffer: any = await this.fileUtilsLib.readBlock(this.file, from, to);
+          const blockBuffer: any = await Promise.race([
+            this.fileUtilsLib.readBlock(this.file, from, to),
+            cancel,
+          ]);
+          if (blockBuffer === 'cancel') {
+            throw new Error('cancel');
+          } else {
+          }
+
           artifacts.range[nBlock] = `bytes=${from}-${to - 1}`;
           const data = new Uint8Array(blockBuffer);
 
@@ -184,6 +194,7 @@ export class AzureBlockUpload {
             encrypt ? stringAsBinaryBuffer(encrypt.encrypted) : data,
             blockID
           );
+
           const progress = (nBlock + 1) / this.totalBlocks;
           if (progressUpdateFunc) {
             progressUpdateFunc(blockBuffer, progress * 100);
@@ -214,7 +225,7 @@ export class AzureBlockUpload {
       const pool = new ThreadPool(this.simultaneousUploads);
 
       for (let nBlock = 0; nBlock < this.totalBlocks; nBlock += 1) {
-        pool.run(() => job(nBlock));
+        pool.run(() => job(nBlock, onCancel));
       }
     });
 
