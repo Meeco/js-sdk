@@ -134,7 +134,11 @@ export async function downloadAndDecryptFile<T extends Blob>(
   dataEncryptionKey: string
 ) {
   const result = await download();
-  const buffer = await (<any>result).arrayBuffer();
+  // Chrome `Blob` objects support the arrayBuffer() methods but Safari do not - only on `Response`
+  // https://stackoverflow.com/questions/15341912/how-to-go-from-blob-to-arraybuffer
+  const buffer = await ((<any>result).arrayBuffer
+    ? (<any>result).arrayBuffer()
+    : new Response(result).arrayBuffer());
   const encryptedContents = await binaryBufferToString(buffer);
   const decryptedContents = await decryptWithKey({
     serialized: encryptedContents,
@@ -215,7 +219,11 @@ export async function downloadThumbnailCommon({
 }) {
   const thumbnailApi = await new ThumbnailApi(buildApiConfig(authConfig, vaultUrl, fetchApi));
   const result = await thumbnailApi.thumbnailsIdGet(id);
-  const buffer = await (<any>result).arrayBuffer();
+  // Chrome `Blob` objects support the arrayBuffer() methods but Safari do not - only on `Response`
+  // https://stackoverflow.com/questions/15341912/how-to-go-from-blob-to-arraybuffer
+  const buffer = await ((<any>result).arrayBuffer
+    ? (<any>result).arrayBuffer()
+    : new Response(result).arrayBuffer());
   const encryptedContents = await binaryBufferToString(buffer);
   const decryptedContents = await decryptBinaryWithKey({
     serialized: encryptedContents,
