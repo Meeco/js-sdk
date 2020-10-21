@@ -169,8 +169,7 @@ export class AzureBlockUpload {
             cancel,
           ]);
           if (blockBuffer === 'cancel') {
-            throw new Error('cancel');
-          } else {
+            return reject('cancel');
           }
 
           artifacts.range[nBlock] = `bytes=${from}-${to - 1}`;
