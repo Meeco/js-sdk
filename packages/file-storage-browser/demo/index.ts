@@ -3,7 +3,7 @@ import {
   downloadThumbnail,
   encryptAndUploadThumbnail,
   fileDownloadBrowser,
-  fileUploadBrowserWithCancle,
+  fileUploadBrowser,
   ThumbnailType,
   ThumbnailTypes,
   thumbSizeTypeToMimeExt,
@@ -115,7 +115,7 @@ async function attachFile() {
       secret,
     });
 
-    const { cancel, success } = fileUploadBrowserWithCancle({
+    const { cancel, success } = fileUploadBrowser({
       file,
       vaultUrl,
       authConfig: {
