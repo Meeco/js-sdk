@@ -3,7 +3,7 @@ import {
   downloadThumbnail,
   encryptAndUploadThumbnail,
   fileDownloadBrowser,
-  fileUploadBrowser,
+  fileUploadBrowserWithCancle,
   ThumbnailType,
   ThumbnailTypes,
   thumbSizeTypeToMimeExt,
@@ -112,7 +112,7 @@ async function attachFile() {
       secret,
     });
 
-    const { attachment, dek: attachmentDek } = await fileUploadBrowser({
+    const { cancel, success } = fileUploadBrowserWithCancle({
       file,
       vaultUrl,
       authConfig: {
@@ -123,6 +123,13 @@ async function attachFile() {
       videoCodec,
       progressUpdateFunc,
     });
+
+    setTimeout(function onElapsed() {
+      cancel('cancel');
+    }, 3000);
+
+    const { attachment, dek: attachmentDek } = await success;
+
     const existingItem = itemFetchResult.item;
     const itemUpdateData = new ItemUpdateData({
       id: existingItem.id,
