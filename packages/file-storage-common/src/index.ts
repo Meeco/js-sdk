@@ -149,19 +149,12 @@ export function buildApiConfig(
   fetchApi?: any
 ): Configuration {
   const headers = {};
-  if (auth.delegation_id) {
-    headers['Meeco-Delegation-Id'] = auth.delegation_id;
-  }
-  if (auth.subscription_key) {
-    headers['Meeco-Subscription-Key'] = auth.subscription_key;
-  }
-  if (auth.vault_access_token) {
-    headers['Authorization'] = auth.vault_access_token;
-  }
+  headers['Meeco-Delegation-Id'] = auth.delegation_id || '';
+  headers['Meeco-Subscription-Key'] = auth.subscription_key || '';
+  headers['Authorization'] = auth.vault_access_token || '';
 
   const configParams: ConfigurationParameters = {
     basePath: vaultUrl,
-    apiKey: key => headers[key],
     headers,
   };
   if (fetchApi) {
