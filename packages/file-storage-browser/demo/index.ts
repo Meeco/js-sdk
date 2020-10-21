@@ -54,7 +54,8 @@ function updateEnvironment() {
 
   $set('environmentStatus', 'Saved');
 }
-
+$('fileUploadProgressBar').hidden = true;
+$('cancelAttachFile').hidden = true;
 $('attachFile').addEventListener('click', attachFile, false);
 $('downloadAttachment').addEventListener('click', downloadAttachment);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
@@ -83,6 +84,8 @@ async function attachFile() {
     const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
     const passphraseDerivedKey = localStorage.getItem('passphraseDerivedKey') || '';
     const secret = localStorage.getItem('secret') || '';
+    $('fileUploadProgressBar').hidden = false;
+    $('cancelAttachFile').hidden = false;
 
     const progressUpdateFunc = (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => {
       $set('fileUploadProgressBar', percentageComplete.toString());
@@ -124,11 +127,27 @@ async function attachFile() {
       progressUpdateFunc,
     });
 
-    setTimeout(function onElapsed() {
-      cancel('cancel');
-    }, 3000);
+    $('cancelAttachFile').addEventListener(
+      'click',
+      () => {
+        cancel('cancel');
+      },
+      false
+    );
 
-    const { attachment, dek: attachmentDek } = await success;
+    const { attachment: attachment, dek: attachmentDek }: any = await success
+      .then(
+        value => {
+          return value;
+        },
+        reason => {
+          alert(reason);
+        }
+      )
+      .finally(() => {
+        $('cancelAttachFile').hidden = true;
+        $set('fileUploadProgressBar', '0');
+      });
 
     const existingItem = itemFetchResult.item;
     const itemUpdateData = new ItemUpdateData({
