@@ -18,7 +18,7 @@ export { ThumbnailType, ThumbnailTypes, thumbSizeTypeToMimeExt } from '@meeco/fi
 export { downloadThumbnailCommon as downloadThumbnail };
 export { encryptAndUploadThumbnailCommon as encryptAndUploadThumbnail };
 
-export async function fileUploadBrowser({
+async function fileUploadBrowserAsync({
   file,
   vaultUrl,
   authConfig,
@@ -212,7 +212,7 @@ async function getDirectDownloadInfo(
   return result.attachment_direct_download_url;
 }
 
-export function fileUploadBrowserWithCancle({
+export function fileUploadBrowser({
   file,
   vaultUrl,
   authConfig,
@@ -231,7 +231,7 @@ export function fileUploadBrowserWithCancle({
   const promise = new Promise((resolve, reject) => (cancel = resolve));
   return {
     cancel,
-    success: fileUploadBrowser({
+    success: fileUploadBrowserAsync({
       file,
       vaultUrl,
       authConfig,
