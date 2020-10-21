@@ -5,6 +5,7 @@ import {
   ItemsIdSharesShareDeks,
   PostItemSharesRequestShare,
   PutItemSharesRequest,
+  Share,
   SharesApi,
   SharesCreateResponse,
   SharesIncomingResponse,
@@ -15,11 +16,12 @@ import {
 import { EncryptionKey } from '../models/encryption-key';
 import { DecryptedSlot, IDecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
+import { getAllPaged, reducePages } from '../util/paged';
 import { VALUE_VERIFICATION_KEY_LENGTH, valueVerificationHash } from '../util/value-verification';
 import { ConnectionService } from './connection-service';
 import cryppo from './cryppo-service';
 import { ItemService } from './item-service';
-import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
+import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 
 export enum SharingMode {
   owner = 'owner',
@@ -38,10 +40,6 @@ interface IShareOptions extends PostItemSharesRequestShare {
   sharing_mode: SharingMode;
   acceptance_required: AcceptanceStatus;
 }
-
-export interface IShareIncomingOutGoingReponse
-  extends SharesOutgoingResponse,
-    SharesIncomingResponse {}
 
 export enum ShareType {
   incoming = 'incoming',
@@ -98,16 +96,43 @@ export class ShareService extends Service<SharesApi> {
     return shareResult;
   }
 
+  /**
+   * @param shareType Filter by ShareType, either incoming or outgoing.
+   * @param acceptanceStatus Filter by acceptance status. Other vaules are 'accepted', 'rejected'.
+   */
   public async listShares(
     user: IVaultToken,
-    shareType: ShareType = ShareType.incoming
-  ): Promise<IShareIncomingOutGoingReponse> {
+    shareType: ShareType = ShareType.incoming,
+    acceptanceStatus?: AcceptanceStatus | string,
+    options?: IPageOptions
+  ): Promise<Share[]> {
+    const api = this.getAPI(user.vault_access_token);
+
+    let response: SharesIncomingResponse | SharesOutgoingResponse;
     switch (shareType) {
       case ShareType.outgoing:
-        return await this.getAPI(user.vault_access_token).outgoingSharesGet();
+        response = await api.outgoingSharesGet(options?.nextPageAfter, options?.perPage);
+        break;
       case ShareType.incoming:
-        return await this.getAPI(user.vault_access_token).incomingSharesGet();
+        response = await api.incomingSharesGet(
+          options?.nextPageAfter,
+          options?.perPage,
+          acceptanceStatus
+        );
+        break;
     }
+    return response.shares;
+  }
+
+  public async listAll(
+    user: IVaultToken,
+    shareType: ShareType = ShareType.incoming
+  ): Promise<Share[]> {
+    const api = this.getAPI(user.vault_access_token);
+    const method = shareType === ShareType.incoming ? api.incomingSharesGet : api.outgoingSharesGet;
+
+    const result = await getAllPaged(cursor => method(cursor)).then(reducePages);
+    return result.shares;
   }
 
   public async acceptIncomingShare(user: IVaultToken, shareId: string): Promise<GetShareResponse> {

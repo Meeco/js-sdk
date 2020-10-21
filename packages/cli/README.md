@@ -1216,17 +1216,16 @@ USAGE
   $ meeco shares:list
 
 OPTIONS
-  -a, --auth=auth                 (required) [default: .user.yaml] Authorization
-                                  config yaml file (if not using the default
-                                  .user.yaml)
+  -a, --auth=auth                 (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                  default .user.yaml)
 
-  -e, --environment=environment   [default: .environment.yaml] environment config
-                                  file
+  -e, --environment=environment   [default: .environment.yaml] environment config file
 
-  -t, --type=(incoming|outgoing)  [default: incoming] There are two types: incoming
-                                  and outgoing
+  -t, --type=(incoming|outgoing)  [default: incoming] There are two types: incoming and outgoing
                                   incoming - Items shared with you
                                   outgoing - Items you have shared
+
+  --all                           Get all possible results from web API, possibly with multiple calls.
 ```
 
 _See code: [src/commands/shares/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/list.ts)_
