@@ -135,7 +135,7 @@ export class AzureBlockUpload {
     progressUpdateFunc?:
       | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
       | null,
-    onCancel: any = null
+    onCancel?: any
   ) {
     const p = new Promise((resolve, reject) => {
       const blockIDList: any[] = [];
@@ -153,7 +153,7 @@ export class AzureBlockUpload {
 
       const commit = async () => BlobStorage.putBlockList(this.url, blockIDList, this.fileType);
 
-      const job = async (nBlock: any, cancel: any) => {
+      const job = async (nBlock: any, cancel?: any) => {
         try {
           const from = nBlock * this.blockSize;
           const to =
@@ -164,12 +164,17 @@ export class AzureBlockUpload {
           const blockID: any = base64(`${this.blockIDPrefix}${nBlock.toString().padStart(5)}`);
           blockIDList.push(blockID);
 
-          const blockBuffer: any = await Promise.race([
-            this.fileUtilsLib.readBlock(this.file, from, to),
-            cancel,
-          ]);
-          if (blockBuffer === 'cancel') {
-            return reject('cancel');
+          let blockBuffer: any;
+          if (cancel) {
+            blockBuffer = await Promise.race([
+              this.fileUtilsLib.readBlock(this.file, from, to),
+              cancel,
+            ]);
+            if (blockBuffer === 'cancel') {
+              return reject('cancel');
+            }
+          } else {
+            blockBuffer = await this.fileUtilsLib.readBlock(this.file, from, to);
           }
 
           artifacts.range[nBlock] = `bytes=${from}-${to - 1}`;

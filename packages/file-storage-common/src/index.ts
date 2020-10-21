@@ -34,7 +34,7 @@ export async function directAttachmentUpload(
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null,
-  onCancel: any = null
+  onCancel?: any
 ): Promise<IDirectAttachmentUploadResponse> {
   let result;
   const client = new AzureBlockUpload(

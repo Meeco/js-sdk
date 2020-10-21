@@ -3,7 +3,7 @@ import {
   downloadThumbnail,
   encryptAndUploadThumbnail,
   fileDownloadBrowser,
-  fileUploadBrowser,
+  fileUploadBrowserWithCancel,
   ThumbnailType,
   ThumbnailTypes,
   thumbSizeTypeToMimeExt,
@@ -115,7 +115,19 @@ async function attachFile() {
       secret,
     });
 
-    const { cancel, success } = fileUploadBrowser({
+    // const { attachment: attachment, dek: attachmentDek } = await fileUploadBrowser({
+    //   file,
+    //   vaultUrl,
+    //   authConfig: {
+    //     data_encryption_key: privateDek,
+    //     vault_access_token: vaultAccessToken,
+    //     subscription_key: subscriptionKey,
+    //   },
+    //   videoCodec,
+    //   progressUpdateFunc,
+    // });
+
+    const { cancel, success } = fileUploadBrowserWithCancel({
       file,
       vaultUrl,
       authConfig: {
