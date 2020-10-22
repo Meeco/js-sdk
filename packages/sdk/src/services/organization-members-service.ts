@@ -16,7 +16,7 @@ export class OrganizationMembersService extends Service<OrganizationsManagingMem
     role: OrganizationMemberRoles = OrganizationMemberRoles.Admin
   ) {
     this.logger.log('Creating invitation request');
-    return await this.vaultAPIFactory(credentials.vault_access_token)
+    return this.vaultAPIFactory(credentials.vault_access_token)
       .InvitationApi.invitationsPost({
         public_key: {
           keypair_external_id: 'org-agent-keypair',

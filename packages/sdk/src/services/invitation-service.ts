@@ -24,7 +24,7 @@ export class InvitationService extends Service<InvitationApi> {
     const encryptedName: string = await this.encryptName(name, data_encryption_key);
 
     this.logger.log('Sending invitation request');
-    return await this.getAPI(vault_access_token)
+    return this.getAPI(vault_access_token)
       .invitationsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,
@@ -54,7 +54,7 @@ export class InvitationService extends Service<InvitationApi> {
     const encryptedName: string = await this.encryptName(name, data_encryption_key);
 
     this.logger.log('Accepting invitation');
-    return await this.vaultAPIFactory(vault_access_token)
+    return this.vaultAPIFactory(vault_access_token)
       .ConnectionApi.connectionsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,

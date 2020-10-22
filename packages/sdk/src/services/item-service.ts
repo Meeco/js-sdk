@@ -120,7 +120,7 @@ export class ItemService extends Service<ItemApi> {
       (config.slots || []).map(slot => ItemService.encryptSlot(slot, data_encryption_key))
     );
 
-    return await this.getAPI(vault_access_token).itemsPost({
+    return this.getAPI(vault_access_token).itemsPost({
       template_name: config.template_name,
       item: {
         label: config.item.label,
@@ -136,7 +136,7 @@ export class ItemService extends Service<ItemApi> {
       )
     );
 
-    return await this.getAPI(credentials.vault_access_token).itemsIdPut(config.id, {
+    return this.getAPI(credentials.vault_access_token).itemsIdPut(config.id, {
       item: {
         label: config.label,
         slots_attributes,

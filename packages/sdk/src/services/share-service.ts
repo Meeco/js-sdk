@@ -148,7 +148,7 @@ export class ShareService extends Service<SharesApi> {
 
   public async deleteSharedItem(user: IVaultToken, shareId: string) {
     try {
-      await this.getAPI(user.vault_access_token).sharesIdDelete(shareId);
+      return await this.getAPI(user.vault_access_token).sharesIdDelete(shareId);
     } catch (error) {
       if ((<Response>error).status === 404) {
         throw new MeecoServiceError(`Share with id '${shareId}' not found for the specified user`);
@@ -230,7 +230,7 @@ export class ShareService extends Service<SharesApi> {
       // can decrypt immediately
       const itemService = new ItemService(this.environment);
 
-      return await shareAPI.outgoingSharesIdGet(shareId).then(async ({ share }) => {
+      return shareAPI.outgoingSharesIdGet(shareId).then(async ({ share }) => {
         const item = await itemService.get(user, share.item_id);
         return {
           share,
