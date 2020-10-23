@@ -29,3 +29,28 @@ export enum SlotType {
   Email = 'email',
   Password = 'password',
 }
+
+/** Every Slot must have either a non-empty name or label */
+export type MinimalSlot = { name: string } | { label: string };
+
+export type SlotAttributes = Omit<NestedSlotAttributes, 'name' | 'label'>;
+
+export type NewSlot = MinimalSlot & SlotAttributes;
+
+export function anyDuplicateSlotNames(slots: Array<{ name?: string }>): boolean {
+  const namesSeen = {};
+
+  for (const s of slots) {
+    if (s.name) {
+      if (namesSeen[s.name]) {
+        return true;
+      }
+      namesSeen[s.name] = s.name;
+    }
+  }
+  return false;
+}
+
+export function findWithEncryptedValue<T>(slots: T[]): T | undefined {
+  return slots.find(s => !!s['encrypted_value']);
+}
