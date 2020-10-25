@@ -1,9 +1,9 @@
 // import * as MeecoAzure from '@meeco/azure-block-upload';
 import { Item, ItemApi, ItemResponse, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
 import { EncryptionKey } from '../models/encryption-key';
-import { ItemCreateData } from '../models/item-create-data';
 import { ItemUpdateData } from '../models/item-update-data';
 import { DecryptedSlot, IDecryptedSlot } from '../models/local-slot';
+import { NewItem } from '../models/new-item';
 import { MeecoServiceError } from '../models/service-error';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import {
@@ -161,23 +161,10 @@ export class ItemService extends Service<ItemApi> {
   // - encrypt all item slots with the given DEK
   // - remove 'value' from encrypted slots
   // - handle attachments?
-  public async create(
-    credentials: IVaultToken & IDEK,
-    config: ItemCreateData
-  ): Promise<ItemResponse> {
-    const { vault_access_token } = credentials;
-
-    const slots_attributes = await Promise.all(
-      (config.slots || []).map(slot => ItemService.encryptSlot(credentials, slot))
-    );
-
-    return this.vaultAPIFactory(vault_access_token).ItemApi.itemsPost({
-      template_name: config.template_name,
-      item: {
-        label: config.item.label,
-        slots_attributes,
-      },
-    });
+  public async create(credentials: IVaultToken & IDEK, item: NewItem): Promise<ItemResponse> {
+    const { vault_access_token, data_encryption_key } = credentials;
+    const request = await item.toRequest(data_encryption_key);
+    return this.vaultAPIFactory(vault_access_token).ItemApi.itemsPost(request);
   }
 
   public async update(credentials: IVaultToken & IDEK, config: ItemUpdateData) {

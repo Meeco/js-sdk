@@ -5,7 +5,6 @@ export * from './models/auth-data';
 export * from './models/encryption-key';
 export * from './models/environment';
 export * from './models/file-attachment-data';
-export * from './models/item-create-data';
 export * from './models/new-item';
 export * from './models/item-update-data';
 export * from './models/local-slot';

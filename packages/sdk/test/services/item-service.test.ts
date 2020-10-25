@@ -1,8 +1,7 @@
-import { SlotType } from '@meeco/sdk';
-import { ItemApi, ItemResponse, NestedSlotAttributes } from '@meeco/vault-api-sdk';
+import { NewItem, NewSlot, SlotType } from '@meeco/sdk';
+import { ItemApi, ItemResponse } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
 import nock from 'nock/types';
-import { ItemCreateData } from '../../src/models/item-create-data';
 import { ItemUpdateData } from '../../src/models/item-update-data';
 import { ItemService } from '../../src/services/item-service';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
@@ -51,15 +50,11 @@ describe('ItemService', () => {
 
     customTest
       .stub(ItemApi.prototype, 'itemsPost', createItem as any)
-      .it('creates an empty item from a template', async () => {
+      .it('creates an empty item given template_name and label', async () => {
         const input = getInputFixture('create-item-from-template.input.json');
 
-        const itemCreateData = new ItemCreateData({
-          template_name: input.template_name,
-          slots: [],
-          item: { label: input.label },
-        });
-        const result = await new ItemService(environment).create(testUserAuth, itemCreateData);
+        const item = new NewItem(input.label, input.template_name, []);
+        const result = await new ItemService(environment).create(testUserAuth, item);
 
         const expected = getOutputFixture('create-item-from-template.output.json');
         const { slots, ...expectedItem } = expected;
@@ -73,18 +68,14 @@ describe('ItemService', () => {
       .it('creates an item with slots provided in a config file', async () => {
         const input = getInputFixture('create-item-with-slots.input.json');
 
-        const inputSlots: NestedSlotAttributes[] = [];
+        const inputSlots: NewSlot[] = [];
         input.slots.forEach(x => {
           inputSlots.push({
             ...x,
           });
         });
 
-        const itemCreateData = new ItemCreateData({
-          template_name: input.template_name,
-          slots: inputSlots,
-          item: { label: input.label },
-        });
+        const itemCreateData = new NewItem(input.label, input.template_name, inputSlots);
         const result = await new ItemService(environment).create(testUserAuth, itemCreateData);
 
         const expected = getOutputFixture('create-item-with-slots.output.json');

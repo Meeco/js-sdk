@@ -83,7 +83,7 @@ export class NewItem {
     // TODO should enforce map integrity?
 
     const slots_attributes: NestedSlotAttributes[] = await Promise.all(
-      this.slots.map(slot => ItemService.encryptSlot(slot, dek))
+      this.slots.map(slot => ItemService.encryptSlot({ data_encryption_key: dek }, slot))
     );
 
     return {
