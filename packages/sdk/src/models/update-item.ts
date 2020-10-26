@@ -69,7 +69,7 @@ export class UpdateItem {
     let slots_attributes: NestedSlotAttributes[] | undefined;
     if (this.update?.slots) {
       slots_attributes = await Promise.all(
-        this.slots.map(slot => ItemService.encryptSlot(slot, key.data_encryption_key))
+        this.slots.map(slot => ItemService.encryptSlot(key, slot))
       );
     }
 

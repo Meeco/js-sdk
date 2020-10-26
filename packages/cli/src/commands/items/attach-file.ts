@@ -1,5 +1,5 @@
 import { largeFileUploadNode } from '@meeco/file-storage-node';
-import { ItemService, ItemUpdateData, SlotType } from '@meeco/sdk';
+import { ItemService, SlotType, UpdateItem } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { lookup } from 'mime-types';
@@ -64,8 +64,7 @@ export default class ItemsAttachFile extends MeecoCommand {
       });
       const label = fileConfig.label;
       const existingItem = itemFetchResult.item;
-      const itemUpdateData = new ItemUpdateData({
-        id: existingItem.id,
+      const itemUpdateData = new UpdateItem(existingItem.id, {
         slots: [
           {
             label,

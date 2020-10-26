@@ -1,10 +1,10 @@
 // import * as MeecoAzure from '@meeco/azure-block-upload';
 import { Item, ItemApi, ItemResponse, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
 import { EncryptionKey } from '../models/encryption-key';
-import { ItemUpdateData } from '../models/item-update-data';
 import { DecryptedSlot, IDecryptedSlot } from '../models/local-slot';
 import { NewItem } from '../models/new-item';
 import { MeecoServiceError } from '../models/service-error';
+import { UpdateItem } from '../models/update-item';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import {
   VALUE_VERIFICATION_KEY_LENGTH,
@@ -167,17 +167,11 @@ export class ItemService extends Service<ItemApi> {
     return this.vaultAPIFactory(vault_access_token).ItemApi.itemsPost(request);
   }
 
-  public async update(credentials: IVaultToken & IDEK, config: ItemUpdateData) {
-    const slots_attributes = await Promise.all(
-      (config.slots || []).map(slot => ItemService.encryptSlot(credentials, slot))
+  public async update(credentials: IVaultToken & IDEK, newData: UpdateItem): Promise<ItemResponse> {
+    return this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsIdPut(
+      newData.id,
+      await newData.toRequest(credentials)
     );
-
-    return this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsIdPut(config.id, {
-      item: {
-        label: config.label,
-        slots_attributes,
-      },
-    });
   }
 
   public async removeSlot(credentials: IVaultToken, slotId: string): Promise<void> {
