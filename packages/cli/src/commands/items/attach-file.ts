@@ -1,5 +1,5 @@
 import { largeFileUploadNode } from '@meeco/file-storage-node';
-import { ItemService, ItemUpdateData } from '@meeco/sdk';
+import { ItemService, ItemUpdateData, SlotType } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { lookup } from 'mime-types';
@@ -69,7 +69,7 @@ export default class ItemsAttachFile extends MeecoCommand {
         slots: [
           {
             label,
-            slot_type_name: 'attachment',
+            slot_type_name: SlotType.Attachment,
             attachment_attributes: {
               id: uploadedFile.attachment.id,
             },

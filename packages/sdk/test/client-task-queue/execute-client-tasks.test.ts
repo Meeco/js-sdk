@@ -140,7 +140,7 @@ const itemResponse = {
       required: false,
       updated_at: '2020-09-18T06:21:31.050Z',
       created_at: '2020-09-18T06:20:57.309Z',
-      slot_type_name: 'date',
+      slot_type_name: SlotType.Date,
       creator: 'system',
       encrypted_value:
         'Aes256Gcm.cKvPRS4w3ZXDMA==.QUAAAAAFaXYADAAAAAC5nXF2re7hCuoKRuYFYXQAEAAAAAAEqqhXgXWLJPNMQPz-43a1AmFkAAUAAABub25lAAA=',

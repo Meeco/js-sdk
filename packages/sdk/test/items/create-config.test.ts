@@ -1,3 +1,4 @@
+import { SlotType } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { vaultAPIFactory } from '../../src/util/api-factory';
 import { customTest, environment, getOutputFixture, testUserAuth } from '../test-helpers';
@@ -39,7 +40,7 @@ const response = {
       label: 'Pizza',
       name: 'pizza',
       foo: 'bar',
-      slot_type_name: 'key_value',
+      slot_type_name: SlotType.KeyValue,
       encrypted_value: 'Hawaiian',
     },
     {
@@ -47,7 +48,7 @@ const response = {
       label: 'Steak',
       name: 'steak',
       foo: 'bar',
-      slot_type_name: 'key_value',
+      slot_type_name: SlotType.KeyValue,
       encrypted_value: 'Rump',
     },
     {
@@ -55,7 +56,7 @@ const response = {
       label: 'Beer',
       name: 'beer',
       foo: 'bar',
-      slot_type_name: 'key_value',
+      slot_type_name: SlotType.KeyValue,
       encrypted_value: 'Session Ale',
     },
   ],

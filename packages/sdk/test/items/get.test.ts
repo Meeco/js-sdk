@@ -1,3 +1,4 @@
+import { SlotType } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { ItemService } from '../../src/services/item-service';
 import {
@@ -37,7 +38,7 @@ const response = {
       label: 'Pizza',
       name: 'pizza',
       foo: 'bar',
-      slot_type_name: 'key_value',
+      slot_type_name: SlotType.KeyValue,
       encrypted_value: 'Hawaiian',
       encrypted: true,
       created_at: new Date(1),
@@ -48,7 +49,7 @@ const response = {
       label: 'Steak',
       name: 'steak',
       foo: 'bar',
-      slot_type_name: 'key_value',
+      slot_type_name: SlotType.KeyValue,
       encrypted_value: 'Rump',
       encrypted: true,
       created_at: new Date(1),
@@ -59,7 +60,7 @@ const response = {
       label: 'Beer',
       name: 'beer',
       foo: 'bar',
-      slot_type_name: 'key_value',
+      slot_type_name: SlotType.KeyValue,
       encrypted_value: 'Session Ale',
       encrypted: true,
       created_at: new Date(1),

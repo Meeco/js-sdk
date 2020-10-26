@@ -1,3 +1,4 @@
+import { SlotType } from '@meeco/sdk';
 import { expect } from 'chai';
 import nock from 'nock/types';
 import { ItemUpdateData } from '../../src/models/item-update-data';
@@ -46,7 +47,7 @@ const response = {
       label: 'Pizza',
       name: 'pizza',
       foo: 'bar',
-      slot_type_name: 'key_value',
+      slot_type_name: SlotType.KeyValue,
       encrypted_value: 'Supreme',
       encrypted: true,
       created_at: new Date(1),
