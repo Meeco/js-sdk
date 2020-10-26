@@ -134,7 +134,7 @@ export class UserService extends Service<UserApi> {
   ): Promise<{ user: User } & IVaultToken> {
     this.logger.log('Create vault api user');
     // No key required as we're only registering a new user
-    const vaultUserApi = this.getAPI('');
+    const vaultUserApi = this.vaultAPIFactory('').UserApi;
 
     const vaultUser = await vaultUserApi.mePost({
       public_key: keyPair.publicKey,
@@ -178,7 +178,7 @@ export class UserService extends Service<UserApi> {
     credentials: IVaultToken & IKeystoreToken,
     keyEncryptionKey: string
   ) {
-    const vaultUserApi = this.getAPI(credentials.vault_access_token);
+    const vaultUserApi = this.vaultAPIFactory(credentials.vault_access_token).UserApi;
 
     const dek = await this.generateAndStoreDataEncryptionKey(
       keyEncryptionKey,
@@ -404,7 +404,7 @@ export class UserService extends Service<UserApi> {
   }
 
   public getUser(credentials: IVaultToken): Promise<MeResponse> {
-    return this.getAPI(credentials.vault_access_token).meGet();
+    return this.vaultAPIFactory(credentials.vault_access_token).UserApi.meGet();
   }
 
   /**

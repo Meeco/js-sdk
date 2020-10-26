@@ -24,8 +24,8 @@ export class InvitationService extends Service<InvitationApi> {
     const encryptedName: string = await this.encryptName(name, data_encryption_key);
 
     this.logger.log('Sending invitation request');
-    return this.getAPI(vault_access_token)
-      .invitationsPost({
+    return this.vaultAPIFactory(vault_access_token)
+      .InvitationApi.invitationsPost({
         public_key: {
           keypair_external_id: keyPair.keystoreStoredKeyPair.id,
           public_key: keyPair.keyPair.publicKey,

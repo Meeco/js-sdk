@@ -46,7 +46,9 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
     target_id?: string,
     options?: IPageOptions
   ): Promise<ClientTaskQueueResponse> {
-    const result = await this.getAPI(credentials.vault_access_token).clientTaskQueueGet(
+    const result = await this.vaultAPIFactory(
+      credentials.vault_access_token
+    ).ClientTaskQueueApi.clientTaskQueueGet(
       options?.nextPageAfter,
       options?.perPage,
       change_state,

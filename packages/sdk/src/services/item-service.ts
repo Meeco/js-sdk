@@ -120,7 +120,7 @@ export class ItemService extends Service<ItemApi> {
       (config.slots || []).map(slot => ItemService.encryptSlot(slot, data_encryption_key))
     );
 
-    return this.getAPI(vault_access_token).itemsPost({
+    return this.vaultAPIFactory(vault_access_token).ItemApi.itemsPost({
       template_name: config.template_name,
       item: {
         label: config.item.label,
@@ -136,7 +136,7 @@ export class ItemService extends Service<ItemApi> {
       )
     );
 
-    return this.getAPI(credentials.vault_access_token).itemsIdPut(config.id, {
+    return this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsIdPut(config.id, {
       item: {
         label: config.label,
         slots_attributes,
@@ -159,7 +159,7 @@ export class ItemService extends Service<ItemApi> {
     const vaultAccessToken = user.vault_access_token;
     let dataEncryptionKey = user.data_encryption_key;
 
-    const result = await this.getAPI(vaultAccessToken).itemsIdGet(id);
+    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
     const { item, slots } = result;
 
     // If the Item is from a share, use the share DEK to decrypt instead.
@@ -242,7 +242,7 @@ export class ItemService extends Service<ItemApi> {
   }
 
   public async list(credentials: IVaultToken, templateIds?: string, options?: IPageOptions) {
-    const result = await this.getAPI(credentials.vault_access_token).itemsGet(
+    const result = await this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsGet(
       templateIds,
       undefined,
       undefined,
@@ -258,7 +258,7 @@ export class ItemService extends Service<ItemApi> {
   }
 
   public async listAll(credentials: IVaultToken, templateIds?: string): Promise<ItemsResponse> {
-    const api = this.getAPI(credentials.vault_access_token);
+    const api = this.vaultAPIFactory(credentials.vault_access_token).ItemApi;
 
     return getAllPaged(cursor => api.itemsGet(templateIds, undefined, undefined, cursor)).then(
       reducePages

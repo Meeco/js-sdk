@@ -90,9 +90,12 @@ export class ShareService extends Service<SharesApi> {
     });
 
     this.logger.log('Sending shared data');
-    const shareResult = await this.getAPI(vault_access_token).itemsIdSharesPost(itemId, {
-      shares: [share],
-    });
+    const shareResult = await this.vaultAPIFactory(vault_access_token).SharesApi.itemsIdSharesPost(
+      itemId,
+      {
+        shares: [share],
+      }
+    );
     return shareResult;
   }
 
@@ -106,7 +109,7 @@ export class ShareService extends Service<SharesApi> {
     acceptanceStatus?: AcceptanceStatus | string,
     options?: IPageOptions
   ): Promise<Share[]> {
-    const api = this.getAPI(user.vault_access_token);
+    const api = this.vaultAPIFactory(user.vault_access_token).SharesApi;
 
     let response: SharesIncomingResponse | SharesOutgoingResponse;
     switch (shareType) {
@@ -128,7 +131,7 @@ export class ShareService extends Service<SharesApi> {
     user: IVaultToken,
     shareType: ShareType = ShareType.incoming
   ): Promise<Share[]> {
-    const api = this.getAPI(user.vault_access_token);
+    const api = this.vaultAPIFactory(user.vault_access_token).SharesApi;
     const method = shareType === ShareType.incoming ? api.incomingSharesGet : api.outgoingSharesGet;
 
     const result = await getAllPaged(cursor => method(cursor)).then(reducePages);
@@ -137,7 +140,9 @@ export class ShareService extends Service<SharesApi> {
 
   public async acceptIncomingShare(user: IVaultToken, shareId: string): Promise<GetShareResponse> {
     try {
-      return await this.getAPI(user.vault_access_token).incomingSharesIdAcceptPut(shareId);
+      return await this.vaultAPIFactory(
+        user.vault_access_token
+      ).SharesApi.incomingSharesIdAcceptPut(shareId);
     } catch (error) {
       if ((<Response>error).status === 404) {
         throw new MeecoServiceError(`Share with id '${shareId}' not found for the specified user`);
@@ -148,7 +153,7 @@ export class ShareService extends Service<SharesApi> {
 
   public async deleteSharedItem(user: IVaultToken, shareId: string) {
     try {
-      return await this.getAPI(user.vault_access_token).sharesIdDelete(shareId);
+      return await this.vaultAPIFactory(user.vault_access_token).SharesApi.sharesIdDelete(shareId);
     } catch (error) {
       if ((<Response>error).status === 404) {
         throw new MeecoServiceError(`Share with id '${shareId}' not found for the specified user`);
@@ -168,7 +173,7 @@ export class ShareService extends Service<SharesApi> {
     shareId: string,
     shareType: ShareType = ShareType.incoming
   ): Promise<ShareWithItemData> {
-    const shareAPI = this.getAPI(user.vault_access_token);
+    const shareAPI = this.vaultAPIFactory(user.vault_access_token).SharesApi;
 
     let shareWithItemData: ShareWithItemData;
     if (shareType === ShareType.incoming) {

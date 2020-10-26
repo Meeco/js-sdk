@@ -26,9 +26,12 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
     serviceId: string,
     privateKey: string
   ): Promise<AuthData> {
-    const result = await this.getAPI(
+    const result = await this.vaultAPIFactory(
       this.vaultAccessToken
-    ).organizationsOrganizationIdServicesIdLoginPost(organizationId, serviceId);
+    ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesIdLoginPost(
+      organizationId,
+      serviceId
+    );
     const decryptedVaultSessionToken = await Service.cryppo.decryptSerializedWithPrivateKey({
       privateKeyPem: privateKey,
       serialized: result.encrypted_access_token,
@@ -46,12 +49,11 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
   public async create(organizationId: string, service: PostServiceRequest) {
     const rsaKeyPair = await Service.cryppo.generateRSAKeyPair(4096);
     service.public_key = rsaKeyPair.publicKey;
-    const result = await this.getAPI(this.vaultAccessToken).organizationsOrganizationIdServicesPost(
-      organizationId,
-      {
-        service,
-      }
-    );
+    const result = await this.vaultAPIFactory(
+      this.vaultAccessToken
+    ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesPost(organizationId, {
+      service,
+    });
     return {
       service: result.service,
       privateKey: rsaKeyPair.privateKey,
