@@ -2,7 +2,7 @@ import { vaultAPIFactory } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
-import { ItemConfig } from '../../configs/item-config';
+import { ItemNewConfig } from '../../configs/item-new-config';
 import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
@@ -56,7 +56,7 @@ export default class ItemsCreateConfig extends MeecoCommand {
     }
 
     this.printYaml(
-      ItemConfig.encodeFromTemplate({
+      ItemNewConfig.encodeFromTemplate({
         template,
         slots: templates.slots.filter(slot => template.slot_ids.includes(slot.id)),
       })

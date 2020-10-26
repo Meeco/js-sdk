@@ -1,7 +1,7 @@
 import { ClientTaskQueueService, ItemService, ItemUpdateData } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
-import { ItemConfig } from '../../configs/item-config';
+import { ItemUpdateConfig } from '../../configs/item-update-config';
 import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
@@ -25,7 +25,7 @@ export default class ItemsUpdate extends MeecoCommand {
     const { item, auth } = flags;
     const environment = await this.readEnvironmentFile();
 
-    const itemConfigFile = await this.readConfigFromFile(ItemConfig, item);
+    const itemConfigFile = await this.readConfigFromFile(ItemUpdateConfig, item);
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
 
     const service = new ItemService(environment);
@@ -52,7 +52,7 @@ export default class ItemsUpdate extends MeecoCommand {
 
     try {
       const updatedItem = await service.update(authConfig, updateData);
-      const result = ItemConfig.encodeFromJSON(updatedItem);
+      const result = ItemUpdateConfig.encodeFromJSON(updatedItem);
 
       const outstandingTasks = await clientTaskQueueService.countOutstandingTasks(authConfig);
       const numberOfOutstandingTasks = outstandingTasks.todo + outstandingTasks.in_progress;

@@ -1,5 +1,5 @@
-import { DecryptedSlot, ITemplateData } from '@meeco/sdk';
-import { Attachment, Item, /*Share, */ Slot, Thumbnail } from '@meeco/vault-api-sdk';
+import { ITemplateData } from '@meeco/sdk';
+import { ItemResponse, Slot } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
 import { ITEM_ASSOCIATIONS, SLOT_TYPE_BLACKLIST } from '../util/constants';
 import { ConfigReader, IYamlConfig } from './yaml-config';
@@ -15,16 +15,17 @@ export interface IItemMetadata {
   shareId?: string;
 }
 
-@ConfigReader<ItemConfig>()
-export class ItemConfig {
+@ConfigReader<ItemNewConfig>()
+export class ItemNewConfig {
   static kind = 'Item';
 
-  constructor(public readonly templateName?: string, public readonly itemConfig?: IItemTemplate) {}
+  /** Template Name is mandatory when creating an Item */
+  constructor(public readonly templateName: string, public readonly itemConfig?: IItemTemplate) {}
 
-  static fromYamlConfig(yamlConfigObj: IYamlConfig<IItemMetadata, IItemTemplate>): ItemConfig {
-    if (yamlConfigObj.kind !== ItemConfig.kind) {
+  static fromYamlConfig(yamlConfigObj: IYamlConfig<IItemMetadata, IItemTemplate>): ItemNewConfig {
+    if (yamlConfigObj.kind !== ItemNewConfig.kind) {
       throw new CLIError(
-        `Config file of incorrect kind: ${yamlConfigObj.kind} (expected '${ItemConfig.kind}')`
+        `Config file of incorrect kind: ${yamlConfigObj.kind} (expected '${ItemNewConfig.kind}')`
       );
     }
     if ((<any>yamlConfigObj.metadata)?.template) {
@@ -32,17 +33,16 @@ export class ItemConfig {
         `Metadata value 'template' in item config is no longer supported - please use 'template_name' instead.')`
       );
     }
-    return new ItemConfig(yamlConfigObj.metadata?.template_name, yamlConfigObj.spec);
+    if (!(<any>yamlConfigObj.metadata)?.template_name) {
+      throw new CLIError(`Metadata value 'template_name' is required)`);
+    }
+
+    return new ItemNewConfig(yamlConfigObj.metadata!.template_name, yamlConfigObj.spec);
   }
 
-  static encodeFromJSON(data: {
-    item: Item;
-    slots?: DecryptedSlot[];
-    thumbnails?: Thumbnail[];
-    attachments?: Attachment[];
-    // shares?: Share[];
-    metadata?: IItemMetadata;
-  }) {
+  // Print the response after creating an object
+  // TODO this should be its own file, it is identical with ItemUpdateConfig
+  static encodeFromJSON(data: ItemResponse) {
     const nested = ITEM_ASSOCIATIONS.reduce((res, key) => {
       if (data[key]) {
         res[key] = data[key];
@@ -51,8 +51,7 @@ export class ItemConfig {
     }, {});
 
     return {
-      kind: ItemConfig.kind,
-      ...(data.metadata ? { metadata: data.metadata } : {}),
+      kind: ItemNewConfig.kind,
       spec: {
         ...data.item,
         ...nested,
@@ -65,7 +64,7 @@ export class ItemConfig {
     const notBlacklisted = (slot: Slot) => !SLOT_TYPE_BLACKLIST.includes(slot.slot_type_name);
 
     return {
-      kind: ItemConfig.kind,
+      kind: ItemNewConfig.kind,
       metadata: {
         template_name: template.template.name,
       },
