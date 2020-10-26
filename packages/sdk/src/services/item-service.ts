@@ -109,6 +109,49 @@ export class ItemService extends Service<ItemApi> {
     return encrypted;
   }
 
+  /**
+   * Add a verification hash and (encrypted) key to the Slot.
+   * This is necessary to share an Item that you own.
+   * If you do not own the Item, then just add the fields but leave them undefined.
+   * @param slot
+   * @param dek Data Encryption Key
+   */
+  public static async addVerificationHash<T extends { own: boolean; value: string | undefined }>(
+    slot: T,
+    dek: EncryptionKey
+  ): Promise<
+    T & {
+      value_verification_hash: string | undefined;
+      encrypted_value_verification_key: string | undefined;
+    }
+  > {
+    if (slot.own && slot.value) {
+      const valueVerificationKey = Service.cryppo.generateRandomKey(
+        VALUE_VERIFICATION_KEY_LENGTH
+      ) as string;
+      const verificationHash = ItemService.valueVerificationHash(valueVerificationKey, slot.value);
+      const encryptedValueVerificationKey = await Service.cryppo
+        .encryptWithKey({
+          data: valueVerificationKey,
+          key: dek.key,
+          strategy: Service.cryppo.CipherStrategy.AES_GCM,
+        })
+        .then(result => result.serialized);
+
+      return {
+        ...slot,
+        encrypted_value_verification_key: encryptedValueVerificationKey,
+        value_verification_hash: verificationHash,
+      };
+    } else {
+      return {
+        ...slot,
+        encrypted_value_verification_key: undefined,
+        value_verification_hash: undefined,
+      };
+    }
+  }
+
   public getAPI(vaultToken: string) {
     return this.vaultAPIFactory(vaultToken).ItemApi;
   }
@@ -151,7 +194,7 @@ export class ItemService extends Service<ItemApi> {
     });
   }
 
-  public async removeSlot(credentials: IVaultToken, slotId: string) {
+  public async removeSlot(credentials: IVaultToken, slotId: string): Promise<void> {
     this.logger.log('Removing slot');
     await this.vaultAPIFactory(credentials.vault_access_token).SlotApi.slotsIdDelete(slotId);
     this.logger.log('Slot successfully removed');
@@ -205,50 +248,11 @@ export class ItemService extends Service<ItemApi> {
 
   // TODO why is IDecryptedSlot != DecryptedSlot?
 
-  /**
-   * Add a verification hash and (encrypted) key to the Slot.
-   * This is necessary to share an Item that you own.
-   * If you do not own the Item, then just add the fields but leave them undefined.
-   * @param slot
-   * @param dek Data Encryption Key
-   */
-  public async addVerificationHash<T extends { own: boolean; value: string | undefined }>(
-    slot: T,
-    dek: EncryptionKey
-  ): Promise<
-    T & {
-      value_verification_hash: string | undefined;
-      encrypted_value_verification_key: string | undefined;
-    }
-  > {
-    if (slot.own && slot.value) {
-      const valueVerificationKey = Service.cryppo.generateRandomKey(
-        VALUE_VERIFICATION_KEY_LENGTH
-      ) as string;
-      const verificationHash = ItemService.valueVerificationHash(valueVerificationKey, slot.value);
-      const encryptedValueVerificationKey = await Service.cryppo
-        .encryptWithKey({
-          data: valueVerificationKey,
-          key: dek.key,
-          strategy: Service.cryppo.CipherStrategy.AES_GCM,
-        })
-        .then(result => result.serialized);
-
-      return {
-        ...slot,
-        encrypted_value_verification_key: encryptedValueVerificationKey,
-        value_verification_hash: verificationHash,
-      };
-    } else {
-      return {
-        ...slot,
-        encrypted_value_verification_key: undefined,
-        value_verification_hash: undefined,
-      };
-    }
-  }
-
-  public async list(credentials: IVaultToken, templateIds?: string, options?: IPageOptions) {
+  public async list(
+    credentials: IVaultToken,
+    templateIds?: string,
+    options?: IPageOptions
+  ): Promise<ItemsResponse> {
     const result = await this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsGet(
       templateIds,
       undefined,
