@@ -1,6 +1,5 @@
 import { ItemService } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
-import { ItemListConfig } from '../../configs/item-list-config';
 import authFlags from '../../flags/auth-flags';
 import pageFlags from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
@@ -29,7 +28,11 @@ export default class ItemsList extends MeecoCommand {
     try {
       const response = all ? await service.listAll(authConfig) : await service.list(authConfig);
 
-      this.printYaml(ItemListConfig.encodeFromJSON(response));
+      // TODO this should inline slots and classifications from the response
+      this.printYaml({
+        kind: 'Items',
+        spec: response.items,
+      });
     } catch (err) {
       await this.handleException(err);
     }
