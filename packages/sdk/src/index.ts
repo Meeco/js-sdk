@@ -7,6 +7,7 @@ export * from './models/environment';
 export * from './models/file-attachment-data';
 export * from './models/new-item';
 export * from './models/update-item';
+export * from './models/decrypted-item';
 export * from './models/local-slot';
 export * from './models/service-error';
 export * from './models/srp-session';
