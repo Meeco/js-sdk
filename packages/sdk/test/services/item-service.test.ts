@@ -57,7 +57,7 @@ describe('ItemService', () => {
 
         const expected = getOutputFixture('create-item-from-template.output.json');
         const { slots, ...expectedItem } = expected;
-        expect(result.item).to.eql(expectedItem);
+        expect(result).to.eql(expectedItem);
         expect(result.slots).to.deep.members(slots);
       });
 
@@ -79,7 +79,7 @@ describe('ItemService', () => {
 
         const expected = getOutputFixture('create-item-with-slots.output.json');
         const { slots, ...expectedItem } = expected;
-        expect(result.item).to.eql(expectedItem);
+        expect(result).to.eql(expectedItem);
         expect(result.slots).to.deep.members(slots);
       });
   });
@@ -104,7 +104,7 @@ describe('ItemService', () => {
         const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
           'get-item.output.json'
         );
-        expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
+        expect(replaceUndefinedWithNull(result)).to.eql(expectedItem);
         expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
       });
 
@@ -391,7 +391,7 @@ describe('ItemService', () => {
         const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
           'update-item.output.json'
         );
-        expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
+        expect(replaceUndefinedWithNull(result)).to.eql(expectedItem);
         expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
       });
   });

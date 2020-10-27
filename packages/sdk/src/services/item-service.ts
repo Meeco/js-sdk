@@ -1,5 +1,6 @@
 // import * as MeecoAzure from '@meeco/azure-block-upload';
-import { Item, ItemApi, ItemResponse, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
+import { Item, ItemApi, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
+import { DecryptedItem } from '../models/decrypted-item';
 import { EncryptionKey } from '../models/encryption-key';
 import { DecryptedSlot, IDecryptedSlot } from '../models/local-slot';
 import { NewItem } from '../models/new-item';
@@ -117,7 +118,9 @@ export class ItemService extends Service<ItemApi> {
    * @param slot
    * @param dek Data Encryption Key
    */
-  public static async addVerificationHash<T extends { own: boolean; value: string | undefined }>(
+  public static async addVerificationHash<
+    T extends { own: boolean; value: string | undefined | null }
+  >(
     slot: T,
     dek: EncryptionKey
   ): Promise<
@@ -161,17 +164,23 @@ export class ItemService extends Service<ItemApi> {
   // - encrypt all item slots with the given DEK
   // - remove 'value' from encrypted slots
   // - handle attachments?
-  public async create(credentials: IVaultToken & IDEK, item: NewItem): Promise<ItemResponse> {
+  public async create(credentials: IVaultToken & IDEK, item: NewItem): Promise<DecryptedItem> {
     const { vault_access_token, data_encryption_key } = credentials;
     const request = await item.toRequest(data_encryption_key);
-    return this.vaultAPIFactory(vault_access_token).ItemApi.itemsPost(request);
+    const response = await this.vaultAPIFactory(vault_access_token).ItemApi.itemsPost(request);
+    return DecryptedItem.fromAPI(credentials, response);
   }
 
-  public async update(credentials: IVaultToken & IDEK, newData: UpdateItem): Promise<ItemResponse> {
-    return this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsIdPut(
+  public async update(
+    credentials: IVaultToken & IDEK,
+    newData: UpdateItem
+  ): Promise<DecryptedItem> {
+    const response = await this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsIdPut(
       newData.id,
       await newData.toRequest(credentials)
     );
+
+    return DecryptedItem.fromAPI(credentials, response);
   }
 
   public async removeSlot(credentials: IVaultToken, slotId: string): Promise<void> {
@@ -179,35 +188,40 @@ export class ItemService extends Service<ItemApi> {
     await this.vaultAPIFactory(credentials.vault_access_token).SlotApi.slotsIdDelete(slotId);
     this.logger.log('Slot successfully removed');
   }
+
   /**
    * Get an Item and decrypt all of its Slots.
    * Works for both owned and shared Items.
    * @param id ItemId
    * @param user
    */
-  public async get(user: IVaultToken & IKeystoreToken & IDEK & IKEK, id: string) {
-    const vaultAccessToken = user.vault_access_token;
-    let dataEncryptionKey = user.data_encryption_key;
+  public async get(
+    credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
+    id: string
+  ): Promise<DecryptedItem> {
+    let dataEncryptionKey = credentials.data_encryption_key;
 
-    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
-    const { item, slots } = result;
+    const result = await this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsIdGet(
+      id
+    );
+    const { item } = result;
 
     // If the Item is from a share, use the share DEK to decrypt instead.
     // Second condition is for typecheck
     if (ItemService.itemIsFromShare(item) && item.share_id !== null) {
-      const share = await this.vaultAPIFactory(user.vault_access_token)
-        .SharesApi.incomingSharesIdGet(item.share_id)
-        .then(response => response.share);
+      const { share } = await this.vaultAPIFactory(
+        credentials.vault_access_token
+      ).SharesApi.incomingSharesIdGet(item.share_id);
 
       // at this point, it may either be encrypted with shared DEK or personal...
       if (share.encrypted_dek) {
         const keyPairExternal = await this.keystoreAPIFactory(
-          user.keystore_access_token
+          credentials.keystore_access_token
         ).KeypairApi.keypairsIdGet(share.keypair_external_id!);
 
         const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
           serialized: keyPairExternal.keypair.encrypted_serialized_key,
-          key: user.key_encryption_key.key,
+          key: credentials.key_encryption_key.key,
         });
 
         dataEncryptionKey = await Service.cryppo
@@ -220,14 +234,7 @@ export class ItemService extends Service<ItemApi> {
       // otherwise just use default user DEK
     }
 
-    const decryptedSlots = await Promise.all(
-      slots.map(s => ItemService.decryptSlot({ data_encryption_key: dataEncryptionKey }, s))
-    );
-
-    return {
-      ...result,
-      slots: decryptedSlots,
-    };
+    return DecryptedItem.fromAPI({ data_encryption_key: dataEncryptionKey }, result);
   }
 
   // TODO why is IDecryptedSlot != DecryptedSlot?
