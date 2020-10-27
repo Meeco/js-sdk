@@ -52,5 +52,5 @@ export function anyDuplicateSlotNames(slots: Array<{ name?: string }>): boolean 
 }
 
 export function findWithEncryptedValue<T>(slots: T[]): T | undefined {
-  return slots.find(s => !!s['encrypted_value']);
+  return slots.find(s => s['encrypted_value'] != null);
 }
