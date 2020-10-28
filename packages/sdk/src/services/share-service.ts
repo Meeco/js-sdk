@@ -64,8 +64,8 @@ export class ShareService extends Service<SharesApi> {
   private static valueVerificationHash =
     (<any>global).valueVerificationHash || valueVerificationHash;
 
-  public getAPI(vaultToken: string) {
-    return this.vaultAPIFactory(vaultToken).SharesApi;
+  public getAPI(token: IVaultToken) {
+    return this.vaultAPIFactory(token.vault_access_token).SharesApi;
   }
 
   public async shareItem(

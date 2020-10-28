@@ -3,14 +3,14 @@ import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { Logger, noopLogger } from '../util/logger';
-import Service from './service';
+import Service, { IVaultToken } from './service';
 
 /**
  * Manage organizations from the API.
  */
 export class OrganizationServicesService extends Service<OrganizationsManagingServicesApi> {
-  public getAPI(token: string) {
-    return this.vaultAPIFactory(token).OrganizationsManagingServicesApi;
+  public getAPI(token: IVaultToken) {
+    return this.vaultAPIFactory(token.vault_access_token).OrganizationsManagingServicesApi;
   }
 
   constructor(

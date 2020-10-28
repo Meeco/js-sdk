@@ -17,8 +17,8 @@ export class UserService extends Service<UserApi> {
 
   private keyGen = Secrets;
 
-  public getAPI(vaultToken: string): UserApi {
-    return this.vaultAPIFactory(vaultToken).UserApi;
+  public getAPI(token: IVaultToken): UserApi {
+    return this.vaultAPIFactory(token.vault_access_token).UserApi;
   }
 
   private async requestKeyPair(credentials: IKeystoreToken): Promise<Keypair> {

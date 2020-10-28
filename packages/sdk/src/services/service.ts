@@ -58,7 +58,7 @@ export default abstract class Service<API> {
   /**
    * Services ususally wrap a single API object, this makes it explicit and accessible.
    */
-  public abstract getAPI(token: string): API;
+  public abstract getAPI(token: IVaultToken | IKeystoreToken): API;
 
   constructor(protected environment: Environment, log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);

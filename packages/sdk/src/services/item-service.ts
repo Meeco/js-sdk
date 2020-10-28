@@ -153,8 +153,8 @@ export class ItemService extends Service<ItemApi> {
     }
   }
 
-  public getAPI(vaultToken: string) {
-    return this.vaultAPIFactory(vaultToken).ItemApi;
+  public getAPI(token: IVaultToken) {
+    return this.vaultAPIFactory(token.vault_access_token).ItemApi;
   }
 
   // TODO this should:

@@ -6,8 +6,8 @@ import Service, { IVaultToken } from './service';
  * Manage organization members from the API.
  */
 export class OrganizationMembersService extends Service<OrganizationsManagingMembersApi> {
-  public getAPI(token: string) {
-    return this.vaultAPIFactory(token).OrganizationsManagingMembersApi;
+  public getAPI(token: IVaultToken) {
+    return this.vaultAPIFactory(token.vault_access_token).OrganizationsManagingMembersApi;
   }
 
   public async createInvite(

@@ -51,7 +51,7 @@ export default class ClientTaskQueueRunBatch extends MeecoCommand {
       let tasks: ClientTask[];
       this.log('Retrieving tasks');
       if (all) {
-        tasks = await service.listAll(authConfig.vault_access_token, false, [state]);
+        tasks = await service.listAll(authConfig, false, [state]);
       } else if (limit) {
         tasks = await service
           .list(authConfig, false, [state], undefined, {

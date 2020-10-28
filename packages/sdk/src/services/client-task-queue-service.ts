@@ -30,8 +30,8 @@ export interface IClientTaskExecResult {
  * usually encrypting some data with their private keys.
  */
 export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
-  public getAPI(vaultToken: string): ClientTaskQueueApi {
-    return this.vaultAPIFactory(vaultToken).ClientTaskQueueApi;
+  public getAPI(token: IVaultToken): ClientTaskQueueApi {
+    return this.vaultAPIFactory(token.vault_access_token).ClientTaskQueueApi;
   }
 
   /**

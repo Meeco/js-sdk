@@ -3,7 +3,7 @@ import { Environment } from '../models/environment';
 import { MeecoServiceError } from '../models/service-error';
 import { ITemplateData } from '../models/template-data';
 import { Logger, noopLogger } from '../util/logger';
-import Service from './service';
+import Service, { IVaultToken } from './service';
 
 /**
  * List and fetch available templates for Meeco Items from the API.
@@ -15,15 +15,15 @@ export class TemplatesService extends Service<ItemTemplateApi> {
 
   constructor(environment: Environment, vaultAccessToken: string, log: Logger = noopLogger) {
     super(environment, log);
-    this.api = this.getAPI(vaultAccessToken);
+    this.api = this.getAPI({ vault_access_token: vaultAccessToken });
   }
 
   public async listTemplates(classificationScheme?: string, classificationName?: string) {
     return await this.api.itemTemplatesGet(classificationScheme, classificationName);
   }
 
-  public getAPI(vaultToken: string): ItemTemplateApi {
-    return this.vaultAPIFactory(vaultToken).ItemTemplateApi;
+  public getAPI(token: IVaultToken): ItemTemplateApi {
+    return this.vaultAPIFactory(token.vault_access_token).ItemTemplateApi;
   }
 
   /**

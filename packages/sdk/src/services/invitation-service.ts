@@ -3,8 +3,8 @@ import { EncryptionKey } from '../models/encryption-key';
 import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
 
 export class InvitationService extends Service<InvitationApi> {
-  public getAPI(vaultToken: string): InvitationApi {
-    return this.vaultAPIFactory(vaultToken).InvitationApi;
+  public getAPI(token: IVaultToken): InvitationApi {
+    return this.vaultAPIFactory(token.vault_access_token).InvitationApi;
   }
 
   public async create(

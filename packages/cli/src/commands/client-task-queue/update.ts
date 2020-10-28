@@ -54,7 +54,7 @@ export default class ClientTaskQueueUpdate extends MeecoCommand {
         : tasks?.spec.map(({ id, state }) => ({ id, state }));
 
       this.updateStatus('Updating Client Tasks');
-      const result = await service.getAPI(authConfig.vault_access_token).clientTaskQueuePut({
+      const result = await service.getAPI(authConfig).clientTaskQueuePut({
         client_tasks: update,
       });
 

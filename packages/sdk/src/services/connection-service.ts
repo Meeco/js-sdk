@@ -25,8 +25,8 @@ export interface ConnectionCreateData {
  * Used for setting up connections between Meeco `User`s to allow the secure sharing of data (see also {@link ShareService})
  */
 export class ConnectionService extends Service<ConnectionApi> {
-  public getAPI(vaultToken: string) {
-    return this.vaultAPIFactory(vaultToken).ConnectionApi;
+  public getAPI(token: IVaultToken) {
+    return this.vaultAPIFactory(token.vault_access_token).ConnectionApi;
   }
 
   /**
