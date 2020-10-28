@@ -25,29 +25,31 @@ export class UpdateItem {
     return this.update.slots || [];
   }
 
-  set slots(slots: NewSlot[]) {
-    this.update.slots = slots;
-  }
+  // set slots(slots: NewSlot[]) {
+  //   this.update.slots = slots;
+  // }
 
   get label() {
     return this.update.label;
   }
 
-  set label(label: string | undefined) {
-    this.update.label = label;
-  }
+  // set label(label: string | undefined) {
+  //   this.update.label = label;
+  // }
 
   /**
    * This just removes the Slot from the creation request. The Slot may still exist on the
    * created Item if it is a Template slot.
    */
   removeSlot(spec: { name?: string; label?: string }) {
-    if (spec.name) {
-      this.slots = this.slots.filter(s => s['name'] !== spec.name);
-    }
+    if (this.update.slots) {
+      if (spec.name) {
+        this.update.slots = this.update.slots.filter(s => s['name'] !== spec.name);
+      }
 
-    if (spec.label) {
-      this.slots = this.slots.filter(s => s['label'] !== spec.label);
+      if (spec.label) {
+        this.update.slots = this.update.slots.filter(s => s['label'] !== spec.label);
+      }
     }
   }
 
