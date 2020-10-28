@@ -223,7 +223,7 @@ export class ShareService extends Service<SharesApi> {
         .then(key => EncryptionKey.fromRaw(key));
 
       const decryptedSlots = await Promise.all(
-        shareWithItemData.slots.map(s => ItemService.decryptSlot(s, dek))
+        shareWithItemData.slots.map(s => ItemService.decryptSlot({ data_encryption_key: dek }, s))
       );
 
       return {

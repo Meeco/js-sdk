@@ -33,10 +33,10 @@ export class ItemService extends Service<ItemApi> {
 
   /**
    * Updates 'value' to the decrypted 'encrypted_value' and sets 'encrypted' to false.
-   * @param slot
-   * @param dek Data Encryption Key
    */
-  public static async decryptSlot(slot: Slot, dek: EncryptionKey): Promise<IDecryptedSlot> {
+  public static async decryptSlot(credentials: IDEK, slot: Slot): Promise<IDecryptedSlot> {
+    const { data_encryption_key: dek } = credentials;
+
     const value =
       slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
         ? await Service.cryppo.decryptWithKey({
@@ -84,9 +84,10 @@ export class ItemService extends Service<ItemApi> {
    * @param dek Data Encryption Key
    */
   public static async encryptSlot<T extends { value?: string | null | undefined }>(
-    slot: T,
-    dek: EncryptionKey
+    credentials: IDEK,
+    slot: T
   ): Promise<Omit<T, 'value'> & { encrypted: boolean; encrypted_value: string | undefined }> {
+    const { data_encryption_key: dek } = credentials;
     const encrypted = {
       ...slot,
       encrypted: false,
@@ -164,10 +165,10 @@ export class ItemService extends Service<ItemApi> {
     credentials: IVaultToken & IDEK,
     config: ItemCreateData
   ): Promise<ItemResponse> {
-    const { vault_access_token, data_encryption_key } = credentials;
+    const { vault_access_token } = credentials;
 
     const slots_attributes = await Promise.all(
-      (config.slots || []).map(slot => ItemService.encryptSlot(slot, data_encryption_key))
+      (config.slots || []).map(slot => ItemService.encryptSlot(credentials, slot))
     );
 
     return this.vaultAPIFactory(vault_access_token).ItemApi.itemsPost({
@@ -181,9 +182,7 @@ export class ItemService extends Service<ItemApi> {
 
   public async update(credentials: IVaultToken & IDEK, config: ItemUpdateData) {
     const slots_attributes = await Promise.all(
-      (config.slots || []).map(slot =>
-        ItemService.encryptSlot(slot, credentials.data_encryption_key)
-      )
+      (config.slots || []).map(slot => ItemService.encryptSlot(credentials, slot))
     );
 
     return this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsIdPut(config.id, {
@@ -241,7 +240,7 @@ export class ItemService extends Service<ItemApi> {
     }
 
     const decryptedSlots = await Promise.all(
-      slots.map(s => ItemService.decryptSlot(s, dataEncryptionKey))
+      slots.map(s => ItemService.decryptSlot({ data_encryption_key: dataEncryptionKey }, s))
     );
 
     return {
