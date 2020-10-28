@@ -1,3 +1,4 @@
+import { ClassificationNode } from '@meeco/vault-api-sdk';
 import test from '@oclif/test';
 import { join } from 'path';
 import { createSandbox } from 'sinon';
@@ -89,3 +90,16 @@ const undefinedToNullreplacer = (key, value) => {
 export const replaceUndefinedWithNull = obj => {
   return JSON.parse(JSON.stringify(obj, undefinedToNullreplacer), dateReviver);
 };
+
+export function mockClassificationNode(id: string = 'id'): ClassificationNode {
+  return {
+    id,
+    background_color: null,
+    description: null,
+    image: null,
+    label: 'A Classification',
+    name: 'a_classification',
+    ordinal: 1,
+    scheme: 'tag',
+  };
+}

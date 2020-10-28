@@ -187,9 +187,9 @@ export class DecryptedItem {
     this.associations_to = extra.associations_to || [];
   }
 
-  get label() {
-    return this.update.label !== undefined ? this.update.label : this.label;
-  }
+  // get label() {
+  //   return this.update.label !== undefined ? this.update.label : this.label;
+  // }
 
   // always decrypted
   get slots() {
@@ -201,10 +201,11 @@ export class DecryptedItem {
     return this._classificationNodes;
   }
 
+  // TODO: the origianl copy of an Item is not updated with a share_id
   /** True if the Item is shared either with you or someone else */
-  isShared(): boolean {
-    return !!this.existingItem && !!this.existingItem['share_id'];
-  }
+  // isShared(): boolean {
+  //   return !!this.existingItem && !!this.existingItem['share_id'];
+  // }
 
   /** True if you are the original creator of this Item */
   isOwned(): boolean {
@@ -213,7 +214,7 @@ export class DecryptedItem {
 
   /** True if this Item is shared with you */
   isReceived(): boolean {
-    return !this.isOwned() && this.isShared();
+    return !this.isOwned() && !!this.share_id;
   }
 
   isEncryptedWithSharedKey(): boolean {
