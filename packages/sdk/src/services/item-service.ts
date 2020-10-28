@@ -219,21 +219,25 @@ export class ItemService extends Service<ItemApi> {
         .SharesApi.incomingSharesIdGet(item.share_id)
         .then(response => response.share);
 
-      const keyPairExternal = await this.keystoreAPIFactory(
-        user.keystore_access_token
-      ).KeypairApi.keypairsIdGet(share.keypair_external_id!);
+      // at this point, it may either be encrypted with shared DEK or personal...
+      if (share.encrypted_dek) {
+        const keyPairExternal = await this.keystoreAPIFactory(
+          user.keystore_access_token
+        ).KeypairApi.keypairsIdGet(share.keypair_external_id!);
 
-      const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
-        serialized: keyPairExternal.keypair.encrypted_serialized_key,
-        key: user.key_encryption_key.key,
-      });
+        const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
+          serialized: keyPairExternal.keypair.encrypted_serialized_key,
+          key: user.key_encryption_key.key,
+        });
 
-      dataEncryptionKey = await Service.cryppo
-        .decryptSerializedWithPrivateKey({
-          privateKeyPem: decryptedPrivateKey,
-          serialized: share.encrypted_dek,
-        })
-        .then(EncryptionKey.fromRaw);
+        dataEncryptionKey = await Service.cryppo
+          .decryptSerializedWithPrivateKey({
+            privateKeyPem: decryptedPrivateKey,
+            serialized: share.encrypted_dek,
+          })
+          .then(EncryptionKey.fromRaw);
+      }
+      // otherwise just use default user DEK
     }
 
     const decryptedSlots = await Promise.all(

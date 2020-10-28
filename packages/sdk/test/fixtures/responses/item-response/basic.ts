@@ -3,7 +3,7 @@ import { ItemResponse } from '@meeco/vault-api-sdk';
 
 const itemId = 'itemId';
 
-export const response: ItemResponse = {
+const response: ItemResponse = {
   item: {
     id: itemId,
     own: true,
@@ -114,3 +114,5 @@ export const response: ItemResponse = {
   classification_nodes: [],
   thumbnails: [],
 };
+
+export default response;
