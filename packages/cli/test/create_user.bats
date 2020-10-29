@@ -17,22 +17,27 @@ alias meeco="node --require tsconfig-paths/register ./bin/run"
     cat .Alice_login | assert_output
 }
 
-@test "Create a 'Vehicle' card template" {    
-    meeco items:create-config vehicle -a .Alice.yaml > .template_vehicle.yaml
+@test "Create a 'Profile' card template" {    
+    meeco items:create-config miksit_profile -a .Alice.yaml > .template_profile.yaml
 
-    cat .template_vehicle.yaml |
-    yq -y '(.spec.label) = "My Vehicle"'|
-    yq -y '(.spec.slots[0].value) = "20000101"' | 
-    yq -y '(.spec.slots[1].value) = "ABC123"' |
-    yq -y '(.spec.slots[2].value) = "Mazda"' |
-    yq -y '(.spec.slots[3].value) = "Familia"' |
-    yq -y '(.spec.slots[4].value) = "VIN3322112223"' > .my_vehicle.yaml
+    cat .template_profile.yaml |
+    yq -y '(.spec.label) = "My Profile"' |
+    yq -y '(.spec.slots[0].name) = "name"' |
+    yq -y '(.spec.slots[0].value) = "alice"' |
+    yq -y '(.spec.slots[1].name) = "surname"' |
+    yq -y '(.spec.slots[1].value) = "smith"' |
+    yq -y '(.spec.slots[2].name) = "dob"' |
+    yq -y '(.spec.slots[2].value) = "1/1/2000"' |
+    yq -y '(.spec.slots[3].name) = "gender"' |
+    yq -y '(.spec.slots[3].value) = "female"' |
+    yq -y '(.spec.slots[4].name) = "country"' |
+    yq -y '(.spec.slots[4].value) = "australia"' > .my_profile.yaml
 
-    cat .my_vehicle.yaml
-    cat ./e2e-assert-output/.my_vehicle.yaml | assert_output
+    cat .my_profile.yaml
+    cat ./e2e-assert-output/.my_profile.yaml | assert_output
 }
 
-@test "Create a 'Vehicle' item" {    
-    run meeco items:create -i .my_vehicle.yaml -a .Alice.yaml > .item_alice.yaml    
+@test "Create a 'Profile' item" {    
+    run meeco items:create -i .my_profile.yaml -a .Alice.yaml > .item_alice.yaml
     [ "$status" -eq 0 ]
 }

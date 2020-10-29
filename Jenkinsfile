@@ -26,8 +26,7 @@ pipeline {
               git submodule init;
               git submodule update; 
               pip3 install yq;
-              cd packages/cli/;
-              npm link;
+              cd packages/cli/;      
               ./test.sh;
             """
           }           
