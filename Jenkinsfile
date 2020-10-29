@@ -10,7 +10,7 @@ pipeline {
     stage ('build') {
         environment {
         RAILS_ENV="test"
-        TEST_FILE='test/results.xml'
+        TEST_FILE='test/results.xml' 
         }
       steps {
         script {
