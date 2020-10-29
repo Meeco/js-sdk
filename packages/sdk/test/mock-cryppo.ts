@@ -29,9 +29,24 @@ export function _mockCryppo() {
         };
       });
 
+      // deprecated
       sandbox.stub(<any>_cryppoService, 'encryptWithKey').callsFake(args => {
         return Promise.resolve({
           serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
+          encrypted: `[encrypted]${args.data}`,
+        });
+      });
+
+      sandbox.stub(<any>_cryppoService, 'encryptStringWithKey').callsFake(args => {
+        return Promise.resolve({
+          serialized: `[serialized][encryptqed]${args.data}[with ${args.key}]`,
+          encrypted: `[encrypted]${args.data}`,
+        });
+      });
+
+      sandbox.stub(<any>_cryppoService, 'encryptBinaryWithKey').callsFake(args => {
+        return Promise.resolve({
+          serialized: `[serialized][encryptqed]${args.data}[with ${args.key}]`,
           encrypted: `[encrypted]${args.data}`,
         });
       });
@@ -43,7 +58,16 @@ export function _mockCryppo() {
         });
       });
 
+      // deprecated
       sandbox.stub(<any>_cryppoService, 'decryptWithKey').callsFake(args => {
+        return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
+      });
+
+      sandbox.stub(<any>_cryppoService, 'decryptStringWithKey').callsFake(args => {
+        return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
+      });
+
+      sandbox.stub(<any>_cryppoService, 'decryptBinaryWithKey').callsFake(args => {
         return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
       });
 
