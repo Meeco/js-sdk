@@ -1,4 +1,5 @@
 import { NestedSlotAttributes, Slot } from '@meeco/vault-api-sdk';
+import parameterize from 'parameterize';
 
 /**
  * For all intents and purposes - this is a `Slot` from `@meeco/vault-api-sdk`.
@@ -31,7 +32,7 @@ export enum SlotType {
 }
 
 /** Every Slot must have either a non-empty name or label */
-export type MinimalSlot = { name: string } | { label: string };
+export type MinimalSlot = { name: string, label?: string } | { name?: string, label: string };
 
 export type SlotAttributes = Omit<NestedSlotAttributes, 'name' | 'label'>;
 
@@ -53,4 +54,9 @@ export function anyDuplicateSlotNames(slots: Array<{ name?: string }>): boolean 
 
 export function findWithEncryptedValue<T>(slots: T[]): T | undefined {
   return slots.find(s => s['encrypted_value'] != null);
+}
+
+/** Convert Slot names to labels as per the backend */
+export function nameFromLabel(label: string): string {
+  return parameterize(label, undefined, '_');
 }
