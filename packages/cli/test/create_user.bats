@@ -34,7 +34,7 @@ alias meeco="node --require tsconfig-paths/register ./bin/run"
     yq -y '(.spec.slots[4].value) = "australia"' > .my_profile.yaml
 
     cat .my_profile.yaml
-    cat ./e2e-assert-output/.my_profile.yaml | assert_output
+    cat ./e2e-assert-output/my_profile.yaml | assert_output
 }
 
 @test "Create a 'Profile' item" {    
