@@ -9,11 +9,17 @@
   "slots": [
     {
       "id": "a",
-      "name": "Make"
+      "name": "Make",
+      "encrypted": false,
+      "value": null,
+      "value_verification_key": null
     },
     {
       "id": "b",
-      "name": "Model"
+      "name": "Model",
+      "encrypted": false,
+      "value": null,
+      "value_verification_key": null
     }
   ]
 }

@@ -43,7 +43,5 @@ describe('DecryptedItem', () => {
       expect(item.isOwned()).to.equal(false);
       expect(item.isReceived()).to.equal(true);
     });
-
-    it('recognizes a shared re-encrypted Item');
   });
 });

@@ -49,37 +49,28 @@ describe('ItemService', () => {
 
     customTest
       .stub(ItemApi.prototype, 'itemsPost', createItem as any)
-      .it('creates an empty item given template_name and label', async () => {
-        const input = getInputFixture('create-item-from-template.input.json');
-
+      .add('input', () => getInputFixture('create-item-from-template.input.json'))
+      .add('expected', () => getOutputFixture('create-item-from-template.output.json'))
+      .it('creates an empty item given template_name and label', async ({ input, expected }) => {
         const item = new NewItem(input.label, input.template_name, []);
         const result = await new ItemService(environment).create(testUserAuth, item);
 
-        const expected = getOutputFixture('create-item-from-template.output.json');
         const { slots, ...expectedItem } = expected;
-        expect(result).to.eql(expectedItem);
+        expect(result.rawItem).to.eql(expectedItem);
         expect(result.slots).to.deep.members(slots);
       });
 
     customTest
       .stub(ItemApi.prototype, 'itemsPost', createItem as any)
       .mockCryppo()
-      .it('creates an item with slots provided in a config file', async () => {
-        const input = getInputFixture('create-item-with-slots.input.json');
-
-        const inputSlots: NewSlot[] = [];
-        input.slots.forEach(x => {
-          inputSlots.push({
-            ...x,
-          });
-        });
-
-        const itemCreateData = new NewItem(input.label, input.template_name, inputSlots);
+      .add('input', () => getInputFixture('create-item-with-slots.input.json'))
+      .add('expected', () => getOutputFixture('create-item-with-slots.output.json'))
+      .it('creates an item with slots provided in a config file', async ({ input, expected }) => {
+        const itemCreateData = new NewItem(input.label, input.template_name, input.slots as NewSlot[]);
         const result = await new ItemService(environment).create(testUserAuth, itemCreateData);
 
-        const expected = getOutputFixture('create-item-with-slots.output.json');
         const { slots, ...expectedItem } = expected;
-        expect(result).to.eql(expectedItem);
+        expect(result.rawItem).to.eql(expectedItem);
         expect(result.slots).to.deep.members(slots);
       });
   });
@@ -104,7 +95,7 @@ describe('ItemService', () => {
         const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
           'get-item.output.json'
         );
-        expect(replaceUndefinedWithNull(result)).to.eql(expectedItem);
+        expect(replaceUndefinedWithNull(result.rawItem)).to.eql(expectedItem);
         expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
       });
 
@@ -391,7 +382,7 @@ describe('ItemService', () => {
         const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
           'update-item.output.json'
         );
-        expect(replaceUndefinedWithNull(result)).to.eql(expectedItem);
+        expect(replaceUndefinedWithNull(result.rawItem)).to.eql(expectedItem);
         expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
       });
   });
