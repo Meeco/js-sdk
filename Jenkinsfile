@@ -15,35 +15,25 @@ pipeline {
         RAILS_ENV="test"
         TEST_FILE='test/results.xml' 
         }
-      steps {
+      steps {        
+
         script {          
-         sh """
+
+         docker.image('nikolaik/python-nodejs').inside ("--user=root") {
+             sh """
               npm install;                        
               git submodule init;
-              git submodule update;                            
-            """      
+              git submodule update; 
+              sudo pip3 install -y yq;                            
+            """
 
-         sh """
-            sudo add-apt-repository ppa:deadsnakes/ppa;
-            sudo apt update;
-            sudo apt install -y python3.8; 
-            sudo apt install -y python3-pip;   
-            sudo pip3 install -y yq;          
-         """
-         
-        withPythonEnv('python3'){
-           sh """
+             sh """
               cd packages/cli/
               ./test.sh;
            """ 
-        } 
+          }           
           
-        }
-
-
-
-
-     
+        }     
       }     
     }
   }
