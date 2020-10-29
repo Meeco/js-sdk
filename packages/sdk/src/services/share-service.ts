@@ -2,7 +2,6 @@ import {
   EncryptedSlotValue,
   GetShareResponse,
   ItemsIdSharesShareDeks,
-  PostItemSharesRequestShare,
   PutItemSharesRequest,
   Share,
   SharesApi,
@@ -33,11 +32,12 @@ export enum AcceptanceStatus {
   notRequired = 'acceptance_not_required',
 }
 
-interface IShareOptions extends PostItemSharesRequestShare {
+interface IShareOptions {
+  slot_id?: string;
   expires_at?: Date;
   terms?: string;
-  sharing_mode: SharingMode;
-  acceptance_required: AcceptanceStatus;
+  sharing_mode?: SharingMode;
+  acceptance_required?: AcceptanceStatus;
 }
 
 export enum ShareType {
@@ -76,7 +76,7 @@ export class ShareService extends Service<SharesApi> {
     credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
     connectionId: string,
     itemId: string,
-    shareOptions: IShareOptions
+    shareOptions: IShareOptions = {}
   ): Promise<SharesCreateResponse> {
     const { vault_access_token } = credentials;
 
