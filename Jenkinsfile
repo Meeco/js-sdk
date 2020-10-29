@@ -26,6 +26,7 @@ pipeline {
               git submodule init;
               git submodule update; 
               pip3 install yq;
+              apt-get install jq;
               cd packages/cli/;      
               ./test.sh;
             """
