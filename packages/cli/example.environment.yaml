@@ -1,0 +1,6 @@
+vault:
+  url: http://localhost:3000/
+  subscription_key: null
+keystore:
+  url: http://localhost:4000/
+  subscription_key: null

@@ -7,7 +7,8 @@ set -e
 shopt -s expand_aliases
 alias meeco="node --require tsconfig-paths/register ./bin/run"
 
-@test "should create user and retrive user" {    
+
+@test "Create user and retrive user" {    
     meeco users:create -p supersecretpassword > .Alice.yaml
     assert [ -e '.Alice.yaml' ] 
 
@@ -38,6 +39,6 @@ alias meeco="node --require tsconfig-paths/register ./bin/run"
 }
 
 @test "Create a 'Profile' item" {    
-    run meeco items:create -i .my_profile.yaml -a .Alice.yaml > .item_alice.yaml
-    [ "$status" -eq 0 ]
+    meeco items:create -i .my_profile.yaml -a .Alice.yaml > .item_alice.yaml
+    assert_success
 }

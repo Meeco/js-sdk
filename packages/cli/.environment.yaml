@@ -1,6 +1,0 @@
-vault:
-  url: https://vault-stage.meeco.me/
-  subscription_key:
-keystore:
-  url: https://keystore-stage.meeco.me/
-  subscription_key:
