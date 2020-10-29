@@ -60,3 +60,21 @@ export function findWithEncryptedValue<T>(slots: T[]): T | undefined {
 export function nameFromLabel(label: string): string {
   return parameterize(label, undefined, '_');
 }
+
+/**
+ * Represent an Item as a map from Slot.names to Slots.
+ * @param item
+ */
+export function toNameSlotMap<S extends MinimalSlot, T extends { slots: S[] } >(item: T): Record<string, S> {
+  function getSlotName(slot: S): string {
+    return slot.name || nameFromLabel(slot.label!);
+  }
+
+  const map: Record<string, S> = {};
+
+  item.slots.forEach(slot => {
+    map[getSlotName(slot)] = slot;
+  });
+
+  return map;
+}

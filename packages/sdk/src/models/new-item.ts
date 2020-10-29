@@ -2,10 +2,11 @@ import { ItemTemplate, NestedSlotAttributes, PostItemsRequest, Slot } from '@mee
 import { ItemService } from '../services/item-service';
 import { slotToNewSlot } from '../util/transformers';
 import { EncryptionKey } from './encryption-key';
-import { findWithEncryptedValue, nameFromLabel, NewSlot } from './local-slot';
+import { ItemChange } from './item-change';
+import { findWithEncryptedValue, NewSlot } from './local-slot';
 
 /** An Item which does not exist in the API */
-export class NewItem {
+export class NewItem extends ItemChange {
   public static fromTemplate(
     template: ItemTemplate,
     templateSlots: Slot[],
@@ -26,50 +27,13 @@ export class NewItem {
     public slots: NewSlot[] = [],
     public classification_nodes = []
   ) {
+    super(slots, classification_nodes);
     if (this.label === '') {
       throw new Error('Cannot create Item with empty label');
     }
 
     if (this.template_name === '') {
       throw new Error('Cannot create Item with empty template name');
-    }
-  }
-
-  /**
-   * Set Slot values. Existing values in `this.slots` are overwritten if present in `assignment`.
-   * `assignment` names that do not correspond to existing names in `this.slots` are created.
-   * @param assignment A map from Slot.name to Slot.value.
-   */
-  assignSlots(assignment: Record<string, string>) {
-    function getSlotName(slot: NewSlot): string {
-      return slot.name || nameFromLabel(slot.label!);
-    }
-
-    const slotNameMap = this.slots.reduce((acc, slot) => {
-      acc[getSlotName(slot)] = slot;
-      return acc;
-    }, {});
-
-    Object.entries(assignment).forEach(([name, value]) => {
-      if (name in slotNameMap) {
-        slotNameMap[name].value = value
-      } else {
-        this.slots.push({ name, value });
-      }
-    });
-  }
-
-  /**
-   * This just removes the Slot from the creation request. The Slot may still exist on the
-   * created Item if it is a Template slot.
-   */
-  removeSlot(spec: { name?: string; label?: string }) {
-    if (spec.name) {
-      this.slots = this.slots.filter(s => s['name'] !== spec.name);
-    }
-
-    if (spec.label) {
-      this.slots = this.slots.filter(s => s['label'] !== spec.label);
     }
   }
 

@@ -7,50 +7,40 @@ import {
 import { ItemService } from '../services/item-service';
 import { IDEK } from '../services/service';
 import { toNestedClassificationNode } from '../util/transformers';
+import { ItemChange } from './item-change';
 import { findWithEncryptedValue, NewSlot } from './local-slot';
 import { NewItem } from './new-item';
 
 /** Construct an update for an existing Item given its id. */
-export class UpdateItem {
+export class UpdateItem extends ItemChange {
+  public label?: string;
+
+  static fromJSON(json: any) {
+    return new UpdateItem(json.id, json);
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      label: this.label,
+      slots: this.slots,
+      classification_nodes: this.classification_nodes,
+    };
+  }
+
   constructor(
     public readonly id: string,
-    public update: Partial<{
+    update: Partial<{
       label: string;
-      classificationNodes: ClassificationNode[];
+      classification_nodes: ClassificationNode[];
       slots: NewSlot[];
     }>
-  ) {}
-
-  get slots() {
-    return this.update.slots || [];
-  }
-
-  // set slots(slots: NewSlot[]) {
-  //   this.update.slots = slots;
-  // }
-
-  get label() {
-    return this.update.label;
-  }
-
-  // set label(label: string | undefined) {
-  //   this.update.label = label;
-  // }
-
-  /**
-   * This just removes the Slot from the creation request. The Slot may still exist on the
-   * created Item if it is a Template slot.
-   */
-  removeSlot(spec: { name?: string; label?: string }) {
-    if (this.update.slots) {
-      if (spec.name) {
-        this.update.slots = this.update.slots.filter(s => s['name'] !== spec.name);
-      }
-
-      if (spec.label) {
-        this.update.slots = this.update.slots.filter(s => s['label'] !== spec.label);
-      }
+  ) {
+    super(update.slots, update.classification_nodes);
+    if (update.label === '') {
+      throw new Error('Cannot create Item with empty label');
     }
+    this.label = update.label;
   }
 
   public toNewItem(label: string, templateName: string): NewItem {
@@ -69,23 +59,21 @@ export class UpdateItem {
     // }
 
     let slots_attributes: NestedSlotAttributes[] | undefined;
-    if (this.update?.slots) {
+    if (this.slots.length > 0) {
       slots_attributes = await Promise.all(
         this.slots.map(slot => ItemService.encryptSlot(key, slot))
       );
     }
 
     let classification_nodes_attributes: NestedClassificationNodeAttributes[] | undefined;
-    if (this.update?.classificationNodes) {
-      classification_nodes_attributes = this.update?.classificationNodes.map(
-        toNestedClassificationNode
-      );
+    if (this.classification_nodes.length > 0) {
+      classification_nodes_attributes = this.classification_nodes.map(toNestedClassificationNode);
     }
 
     return {
       item: {
         classification_nodes_attributes,
-        label: this.update?.label,
+        label: this.label,
         slots_attributes,
       },
     };

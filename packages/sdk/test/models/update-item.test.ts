@@ -19,7 +19,7 @@ describe('UpdateItem', () => {
     });
 
     it('encrypts any slots with values', async () => {
-      item.update.slots = [
+      item.slots = [
         { name: 'test_slot', value: 'abc' },
         { label: 'Test Slot 2', value: 'abc' },
       ];
@@ -33,7 +33,7 @@ describe('UpdateItem', () => {
     });
 
     it('does not encrypt slots without values', async () => {
-      item.update.slots = [{ name: 'empty_slot' }, { label: 'Another Empty Slot' }];
+      item.slots = [{ name: 'empty_slot' }, { label: 'Another Empty Slot' }];
       const result = await item.toRequest(dek);
       expect(result.item!.slots_attributes!.length).to.equal(2);
       for (const slot of result.item!.slots_attributes!) {
@@ -45,7 +45,7 @@ describe('UpdateItem', () => {
     });
 
     it('throws an error if any slot has encrypted_value', async () => {
-      item.update.slots = [{ name: 'empty_slot', encrypted_value: '' }];
+      item.slots = [{ name: 'empty_slot', encrypted_value: '' }];
       try {
         await item.toRequest(dek);
         expect.fail();
