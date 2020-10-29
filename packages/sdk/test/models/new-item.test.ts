@@ -1,10 +1,23 @@
 import { EncryptionKey, NewItem } from '@meeco/sdk';
+import { ItemTemplate, Slot } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
 import { testUserAuth } from '../test-helpers';
 
 describe('NewItem', () => {
   describe('#fromTemplate', () => {
-    it('merges template slots and additional slots');
+    it('includes both template slots and additional slots', () => {
+      const item = NewItem.fromTemplate(
+        {
+          name: 'food',
+          slot_ids: ['steak', 'pizza', 'yoghurt'],
+        } as ItemTemplate,
+        [{ name: 'a_slot' } as Slot],
+        'label',
+        [{ name: 'another_slot', value: '123' }]
+      );
+
+      expect(item.slots.length).to.equal(2);
+    });
   });
 
   describe('#constructor', () => {
@@ -13,6 +26,32 @@ describe('NewItem', () => {
     });
     it('throws an Error when given an empty template name', () => {
       expect(() => new NewItem('label', '')).to.throw();
+    });
+  });
+
+  describe('#assignSlots', () => {
+    let newItem: NewItem;
+
+    beforeEach(() => {
+      newItem = new NewItem('label', 'template');
+    });
+
+    it('creates new slots if none match', () => {
+      newItem.assignSlots({ new_slot: '123' });
+      expect(newItem.slots[0].name).to.equal('new_slot');
+      expect(newItem.slots[0].value).to.equal('123');
+    });
+
+    it('assigns to existing slots', () => {
+      newItem.slots = [{ name: 'a_slot', value: '123' }];
+      newItem.assignSlots({ a_slot: '0' });
+      expect(newItem.slots[0].value).to.equal('0');
+    });
+
+    it('matches by label', () => {
+      newItem.slots = [{ label: 'A Slot', value: '123' }];
+      newItem.assignSlots({ a_slot: '0' });
+      expect(newItem.slots[0].value).to.equal('0');
     });
   });
 

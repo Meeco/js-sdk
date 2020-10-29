@@ -1,23 +1,8 @@
 import { ItemTemplate, NestedSlotAttributes, PostItemsRequest, Slot } from '@meeco/vault-api-sdk';
 import { ItemService } from '../services/item-service';
+import { slotToNewSlot } from '../util/transformers';
 import { EncryptionKey } from './encryption-key';
-import { findWithEncryptedValue, NewSlot, SlotType } from './local-slot';
-
-function slotToNewSlot(s: Slot): NewSlot {
-  const result = {
-    ...s,
-    slot_type_name: SlotType[s.slot_type_name],
-    image_id: s.image ? s.image : undefined,
-  };
-
-  for (const k in result) {
-    if (result[k] === null) {
-      delete result[k];
-    }
-  }
-
-  return result as NewSlot;
-}
+import { findWithEncryptedValue, nameFromLabel, NewSlot } from './local-slot';
 
 /** An Item which does not exist in the API */
 export class NewItem {
@@ -33,21 +18,45 @@ export class NewItem {
   /**
    * Required fields for creating a new Item.
    * @param label Must be non-empty string
-   * @param templateName Must be non-empty string
-   * @param slots
+   * @param template_name Must be non-empty string
    */
   constructor(
     public readonly label: string,
-    public templateName: string,
-    public slots: NewSlot[] = []
+    public template_name: string,
+    public slots: NewSlot[] = [],
+    public classification_nodes = []
   ) {
     if (this.label === '') {
       throw new Error('Cannot create Item with empty label');
     }
 
-    if (this.templateName === '') {
+    if (this.template_name === '') {
       throw new Error('Cannot create Item with empty template name');
     }
+  }
+
+  /**
+   * Set Slot values. Existing values in `this.slots` are overwritten if present in `assignment`.
+   * `assignment` names that do not correspond to existing names in `this.slots` are created.
+   * @param assignment A map from Slot.name to Slot.value.
+   */
+  assignSlots(assignment: Record<string, string>) {
+    function getSlotName(slot: NewSlot): string {
+      return slot.name || nameFromLabel(slot.label!);
+    }
+
+    const slotNameMap = this.slots.reduce((acc, slot) => {
+      acc[getSlotName(slot)] = slot;
+      return acc;
+    }, {});
+
+    Object.entries(assignment).forEach(([name, value]) => {
+      if (name in slotNameMap) {
+        slotNameMap[name].value = value
+      } else {
+        this.slots.push({ name, value });
+      }
+    });
   }
 
   /**
@@ -87,11 +96,12 @@ export class NewItem {
     );
 
     return {
-      template_name: this.templateName,
+      template_name: this.template_name,
       item: {
         label: this.label,
         slots_attributes,
       },
     };
   }
+
 }

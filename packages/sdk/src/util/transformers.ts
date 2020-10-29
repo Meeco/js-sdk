@@ -4,6 +4,7 @@ import {
   NestedSlotAttributes,
   Slot,
 } from '@meeco/vault-api-sdk';
+import { NewSlot, SlotType } from '../models/local-slot';
 
 /** The API typically returns types with null props, but accepts only undefined */
 function fix<T>(x: T | null): T | undefined {
@@ -36,4 +37,24 @@ export function toNestedSlot(
   }
 
   return result;
+}
+
+/**
+ * Convert API returned Slots to NewSlot creation requests.
+ * Renames image_id to image, and removes all props with null value.
+ */
+export function slotToNewSlot(slot: Slot): NewSlot {
+  const result = {
+    ...slot,
+    slot_type_name: SlotType[slot.slot_type_name],
+    image_id: slot.image ? slot.image : undefined,
+  };
+
+  for (const k in result) {
+    if (result[k] === null) {
+      delete result[k];
+    }
+  }
+
+  return result as NewSlot;
 }
