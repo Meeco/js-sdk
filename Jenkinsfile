@@ -16,12 +16,7 @@ pipeline {
         script {
           sh 'echo "js-sdk-sc"'       
         }
-      }
-      post {
-        always {
-          junit TEST_FILE
-        }
-      }
+      }     
     }
   }
 }
