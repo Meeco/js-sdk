@@ -21,11 +21,12 @@ pipeline {
 
          docker.image('nikolaik/python-nodejs').inside ("--user=root") {
              sh """
-              npm install;                        
+              npm run bootstrap;                        
               git submodule init;
               git submodule update; 
               pip3 install yq;
               cd packages/cli/;
+              npm link;
               ./test.sh;
             """
           }           
