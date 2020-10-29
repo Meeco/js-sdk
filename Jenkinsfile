@@ -24,9 +24,10 @@ pipeline {
               npm install;
               npm run bootstrap;                        
               git submodule init;
-              git submodule update; 
-              pip3 install yq;
-              apt-get install jq;
+              git submodule update;
+              apt-get update;
+              apt-get install -y jq; 
+              pip3 install yq;              
               cd packages/cli/;      
               ./test.sh;
             """
