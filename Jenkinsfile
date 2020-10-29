@@ -24,13 +24,10 @@ pipeline {
               npm install;                        
               git submodule init;
               git submodule update; 
-              sudo pip3 install -y yq;                            
-            """
-
-             sh """
-              cd packages/cli/
+              pip3 install -y yq;
+              cd packages/cli/;
               ./test.sh;
-           """ 
+            """
           }           
           
         }     
