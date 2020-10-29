@@ -21,6 +21,7 @@ pipeline {
 
          docker.image('nikolaik/python-nodejs').inside ("--user=root") {
              sh """
+              npm install;
               npm run bootstrap;                        
               git submodule init;
               git submodule update; 
