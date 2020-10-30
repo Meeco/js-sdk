@@ -5,7 +5,7 @@ import { InvitationService } from './invitation-service';
 import Service, { IDEK, IPageOptions, IVaultToken } from './service';
 
 export interface IDecryptedConnection {
-  name: string;
+  recipient_name: string | null;
   connection: Connection;
 }
 
@@ -162,7 +162,7 @@ export class ConnectionService extends Service<ConnectionApi> {
     const connection = response.connection;
 
     if (!connection || !connection.own.id) {
-      throw new Error(`Conncetion ${connectionId} not found.`);
+      throw new Error(`Connection ${connectionId} not found.`);
     }
 
     return connection;
@@ -170,39 +170,41 @@ export class ConnectionService extends Service<ConnectionApi> {
 
   /**
    * Helper to find connection between two users (if one exists)
+   * Throws an Error if no connection exists.
    */
   public async findConnectionBetween(fromUser: IVaultToken, toUser: IVaultToken) {
     this.logger.log('Fetching from user connections');
-    const fromUserConnections = await this.vaultAPIFactory(
+    const { connections: fromUserConnections } = await this.vaultAPIFactory(
       fromUser.vault_access_token
     ).ConnectionApi.connectionsGet();
 
+    if (fromUserConnections.length === 0) {
+      throw new Error('Users are not connected. Please set up a connection first.');
+    }
+
     this.logger.log('Fetching to user connections');
-    const toUserConnections = await this.vaultAPIFactory(
+    const { connections: toUserConnections } = await this.vaultAPIFactory(
       toUser.vault_access_token
     ).ConnectionApi.connectionsGet();
 
-    const sharedConnections = fromUserConnections.connections!.filter(
-      fromConnection =>
-        !!toUserConnections.connections!.find(
-          toConnection =>
-            fromConnection.own.user_public_key === toConnection.the_other_user.user_public_key
-        )
-    );
+    let toUserConnection: Connection | undefined;
 
-    if (sharedConnections.length < 1) {
+    const fromUserConnection = fromUserConnections.find(fromConnection => {
+      const result = toUserConnections.find(
+        toConnection =>
+          fromConnection.own.user_public_key === toConnection.the_other_user.user_public_key
+      );
+      if (result) {
+        toUserConnection = result;
+      }
+      return !!result;
+    });
+
+    if (!fromUserConnection) {
       throw new Error('Users are not connected. Please set up a connection first.');
     }
-    const [fromUserConnection] = sharedConnections;
-    const toUserConnection = toUserConnections.connections!.find(
-      toConnection =>
-        fromUserConnection.own.user_public_key === toConnection.the_other_user.user_public_key
-    );
 
-    if (!toUserConnection) {
-      throw new Error('To user connection not found. Invitation may not have been accepted');
-    }
-
-    return { fromUserConnection, toUserConnection };
+    // toUserConnection must be defined if fromUserConnection is
+    return { fromUserConnection, toUserConnection: toUserConnection! };
   }
 }

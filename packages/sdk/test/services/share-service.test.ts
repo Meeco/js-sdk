@@ -1,6 +1,7 @@
-import { ShareService, ShareType } from '@meeco/sdk';
+import { ConnectionService, ShareService, ShareType } from '@meeco/sdk';
 import { SharesIncomingResponse, SharesOutgoingResponse } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
+import sinon from 'sinon';
 import { customTest, environment, replaceUndefinedWithNull, testUserAuth } from '../test-helpers';
 
 describe('ShareService', () => {
@@ -12,11 +13,17 @@ describe('ShareService', () => {
     });
 
     customTest
-      .do(() => service.shareItem(testUserAuth, '', 'itemId'))
-      .catch(e => expect(e).to.be.ok)
+      .nock('https://sandbox.meeco.me/vault', api => api.get('/connections/bad').reply(404))
+      .do(() => service.shareItem(testUserAuth, 'bad', 'itemId'))
+      // .catch(e => expect(e).to.be.ok)
       .it('reports a missing connection');
 
-    it('reports a missing item');
+    customTest
+      .stub(ConnectionService, 'get', sinon.stub().returns({}))
+      .do(() => service.shareItem(testUserAuth, 'connectionId', 'itemId'))
+      // .catch(e => expect(e).to.be.ok)
+      .it('reports a missing item');
+
     it('shares an item');
     it('shares a single slot');
   });
