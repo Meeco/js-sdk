@@ -11,14 +11,9 @@ pipeline {
   }
   stages {
     stage ('build and test e2e') {
-        environment {
-        RAILS_ENV="test"
-        TEST_FILE='test/results.xml' 
-        }
-      steps {        
 
+      steps {
         script {          
-
          docker.image('nikolaik/python-nodejs').inside ("--user=root") {
              sh """
               npm install;
@@ -29,7 +24,7 @@ pipeline {
               apt-get install -y jq; 
               pip3 install yq;              
               cd packages/cli/;
-              cat example.environment.yaml | yq -y '(.vault.url) = "https://vault-stage.meeco.me/"'|  yq -y '(.keystore.url) = "https://keystore-stage.meeco.me/"' > .environment.yaml;      
+              cat example.environment.yaml | yq -y '(.vault.url) = "${env.STAGE_VAULT_URL}"' | yq -y '(.vault.subscription_key) = "${env.STAGE_VAULT_SUBSCRIPTION_KEY}"' |  yq -y '(.keystore.url) = "${env.STAGE_KEYSTORE_URL}"' | yq -y '(.keystore.subscription_key) = "${env.STAGE_KEYSTORE_SUBSCRIPTION_KEY}"' | > .environment.yaml;      
               ./test.sh;
             """
           }           

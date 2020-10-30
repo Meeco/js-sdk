@@ -1,0 +1,16 @@
+kind: Item
+metadata:
+  template_name: vehicle
+spec:
+  label: My Vehicle
+  slots:
+    - name: model_make
+      value: '20000101'
+    - name: licence_plate
+      value: ABC123
+    - name: vin
+      value: Mazda
+    - name: type
+      value: Familia
+    - name: purchase_date
+      value: VIN3322112223
