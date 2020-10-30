@@ -32,7 +32,7 @@ pipeline {
               cat example.environment.yaml | yq -y '(.vault.url) = "${env.STAGE_VAULT_URL}"' | yq -y '(.vault.subscription_key) = "${env.STAGE_VAULT_SUBSCRIPTION_KEY}"' |  yq -y '(.keystore.url) = "${env.STAGE_KEYSTORE_URL}"' | yq -y '(.keystore.subscription_key) = "${env.STAGE_KEYSTORE_SUBSCRIPTION_KEY}"' > .environment.yaml;      
               ./test.sh;
             """         
-          
+         }
         }     
       }     
     }
