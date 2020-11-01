@@ -9,8 +9,8 @@ import {
   SharesIncomingResponse,
   SharesOutgoingResponse,
   ShareWithItemData,
-  Slot,
 } from '@meeco/vault-api-sdk';
+import { DecryptedItem } from '../models/decrypted-item';
 import { EncryptionKey } from '../models/encryption-key';
 import { DecryptedSlot, IDecryptedSlot } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
@@ -90,12 +90,12 @@ export class ShareService extends Service<SharesApi> {
     const item = await new ItemService(this.environment).get(credentials, itemId);
     let { slots } = item;
 
+    this.logger.log('Encrypting slots with generated DEK');
+    const dek = EncryptionKey.fromRaw(Service.cryppo.generateRandomKey());
+
     if (shareOptions.slot_id) {
       slots = slots.filter(slot => slot.id === shareOptions.slot_id);
     }
-
-    this.logger.log('Encrypting slots with generated DEK');
-    const dek = EncryptionKey.fromRaw(Service.cryppo.generateRandomKey());
 
     const encryptions: EncryptedSlotValue[] = await item.toEncryptedSlotValues({
       data_encryption_key: dek,
@@ -188,16 +188,49 @@ export class ShareService extends Service<SharesApi> {
   }
 
   /**
+   * A shared Item may be either encrypted with a shared data-encryption key (DEK) or with
+   * the user's personal DEK. This method inspects the share record and returns the appropriate
+   * key.
+   * @param user
+   * @param shareId
+   */
+  public async getShareDEK(credentials: IKeystoreToken & IKEK & IDEK, share: Share) {
+    let dataEncryptionKey: EncryptionKey;
+
+    if (share.encrypted_dek) {
+      const keyPairExternal = await this.keystoreAPIFactory(
+        credentials.keystore_access_token
+      ).KeypairApi.keypairsIdGet(share.keypair_external_id!);
+
+      const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
+        serialized: keyPairExternal.keypair.encrypted_serialized_key,
+        key: credentials.key_encryption_key.key,
+      });
+
+      dataEncryptionKey = await Service.cryppo
+        .decryptSerializedWithPrivateKey({
+          privateKeyPem: decryptedPrivateKey,
+          serialized: share.encrypted_dek,
+        })
+        .then(EncryptionKey.fromRaw);
+    } else {
+      dataEncryptionKey = credentials.data_encryption_key;
+    }
+
+    return dataEncryptionKey;
+  }
+
+  /**
    * Get a Share record and the Item it references with all Slots decrypted.
    * @param user
    * @param shareId
-   * @param shareType
+   * @param shareType Defaults to 'incoming'.
    */
   public async getSharedItem(
     user: IVaultToken & IKeystoreToken & IKEK & IDEK,
     shareId: string,
     shareType: ShareType = ShareType.incoming
-  ): Promise<ShareWithItemData> {
+  ): Promise<{ share: Share; item: DecryptedItem }> {
     const shareAPI = this.vaultAPIFactory(user.vault_access_token).SharesApi;
 
     let shareWithItemData: ShareWithItemData;
@@ -212,9 +245,11 @@ export class ShareService extends Service<SharesApi> {
       });
 
       // assumes it is incoming share from here
-      if (shareWithItemData.share.acceptance_required === AcceptanceStatus.required) {
+      if (shareWithItemData.share.acceptance_required !== 'accepted') {
         // data is not decrypted as terms are not accepted
-        return shareWithItemData;
+        throw new Error(
+          `Share terms not accepted (${shareWithItemData.share.acceptance_required}); Item cannot be decrypted`
+        );
       }
 
       // When Item is already shared with user using another share, retrieve that share and item as
@@ -229,50 +264,22 @@ export class ShareService extends Service<SharesApi> {
         this.logger.log(str);
       }
 
-      // TODO assumes it is still encrypted with the share DEK, not the user's DEK
-      // TODO this flow duplicates the ItemService.get flow
-      const keyPairExternal = await this.keystoreAPIFactory(
-        user.keystore_access_token
-      ).KeypairApi.keypairsIdGet(shareWithItemData.share.keypair_external_id!);
-
-      const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
-        serialized: keyPairExternal.keypair.encrypted_serialized_key,
-        key: user.key_encryption_key.key,
-      });
-
-      const dek = await Service.cryppo
-        .decryptSerializedWithPrivateKey({
-          privateKeyPem: decryptedPrivateKey,
-          serialized: shareWithItemData.share.encrypted_dek,
-        })
-        .then(key => EncryptionKey.fromRaw(key));
-
-      const decryptedSlots = await Promise.all(
-        shareWithItemData.slots.map(s => ItemService.decryptSlot({ data_encryption_key: dek }, s))
-      );
+      const dek = await this.getShareDEK(user, shareWithItemData.share);
 
       return {
         ...shareWithItemData,
-        slots: decryptedSlots as Slot[],
+        item: await DecryptedItem.fromAPI({ data_encryption_key: dek }, shareWithItemData),
       };
     } else {
       // you own the object, but it is shared with someone
       // can decrypt immediately
       return shareAPI.outgoingSharesIdGet(shareId).then(async ({ share }) => {
-        const item = await new ItemService(this.environment).getAPI(user).itemsIdGet(share.item_id);
         return {
           share,
-          ...item,
+          item: await new ItemService(this.environment).get(user, share.item_id),
         };
       });
     }
-  }
-
-  public async getSharedItemIncoming(
-    user: IVaultToken & IKeystoreToken & IKEK & IDEK,
-    shareId: string
-  ): Promise<ShareWithItemData> {
-    return this.getSharedItem(user, shareId, ShareType.incoming);
   }
 
   /**

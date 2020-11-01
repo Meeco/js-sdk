@@ -13,6 +13,7 @@ import {
   verifyHashedValue,
 } from '../util/value-verification';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
+import { ShareService } from './share-service';
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -213,25 +214,7 @@ export class ItemService extends Service<ItemApi> {
         credentials.vault_access_token
       ).SharesApi.incomingSharesIdGet(item.share_id);
 
-      // at this point, it may either be encrypted with shared DEK or personal...
-      if (share.encrypted_dek) {
-        const keyPairExternal = await this.keystoreAPIFactory(
-          credentials.keystore_access_token
-        ).KeypairApi.keypairsIdGet(share.keypair_external_id!);
-
-        const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
-          serialized: keyPairExternal.keypair.encrypted_serialized_key,
-          key: credentials.key_encryption_key.key,
-        });
-
-        dataEncryptionKey = await Service.cryppo
-          .decryptSerializedWithPrivateKey({
-            privateKeyPem: decryptedPrivateKey,
-            serialized: share.encrypted_dek,
-          })
-          .then(EncryptionKey.fromRaw);
-      }
-      // otherwise just use default user DEK
+      dataEncryptionKey = await new ShareService(this.environment).getShareDEK(credentials, share);
     }
 
     return DecryptedItem.fromAPI({ data_encryption_key: dataEncryptionKey }, result);
