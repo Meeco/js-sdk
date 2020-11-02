@@ -7,7 +7,7 @@ import {
 import { ItemService } from '../services/item-service';
 import { IDEK } from '../services/service';
 import { toNestedClassificationNode } from '../util/transformers';
-import { ItemChange } from './item-change';
+import ItemChange from './item-change';
 import { findWithEncryptedValue, NewSlot } from './local-slot';
 import { NewItem } from './new-item';
 

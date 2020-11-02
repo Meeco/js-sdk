@@ -18,18 +18,20 @@ import {
   verifyHashedValue,
 } from '../util/value-verification';
 import { EncryptionKey } from './encryption-key';
-import { NewSlot, SDKDecryptedSlot, toNameSlotMap } from './local-slot';
+import ItemMap from './item-map';
+import { NewSlot, SDKDecryptedSlot } from './local-slot';
 import { UpdateItem } from './update-item';
 
 /**
  * Wraps Items returned from the API that have been decrypted, usually by {@link ItemService}.
  * If `associations`, `classification_nodes` and `attachements`are provided at construction, they are stored.
+ *
  * Note that {@link classification_nodes} is not the same as `ItemResponse.classification_nodes`, it is just the
  * classifications that apply to the Item!
  *
- * `DecryptedItem` is immutable, you should use {@link toUpdate} to stage modifications.
+ * `DecryptedItem` is immutable, you should use {@link toUpdateItem} to stage modifications.
  */
-export class DecryptedItem {
+export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
   public static readonly cryppo = (<any>global).cryppo || cryppo;
 
   // forwarded props of Item
@@ -50,11 +52,9 @@ export class DecryptedItem {
   /** The `Item` as it exists within the API */
   public readonly item: Item;
 
-  /** The `Slots` as they exist in the API */
-  public readonly slots: SDKDecryptedSlot[];
-
   /**
-   * These are just the Item's classifications, not the same as `ItemResponse.classification_nodes`
+   * These are just the Item's classifications, not the same as `ItemResponse.classification_nodes`.
+   * To retrieve classification nodes for individual Slots, use {@link getSlotClassifications}
    */
   public readonly classification_nodes: ClassificationNode[];
 
@@ -161,6 +161,8 @@ export class DecryptedItem {
       thumbnails: Thumbnail[];
     }> = {}
   ) {
+    super(slots);
+
     this.item = item;
 
     // simpler interface
@@ -173,7 +175,6 @@ export class DecryptedItem {
     this.owner_id = item.owner_id || undefined;
     this.share_id = item.share_id || undefined;
 
-    this.slots = slots;
     this.allClassificationNodes = extra.classification_nodes || [];
     this.classification_nodes =
       this.allClassificationNodes.filter(x => item.classification_node_ids.some(y => y === x.id)) ||
@@ -202,19 +203,6 @@ export class DecryptedItem {
     return !this.isOwned() && !!this.share_id;
   }
 
-  // only know the following by inspecting a share
-  // isEncryptedWithSharedKey(): boolean {
-  //   return false;
-  // }
-
-  // isReencrypted(): boolean {
-  //   return false;
-  // }
-
-  toMap(): Record<string, SDKDecryptedSlot> {
-    return toNameSlotMap(this);
-  }
-
   getSlotAttachment(slot: SDKDecryptedSlot): Attachment | undefined {
     if (slot.attachment_id) {
       return this.attachments.find(x => x.id === slot.attachment_id);
@@ -228,6 +216,7 @@ export class DecryptedItem {
       slot.classification_node_ids.some(y => y === x.id)
     );
   }
+
   /**
    * Stage updated values in an UpdateItem.
    * This has no effect on the values stored in this DecryptedItem.
@@ -328,7 +317,3 @@ export class DecryptedItem {
     );
   }
 }
-
-// // Ensure Item properties are exposed by DecryptedItem
-// // tslint:disable-next-line:interface-name
-// export interface DecryptedItem extends Item {}

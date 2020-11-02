@@ -1,5 +1,7 @@
-import { NestedSlotAttributes, Slot } from '@meeco/vault-api-sdk';
+import { EncryptedSlotValue, NestedSlotAttributes, Slot } from '@meeco/vault-api-sdk';
 import parameterize from 'parameterize';
+import { ItemService } from '../services/item-service';
+import { IDEK } from '../services/service';
 
 /**
  * After decryption all `encrypted_X` props are replaced with `X` props.
@@ -57,27 +59,32 @@ export function findWithEncryptedValue<T>(slots: T[]): T | undefined {
   return slots.find(s => s['encrypted_value'] != null);
 }
 
-/** Convert Slot names to labels as per the backend */
+/**
+ * Convert Slot names to labels as per the backend URL-safe encoding.
+ * For example `A Slot/name?` becomes `a_slot_name`.
+ */
 export function nameFromLabel(label: string): string {
   return parameterize(label, undefined, '_');
 }
 
-/**
- * Represent an Item as a map from Slot.names to Slots.
- * @param item
- */
-export function toNameSlotMap<S extends MinimalSlot, T extends { slots: S[] }>(
-  item: T
-): Record<string, S> {
-  function getSlotName(slot: S): string {
-    return slot.name || nameFromLabel(slot.label!);
-  }
+export async function toEncryptedSlotValue(
+  credentials: IDEK,
+  slot: SDKDecryptedSlot
+): Promise<EncryptedSlotValue> {
+  const withHash = await ItemService.addVerificationHash(slot, credentials.data_encryption_key);
 
-  const map: Record<string, S> = {};
+  const {
+    id,
+    encrypted_value,
+    encrypted_value_verification_key,
+    value_verification_hash,
+  } = await ItemService.encryptSlot(credentials, withHash);
 
-  item.slots.forEach(slot => {
-    map[getSlotName(slot)] = slot;
-  });
-
-  return map;
+  // TODO due to an API bug, this doesn't typecheck when encrypted_value is undefined
+  return {
+    slot_id: id,
+    encrypted_value,
+    encrypted_value_verification_key,
+    value_verification_hash,
+  } as EncryptedSlotValue;
 }

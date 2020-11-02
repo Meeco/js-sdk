@@ -1,18 +1,21 @@
 import { ClassificationNode } from '@meeco/vault-api-sdk';
 import cryppo from '../services/cryppo-service';
-import { NewSlot, toNameSlotMap } from './local-slot';
+import ItemMap from './item-map';
+import { NewSlot } from './local-slot';
 
 /**
  * Represents a change to the Item that hasn't been posted to the API.
  * It can be modified, and contains only partial information about the Item.
  */
-export class ItemChange {
+export default class ItemChange extends ItemMap<NewSlot> {
   protected static readonly cryppo = (<any>global).cryppo || cryppo;
 
   constructor(
     public slots: NewSlot[] = [],
     public classification_nodes: ClassificationNode[] = []
-  ) {}
+  ) {
+    super(slots);
+  }
 
   /**
    * Set Slot values. Existing values in `this.slots` are overwritten if present in `assignment`.
@@ -20,7 +23,7 @@ export class ItemChange {
    * @param assignment A map from Slot.name to Slot.value.
    */
   assignSlots(assignment: Record<string, string>) {
-    const slotNameMap: Record<string, NewSlot> = toNameSlotMap(this);
+    const slotNameMap: Record<string, NewSlot> = this.toMap();
     Object.entries(assignment).forEach(([name, value]) => {
       if (name in slotNameMap) {
         slotNameMap[name].value = value;

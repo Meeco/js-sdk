@@ -5,6 +5,8 @@ export * from './models/auth-data';
 export * from './models/encryption-key';
 export * from './models/environment';
 export * from './models/file-attachment-data';
+export * from './models/item-change';
+export { default as ItemMap } from './models/item-map';
 export * from './models/new-item';
 export * from './models/update-item';
 export * from './models/decrypted-item';

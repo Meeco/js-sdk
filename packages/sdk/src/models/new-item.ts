@@ -2,7 +2,7 @@ import { ItemTemplate, NestedSlotAttributes, PostItemsRequest, Slot } from '@mee
 import { ItemService } from '../services/item-service';
 import { slotToNewSlot } from '../util/transformers';
 import { EncryptionKey } from './encryption-key';
-import { ItemChange } from './item-change';
+import ItemChange from './item-change';
 import { findWithEncryptedValue, NewSlot } from './local-slot';
 
 /** An Item which does not exist in the API */
@@ -67,5 +67,4 @@ export class NewItem extends ItemChange {
       },
     };
   }
-
 }
