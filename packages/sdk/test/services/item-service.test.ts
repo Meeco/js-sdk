@@ -56,7 +56,7 @@ describe('ItemService', () => {
         const result = await new ItemService(environment).create(testUserAuth, item);
 
         const { slots, ...expectedItem } = expected;
-        expect(result.rawItem).to.eql(expectedItem);
+        expect(result.item).to.eql(expectedItem);
         expect(result.slots).to.deep.members(slots);
       });
 
@@ -66,11 +66,15 @@ describe('ItemService', () => {
       .add('input', () => getInputFixture('create-item-with-slots.input.json'))
       .add('expected', () => getOutputFixture('create-item-with-slots.output.json'))
       .it('creates an item with slots provided in a config file', async ({ input, expected }) => {
-        const itemCreateData = new NewItem(input.label, input.template_name, input.slots as NewSlot[]);
+        const itemCreateData = new NewItem(
+          input.label,
+          input.template_name,
+          input.slots as NewSlot[]
+        );
         const result = await new ItemService(environment).create(testUserAuth, itemCreateData);
 
         const { slots, ...expectedItem } = expected;
-        expect(result.rawItem).to.eql(expectedItem);
+        expect(result.item).to.eql(expectedItem);
         expect(result.slots).to.deep.members(slots);
       });
   });
@@ -95,7 +99,7 @@ describe('ItemService', () => {
         const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
           'get-item.output.json'
         );
-        expect(replaceUndefinedWithNull(result.rawItem)).to.eql(expectedItem);
+        expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
         expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
       });
 
@@ -382,7 +386,7 @@ describe('ItemService', () => {
         const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
           'update-item.output.json'
         );
-        expect(replaceUndefinedWithNull(result.rawItem)).to.eql(expectedItem);
+        expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
         expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
       });
   });

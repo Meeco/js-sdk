@@ -21,21 +21,26 @@ import { EncryptionKey } from './encryption-key';
 import { NewSlot, SDKDecryptedSlot, toNameSlotMap } from './local-slot';
 import { UpdateItem } from './update-item';
 
-// construct from existing Item object
-// construct an update for an Item with known id
-
-// uses:
-// POST items/id/shares
-// PUT items/id/shares
-// POST items/id/encrypt
-// POST items
-// PUT items
-// ignore pUT slots
-// get attachments
-// get class nodes
-
+/**
+ * Wraps Items returned from the API that have been decrypted, usually by {@link ItemService}.
+ * If `associations`, `classification_nodes` and `attachements`are provided at construction, they are stored.
+ * Note that {@link classification_nodes} is not the same as `ItemResponse.classification_nodes`, it is just the
+ * classifications that apply to the Item!
+ *
+ * `DecryptedItem` is immutable, you should use {@link toUpdate} to stage modifications.
+ */
 export class DecryptedItem {
-  private static readonly cryppo = (<any>global).cryppo || cryppo;
+  public static readonly cryppo = (<any>global).cryppo || cryppo;
+
+  // forwarded props of Item
+  public readonly id: string;
+  public readonly own: boolean;
+  public readonly name: string;
+  public readonly label: string;
+  public readonly description: string;
+  public readonly original_id: string | undefined;
+  public readonly owner_id: string | undefined;
+  public readonly share_id: string | undefined;
 
   public readonly thumbnails: Thumbnail[];
   public readonly associations: Association[];
@@ -43,13 +48,18 @@ export class DecryptedItem {
   public readonly attachments: Attachment[];
 
   /** The `Item` as it exists within the API */
-  public readonly rawItem: Item;
+  public readonly item: Item;
 
   /** The `Slots` as they exist in the API */
   public readonly slots: SDKDecryptedSlot[];
 
-  // These apply to either the Item or any of its Slots
+  /**
+   * These are just the Item's classifications, not the same as `ItemResponse.classification_nodes`
+   */
   public readonly classification_nodes: ClassificationNode[];
+
+  /** These include the slot's classifications */
+  private allClassificationNodes: ClassificationNode[];
 
   public static async fromAPI(key: IDEK, response: ItemResponse) {
     const slots = await Promise.all(
@@ -101,7 +111,7 @@ export class DecryptedItem {
       });
     }
 
-    const value = await cryppo
+    const value = await DecryptedItem.cryppo
       .decryptStringWithKey({
         key: dek.key,
         serialized: slot.encrypted_value,
@@ -151,13 +161,23 @@ export class DecryptedItem {
       thumbnails: Thumbnail[];
     }> = {}
   ) {
-    this.rawItem = item;
-    Object.assign(this, item);
-    // TODO should we remove X_ids fields which are replaced?
+    this.item = item;
+
+    // simpler interface
+    this.id = item.id;
+    this.own = item.own;
+    this.name = item.name;
+    this.label = item.label;
+    this.description = item.description;
+    this.original_id = item.original_id || undefined;
+    this.owner_id = item.owner_id || undefined;
+    this.share_id = item.share_id || undefined;
 
     this.slots = slots;
-    this.classification_nodes = extra.classification_nodes || [];
-
+    this.allClassificationNodes = extra.classification_nodes || [];
+    this.classification_nodes =
+      this.allClassificationNodes.filter(x => item.classification_node_ids.some(y => y === x.id)) ||
+      [];
     this.attachments = extra.attachments || [];
 
     // TODO do these need to be filtered by id?
@@ -195,6 +215,19 @@ export class DecryptedItem {
     return toNameSlotMap(this);
   }
 
+  getSlotAttachment(slot: SDKDecryptedSlot): Attachment | undefined {
+    if (slot.attachment_id) {
+      return this.attachments.find(x => x.id === slot.attachment_id);
+    } else {
+      return undefined;
+    }
+  }
+
+  getSlotClassifications(slot: SDKDecryptedSlot): ClassificationNode[] {
+    return this.allClassificationNodes.filter(x =>
+      slot.classification_node_ids.some(y => y === x.id)
+    );
+  }
   /**
    * Stage updated values in an UpdateItem.
    * This has no effect on the values stored in this DecryptedItem.
@@ -210,10 +243,12 @@ export class DecryptedItem {
     return new UpdateItem(this.id, update);
   }
 
-  // for PUT items/id/shares
-  // - must include all slot ids in the parent
-  // - must re-encrypt VVK if present on slots
-  // - must generate VVH and Key if required and only if owned
+  /**
+   * For updating shared data (i.e. `PUT items/id/shares`).
+   * The Item's slots are encrypted with the given DEK and value verification hashes are appended.
+   * If verificationKey is not set, a new key will be generated for this share and used on each slot.
+   * @param verificationKey a random key that is {@link VALUE_VERIFICATION_KEY_LENGTH} bits long.
+   */
   async toShareSlots(
     credentials: IDEK,
     shareId: string,
@@ -294,6 +329,6 @@ export class DecryptedItem {
   }
 }
 
-// Ensure Item properties are exposed by DecryptedItem
-// tslint:disable-next-line:interface-name
-export interface DecryptedItem extends Item {}
+// // Ensure Item properties are exposed by DecryptedItem
+// // tslint:disable-next-line:interface-name
+// export interface DecryptedItem extends Item {}
