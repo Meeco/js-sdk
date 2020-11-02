@@ -18,11 +18,8 @@ import {
   verifyHashedValue,
 } from '../util/value-verification';
 import { EncryptionKey } from './encryption-key';
-import { NewSlot, toNameSlotMap } from './local-slot';
+import { NewSlot, SDKDecryptedSlot, toNameSlotMap } from './local-slot';
 import { UpdateItem } from './update-item';
-
-// for now there is just Item from the API
-// but there is DecryptedSlot/IDecryptedSlot/EncryptedSlot/others for slot types...
 
 // construct from existing Item object
 // construct an update for an Item with known id
@@ -36,15 +33,6 @@ import { UpdateItem } from './update-item';
 // ignore pUT slots
 // get attachments
 // get class nodes
-
-/** After decryption all `encrypted_X` props are replaced with `X` props */
-export type SDKDecryptedSlot = Omit<
-  Slot,
-  'encrypted_value' | 'encrypted_value_verification_key'
-> & {
-  value: string | null;
-  value_verification_key: string | null;
-};
 
 export class DecryptedItem {
   private static readonly cryppo = (<any>global).cryppo || cryppo;

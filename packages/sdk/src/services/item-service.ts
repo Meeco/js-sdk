@@ -2,16 +2,11 @@
 import { Item, ItemApi, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
 import { EncryptionKey } from '../models/encryption-key';
-import { DecryptedSlot, IDecryptedSlot } from '../models/local-slot';
+import { SDKDecryptedSlot } from '../models/local-slot';
 import { NewItem } from '../models/new-item';
-import { MeecoServiceError } from '../models/service-error';
 import { UpdateItem } from '../models/update-item';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
-import {
-  VALUE_VERIFICATION_KEY_LENGTH,
-  valueVerificationHash,
-  verifyHashedValue,
-} from '../util/value-verification';
+import { VALUE_VERIFICATION_KEY_LENGTH, valueVerificationHash } from '../util/value-verification';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 import { ShareService } from './share-service';
 
@@ -20,7 +15,6 @@ import { ShareService } from './share-service';
  */
 export class ItemService extends Service<ItemApi> {
   // for mocking during testing
-  private static verifyHashedValue = (<any>global).verifyHashedValue || verifyHashedValue;
   private static valueVerificationHash =
     (<any>global).valueVerificationHash || valueVerificationHash;
 
@@ -36,46 +30,9 @@ export class ItemService extends Service<ItemApi> {
   /**
    * Updates 'value' to the decrypted 'encrypted_value' and sets 'encrypted' to false.
    */
-  public static async decryptSlot(credentials: IDEK, slot: Slot): Promise<IDecryptedSlot> {
-    const { data_encryption_key: dek } = credentials;
-
-    const value =
-      slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
-        ? await Service.cryppo.decryptWithKey({
-            key: dek.key,
-            serialized: slot.encrypted_value,
-          })
-        : (slot as DecryptedSlot).value;
-
-    let decryptedValueVerificationKey: string | undefined;
-
-    if (value != null && !slot.own && slot.encrypted_value_verification_key != null) {
-      decryptedValueVerificationKey = await Service.cryppo.decryptWithKey({
-        serialized: slot.encrypted_value_verification_key,
-        key: dek.key,
-      });
-
-      if (
-        slot.value_verification_hash !== null &&
-        !ItemService.verifyHashedValue(
-          decryptedValueVerificationKey as string,
-          value,
-          slot.value_verification_hash
-        )
-      ) {
-        throw new MeecoServiceError(
-          `Decrypted slot ${slot.name} with value ${value} does not match original value.`
-        );
-      }
-    }
-
-    const decrypted = {
-      ...slot,
-      encrypted: false,
-      value,
-      value_verification_key: decryptedValueVerificationKey,
-    };
-    return decrypted;
+  public static async decryptSlot(credentials: IDEK, slot: Slot): Promise<SDKDecryptedSlot> {
+    // TODO: find an appropriate spot for this
+    return DecryptedItem.decryptSlot(slot, credentials.data_encryption_key);
   }
 
   /**
@@ -219,8 +176,6 @@ export class ItemService extends Service<ItemApi> {
 
     return DecryptedItem.fromAPI({ data_encryption_key: dataEncryptionKey }, result);
   }
-
-  // TODO why is IDecryptedSlot != DecryptedSlot?
 
   public async list(
     credentials: IVaultToken,

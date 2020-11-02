@@ -2,16 +2,16 @@ import { NestedSlotAttributes, Slot } from '@meeco/vault-api-sdk';
 import parameterize from 'parameterize';
 
 /**
- * For all intents and purposes - this is a `Slot` from `@meeco/vault-api-sdk`.
- *
- * Mostly because the Meeco Vault API `Slot` no longer has `value` - `DecryptedSlot` represents a slot with a decrypted `encrypted_value`.
+ * After decryption all `encrypted_X` props are replaced with `X` props.
+ * In particular `encrypted_value` becomes `value`.
  */
-export type DecryptedSlot = Omit<NestedSlotAttributes, 'encrypted_value'>;
-
-export interface IDecryptedSlot extends Slot {
-  value_verification_key?: string;
-  value?: string;
-}
+export type SDKDecryptedSlot = Omit<
+  Slot,
+  'encrypted_value' | 'encrypted_value_verification_key'
+> & {
+  value: string | null;
+  value_verification_key: string | null;
+};
 
 export enum SlotType {
   Bool = 'bool',
@@ -32,8 +32,9 @@ export enum SlotType {
 }
 
 /** Every Slot must have either a non-empty name or label */
-export type MinimalSlot = { name: string, label?: string } | { name?: string, label: string };
+export type MinimalSlot = { name: string; label?: string } | { name?: string; label: string };
 
+/** Optional attributes which can be specified when creating a new Slot */
 export type SlotAttributes = Omit<NestedSlotAttributes, 'name' | 'label'>;
 
 export type NewSlot = MinimalSlot & SlotAttributes;
@@ -65,7 +66,9 @@ export function nameFromLabel(label: string): string {
  * Represent an Item as a map from Slot.names to Slots.
  * @param item
  */
-export function toNameSlotMap<S extends MinimalSlot, T extends { slots: S[] } >(item: T): Record<string, S> {
+export function toNameSlotMap<S extends MinimalSlot, T extends { slots: S[] }>(
+  item: T
+): Record<string, S> {
   function getSlotName(slot: S): string {
     return slot.name || nameFromLabel(slot.label!);
   }
