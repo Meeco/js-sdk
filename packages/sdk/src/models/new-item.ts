@@ -1,9 +1,8 @@
 import { ItemTemplate, NestedSlotAttributes, PostItemsRequest, Slot } from '@meeco/vault-api-sdk';
-import { ItemService } from '../services/item-service';
 import { slotToNewSlot } from '../util/transformers';
 import { EncryptionKey } from './encryption-key';
 import ItemChange from './item-change';
-import { findWithEncryptedValue, NewSlot } from './local-slot';
+import { NewSlot, SlotHelpers } from './local-slot';
 
 /** An Item which does not exist in the API */
 export class NewItem extends ItemChange {
@@ -46,7 +45,7 @@ export class NewItem extends ItemChange {
    * @param dek
    */
   async toRequest(dek: EncryptionKey): Promise<PostItemsRequest> {
-    const badValue = findWithEncryptedValue(this.slots);
+    const badValue = SlotHelpers.findWithEncryptedValue(this.slots);
     if (badValue) {
       throw new Error(
         `Slot ${badValue['name'] ||
@@ -56,7 +55,7 @@ export class NewItem extends ItemChange {
     // TODO should enforce map integrity?
 
     const slots_attributes: NestedSlotAttributes[] = await Promise.all(
-      this.slots.map(slot => ItemService.encryptSlot({ data_encryption_key: dek }, slot))
+      this.slots.map(slot => SlotHelpers.encryptSlot({ data_encryption_key: dek }, slot))
     );
 
     return {

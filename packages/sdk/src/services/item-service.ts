@@ -1,12 +1,9 @@
 // import * as MeecoAzure from '@meeco/azure-block-upload';
-import { Item, ItemApi, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
+import { Item, ItemApi, ItemsResponse } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
-import { EncryptionKey } from '../models/encryption-key';
-import { SDKDecryptedSlot } from '../models/local-slot';
 import { NewItem } from '../models/new-item';
 import { UpdateItem } from '../models/update-item';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
-import { VALUE_VERIFICATION_KEY_LENGTH, valueVerificationHash } from '../util/value-verification';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 import { ShareService } from './share-service';
 
@@ -14,10 +11,6 @@ import { ShareService } from './share-service';
  * Used for fetching and sending `Items` to and from the Vault.
  */
 export class ItemService extends Service<ItemApi> {
-  // for mocking during testing
-  private static valueVerificationHash =
-    (<any>global).valueVerificationHash || valueVerificationHash;
-
   /**
    * True if the Item was received via a Share from another user.
    * In that case, it must be decrypted with the Share DEK, not the user's own DEK.
@@ -25,93 +18,6 @@ export class ItemService extends Service<ItemApi> {
    */
   public static itemIsFromShare(item: Item): boolean {
     return item.own === false || !!item.share_id;
-  }
-
-  /**
-   * Updates 'value' to the decrypted 'encrypted_value' and sets 'encrypted' to false.
-   */
-  public static async decryptSlot(credentials: IDEK, slot: Slot): Promise<SDKDecryptedSlot> {
-    // TODO: find an appropriate spot for this
-    return DecryptedItem.decryptSlot(slot, credentials.data_encryption_key);
-  }
-
-  /**
-   * Encrypt the value in the Slot. Undefined values are not changed.
-   *
-   * After successful encryption, Slot.encrypted = true and Slot.value is deleted.
-   * @param slot
-   * @param dek Data Encryption Key
-   */
-  public static async encryptSlot<T extends { value?: string | null | undefined }>(
-    credentials: IDEK,
-    slot: T
-  ): Promise<Omit<T, 'value'> & { encrypted: boolean; encrypted_value: string | undefined }> {
-    const { data_encryption_key: dek } = credentials;
-    const encrypted = {
-      ...slot,
-      encrypted: false,
-      encrypted_value: undefined,
-    };
-
-    if (slot.value) {
-      encrypted.encrypted_value = await Service.cryppo
-        .encryptWithKey({
-          strategy: Service.cryppo.CipherStrategy.AES_GCM,
-          key: dek.key,
-          data: slot.value,
-        })
-        .then(result => result.serialized);
-
-      delete encrypted.value;
-      encrypted.encrypted = true;
-    }
-
-    return encrypted;
-  }
-
-  /**
-   * Add a verification hash and (encrypted) key to the Slot.
-   * This is necessary to share an Item that you own.
-   * If you do not own the Item, then just add the fields but leave them undefined.
-   * @param slot
-   * @param dek Data Encryption Key
-   */
-  public static async addVerificationHash<
-    T extends { own: boolean; value: string | undefined | null }
-  >(
-    slot: T,
-    dek: EncryptionKey
-  ): Promise<
-    T & {
-      value_verification_hash: string | undefined;
-      encrypted_value_verification_key: string | undefined;
-    }
-  > {
-    if (slot.own && slot.value) {
-      const valueVerificationKey = Service.cryppo.generateRandomKey(
-        VALUE_VERIFICATION_KEY_LENGTH
-      ) as string;
-      const verificationHash = ItemService.valueVerificationHash(valueVerificationKey, slot.value);
-      const encryptedValueVerificationKey = await Service.cryppo
-        .encryptWithKey({
-          data: valueVerificationKey,
-          key: dek.key,
-          strategy: Service.cryppo.CipherStrategy.AES_GCM,
-        })
-        .then(result => result.serialized);
-
-      return {
-        ...slot,
-        encrypted_value_verification_key: encryptedValueVerificationKey,
-        value_verification_hash: verificationHash,
-      };
-    } else {
-      return {
-        ...slot,
-        encrypted_value_verification_key: undefined,
-        value_verification_hash: undefined,
-      };
-    }
   }
 
   public getAPI(token: IVaultToken) {

@@ -6,20 +6,13 @@ import {
   Item,
   ItemResponse,
   ItemsIdSharesSlotValues,
-  Slot,
   Thumbnail,
 } from '@meeco/vault-api-sdk';
 import cryppo from '../services/cryppo-service';
-import { ItemService } from '../services/item-service';
 import { IDEK } from '../services/service';
-import {
-  VALUE_VERIFICATION_KEY_LENGTH,
-  valueVerificationHash,
-  verifyHashedValue,
-} from '../util/value-verification';
-import { EncryptionKey } from './encryption-key';
+import { VALUE_VERIFICATION_KEY_LENGTH, valueVerificationHash } from '../util/value-verification';
 import ItemMap from './item-map';
-import { NewSlot, SDKDecryptedSlot } from './local-slot';
+import { NewSlot, SDKDecryptedSlot, SlotHelpers } from './local-slot';
 import { UpdateItem } from './update-item';
 
 /**
@@ -62,92 +55,8 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
   private allClassificationNodes: ClassificationNode[];
 
   public static async fromAPI(key: IDEK, response: ItemResponse) {
-    const slots = await Promise.all(
-      response.slots.map(s => DecryptedItem.decryptSlot(s, key.data_encryption_key))
-    );
+    const slots = await Promise.all(response.slots.map(s => SlotHelpers.decryptSlot(key, s)));
     return new DecryptedItem(response.item, slots, response);
-  }
-
-  public static async decryptSlot(slot: Slot, dek: EncryptionKey): Promise<SDKDecryptedSlot> {
-    function throwIfNull<T>(descriptor: string) {
-      return (x: T | null) => {
-        if (x === null) {
-          throw new Error(`${descriptor} was null, but should have a value`);
-        }
-
-        return x;
-      };
-    }
-
-    // ensure result really does match the type
-    function cleanResult(spec: {
-      encrypted: boolean;
-      value: string | null;
-      value_verification_key: string | null;
-    }): SDKDecryptedSlot {
-      const decrypted: any = {
-        ...slot,
-        ...spec,
-      };
-
-      delete decrypted.encrypted_value;
-      delete decrypted.encrypted_value_verification_key;
-
-      return decrypted;
-    }
-
-    if (!slot.encrypted) {
-      return cleanResult({
-        encrypted: false,
-        value: null,
-        value_verification_key: null,
-      });
-    } else if (slot.encrypted_value === null) {
-      // need to check encrypted_value as binaries will also have `encrypted: true`
-      return cleanResult({
-        encrypted: true,
-        value: null,
-        value_verification_key: null,
-      });
-    }
-
-    const value = await DecryptedItem.cryppo
-      .decryptStringWithKey({
-        key: dek.key,
-        serialized: slot.encrypted_value,
-      })
-      .then(throwIfNull('Slot decrypted value'));
-
-    let decryptedValueVerificationKey: string | null = null;
-
-    if (slot.encrypted_value_verification_key != null) {
-      decryptedValueVerificationKey = await DecryptedItem.cryppo
-        .decryptStringWithKey({
-          serialized: slot.encrypted_value_verification_key,
-          key: dek.key,
-        })
-        .then(throwIfNull('Slot decrypted value_verification_key'));
-
-      if (
-        !slot.own &&
-        slot.value_verification_hash !== null &&
-        !verifyHashedValue(
-          <string>decryptedValueVerificationKey,
-          value,
-          slot.value_verification_hash
-        )
-      ) {
-        throw new Error(
-          `Decrypted slot ${slot.name} with value ${value} does not match original value.`
-        );
-      }
-    }
-
-    return cleanResult({
-      encrypted: false,
-      value,
-      value_verification_key: decryptedValueVerificationKey,
-    });
   }
 
   constructor(
@@ -257,7 +166,7 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
 
     return Promise.all(
       this.slots.map(async s => {
-        const encrypted = await ItemService.encryptSlot(credentials, s);
+        const encrypted = await SlotHelpers.encryptSlot(credentials, s);
 
         if (s.value) {
           return {
@@ -295,7 +204,7 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
   async toEncryptedSlotValues(credentials: IDEK): Promise<EncryptedSlotValue[]> {
     return Promise.all(
       this.slots.map(async slot => {
-        const withHash = await ItemService.addVerificationHash(
+        const withHash = await SlotHelpers.addVerificationHash(
           slot,
           credentials.data_encryption_key
         );
@@ -304,7 +213,7 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
           encrypted_value,
           encrypted_value_verification_key,
           value_verification_hash,
-        } = await ItemService.encryptSlot(credentials, withHash);
+        } = await SlotHelpers.encryptSlot(credentials, withHash);
 
         // TODO due to an API bug, this doesn't typecheck when encrypted_value is undefined
         return {

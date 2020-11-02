@@ -60,6 +60,16 @@ export class ShareService extends Service<SharesApi> {
   private static valueVerificationHash =
     (<any>global).valueVerificationHash || valueVerificationHash;
 
+  /**
+   * When a share is initially created it is encrypted with a generated
+   * symmetric key, encrypted with the recipient's public key.
+   * See {@link getShareDEK} for decrypting that key.
+   * @returns true if the share is encrypted with the shared key.
+   */
+  public static shareEncryptedWithSharedKey(share: Share): boolean {
+    return !!share.encrypted_dek;
+  }
+
   public getAPI(token: IVaultToken) {
     return this.vaultAPIFactory(token.vault_access_token).SharesApi;
   }

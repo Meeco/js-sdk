@@ -4,11 +4,10 @@ import {
   NestedSlotAttributes,
   PutItemsRequest,
 } from '@meeco/vault-api-sdk';
-import { ItemService } from '../services/item-service';
 import { IDEK } from '../services/service';
 import { toNestedClassificationNode } from '../util/transformers';
 import ItemChange from './item-change';
-import { findWithEncryptedValue, NewSlot } from './local-slot';
+import { NewSlot, SlotHelpers } from './local-slot';
 import { NewItem } from './new-item';
 
 /** Construct an update for an existing Item given its id. */
@@ -50,7 +49,7 @@ export class UpdateItem extends ItemChange {
   // for PUT /items/id
   // - should encrypt all values in slots attributes request
   public async toRequest(key: IDEK): Promise<PutItemsRequest> {
-    if (findWithEncryptedValue(this.slots)) {
+    if (SlotHelpers.findWithEncryptedValue(this.slots)) {
       throw new Error('Slot`s existing value will be overwritten');
     }
 
@@ -61,7 +60,7 @@ export class UpdateItem extends ItemChange {
     let slots_attributes: NestedSlotAttributes[] | undefined;
     if (this.slots.length > 0) {
       slots_attributes = await Promise.all(
-        this.slots.map(slot => ItemService.encryptSlot(key, slot))
+        this.slots.map(slot => SlotHelpers.encryptSlot(key, slot))
       );
     }
 

@@ -1,4 +1,4 @@
-import { DecryptedItem, EncryptionKey } from '@meeco/sdk';
+import { DecryptedItem, EncryptionKey, SlotHelpers } from '@meeco/sdk';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { default as BasicItem } from '../fixtures/responses/item-response/basic';
@@ -79,7 +79,7 @@ describe('DecryptedItem', () => {
       });
 
     customTest
-      .stub(DecryptedItem, 'decryptSlot', sinon.stub().returns({}))
+      .stub(SlotHelpers, 'decryptSlot', sinon.stub().returns({}))
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, ReceivedItem))
       .it('recognizes a received Item', async ({ item }) => {
         expect(item.isOwned()).to.equal(false);
