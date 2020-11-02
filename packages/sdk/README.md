@@ -197,23 +197,23 @@ const service = new UserService();
 const authData = await userService.getAuthData(password, secret);
 // Create the item
 const service = new ItemService(environment);
-const item = await service.create(user.vault_access_token, authData, {
-  template_name: availableTemplates.item_templates[0].name,
-  item: {
-    label: 'My Car',
-  },
-  slots: [
-    {
-      name: 'make_model',
-      value: 'Ford Focus',
-    },
-    {
-      name: 'year',
-      value: '2017',
-    },
-  ],
-});
+const selectedTemplate = availableTemplates.item_templates[0];
+const newItem =
+    NewItem.fromTemplate(selectedTemplate, selectedTemplate.slots, 'My Car',
+                         [{
+                             name: 'make_model',
+                             value: 'Ford Focus',
+                         },
+                          {
+                             name: 'year',
+                             value: '2017',
+                         }],
+                        );
+const item = await service.create(user.vault_access_token, authData, newItem);
 ```
+
+`NewItem` is a wrapper class that helps with the staging of a new created Item. It provides helpful commands
+for adding or removing slots and "previewing" the Item.
 
 We can also fetch a list of a user's items or get details about a specific item in a manner similar to templates:
 
@@ -227,6 +227,60 @@ const service = new ItemService(environment);
 const items = await service.list(user.vault_access_token);
 // Get more details about a particular item
 const itemDetails = await service.get(items[0].id, authData);
+```
+
+The SDK provides several convenience classes for the various interactions you will have with Items:
+- `NewItem`: describe an Item that doesn't yet exist in the backend (as above)
+- `DecryptedItem`: an Item retrieved with ItemService.get, automatically decrypted using user credentials
+- `UpdateItem`: describe an Item update using only its id (i.e. you don't download the Item first).
+
+There are two uses for `DecryptedItem` within the SDK: updating or sharing it.
+
+`DecryptedItem` is immutable (the API object it represents can be updated though), so an update must create an `UpdateItem`:
+
+``` typescript
+const decryptedItem = await new ItemService(environment).get(...);
+
+// you can view item properties as usual
+decryptedItem.name;
+decryptedItem.id;
+// view the Item as a map of slot names to slots
+decryptedItem.toMap();
+
+// if you need to see the Item as it was sent from the API
+decryptedItem.item;
+
+// prepare an update
+const update = decryptedItem.update({
+  label: 'new_label',
+  classifications: nodes,
+  slots: slots, // new values for slots will be merged with existing
+});
+
+// assign values to the update using a map:
+update.assignValues({ make_model: 'BMW' }) // instead of { name: 'make_model', value: 'BMW' }
+
+// delete slots from the update by name
+// (delete slots in the API item using ItemService.removeSlot)
+update.removeSlot('make_model');
+
+new ItemService(environment).update(credentials, update);
+```
+
+To share
+``` typescript
+const item = await new ItemService(environment).get(credentials, 'item_id');
+new ShareService(environment).share(credentials, item);
+```
+
+As you can see, the SDK handles all encryption/decryption in the background.
+If you would like to manage that yourself, you can easily access the base API method via ItemService:
+
+``` typescript
+const itemAPI: Meeco.ItemAPI = new ItemService(...).getAPI(...);
+const encryptedItem = api.get(id);
+// ... do some client-side encryption modification
+api.post(itemJSON);
 ```
 
 ### Connecting Users and Sharing Data
