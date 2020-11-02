@@ -12,7 +12,7 @@ import {
 } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
 import { EncryptionKey } from '../models/encryption-key';
-import { SDKDecryptedSlot } from '../models/local-slot';
+import { SDKDecryptedSlot, SlotHelpers } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import { getAllPaged, reducePages } from '../util/paged';
 import { VALUE_VERIFICATION_KEY_LENGTH, valueVerificationHash } from '../util/value-verification';
@@ -98,18 +98,23 @@ export class ShareService extends Service<SharesApi> {
 
     this.logger.log('Preparing item to share');
     const item = await new ItemService(this.environment).get(credentials, itemId);
-    let { slots } = item;
+    const { slots } = item;
 
     this.logger.log('Encrypting slots with generated DEK');
     const dek = EncryptionKey.fromRaw(Service.cryppo.generateRandomKey());
 
+    let encryptions: EncryptedSlotValue[];
     if (shareOptions.slot_id) {
-      slots = slots.filter(slot => slot.id === shareOptions.slot_id);
+      const shareSlot = slots.find(slot => slot.id === shareOptions.slot_id);
+      if (!shareSlot) {
+        throw new Error('could not find slot with id');
+      }
+      encryptions = [await SlotHelpers.toEncryptedSlotValue(credentials, shareSlot)];
+    } else {
+      encryptions = await item.toEncryptedSlotValues({
+        data_encryption_key: dek,
+      });
     }
-
-    const encryptions: EncryptedSlotValue[] = await item.toEncryptedSlotValues({
-      data_encryption_key: dek,
-    });
 
     const encryptedDek = await Service.cryppo.encryptWithPublicKey({
       publicKeyPem: user_public_key,

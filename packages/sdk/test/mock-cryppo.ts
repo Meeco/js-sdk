@@ -58,18 +58,16 @@ export function _mockCryppo() {
         });
       });
 
+      const simpleDecrypt = args => {
+        return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
+      };
+
       // deprecated
-      sandbox.stub(<any>_cryppoService, 'decryptWithKey').callsFake(args => {
-        return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
-      });
+      sandbox.stub(<any>_cryppoService, 'decryptWithKey').callsFake(simpleDecrypt);
 
-      sandbox.stub(<any>_cryppoService, 'decryptStringWithKey').callsFake(args => {
-        return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
-      });
+      sandbox.stub(<any>_cryppoService, 'decryptStringWithKey').callsFake(simpleDecrypt);
 
-      sandbox.stub(<any>_cryppoService, 'decryptBinaryWithKey').callsFake(args => {
-        return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
-      });
+      sandbox.stub(<any>_cryppoService, 'decryptBinaryWithKey').callsFake(simpleDecrypt);
 
       sandbox.stub(<any>_cryppoService, 'signWithPrivateKey').callsFake((pem, data) => {
         return {

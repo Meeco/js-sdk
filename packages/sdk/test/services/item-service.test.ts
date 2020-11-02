@@ -93,14 +93,13 @@ describe('ItemService', () => {
     customTest
       .mockCryppo()
       .nock('https://sandbox.meeco.me/vault', getItem(MockItemResponse))
-      .it('returns an item with all slots decrypted', async () => {
-        const result = await new ItemService(environment).get(testUserAuth, 'my-item');
-
-        const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
-          'get-item.output.json'
-        );
-        expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
-        expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
+      .add('result', () => new ItemService(environment).get(testUserAuth, 'my-item'))
+      .it('returns an item with all slots decrypted', async ({ result }) => {
+        for (const s of result.slots) {
+          if (s.value) {
+            expect(s.value).to.match(/.*\[decrypted with my_generated_dek\]$/);
+          }
+        }
       });
 
     // gets a shared item
