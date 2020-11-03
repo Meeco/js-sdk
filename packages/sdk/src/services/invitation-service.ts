@@ -1,5 +1,7 @@
+import { Keypair } from '@meeco/keystore-api-sdk';
 import { Connection, Invitation, InvitationApi } from '@meeco/vault-api-sdk';
 import { EncryptionKey } from '../models/encryption-key';
+import { MeecoServiceError } from '../models/service-error';
 import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
 
 export class InvitationService extends Service<InvitationApi> {
@@ -7,9 +9,16 @@ export class InvitationService extends Service<InvitationApi> {
     return this.vaultAPIFactory(token.vault_access_token).InvitationApi;
   }
 
+  /**
+   * Create an invitation token for a Connection (exchanging public keys to share Items).
+   * @param connectionName Used in the new Connection, only visible to the creating user.
+   * @param keypairId Use this public key in the new Connection. This is a Keystore Keypair.id (not external_id).
+   * Throws an error if the key pair does not exist.
+   */
   public async create(
     credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
-    name: string
+    connectionName: string,
+    keypairId?: string
   ): Promise<Invitation> {
     const {
       vault_access_token,
@@ -18,17 +27,23 @@ export class InvitationService extends Service<InvitationApi> {
       data_encryption_key,
     } = credentials;
 
-    const keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
+    let keyPair: Keypair;
+
+    if (keypairId) {
+      keyPair = await this.getKeyPair(keystore_access_token, keypairId);
+    } else {
+      keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
+    }
 
     this.logger.log('Encrypting recipient name');
-    const encryptedName: string = await this.encryptName(name, data_encryption_key);
+    const encryptedName: string = await this.encryptName(connectionName, data_encryption_key);
 
     this.logger.log('Sending invitation request');
     return this.vaultAPIFactory(vault_access_token)
       .InvitationApi.invitationsPost({
         public_key: {
-          keypair_external_id: keyPair.keystoreStoredKeyPair.id,
-          public_key: keyPair.keyPair.publicKey,
+          keypair_external_id: keyPair.id,
+          public_key: keyPair.public_key,
         },
         invitation: {
           encrypted_recipient_name: encryptedName,
@@ -37,10 +52,18 @@ export class InvitationService extends Service<InvitationApi> {
       .then(result => result.invitation);
   }
 
+  /**
+   * Create a Connection from an Invitation token.
+   * @param connectionName Used in the new Connection, only visible to the creating user.
+   * @param invitationToken From an existing Invitation request. Throws an exception if it does not exist.
+   * @param keypairId Use this public key in the new Connection. This is a Keystore Keypair.id (not external_id).
+   * Throws an error if the key pair does not exist.
+   */
   public async accept(
     credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
     name: string,
-    invitationToken: string
+    invitationToken: string,
+    keypairId?: string
   ): Promise<Connection> {
     const {
       keystore_access_token,
@@ -48,7 +71,14 @@ export class InvitationService extends Service<InvitationApi> {
       key_encryption_key,
       data_encryption_key,
     } = credentials;
-    const keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
+
+    let keyPair: Keypair;
+
+    if (keypairId) {
+      keyPair = await this.getKeyPair(keystore_access_token, keypairId);
+    } else {
+      keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
+    }
 
     this.logger.log('Encrypting connection name');
     const encryptedName: string = await this.encryptName(name, data_encryption_key);
@@ -57,8 +87,8 @@ export class InvitationService extends Service<InvitationApi> {
     return this.vaultAPIFactory(vault_access_token)
       .ConnectionApi.connectionsPost({
         public_key: {
-          keypair_external_id: keyPair.keystoreStoredKeyPair.id,
-          public_key: keyPair.keyPair.publicKey,
+          keypair_external_id: keyPair.id,
+          public_key: keyPair.public_key,
         },
         connection: {
           encrypted_recipient_name: encryptedName,
@@ -76,6 +106,19 @@ export class InvitationService extends Service<InvitationApi> {
         strategy: Service.cryppo.CipherStrategy.AES_GCM,
       })
       .then(result => result.serialized);
+  }
+
+  private async getKeyPair(keystoreToken: string, id: string): Promise<Keypair> {
+    try {
+      return await this.keystoreAPIFactory(keystoreToken)
+        .KeypairApi.keypairsIdGet(id)
+        .then(result => result.keypair);
+    } catch (error) {
+      if ((<Response>error).status === 404) {
+        throw new MeecoServiceError(`KeyPair with id '${id}' not found`);
+      }
+      throw error;
+    }
   }
 
   private async createAndStoreKeyPair(keystoreToken: string, keyEncryptionKey: EncryptionKey) {
@@ -98,9 +141,6 @@ export class InvitationService extends Service<InvitationApi> {
       })
       .then(result => result.keypair);
 
-    return {
-      keyPair,
-      keystoreStoredKeyPair,
-    };
+    return keystoreStoredKeyPair;
   }
 }

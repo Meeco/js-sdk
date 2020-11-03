@@ -1,26 +1,24 @@
 import { expect } from '@oclif/test';
-import nock from 'nock/types';
 import { InvitationService } from 'packages/sdk/src/services/invitation-service';
-import {
-  customTest,
-  environment,
-  getInputFixture,
-  getOutputFixture,
-  testUserAuthFixture,
-} from '../test-helpers';
+import sinon from 'sinon';
+import { customTest, environment, getOutputFixture, testUserAuth } from '../test-helpers';
 
 describe('Organization-members accept-invitation', () => {
+  const token = 'I2aUc0zEU2veqg52QtKbwEsJ1eNIqWlBdjH5FrRIKXg';
+
   customTest
     .mockCryppo()
-    .nock('https://sandbox.meeco.me/vault', mockVault)
-    .nock('https://sandbox.meeco.me/keystore', stubKeystore)
-    .it('Requests the creation of a new organization member invitation', async () => {
-      const input = getInputFixture('accept-organization-members-invitation.input.json');
-      const result = await new InvitationService(environment).accept(
-        testUserAuthFixture,
-        '',
-        input.token
-      );
+    .nock('https://sandbox.meeco.me/vault', api => api.post('/connections').reply(200, response))
+    .stub(
+      InvitationService.prototype,
+      'createAndStoreKeyPair',
+      sinon.stub().returns({
+        id: 'from_stored_keypair_id',
+        public_key: '--PUBLIC_KEY--ABCD',
+      })
+    )
+    .it('preserves connection metadata', async () => {
+      const result = await new InvitationService(environment).accept(testUserAuth, '', token);
 
       const { privateKey, publicKey, ...expectedSpec } = getOutputFixture(
         'accept-organization-members-invitation.output.json'
@@ -64,37 +62,3 @@ const response = {
     },
   },
 };
-
-function mockVault(api) {
-  api
-    .post('/connections', {
-      public_key: {
-        keypair_external_id: 'from_stored_keypair_id',
-        public_key: '--PUBLIC_KEY--ABCD',
-      },
-      connection: {
-        encrypted_recipient_name: '[serialized][encrypted][with undefined]',
-        invitation_token: 'I2aUc0zEU2veqg52QtKbwEsJ1eNIqWlBdjH5FrRIKXg',
-      },
-    })
-    .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, response);
-}
-
-function stubKeystore(api: nock.Scope) {
-  api
-    .post('/keypairs', {
-      public_key: '--PUBLIC_KEY--ABCD',
-      encrypted_serialized_key: '[serialized][encrypted]--PRIVATE_KEY--12324[with undefined]',
-      metadata: {},
-      external_identifiers: [],
-    })
-    .matchHeader('Authorization', 'a2V5c3RvcmVfYXV0aF90b2tlbg==')
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, {
-      keypair: {
-        id: 'from_stored_keypair_id',
-      },
-    });
-}

@@ -39,14 +39,14 @@ export function _mockCryppo() {
 
       sandbox.stub(<any>_cryppoService, 'encryptStringWithKey').callsFake(args => {
         return Promise.resolve({
-          serialized: `[serialized][encryptqed]${args.data}[with ${args.key}]`,
+          serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
           encrypted: `[encrypted]${args.data}`,
         });
       });
 
       sandbox.stub(<any>_cryppoService, 'encryptBinaryWithKey').callsFake(args => {
         return Promise.resolve({
-          serialized: `[serialized][encryptqed]${args.data}[with ${args.key}]`,
+          serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
           encrypted: `[encrypted]${args.data}`,
         });
       });
