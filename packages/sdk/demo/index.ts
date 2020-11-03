@@ -3,7 +3,10 @@ import {
   configureFetch,
   Environment,
   ItemService,
+  NewItem,
+  SDKTemplate,
   Secrets,
+  TemplateService,
   UserService,
 } from '../src/index';
 import './styles.scss';
@@ -75,7 +78,9 @@ $('getSecret').addEventListener('click', getSecret);
 $('fetchUserData').addEventListener('click', fetchUserData);
 $('createUser').addEventListener('click', createUser);
 $('getItems').addEventListener('click', getItems);
+$('getTemplates').addEventListener('click', getTemplates);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
+$('createItem').addEventListener('click', createItem);
 
 async function getUsername() {
   try {
@@ -93,7 +98,7 @@ async function getSecret() {
   if (!username) {
     return alert('Generating a secret requires a username');
   }
-  const secret = await Secrets.generateSecret(username);
+  const secret = Secrets.generateSecret(username);
   $set('secret', secret);
 }
 
@@ -108,7 +113,7 @@ async function fetchUserData() {
   }
 
   try {
-    const user = await new UserService(environment, log).get(passphrase, secret);
+    const user = await new UserService(environment, log).getAuthData(passphrase, secret);
     STATE.user = user;
     $set('userData', JSON.stringify(user, null, 2));
   } catch (error) {
@@ -151,6 +156,78 @@ async function getItems() {
   }
 }
 
+async function getTemplates() {
+  clearLog();
+  if (!STATE.user) {
+    return alert('Fetch user data above before fetching templates');
+  }
+  $set('templates', '');
+  try {
+    const templates = await new TemplateService(environment, log).list(STATE.user);
+    $set('templates', JSON.stringify(templates, null, 2));
+
+    // seed template selector
+    const options = templates.item_templates
+      .map(t => `<option value="${t.name}">${t.label}</option>`)
+      .join('');
+    $('templateSelect').innerHTML = options;
+
+    const templateSelectHandler = () => {
+      const templateName = $get('templateSelect');
+      const sdkTemplate = new SDKTemplate(
+        templates.item_templates.find(t => t.name === templateName)!,
+        templates.slots
+      );
+      const slotHTML = sdkTemplate.slots
+        .map(
+          s =>
+            `<label>${s.label}</label><input name="${s.name}" type="${slotTypeToInputType(
+              s.slot_type_name
+            )}">`
+        )
+        .join('');
+      $('formSlots').innerHTML = slotHTML;
+    };
+
+    // seed new item slots on select
+    $('templateSelect').addEventListener('change', templateSelectHandler);
+
+    // initialize slots with the first selection
+    templateSelectHandler();
+  } catch (error) {
+    $set('templates', `Error (See Action Log for Details)`);
+    return handleException(error);
+  }
+}
+
+async function createItem() {
+  clearLog();
+  if (!STATE.user) {
+    return alert('Fetch user data above first');
+  }
+  $set('newItem', '');
+  try {
+    // get field values
+    const label = $get('labelField');
+    const templateName = $get('templateSelect');
+    // construct Item with slot values
+    const item = new NewItem(label, templateName, readItemSlots());
+    const newItem = await new ItemService(environment, log).create(STATE.user, item);
+    $set('newItem', JSON.stringify(newItem, null, 2));
+  } catch (error) {
+    $set('newItem', `Error (See Action Log for Details)`);
+    return handleException(error);
+  }
+}
+
+function readItemSlots(): Array<{ name: string; value: string }> {
+  const result: any[] = [];
+  $('formSlots')
+    .querySelectorAll('input')
+    .forEach((input: any) => result.push({ name: input.name, value: input.value }));
+  return result;
+}
+
 async function handleException(error) {
   let errorMessage: string;
   if (error && error.json && typeof error.json === 'function') {
@@ -174,6 +251,23 @@ function log(message: string) {
 function clearLog() {
   $set('log', '');
   $('log').scrollTop = 0;
+}
+
+function slotTypeToInputType(ty: string): string {
+  switch (ty) {
+    case 'bool':
+      return 'checkbox';
+    case 'date':
+    case 'datetime':
+      return 'date';
+    case 'password':
+      return 'password';
+    case 'phone_number':
+      return 'number';
+    case 'key_value':
+    default:
+      return 'text';
+  }
 }
 
 // function getCaptchaToken() {
