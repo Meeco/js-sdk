@@ -3,10 +3,9 @@ import { expect } from 'chai';
 import { testUserAuth } from '../test-helpers';
 
 describe('UpdateItem', () => {
-
   describe('#constructor', () => {
     it('throws an Error when given an empty label', () => {
-      expect(() => new UpdateItem('itemId', { label: ''})).to.throw();
+      expect(() => new UpdateItem('itemId', { label: '' })).to.throw();
     });
   });
 

@@ -1,7 +1,7 @@
-import { ITemplateData } from '@meeco/sdk';
-import { ItemResponse, Slot } from '@meeco/vault-api-sdk';
+import { DecryptedItem, ITemplateData } from '@meeco/sdk';
+import { Slot } from '@meeco/vault-api-sdk';
 import { CLIError } from '@oclif/errors';
-import { ITEM_ASSOCIATIONS, SLOT_TYPE_BLACKLIST } from '../util/constants';
+import { SLOT_TYPE_BLACKLIST } from '../util/constants';
 import { ConfigReader, IYamlConfig } from './yaml-config';
 
 export interface IItemTemplate {
@@ -42,19 +42,14 @@ export class ItemNewConfig {
 
   // Print the response after creating an object
   // TODO this should be its own file, it is identical with ItemUpdateConfig
-  static encodeFromJSON(data: ItemResponse) {
-    const nested = ITEM_ASSOCIATIONS.reduce((res, key) => {
-      if (data[key]) {
-        res[key] = data[key];
-      }
-      return res;
-    }, {});
-
+  static encodeFromJSON(data: DecryptedItem) {
+    const { item, slots, classification_nodes } = data;
     return {
       kind: ItemNewConfig.kind,
       spec: {
-        ...data.item,
-        ...nested,
+        item,
+        slots,
+        classification_nodes,
       },
     };
   }

@@ -1,4 +1,4 @@
-import { ItemResponse } from '@meeco/vault-api-sdk';
+import { DecryptedItem } from '@meeco/sdk';
 import { CLIError } from '@oclif/errors';
 import { IItemTemplate, ItemNewConfig } from './item-new-config';
 import { ConfigReader, IYamlConfig } from './yaml-config';
@@ -20,7 +20,7 @@ export class ItemUpdateConfig {
     return new ItemUpdateConfig(yamlConfigObj.spec);
   }
 
-  static encodeFromJSON(data: ItemResponse) {
+  static encodeFromJSON(data: DecryptedItem) {
     return ItemNewConfig.encodeFromJSON(data);
   }
 }
