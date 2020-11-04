@@ -79,7 +79,7 @@ function create(
     classification_nodes: [],
     item: {
       id: 'item-foo',
-      template_name: itemCreateData.templateName,
+      template_name: itemCreateData.template_name,
       label: itemCreateData.label,
       slot_ids,
     },

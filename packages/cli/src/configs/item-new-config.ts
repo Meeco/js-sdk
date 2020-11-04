@@ -47,7 +47,7 @@ export class ItemNewConfig {
     return {
       kind: ItemNewConfig.kind,
       spec: {
-        item,
+        ...item,
         slots,
         classification_nodes,
       },

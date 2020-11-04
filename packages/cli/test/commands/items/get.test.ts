@@ -11,7 +11,7 @@ describe('items:get', () => {
     .run(['items:get', 'my-item', ...testUserAuth, ...testEnvironmentFile])
     .it('returns an item with all slots decrypted', ctx => {
       const expected = readFileSync(outputFixture('get-item.output.yaml'), 'utf-8');
-      expect(ctx.stdout).to.contain(expected);
+      expect(ctx.stdout.trim()).to.equal(expected.trim());
     });
 });
 
@@ -124,5 +124,6 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
     ],
     thumbnails: [],
     attachments: [],
+    classification_nodes: [],
   });
 }

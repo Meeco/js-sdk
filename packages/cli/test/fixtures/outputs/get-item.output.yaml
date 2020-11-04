@@ -99,5 +99,4 @@ spec:
       original_id: null
       owner_id: null
       value: Session Ale[decrypted with my_generated_dek]
-  thumbnails: []
-  attachments: []
+  classification_nodes: []
