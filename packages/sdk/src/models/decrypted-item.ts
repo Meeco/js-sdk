@@ -70,7 +70,7 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
       thumbnails: Thumbnail[];
     }> = {}
   ) {
-    super(slots);
+    super(slots.filter(s => item.slot_ids.some(id => id === s.id)));
 
     this.item = item;
 
@@ -137,7 +137,6 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
       slots: NewSlot[];
     }>
   ): UpdateItem {
-    // TODO should zip slots with existing ones
     return new UpdateItem(this.id, update);
   }
 
@@ -145,6 +144,7 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
    * For updating shared data (i.e. `PUT items/id/shares`).
    * The Item's slots are encrypted with the given DEK and value verification hashes are appended.
    * If verificationKey is not set, a new key will be generated for this share and used on each slot.
+   * Any existing Slot verification key is overwritten whether or not a `verificationKey` argument is provided.
    * @param verificationKey a random key that is {@link VALUE_VERIFICATION_KEY_LENGTH} bits long.
    */
   async toShareSlots(
