@@ -1,4 +1,4 @@
-import { OrganizationsService } from '@meeco/sdk';
+import { AuthData, OrganizationService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationConfig } from '../../configs/organization-config';
@@ -47,11 +47,15 @@ export default class OrganizationsLogin extends MeecoCommand {
 
     try {
       this.updateStatus('Login as an organization agent');
-      const service = new OrganizationsService(environment, authConfig!.vault_access_token);
+      const service = new OrganizationService(environment);
       this.updateStatus('Fetching organization agent credentials');
-      const result = await service.getLogin(organization.id, metadata.privateKey);
+      const result = await service.getOrganizationToken(
+        authConfig!,
+        organization.id,
+        metadata.privateKey
+      );
       this.finish();
-      this.printYaml(AuthConfig.encodeFromAuthData(result));
+      this.printYaml(AuthConfig.encodeFromAuthData(result as AuthData));
     } catch (err) {
       await this.handleException(err);
     }

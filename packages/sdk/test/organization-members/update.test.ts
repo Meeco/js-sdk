@@ -1,4 +1,4 @@
-import { OrganizationMemberRoles } from '../../src/services/organizations-service';
+import { OrganizationMemberRoles } from '../../src/services/organization-service';
 import { vaultAPIFactory } from '../../src/util/api-factory';
 import { customTest, environment, getInputFixture, testUserAuth } from '../test-helpers';
 

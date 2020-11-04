@@ -1,5 +1,5 @@
 import { OrganizationsManagingMembersApi } from '@meeco/vault-api-sdk';
-import { OrganizationMemberRoles } from './organizations-service';
+import { OrganizationMemberRoles } from './organization-service';
 import Service, { IVaultToken } from './service';
 
 /**

@@ -21,7 +21,7 @@ export * from './services/invitation-service';
 export * from './services/item-service';
 export * from './services/organization-members-service';
 export * from './services/organization-services-service';
-export * from './services/organizations-service';
+export * from './services/organization-service';
 export * from './services/service';
 export * from './services/share-service';
 export * from './services/template-service';
