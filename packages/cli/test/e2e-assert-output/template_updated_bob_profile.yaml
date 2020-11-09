@@ -1,0 +1,16 @@
+kind: Item
+metadata:
+  template_name: miksit_profile
+spec:
+  label: My Profile
+  slots:
+    - name: name
+      value: alice
+    - name: surname
+      value: smith
+    - name: dob
+      value: 1/1/2000
+    - name: gender
+      value: female
+    - name: country
+      value: australia
