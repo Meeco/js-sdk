@@ -157,11 +157,11 @@ export function buildApiConfig(
 
   const configParams: ConfigurationParameters = {
     basePath: vaultUrl,
-    headers    
+    headers,
   };
   if (fetchApi) {
     configParams['fetchApi'] = fetchApi;
-  }  
+  }
   return new Configuration(configParams);
 }
 
@@ -225,9 +225,9 @@ export async function downloadThumbnailCommon({
 }) {
   // const thumbnailApi = await new ThumbnailApi(buildApiConfig(authConfig, vaultUrl, fetchApi));
   const res = await thumbnailsIdGet(authConfig, vaultUrl, id);
-  const result  = await thumbnailDownload(res.data.redirect_url)
+  const result = await thumbnailDownload(res.data.redirect_url);
   // Chrome `Blob` objects support the arrayBuffer() methods but Safari do not - only on `Response`
-  // https://stackoverflow.com/questions/15341912/how-to-go-from-blob-to-arraybuffer  
+  // https://stackoverflow.com/questions/15341912/how-to-go-from-blob-to-arraybuffer
   const buffer = await ((<any>result).arrayBuffer
     ? (<any>result).arrayBuffer()
     : new Response(result.data).arrayBuffer());
@@ -309,24 +309,23 @@ export const ThumbnailTypes: ThumbnailType[] = [
   '512x512/png',
 ];
 
-export const thumbnailsIdGet = async (authConfig: IFileStorageAuthConfiguration, vaultUrl: any, id: string) => {
+export const thumbnailsIdGet = async (
+  authConfig: IFileStorageAuthConfiguration,
+  vaultUrl: any,
+  id: string
+) => {
   const url = vaultUrl + '/thumbnails/' + id;
-  console.log(url);
   const headers = getHeaders(authConfig);
   return axios({
     method: 'get',
     url,
-    headers
-  }).then(result => {
-    return result;
+    headers,
   });
 };
 
 export const thumbnailDownload = async (url: string) => {
   return axios({
     method: 'get',
-    url    
-  }).then(result => {
-    return result;
+    url,
   });
 };
