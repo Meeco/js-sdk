@@ -1,4 +1,8 @@
-import { ClientTask, ClientTaskQueueResponse } from '@meeco/vault-api-sdk';
+import {
+  ClientTask,
+  ClientTaskQueueGetStateEnum,
+  ClientTaskQueueResponse,
+} from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
@@ -34,8 +38,9 @@ export class ClientTaskQueueService {
 
   public async list(
     vaultAccessToken: string,
-    supressChangingState: boolean = true,
-    state: State = State.Todo,
+    change_state: boolean = true,
+    states: ClientTaskQueueGetStateEnum[] = [ClientTaskQueueGetStateEnum.Todo],
+    target_id?: string,
     options?: { nextPageAfter?: string; perPage?: number }
   ): Promise<ClientTaskQueueResponse> {
     const result = await this.vaultAPIFactory(
@@ -43,8 +48,9 @@ export class ClientTaskQueueService {
     ).ClientTaskQueueApi.clientTaskQueueGet(
       options?.nextPageAfter,
       options?.perPage,
-      supressChangingState,
-      state
+      change_state,
+      target_id,
+      states
     );
 
     if (resultHasNext(result) && options?.perPage === undefined) {
@@ -57,8 +63,9 @@ export class ClientTaskQueueService {
 
   public async listAll(
     vaultAccessToken: string,
-    supressChangingState: boolean = true,
-    state: State = State.Todo,
+    change_state: boolean = true,
+    states: ClientTaskQueueGetStateEnum[] = [ClientTaskQueueGetStateEnum.Todo],
+    target_id?: string,
     options?: {
       nextPageAfter?: string;
       perPage?: number;
@@ -66,18 +73,22 @@ export class ClientTaskQueueService {
   ): Promise<ClientTaskQueueResponse> {
     const api = this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi;
     return getAllPaged(cursor =>
-      api.clientTaskQueueGet(cursor, undefined, supressChangingState, state)
+      api.clientTaskQueueGet(cursor, undefined, change_state, target_id, states)
     ).then(reducePages);
   }
 
   public async countOutstandingTasks(vaultAccessToken: string): Promise<IOutstandingClientTasks> {
     const todoTasks = await this.vaultAPIFactory(
       vaultAccessToken
-    ).ClientTaskQueueApi.clientTaskQueueGet(undefined, undefined, true, State.Todo);
+    ).ClientTaskQueueApi.clientTaskQueueGet(undefined, undefined, true, undefined, [
+      ClientTaskQueueGetStateEnum.Todo,
+    ]);
 
     const inProgressTasks = await this.vaultAPIFactory(
       vaultAccessToken
-    ).ClientTaskQueueApi.clientTaskQueueGet(undefined, undefined, true, State.InProgress);
+    ).ClientTaskQueueApi.clientTaskQueueGet(undefined, undefined, true, undefined, [
+      ClientTaskQueueGetStateEnum.InProgress,
+    ]);
 
     return {
       todo: todoTasks.client_tasks.length,
@@ -177,13 +188,6 @@ export class ClientTaskQueueService {
 
     return combinedTaskReports;
   }
-}
-
-export enum State {
-  Todo = 'todo',
-  InProgress = 'in_progress',
-  Done = 'done',
-  Failed = 'failed',
 }
 
 export interface IOutstandingClientTasks {
