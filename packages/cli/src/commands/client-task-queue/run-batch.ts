@@ -1,4 +1,5 @@
-import { ClientTaskQueueService, State } from '@meeco/sdk';
+import { ClientTaskQueueService } from '@meeco/sdk';
+import { ClientTaskQueueGetStateEnum } from '@meeco/vault-api-sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { authFlags } from '../../flags/auth-flags';
@@ -16,11 +17,14 @@ export default class ClientTaskQueueRunBatch extends MeecoCommand {
       default: 'true',
       description: 'suppress transitioning tasks in the response to in_progress: true, false',
     }),
-    state: _flags.string({
+    states: _flags.string({
       char: 's',
       required: false,
       default: 'Todo',
-      description: 'Client Task Queue avalible states: ' + Object.keys(State),
+      description:
+        'Client Task Queue avalible states: ' +
+        Object.keys(ClientTaskQueueGetStateEnum) +
+        ' e.g Todo,InProgress ',
     }),
   };
 
@@ -35,7 +39,7 @@ export default class ClientTaskQueueRunBatch extends MeecoCommand {
 
   async run() {
     const { flags, args } = this.parse(this.constructor as typeof ClientTaskQueueRunBatch);
-    const { supressChangingState, state, auth } = flags;
+    const { supressChangingState, states, auth } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
     const service = new ClientTaskQueueService(environment);
@@ -45,17 +49,24 @@ export default class ClientTaskQueueRunBatch extends MeecoCommand {
     }
 
     try {
-      const clientTaskQueueState = State[state];
-      if (state && clientTaskQueueState === undefined) {
-        this.error(
-          'Invalid state provided, state argument value must be one of this: ' + Object.keys(State)
-        );
-      }
+      const clientTaskQueueStates: ClientTaskQueueGetStateEnum[] = [];
+      states.split(',').forEach(state => {
+        const clientTaskQueueState = ClientTaskQueueGetStateEnum[state];
+        clientTaskQueueStates.push(clientTaskQueueState);
+        if (clientTaskQueueState === undefined) {
+          this.error(
+            'Invalid state provided, state argument value must be one of this: ' +
+              Object.keys(ClientTaskQueueGetStateEnum)
+          );
+        }
+      });
+
       const numberOfTasks = args.numberOfTasks;
       const clientTaskList = await service.list(
         authConfig.vault_access_token,
         supressChangingState === 'false' ? false : true,
-        clientTaskQueueState,
+        clientTaskQueueStates,
+        undefined,
         { perPage: numberOfTasks }
       );
 
