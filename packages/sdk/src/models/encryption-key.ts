@@ -38,7 +38,7 @@ export class EncryptionKey {
   /**
    * Implicitly called by `JSON.stringify()` to ensure that the value is safely printable
    */
-  toJSON(key) {
+  toJSON() {
     return cryppo.encodeSafe64(this._value);
   }
 }
