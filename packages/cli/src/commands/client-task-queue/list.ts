@@ -31,17 +31,27 @@ export default class ClientTaskQueueList extends MeecoCommand {
     state: _flags.build<ClientTaskState[]>({
       char: 's',
       required: false,
-      default: [] as Array<ClientTaskState>,
-      parse: input => input.split(',').map(x => ClientTaskState[x]),
-      options: Object.values(ClientTaskState),
-      description:
-        'Filter Client Tasks by execution state. Can take multiple values separated by commas.',
+      parse: input =>
+        input
+          .split(',')
+          .filter(x =>
+            Object.values(ClientTaskState).includes(x as ClientTaskState)
+          ) as ClientTaskState[],
+      description: `Filter Client Tasks by execution state. Can take multiple values separated by commas. Values can be (${Object.values(
+        ClientTaskState
+      ).join('|')})`,
     })(),
   };
 
   async run() {
     const { flags } = this.parse(this.constructor as typeof ClientTaskQueueList);
-    const { limit, update, state, auth, all } = flags;
+    const { limit, update, auth, all } = flags;
+
+    let { state } = flags;
+    if (state && state.length == 0) {
+      state = undefined;
+    }
+
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
     const service = new ClientTaskQueueService(environment, this.log);

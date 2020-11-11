@@ -247,9 +247,10 @@ once approved it can be access with follwoing command
 - [`meeco items:attach-file`](#meeco-itemsattach-file)
 - [`meeco items:create`](#meeco-itemscreate)
 - [`meeco items:create-config TEMPLATENAME`](#meeco-itemscreate-config-templatename)
+- [`meeco items:create-thumbnail`](#meeco-itemscreate-thumbnail)
 - [`meeco items:get ITEMID`](#meeco-itemsget-itemid)
 - [`meeco items:get-attachment ITEMID SLOTID`](#meeco-itemsget-attachment-itemid-slotid)
-- [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
+- [`meeco items:get-thumbnail ITEMID SLOTID THUMBNAILID`](#meeco-itemsget-thumbnail-itemid-slotid-thumbnailid)
 - [`meeco items:list`](#meeco-itemslist)
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
 - [`meeco items:update`](#meeco-itemsupdate)
@@ -292,19 +293,16 @@ USAGE
   $ meeco client-task-queue:list
 
 OPTIONS
-  -a, --auth=auth                             (required) [default: .user.yaml] Authorization config yaml file (if not
-                                              using the default .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+  -l, --limit=limit              Get at most 'limit' many Client Tasks
 
-  -e, --environment=environment               [default: .environment.yaml] environment config file
+  -s, --state=state              Filter Client Tasks by execution state. Can take multiple values separated by commas. Values can be
+                                 (todo|in_progress|done|failed)
 
-  -l, --limit=limit                           Get at most 'limit' many Client Tasks
+  --all                          Get all possible results from web API, possibly with multiple calls.
 
-  -s, --state=(todo|in_progress|done|failed)  Get Client Tasks with this execution state. If unspecified get Client
-                                              Tasks with any state.
-
-  --all                                       Get all possible results from web API, possibly with multiple calls.
-
-  --update                                    Set the state of retrieved "todo" Client Tasks to "in_progress" in the API
+  --update                       Set the state of retrieved "todo" Client Tasks to "in_progress" in the API
 
 EXAMPLES
   meeco client-task-queue:list --state failed --all
@@ -322,15 +320,10 @@ USAGE
   $ meeco client-task-queue:run-batch
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
-                                 default .user.yaml)
-
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
   -e, --environment=environment  [default: .environment.yaml] environment config file
-
   -l, --limit=limit              Run at most 'limit' many Client Tasks. Defaults to the API page size (200)
-
   -s, --state=(todo|failed)      [default: todo] Run only Client Tasks with the given state
-
   --all                          Get all possible results from web API, possibly with multiple calls.
 
 EXAMPLES
@@ -478,6 +471,25 @@ EXAMPLES
 
 _See code: [src/commands/items/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/create-config.ts)_
 
+## `meeco items:create-thumbnail`
+
+Encrypt and attach a thumbnail to an attachment
+
+```
+USAGE
+  $ meeco items:create-thumbnail
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -c, --config=config            (required) thumbnail config yaml
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLES
+  meeco items:thumbnail-create -c ./thumbnail-config.yaml
+```
+
+_See code: [src/commands/items/create-thumbnail.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/create-thumbnail.ts)_
+
 ## `meeco items:get ITEMID`
 
 Get an item from the vault and decrypt its values
@@ -521,27 +533,26 @@ EXAMPLES
 
 _See code: [src/commands/items/get-attachment.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get-attachment.ts)_
 
-## `meeco items:get-thumbnail THUMBNAILID`
+## `meeco items:get-thumbnail ITEMID SLOTID THUMBNAILID`
 
 Download and decrypt an thumbnail by id
 
 ```
 USAGE
-  $ meeco items:get-thumbnail THUMBNAILID
+  $ meeco items:get-thumbnail ITEMID SLOTID THUMBNAILID
 
 ARGUMENTS
+  ITEMID       Id of item containing the slot of the attachment containing the thumbnail
+  SLOTID       Id of the the slot of the attachment containing the thumbnail
   THUMBNAILID  ID of the thumbnail to download
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
-                                 default .user.yaml)
-
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
   -e, --environment=environment  [default: .environment.yaml] environment config file
-
   -o, --outputPath=outputPath    (required) output file path
 
 EXAMPLES
-  meeco items:get-thumbnail my-thumbnail-id -o ./my-thumbnail.png
+  meeco items:get-thumbnail my-thumbnail-id -o ./
 ```
 
 _See code: [src/commands/items/get-thumbnail.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get-thumbnail.ts)_
