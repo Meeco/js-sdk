@@ -240,6 +240,7 @@ once approved it can be access with follwoing command
 
 - [`meeco client-task-queue:list`](#meeco-client-task-queuelist)
 - [`meeco client-task-queue:run-batch`](#meeco-client-task-queuerun-batch)
+- [`meeco client-task-queue:update TASKS_FILE`](#meeco-client-task-queueupdate-tasks_file)
 - [`meeco connections:create`](#meeco-connectionscreate)
 - [`meeco connections:create-config`](#meeco-connectionscreate-config)
 - [`meeco connections:list`](#meeco-connectionslist)
@@ -332,6 +333,29 @@ EXAMPLES
 ```
 
 _See code: [src/commands/client-task-queue/run-batch.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/run-batch.ts)_
+
+## `meeco client-task-queue:update TASKS_FILE`
+
+Set Client Task states using YAML file
+
+```
+USAGE
+  $ meeco client-task-queue:update TASKS_FILE
+
+ARGUMENTS
+  TASKS_FILE  YAML file with a list of Client Tasks to update. Matches output format of client-task-queue:list
+
+OPTIONS
+  -a, --auth=auth                       (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -e, --environment=environment         [default: .environment.yaml] environment config file
+  --set=(todo|in_progress|done|failed)  Set all Client Tasks to this state
+
+EXAMPLES
+  meeco client-task-queue:update updated_tasks.yaml
+  meeco client-task-queue:update --set done tasks.yaml
+```
+
+_See code: [src/commands/client-task-queue/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/update.ts)_
 
 ## `meeco connections:create`
 

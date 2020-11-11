@@ -43,6 +43,10 @@ export class ClientTaskQueueService {
     this.logger = toFullLogger(logger);
   }
 
+  public getAPI(vaultToken: string) {
+    return this.vaultAPIFactory(vaultToken).ClientTaskQueueApi;
+  }
+
   /**
    * @param change_state If true, set the state of all tasks in the reponse to 'in_progress'
    * @param states Filter results by state.
