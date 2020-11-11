@@ -1,5 +1,4 @@
-import { ClientTaskQueueService } from '@meeco/sdk';
-import { ClientTaskQueueGetStateEnum as ClientTaskState } from '@meeco/vault-api-sdk';
+import { ClientTaskQueueService, ClientTaskState } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import sinon from 'sinon';

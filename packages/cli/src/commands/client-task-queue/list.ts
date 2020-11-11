@@ -1,5 +1,5 @@
-import { ClientTaskQueueService } from '@meeco/sdk';
-import { ClientTask, ClientTaskQueueGetStateEnum as ClientTaskState } from '@meeco/vault-api-sdk';
+import { ClientTaskQueueService, ClientTaskState } from '@meeco/sdk';
+import { ClientTask } from '@meeco/vault-api-sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import authFlags from '../../flags/auth-flags';
@@ -48,7 +48,7 @@ export default class ClientTaskQueueList extends MeecoCommand {
     const { limit, update, auth, all } = flags;
 
     let { state } = flags;
-    if (state && state.length == 0) {
+    if (state && state.length === 0) {
       state = undefined;
     }
 

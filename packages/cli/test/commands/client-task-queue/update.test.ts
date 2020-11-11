@@ -1,4 +1,4 @@
-import { ClientTaskQueueGetStateEnum as ClientTaskState } from '@meeco/vault-api-sdk';
+import { ClientTaskState } from '@meeco/sdk';
 import { ClientTaskQueueResponse1 } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';

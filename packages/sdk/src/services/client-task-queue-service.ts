@@ -11,6 +11,8 @@ import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import { ShareService } from './share-service';
 
+export { ClientTaskQueueGetStateEnum as ClientTaskState } from '@meeco/vault-api-sdk';
+
 interface IFailedClientTask extends ClientTask {
   failureReason: any;
 }

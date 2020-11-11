@@ -1,5 +1,4 @@
-import { ClientTaskQueueService } from '@meeco/sdk';
-import { ClientTaskQueueGetStateEnum as ClientTaskState } from '@meeco/vault-api-sdk';
+import { ClientTaskQueueService, ClientTaskState } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import authFlags from '../../flags/auth-flags';
