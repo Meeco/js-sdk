@@ -1,24 +1,57 @@
+import { ItemService, ShareService } from '@meeco/sdk';
 import {
   ClientTask,
-  ClientTaskQueueGetStateEnum,
+  ClientTaskQueueGetStateEnum as ClientTaskState,
   Item,
-  ShareWithItemData,
   Slot,
 } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
 import * as nock from 'nock';
+import sinon from 'sinon';
 import { ClientTaskQueueService } from '../../src/services/client-task-queue-service';
-import { ShareService } from '../../src/services/share-service';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
-describe('ClientTaskQueueService.executeClientTasks', () => {
+describe('ClientTaskQueueService.execute', () => {
+  const updateStub = sinon.stub();
+  updateStub.withArgs(testUserAuth, 'a').returns({});
+
   customTest
-    .stub(ShareService.prototype, 'getSharedItem', getSharedItem as any)
+    .stub(ItemService.prototype, 'get', getSharedItem as any)
+    .stub(ShareService.prototype, 'updateSharedItem', updateStub)
     .nock('https://sandbox.meeco.me/vault', stubVault)
     .mockCryppo()
     .it('executes and updates ClientTasks', async () => {
-      const result = await new ClientTaskQueueService(environment).executeClientTasks(
-        listOfClientTasks,
+      const result = await new ClientTaskQueueService(environment).execute(
+        [task('a', ClientTaskState.Todo)],
+        testUserAuth
+      );
+
+      expect(result.completed.length).to.equal(1);
+      expect(result.failed.length).to.equal(0);
+    });
+
+  customTest.it('does not execute in_progress tasks', async () => {
+    new ClientTaskQueueService(environment)
+      .execute([task('a', ClientTaskState.InProgress)], testUserAuth)
+      .then(() => expect.fail())
+      .catch(e => expect(e).to.be.ok);
+  });
+
+  customTest.it('does not execute done tasks', async () => {
+    new ClientTaskQueueService(environment)
+      .execute([task('a', ClientTaskState.Done)], testUserAuth)
+      .then(() => expect.fail())
+      .catch(e => expect(e).to.be.ok);
+  });
+
+  customTest
+    .stub(ItemService.prototype, 'get', getSharedItem as any)
+    .stub(ShareService.prototype, 'updateSharedItem', updateStub)
+    .nock('https://sandbox.meeco.me/vault', stubVault)
+    .mockCryppo()
+    .it('executes failed tasks', async () => {
+      const result = await new ClientTaskQueueService(environment).execute(
+        [task('a', ClientTaskState.Failed)],
         testUserAuth
       );
 
@@ -30,33 +63,38 @@ describe('ClientTaskQueueService.executeClientTasks', () => {
 const shareId = 'share_id';
 const itemId = 'share_item_id_a';
 
-const listOfClientTasks: ClientTask[] = [
-  {
-    id: 'a',
-    state: 'todo',
+function task(id: string, state: ClientTaskState): ClientTask {
+  return {
+    id,
+    state,
     work_type: 'update_item_shares',
-    target_id: shareId,
+    target_id: itemId,
     additional_options: {},
     last_state_transition_at: new Date(1),
     report: {},
     created_at: new Date(1),
-  },
-];
+  };
+}
+
+const doneTasksResult = [task('a', ClientTaskState.Done)];
+const inProgressTasksResult = [task('a', ClientTaskState.InProgress)];
 
 function stubVault(api: nock.Scope) {
   api
-    .post(`/items/${itemId}/encrypt`)
-    .matchHeader('Authorization', testUserAuth.vault_access_token)
-    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, itemResponse);
-
-  api
     .put(`/client_task_queue`, (body: any) =>
-      body.client_tasks.every(x => x.state === ClientTaskQueueGetStateEnum.Done)
+      body.client_tasks.every(x => x.state === ClientTaskState.InProgress)
     )
     .matchHeader('Authorization', testUserAuth.vault_access_token)
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-    .reply(200, { client_tasks: listOfClientTasks.map(x => ({ ...x, state: 'done' })) });
+    .reply(200, { client_tasks: inProgressTasksResult });
+
+  api
+    .put(`/client_task_queue`, (body: any) =>
+      body.client_tasks.every(x => x.state === ClientTaskState.Done)
+    )
+    .matchHeader('Authorization', testUserAuth.vault_access_token)
+    .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+    .reply(200, { client_tasks: doneTasksResult });
 }
 
 const itemResponse = {
@@ -124,25 +162,8 @@ const itemResponse = {
   thumbnails: [],
 };
 
-function getSharedItem(): Promise<ShareWithItemData> {
+function getSharedItem() {
   return Promise.resolve({
-    share: {
-      id: shareId,
-      public_key:
-        '-----BEGIN PUBLIC KEY-----\r\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA8J9w9UyFZvG3h3EpGoTE\r\nP6QiWhq26JnHJsdoJXfJWXgF1dRawtFI9NdwSaXp9g6/cQE+CN+6PvNU/Asqu4Fn\r\nu3hAdewXvzV6CQm7pl7klvOQZ5pmOlViX7YCCrwBPZJVmMqIV9sh6Lanw65N+16R\r\nG7r5ebzDBhtymVU/gsa2NWeaucCExreOWn9bcMhfihAmYiWDR5IookDp3EcxN5BY\r\nJYIwQ34yUj25zXmJRuCYdfsgnLh1gJHfzfjs6oAIy/Bf/BY8odKAFFsjOnAnhUl3\r\nFL9L/B1F+YL4gdhoZsHdAgUMzShLKjyab8CjTzp2LRNSt/rDFU87RrTSCDTMXS2E\r\nwhMJ3/zjQkSYImRMvxlF/+kkHnea6gGOgE1QyvePpVYn5hXtAoxU9+7RRUu9uVz2\r\n5t5N6Hd00ORJo8u47ZHv7X7rLnHS4mZXsx/wM4dfoHrs3Htjr42r6Y+BH8RZ2+4u\r\n92qagF8xsKXlvExUtjIPXJExxKIeL4QW77SwLQ2KBJfYuu+tL0KLSZOdxbI9p84I\r\nA9H/jWSHVuNXY41NGmPv2EisgZel9WObH3xa6ent28uu1VSflA13CA2JYZFcv/9H\r\nQf3QRjCp02dEnayNB9ro5W2yLLXr4TLG+NVh106w3kYwek02ktW9XpVuxBreWeqs\r\nwNaV/jFKXKF4vXyKcvbmWtcCAwEAAQ==\r\n-----END PUBLIC KEY-----\r\n',
-      owner_id: '',
-      sender_id: '',
-      recipient_id: '',
-      acceptance_required: '',
-      item_id: itemId,
-      sharing_mode: '',
-      keypair_external_id: null,
-      encrypted_dek: null,
-      terms: null,
-      created_at: null,
-      expires_at: null,
-      slot_id: null,
-    },
     associations_to: [],
     associations: [],
     attachments: [],

@@ -11,9 +11,6 @@ import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import { ShareService } from './share-service';
 
-/**
- * A ClientTask represents a task the client is supposed to perform.
- */
 interface IFailedClientTask extends ClientTask {
   failureReason: any;
 }
@@ -28,6 +25,10 @@ export interface IClientTaskExecResult {
   failed: IFailedClientTask[];
 }
 
+/**
+ * A ClientTask describes a set of API actions the client has been requested to perform,
+ * usually encrypting some data with their private keys.
+ */
 export class ClientTaskQueueService {
   private vaultAPIFactory: VaultAPIFactory;
 
@@ -73,46 +74,70 @@ export class ClientTaskQueueService {
 
   public async listAll(
     vaultAccessToken: string,
-    change_state: boolean = true,
+    change_state: boolean = false,
     states: ClientTaskState[] = [ClientTaskState.Todo],
     target_id?: string
-  ): Promise<ClientTaskQueueResponse> {
+  ): Promise<ClientTask[]> {
     const api = this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi;
     return getAllPaged(cursor =>
       api.clientTaskQueueGet(cursor, undefined, change_state, target_id, states)
-    ).then(reducePages);
+    )
+      .then(reducePages)
+      .then(result => result.client_tasks);
   }
 
+  /**
+   * Count all tasks that have state either 'todo' or 'in_progress'.
+   * May make multiple API calls, depending on number of tasks.
+   */
   public async countOutstandingTasks(vaultAccessToken: string): Promise<IOutstandingClientTasks> {
-    const api = this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi;
-    const todoTasks = await api.clientTaskQueueGet(undefined, undefined, true, undefined, [
+    const allTasks = await this.listAll(vaultAccessToken, false, [
       ClientTaskState.Todo,
-    ]);
-
-    const inProgressTasks = await api.clientTaskQueueGet(undefined, undefined, true, undefined, [
       ClientTaskState.InProgress,
     ]);
 
-    return {
-      todo: todoTasks.client_tasks.length,
-      in_progress: inProgressTasks.client_tasks.length,
-    };
+    const initialCount = { todo: 0, in_progress: 0 };
+    const result = allTasks.reduce((acc, task) => {
+      if (task.state === ClientTaskState.Todo) {
+        acc.todo += 1;
+      } else if (task.state === ClientTaskState.InProgress) {
+        acc.in_progress += 1;
+      }
+      return acc;
+    }, initialCount);
+
+    return result;
   }
 
-  public async executeClientTasks(
-    listOfClientTasks: ClientTask[],
-    authData: AuthData
-  ): Promise<IClientTaskExecResult> {
-    for (const task of listOfClientTasks) {
+  /**
+   * Execute the given ClientTasks, updating their state in the API.
+   * Currently, the only implemented task is 'update_item_share'.
+   *
+   * ClientTask state is set to 'in_progress' once execution begins.
+   * Any tasks with state 'in_progress' or 'done' will raise an exception.
+   * Tasks with state 'failed' will be retried.
+   *
+   * No tasks are initiated if any one of the tasks is unrecognized or cannot be started.
+   * @param tasks ClientTasks to be executed. Each must have state 'todo' or 'failed'.
+   * @param authData
+   */
+  public async execute(tasks: ClientTask[], authData: AuthData): Promise<IClientTaskExecResult> {
+    for (const task of tasks) {
       if (task.work_type !== 'update_item_shares') {
         throw new MeecoServiceError(
           `Do not know how to execute ClientTask of type ${task.work_type}`
         );
       }
+
+      if (task.state === ClientTaskState.InProgress || task.state === ClientTaskState.Done) {
+        throw new MeecoServiceError(
+          `Cannot execute ${task.work_type} task ${task.id} because it is already ${task.state}`
+        );
+      }
     }
 
     const updateSharesTasksResult: IClientTaskExecResult = await this.updateSharesClientTasks(
-      listOfClientTasks,
+      tasks,
       authData
     );
 
@@ -125,8 +150,8 @@ export class ClientTaskQueueService {
    * @param listOfClientTasks A list of update_item_shares tasks to run.
    * @param authData
    */
-  public async updateSharesClientTasks(
-    listOfClientTasks: ClientTask[],
+  private async updateSharesClientTasks(
+    tasks: ClientTask[],
     authData: AuthData
   ): Promise<IClientTaskExecResult> {
     const shareService = new ShareService(this.environment);
@@ -147,7 +172,12 @@ export class ClientTaskQueueService {
       }
     };
 
-    await Promise.all(listOfClientTasks.map(runTask));
+    // Set all tasks to in_progress
+    await this.vaultAPIFactory(authData.vault_access_token).ClientTaskQueueApi.clientTaskQueuePut({
+      client_tasks: tasks.map(({ id }) => ({ id, state: ClientTaskState.InProgress })),
+    });
+
+    await Promise.all(tasks.map(runTask));
 
     // now update the tasks in the API
     const allTasks = taskReport.completed

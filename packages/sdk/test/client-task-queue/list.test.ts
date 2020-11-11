@@ -49,7 +49,7 @@ describe('ClientTaskService.listAll', () => {
       ).listAll(testUserAuth.vault_access_token, true, [ClientTaskQueueGetStateEnum.Todo]);
 
       const expected = getOutputFixture('list-client-task-queue.output.json');
-      expect(result.client_tasks).to.deep.members(expected);
+      expect(result).to.deep.members(expected);
     });
 });
 
