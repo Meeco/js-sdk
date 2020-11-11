@@ -302,33 +302,40 @@ export class ShareService {
    * @param itemId
    */
   public async updateSharedItem(user: AuthData, itemId: string) {
-    const { item, slots } = await this.getItem(user, itemId);
+    const { item, slots: decryptedSlots } = await new ItemService(this.environment, this.log).get(
+      itemId,
+      user
+    );
 
     if (!item.own) {
       throw new MeecoServiceError(`Only Item owner can update shared Item.`);
     }
 
-    // retrieve the list of shares IDs and public keys via
-    const itemShares = await this.vaultApiFactory(user).SharesApi.itemsIdSharesGet(itemId);
+    this.log('Retrieving Share Public Keys');
+    const itemShares = await this.vaultApiFactory(
+      user.vault_access_token
+    ).SharesApi.itemsIdSharesGet(itemId);
 
     // prepare request body
     const putItemSharesRequest = await this.createPutItemSharesRequestBody(
       itemShares.shares,
-      slots,
-      user
+      decryptedSlots
     );
 
-    // put items/{id}/shares
-    return await this.vaultApiFactory(user).SharesApi.itemsIdSharesPut(
-      itemId,
-      putItemSharesRequest
-    );
+    return this.vaultApiFactory(user.vault_access_token)
+      .SharesApi.itemsIdSharesPut(itemId, putItemSharesRequest)
+      .catch(err => {
+        if ((<Response>err).status === 400) {
+          throw new Error('Error updating shares: ' + err.statusText);
+        }
+
+        throw err;
+      });
   }
 
   private async createPutItemSharesRequestBody(
     shares: GetItemSharesResponseShares[],
-    slots: Slot[],
-    user: AuthData
+    decryptedSlots: IDecryptedSlot[]
   ): Promise<PutItemSharesRequest> {
     const result: any = await Promise.all(
       shares.map(async share => {
@@ -345,10 +352,6 @@ export class ShareService {
           dek: encryptedDek.serialized,
         };
 
-        this.log('Decrypting all slots');
-        const decryptedSlots = await ItemService.decryptAllSlots(slots!, user.data_encryption_key);
-
-        this.log('Re-Encrypt all slots');
         const slot_values = await this.convertSlotsToEncryptedValuesForShare(
           decryptedSlots,
           EncryptionKey.fromRaw(dek)
@@ -393,8 +396,9 @@ export class ShareService {
       if (!ds.value && !slot_values.find(f => f.slot_id === ds.id)) {
         slot_values.push({
           slot_id: ds.id as string,
-          encrypted_value: '',
-        });
+          // TODO an API type bug prevents doing the right thing here
+          // encrypted_value: '',
+        } as any);
       }
     });
 

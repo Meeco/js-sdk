@@ -160,7 +160,7 @@ export class ClientTaskQueueService {
     tasks: ClientTask[],
     authData: AuthData
   ): Promise<IClientTaskExecResult> {
-    const shareService = new ShareService(this.environment);
+    const shareService = new ShareService(this.environment, this.logger.log);
 
     const taskReport: IClientTaskExecResult = {
       completed: [],
@@ -175,7 +175,7 @@ export class ClientTaskQueueService {
       } catch (error) {
         this.logger.warn(`Task with id=${task.id} failed!`);
         task.state = ClientTaskState.Failed;
-        taskReport.failed.push({ ...task, failureReason: error });
+        taskReport.failed.push({ ...task, failureReason: error?.body });
       }
     };
 
@@ -189,10 +189,12 @@ export class ClientTaskQueueService {
 
     // now update the tasks in the API
     this.logger.log(`Task run completed, updating.`);
+
     const allTasks = taskReport.completed
       .concat(taskReport.failed)
       .map(({ id, state, report }) => ({ id, state, report }));
-    this.vaultAPIFactory(authData.vault_access_token).ClientTaskQueueApi.clientTaskQueuePut({
+
+    await this.vaultAPIFactory(authData.vault_access_token).ClientTaskQueueApi.clientTaskQueuePut({
       client_tasks: allTasks,
     });
 
