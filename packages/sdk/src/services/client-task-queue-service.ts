@@ -1,17 +1,14 @@
 import {
   ClientTask,
-  ClientTaskQueueGetStateEnum,
+  ClientTaskQueueGetStateEnum as ClientTaskState,
   ClientTaskQueueResponse,
 } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
-import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
 import { MeecoServiceError } from '../models/service-error';
 import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
-import cryppo from './cryppo-service';
-import { ItemService } from './item-service';
 import { ShareService } from './share-service';
 
 /**
@@ -21,9 +18,18 @@ interface IFailedClientTask extends ClientTask {
   failureReason: any;
 }
 
+export interface IOutstandingClientTasks {
+  todo: number;
+  in_progress: number;
+}
+
+export interface IClientTaskExecResult {
+  completed: ClientTask[];
+  failed: IFailedClientTask[];
+}
+
 export class ClientTaskQueueService {
   private vaultAPIFactory: VaultAPIFactory;
-  private cryppo = (<any>global).cryppo || cryppo;
 
   private log: IFullLogger;
 
@@ -36,10 +42,15 @@ export class ClientTaskQueueService {
     this.log = toFullLogger(logger);
   }
 
+  /**
+   * @param change_state If true, set the state of all tasks in the reponse to 'in_progress'
+   * @param states Filter results by state.
+   * @param target_id Filter results by target_id.
+   */
   public async list(
     vaultAccessToken: string,
-    change_state: boolean = true,
-    states: ClientTaskQueueGetStateEnum[] = [ClientTaskQueueGetStateEnum.Todo],
+    change_state: boolean = false,
+    states: ClientTaskState[] = [ClientTaskState.Todo],
     target_id?: string,
     options?: { nextPageAfter?: string; perPage?: number }
   ): Promise<ClientTaskQueueResponse> {
@@ -54,7 +65,6 @@ export class ClientTaskQueueService {
     );
 
     if (resultHasNext(result) && options?.perPage === undefined) {
-      // TODO-- should pass a warning logger!
       this.log.warn('Some results omitted, but page limit was not explicitly set');
     }
 
@@ -64,12 +74,8 @@ export class ClientTaskQueueService {
   public async listAll(
     vaultAccessToken: string,
     change_state: boolean = true,
-    states: ClientTaskQueueGetStateEnum[] = [ClientTaskQueueGetStateEnum.Todo],
-    target_id?: string,
-    options?: {
-      nextPageAfter?: string;
-      perPage?: number;
-    }
+    states: ClientTaskState[] = [ClientTaskState.Todo],
+    target_id?: string
   ): Promise<ClientTaskQueueResponse> {
     const api = this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi;
     return getAllPaged(cursor =>
@@ -78,16 +84,13 @@ export class ClientTaskQueueService {
   }
 
   public async countOutstandingTasks(vaultAccessToken: string): Promise<IOutstandingClientTasks> {
-    const todoTasks = await this.vaultAPIFactory(
-      vaultAccessToken
-    ).ClientTaskQueueApi.clientTaskQueueGet(undefined, undefined, true, undefined, [
-      ClientTaskQueueGetStateEnum.Todo,
+    const api = this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi;
+    const todoTasks = await api.clientTaskQueueGet(undefined, undefined, true, undefined, [
+      ClientTaskState.Todo,
     ]);
 
-    const inProgressTasks = await this.vaultAPIFactory(
-      vaultAccessToken
-    ).ClientTaskQueueApi.clientTaskQueueGet(undefined, undefined, true, undefined, [
-      ClientTaskQueueGetStateEnum.InProgress,
+    const inProgressTasks = await api.clientTaskQueueGet(undefined, undefined, true, undefined, [
+      ClientTaskState.InProgress,
     ]);
 
     return {
@@ -99,98 +102,61 @@ export class ClientTaskQueueService {
   public async executeClientTasks(
     listOfClientTasks: ClientTask[],
     authData: AuthData
-  ): Promise<{ completedTasks: ClientTask[]; failedTasks: ClientTask[] }> {
-    const remainingClientTasks: ClientTask[] = [];
-    const itemUpdateSharesTasks: ClientTask[] = [];
+  ): Promise<IClientTaskExecResult> {
     for (const task of listOfClientTasks) {
-      switch (task.work_type) {
-        case 'update_item_shares':
-          itemUpdateSharesTasks.push(task);
-          break;
-        default:
-          remainingClientTasks.push(task);
-          break;
+      if (task.work_type !== 'update_item_shares') {
+        throw new MeecoServiceError(
+          `Do not know how to execute ClientTask of type ${task.work_type}`
+        );
       }
     }
-    if (remainingClientTasks.length) {
-      throw new MeecoServiceError(
-        `Do not know how to execute ClientTask of type ${remainingClientTasks[0].work_type}`
-      );
-    }
-    const updateSharesTasksResult: {
-      completedTasks: ClientTask[];
-      failedTasks: IFailedClientTask[];
-    } = await this.updateSharesClientTasks(itemUpdateSharesTasks, authData);
+
+    const updateSharesTasksResult: IClientTaskExecResult = await this.updateSharesClientTasks(
+      listOfClientTasks,
+      authData
+    );
 
     return updateSharesTasksResult;
   }
 
+  /**
+   * In this ClientTask, the target_id points to an Item which has been updated by the owner and so the owner must re-encrypt
+   * the Item with each of the shared public keys.
+   * @param listOfClientTasks A list of update_item_shares tasks to run.
+   * @param authData
+   */
   public async updateSharesClientTasks(
     listOfClientTasks: ClientTask[],
     authData: AuthData
-  ): Promise<{ completedTasks: ClientTask[]; failedTasks: IFailedClientTask[] }> {
-    const sharesApi = this.vaultAPIFactory(authData.vault_access_token).SharesApi;
-    const itemsApi = this.vaultAPIFactory(authData.vault_access_token).ItemApi;
+  ): Promise<IClientTaskExecResult> {
+    const shareService = new ShareService(this.environment);
 
-    const taskReports = await Promise.all(
-      listOfClientTasks.map(async task => {
-        const taskReport = {
-          completedTasks: <ClientTask[]>[],
-          failedTasks: <IFailedClientTask[]>[],
-        };
-        try {
-          const [item, shares] = await Promise.all([
-            itemsApi.itemsIdGet(task.target_id),
-            sharesApi.itemsIdSharesGet(task.target_id),
-          ]);
-          const decryptedSlots = await ItemService.decryptAllSlots(
-            item.slots,
-            authData.data_encryption_key
-          );
-          const dek = this.cryppo.generateRandomKey();
-          const newEncryptedSlots = await new ShareService(
-            this.environment
-          ).convertSlotsToEncryptedValuesForShare(decryptedSlots, EncryptionKey.fromRaw(dek));
-          const nestedSlotValues: any[] = shares.shares.map(share => {
-            return newEncryptedSlots.map(newValue => {
-              return { ...newValue, share_id: share.id };
-            });
-          });
-          const slotValues = [].concat.apply([], nestedSlotValues);
-          const shareDeks = await Promise.all(
-            shares.shares.map(async share => {
-              const encryptedDek = await this.cryppo.encryptWithPublicKey({
-                publicKeyPem: share.public_key,
-                data: dek,
-              });
-              return { share_id: share.id, dek: encryptedDek.serialized };
-            })
-          );
-          const clientTasks = [{ id: task.id, state: 'done', report: task.report }];
-          await sharesApi.itemsIdSharesPut(task.target_id, {
-            slot_values: slotValues,
-            share_deks: shareDeks,
-            client_tasks: clientTasks,
-          });
-          taskReport.completedTasks.push(task);
-        } catch (error) {
-          taskReport.failedTasks.push({ ...task, failureReason: error });
-        }
-        return taskReport;
-      })
-    );
+    const taskReport: IClientTaskExecResult = {
+      completed: [],
+      failed: [],
+    };
 
-    const combinedTaskReports = taskReports.reduce((accum, current) => {
-      accum.completedTasks.concat(current.completedTasks);
-      accum.failedTasks.concat(current.failedTasks);
-      return accum;
+    const runTask = async (task: ClientTask) => {
+      try {
+        await shareService.updateSharedItem(authData, task.target_id);
+        task.state = ClientTaskState.Done;
+        taskReport.completed.push(task);
+      } catch (error) {
+        task.state = ClientTaskState.Failed;
+        taskReport.failed.push({ ...task, failureReason: error });
+      }
+    };
+
+    await Promise.all(listOfClientTasks.map(runTask));
+
+    // now update the tasks in the API
+    const allTasks = taskReport.completed
+      .concat(taskReport.failed)
+      .map(({ id, state, report }) => ({ id, state, report }));
+    this.vaultAPIFactory(authData.vault_access_token).ClientTaskQueueApi.clientTaskQueuePut({
+      client_tasks: allTasks,
     });
 
-    return combinedTaskReports;
+    return taskReport;
   }
-}
-
-export interface IOutstandingClientTasks {
-  todo: number;
-  in_progress: number;
 }

@@ -4,17 +4,17 @@ import { ClientTaskQueueService } from '../../src/services/client-task-queue-ser
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
 import { customTest, environment, getOutputFixture, testUserAuth } from '../test-helpers';
 
-describe('Client-task-queue list', () => {
+describe('ClientTaskService.list', () => {
   customTest
     .nock('https://sandbox.meeco.me/vault', api =>
       api
         .get('/client_task_queue')
         .query({ change_state: true, state: 'todo' })
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Authorization', testUserAuth.vault_access_token)
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, response)
     )
-    .it('list task that client suppose to perform', async () => {
+    .it('list tasks that the client must perform', async () => {
       const result = await new ClientTaskQueueService(
         environment
       ).list(testUserAuth.vault_access_token, true, [ClientTaskQueueGetStateEnum.Todo]);
@@ -22,13 +22,15 @@ describe('Client-task-queue list', () => {
       const expected = getOutputFixture('list-client-task-queue.output.json');
       expect(result.client_tasks).to.deep.members(expected);
     });
+});
 
+describe('ClientTaskService.listAll', () => {
   customTest
     .nock('https://sandbox.meeco.me/vault', api =>
       api
         .get('/client_task_queue')
         .query({ change_state: true, state: 'todo' })
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Authorization', testUserAuth.vault_access_token)
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, responsePart1)
         .get('/client_task_queue')
@@ -37,7 +39,7 @@ describe('Client-task-queue list', () => {
           state: 'todo',
           next_page_after: MOCK_NEXT_PAGE_AFTER,
         })
-        .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+        .matchHeader('Authorization', testUserAuth.vault_access_token)
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
         .reply(200, responsePart2)
     )
