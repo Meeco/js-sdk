@@ -37,7 +37,7 @@ export default class ClientTaskQueueRunBatch extends MeecoCommand {
     const { all, state, limit, auth } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-    const service = new ClientTaskQueueService(environment);
+    const service = new ClientTaskQueueService(environment, this);
 
     if (!authConfig) {
       this.error('Must specify a valid auth config file');
@@ -49,6 +49,7 @@ export default class ClientTaskQueueRunBatch extends MeecoCommand {
 
     try {
       let tasks: ClientTask[];
+      this.log('Retrieving tasks');
       if (all) {
         tasks = await service.listAll(authConfig.vault_access_token, false, [state]);
       } else if (limit) {

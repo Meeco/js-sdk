@@ -32,15 +32,15 @@ export interface IClientTaskExecResult {
 export class ClientTaskQueueService {
   private vaultAPIFactory: VaultAPIFactory;
 
-  private log: IFullLogger;
+  private logger: IFullLogger;
 
   constructor(private environment: Environment, log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
-    this.log = toFullLogger(log);
+    this.logger = toFullLogger(log);
   }
 
   public setLogger(logger: Logger) {
-    this.log = toFullLogger(logger);
+    this.logger = toFullLogger(logger);
   }
 
   /**
@@ -66,7 +66,7 @@ export class ClientTaskQueueService {
     );
 
     if (resultHasNext(result) && options?.perPage === undefined) {
-      this.log.warn('Some results omitted, but page limit was not explicitly set');
+      this.logger.warn('Some results omitted, but page limit was not explicitly set');
     }
 
     return result;
@@ -122,6 +122,8 @@ export class ClientTaskQueueService {
    * @param authData
    */
   public async execute(tasks: ClientTask[], authData: AuthData): Promise<IClientTaskExecResult> {
+    this.logger.log(`Executing ${tasks.length} tasks`);
+
     for (const task of tasks) {
       if (task.work_type !== 'update_item_shares') {
         throw new MeecoServiceError(
@@ -167,6 +169,7 @@ export class ClientTaskQueueService {
         task.state = ClientTaskState.Done;
         taskReport.completed.push(task);
       } catch (error) {
+        this.logger.warn(`Task with id=${task.id} failed!`);
         task.state = ClientTaskState.Failed;
         taskReport.failed.push({ ...task, failureReason: error });
       }
@@ -176,10 +179,12 @@ export class ClientTaskQueueService {
     await this.vaultAPIFactory(authData.vault_access_token).ClientTaskQueueApi.clientTaskQueuePut({
       client_tasks: tasks.map(({ id }) => ({ id, state: ClientTaskState.InProgress })),
     });
+    this.logger.log('Set: in_progress');
 
     await Promise.all(tasks.map(runTask));
 
     // now update the tasks in the API
+    this.logger.log(`Task run completed, updating.`);
     const allTasks = taskReport.completed
       .concat(taskReport.failed)
       .map(({ id, state, report }) => ({ id, state, report }));
