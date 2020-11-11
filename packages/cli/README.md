@@ -239,7 +239,7 @@ once approved it can be access with follwoing command
 <!-- commands -->
 
 - [`meeco client-task-queue:list`](#meeco-client-task-queuelist)
-- [`meeco client-task-queue:run-batch [NUMBEROFTASKS]`](#meeco-client-task-queuerun-batch-numberoftasks)
+- [`meeco client-task-queue:run-batch`](#meeco-client-task-queuerun-batch)
 - [`meeco connections:create`](#meeco-connectionscreate)
 - [`meeco connections:create-config`](#meeco-connectionscreate-config)
 - [`meeco connections:list`](#meeco-connectionslist)
@@ -285,57 +285,57 @@ once approved it can be access with follwoing command
 
 ## `meeco client-task-queue:list`
 
-Read the client task that client is supposed to perform
+Read Client Tasks assigned to the user
 
 ```
 USAGE
   $ meeco client-task-queue:list
 
 OPTIONS
-  -a, --auth=auth                              (required) [default: .user.yaml] Authorization config yaml file (if not
-                                               using the default .user.yaml)
+  -a, --auth=auth                             (required) [default: .user.yaml] Authorization config yaml file (if not
+                                              using the default .user.yaml)
 
-  -e, --environment=environment                [default: .environment.yaml] environment config file
+  -e, --environment=environment               [default: .environment.yaml] environment config file
 
-  -s, --state=state                            [default: Todo] Client Task Queue avalible states:
-                                               Todo,InProgress,Done,Failed
+  -l, --limit=limit                           Get at most 'limit' many Client Tasks
 
-  --all                                        Get all possible results from web API, possibly with multiple calls.
+  -s, --state=(todo|in_progress|done|failed)  Get Client Tasks with this execution state. If unspecified get Client
+                                              Tasks with any state.
 
-  --supressChangingState=supressChangingState  [default: true] suppress transitioning tasks in the response to
-                                               in_progress: true, false
+  --all                                       Get all possible results from web API, possibly with multiple calls.
 
-EXAMPLE
-  meeco client-task-queue:list -a path/to/auth.yaml
+  --update                                    Set the state of retrieved "todo" Client Tasks to "in_progress" in the API
+
+EXAMPLES
+  meeco client-task-queue:list --state failed --all
+  meeco client-task-queue:list --update --state todo --limit 5
 ```
 
 _See code: [src/commands/client-task-queue/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/list.ts)_
 
-## `meeco client-task-queue:run-batch [NUMBEROFTASKS]`
+## `meeco client-task-queue:run-batch`
 
-Load and run a batch of ClientTasks from the queue
+Load and run Client Tasks from the queue
 
 ```
 USAGE
-  $ meeco client-task-queue:run-batch [NUMBEROFTASKS]
-
-ARGUMENTS
-  NUMBEROFTASKS  number of tasks to fetch and execute
+  $ meeco client-task-queue:run-batch
 
 OPTIONS
-  -a, --auth=auth                              (required) [default: .user.yaml] Authorization config yaml file (if not
-                                               using the default .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
 
-  -e, --environment=environment                [default: .environment.yaml] environment config file
+  -e, --environment=environment  [default: .environment.yaml] environment config file
 
-  -s, --state=state                            [default: Todo] Client Task Queue avalible states:
-                                               Todo,InProgress,Done,Failed
+  -l, --limit=limit              Run at most 'limit' many Client Tasks. Defaults to the API page size (200)
 
-  --supressChangingState=supressChangingState  [default: true] suppress transitioning tasks in the response to
-                                               in_progress: true, false
+  -s, --state=(todo|failed)      [default: todo] Run only Client Tasks with the given state
 
-EXAMPLE
-  meeco client-task-queue:run-batch -a path/to/auth.yaml 10
+  --all                          Get all possible results from web API, possibly with multiple calls.
+
+EXAMPLES
+  meeco client-task-queue:run-batch --limit 10
+  meeco client-task-queue:run-batch --all --state failed
 ```
 
 _See code: [src/commands/client-task-queue/run-batch.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/run-batch.ts)_

@@ -1,5 +1,5 @@
 import { ClientTaskQueueService } from '@meeco/sdk';
-import { ClientTaskQueueGetStateEnum } from '@meeco/vault-api-sdk';
+import { ClientTask, ClientTaskQueueGetStateEnum as ClientTaskState } from '@meeco/vault-api-sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import authFlags from '../../flags/auth-flags';
@@ -7,32 +7,41 @@ import pageFlags from '../../flags/page-flags';
 import MeecoCommand from '../../util/meeco-command';
 
 export default class ClientTaskQueueList extends MeecoCommand {
-  static description = 'Read the client task that client is supposed to perform';
-  static examples = [`meeco client-task-queue:list -a path/to/auth.yaml`];
+  static description = 'Read Client Tasks assigned to the user';
+  static examples = [
+    `meeco client-task-queue:list --state failed --all`,
+    `meeco client-task-queue:list --update --state todo --limit 5`,
+  ];
 
   static flags = {
     ...MeecoCommand.flags,
     ...authFlags,
     ...pageFlags,
-    supressChangingState: _flags.string({
+    limit: _flags.integer({
       required: false,
-      default: 'true',
-      description: 'suppress transitioning tasks in the response to in_progress: true, false',
+      char: 'l',
+      description: `Get at most 'limit' many Client Tasks`,
+      exclusive: ['all'],
     }),
-    states: _flags.string({
+    update: _flags.boolean({
+      required: false,
+      default: false,
+      description: `Set the state of retrieved "todo" Client Tasks to "in_progress" in the API`,
+    }),
+    state: _flags.build<ClientTaskState[]>({
       char: 's',
       required: false,
-      default: 'Todo',
+      default: [] as Array<ClientTaskState>,
+      parse: input => input.split(',').map(x => ClientTaskState[x]),
+      options: Object.values(ClientTaskState),
       description:
-        'Client Task Queue avalible states: ' +
-        Object.keys(ClientTaskQueueGetStateEnum) +
-        ' e.g Todo,InProgress ',
-    }),
+        'Filter Client Tasks by execution state. Can take multiple values separated by commas.',
+    })(),
   };
 
   async run() {
     const { flags } = this.parse(this.constructor as typeof ClientTaskQueueList);
-    const { supressChangingState, states, auth, all } = flags;
+    const { limit, update, state, auth, all } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
     const service = new ClientTaskQueueService(environment, this.log);
@@ -41,33 +50,29 @@ export default class ClientTaskQueueList extends MeecoCommand {
       this.error('Must specify a valid auth config file');
     }
 
-    try {
-      const clientTaskQueueStates: ClientTaskQueueGetStateEnum[] = [];
-      states.split(',').forEach(state => {
-        const clientTaskQueueState = ClientTaskQueueGetStateEnum[state];
-        clientTaskQueueStates.push(clientTaskQueueState);
-        if (clientTaskQueueState === undefined) {
-          this.error(
-            'Invalid state provided, state argument value must be one of this: ' +
-              Object.keys(ClientTaskQueueGetStateEnum)
-          );
-        }
-      });
+    if (limit && limit <= 0) {
+      this.error('Must specify a positive limit');
+    }
 
-      const response = all
-        ? await service.listAll(
-            authConfig.vault_access_token,
-            supressChangingState === 'false' ? false : true,
-            clientTaskQueueStates
-          )
-        : await service.list(
-            authConfig.vault_access_token,
-            supressChangingState === 'false' ? false : true,
-            clientTaskQueueStates
-          );
+    try {
+      let response: ClientTask[];
+      if (all) {
+        response = await service.listAll(authConfig.vault_access_token, update, state);
+      } else if (limit) {
+        response = await service
+          .list(authConfig.vault_access_token, update, state, undefined, {
+            nextPageAfter: limit.toString(),
+          })
+          .then(r => r.client_tasks);
+      } else {
+        response = await service
+          .list(authConfig.vault_access_token, update, state)
+          .then(r => r.client_tasks);
+      }
+
       this.printYaml({
         kind: 'ClientTaskQueue',
-        spec: response.client_tasks,
+        spec: response,
       });
     } catch (err) {
       await this.handleException(err);
