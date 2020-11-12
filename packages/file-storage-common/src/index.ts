@@ -34,7 +34,8 @@ export async function directAttachmentUpload(
   fileUtilsLib,
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
-    | null
+    | null,
+  onCancel?: any
 ): Promise<IDirectAttachmentUploadResponse> {
   let result;
   const client = new AzureBlockUpload(
@@ -56,7 +57,8 @@ export async function directAttachmentUpload(
   );
   await client.start(
     config.encrypt && config.attachmentDek ? config.attachmentDek : null,
-    progressUpdateFunc
+    progressUpdateFunc,
+    onCancel
   );
 
   return result;

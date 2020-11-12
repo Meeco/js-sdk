@@ -24,6 +24,7 @@ export async function fileUploadBrowser({
   authConfig,
   videoCodec,
   progressUpdateFunc = null,
+  onCancel = null,
 }: {
   file: File;
   vaultUrl: string;
@@ -32,6 +33,7 @@ export async function fileUploadBrowser({
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null;
+  onCancel?: any;
 }): Promise<{ attachment: any; dek: string }> {
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
@@ -55,7 +57,8 @@ export async function fileUploadBrowser({
       attachmentDek: dek,
     },
     FileUtils,
-    progressUpdateFunc
+    progressUpdateFunc,
+    onCancel
   );
   const artifactsFileName = file.name + '.encryption_artifacts';
   if (videoCodec) {
@@ -83,7 +86,9 @@ export async function fileUploadBrowser({
       file: artifactsFile,
       encrypt: false,
     },
-    FileUtils
+    FileUtils,
+    null,
+    onCancel
   );
   const attachedDoc = await directAttachmentAttach(
     {
@@ -205,4 +210,34 @@ async function getDirectDownloadInfo(
   const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl));
   const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
   return result.attachment_direct_download_url;
+}
+
+export function fileUploadBrowserWithCancel({
+  file,
+  vaultUrl,
+  authConfig,
+  videoCodec,
+  progressUpdateFunc = null,
+}: {
+  file: File;
+  vaultUrl: string;
+  authConfig: IFileStorageAuthConfiguration;
+  videoCodec?: string;
+  progressUpdateFunc?:
+    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
+    | null;
+}) {
+  let cancel;
+  const promise = new Promise((resolve, reject) => (cancel = resolve));
+  return {
+    cancel,
+    success: fileUploadBrowser({
+      file,
+      vaultUrl,
+      authConfig,
+      videoCodec,
+      progressUpdateFunc,
+      onCancel: promise,
+    }),
+  };
 }

@@ -3,7 +3,7 @@ import {
   downloadThumbnail,
   encryptAndUploadThumbnail,
   fileDownloadBrowser,
-  fileUploadBrowser,
+  fileUploadBrowserWithCancel,
   ThumbnailType,
   ThumbnailTypes,
   thumbSizeTypeToMimeExt,
@@ -54,7 +54,8 @@ function updateEnvironment() {
 
   $set('environmentStatus', 'Saved');
 }
-
+$('fileUploadProgressBar').hidden = true;
+$('cancelAttachFile').hidden = true;
 $('attachFile').addEventListener('click', attachFile, false);
 $('downloadAttachment').addEventListener('click', downloadAttachment);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
@@ -83,6 +84,8 @@ async function attachFile() {
     const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
     const passphraseDerivedKey = localStorage.getItem('passphraseDerivedKey') || '';
     const secret = localStorage.getItem('secret') || '';
+    $('fileUploadProgressBar').hidden = false;
+    $('cancelAttachFile').hidden = false;
 
     const progressUpdateFunc = (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => {
       $set('fileUploadProgressBar', percentageComplete.toString());
@@ -112,7 +115,19 @@ async function attachFile() {
       secret,
     });
 
-    const { attachment, dek: attachmentDek } = await fileUploadBrowser({
+    // const { attachment: attachment, dek: attachmentDek } = await fileUploadBrowser({
+    //   file,
+    //   vaultUrl,
+    //   authConfig: {
+    //     data_encryption_key: privateDek,
+    //     vault_access_token: vaultAccessToken,
+    //     subscription_key: subscriptionKey,
+    //   },
+    //   videoCodec,
+    //   progressUpdateFunc,
+    // });
+
+    const { cancel, success } = fileUploadBrowserWithCancel({
       file,
       vaultUrl,
       authConfig: {
@@ -123,6 +138,29 @@ async function attachFile() {
       videoCodec,
       progressUpdateFunc,
     });
+
+    $('cancelAttachFile').addEventListener(
+      'click',
+      () => {
+        cancel('cancel');
+      },
+      false
+    );
+
+    const { attachment: attachment, dek: attachmentDek }: any = await success
+      .then(
+        value => {
+          return value;
+        },
+        reason => {
+          alert(reason);
+        }
+      )
+      .finally(() => {
+        $('cancelAttachFile').hidden = true;
+        $set('fileUploadProgressBar', '0');
+      });
+
     const existingItem = itemFetchResult.item;
     const itemUpdateData = new ItemUpdateData({
       id: existingItem.id,
