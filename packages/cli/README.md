@@ -239,7 +239,8 @@ once approved it can be access with follwoing command
 <!-- commands -->
 
 - [`meeco client-task-queue:list`](#meeco-client-task-queuelist)
-- [`meeco client-task-queue:run-batch [NUMBEROFTASKS]`](#meeco-client-task-queuerun-batch-numberoftasks)
+- [`meeco client-task-queue:run-batch`](#meeco-client-task-queuerun-batch)
+- [`meeco client-task-queue:update TASKS_FILE`](#meeco-client-task-queueupdate-tasks_file)
 - [`meeco connections:create`](#meeco-connectionscreate)
 - [`meeco connections:create-config`](#meeco-connectionscreate-config)
 - [`meeco connections:list`](#meeco-connectionslist)
@@ -247,9 +248,10 @@ once approved it can be access with follwoing command
 - [`meeco items:attach-file`](#meeco-itemsattach-file)
 - [`meeco items:create`](#meeco-itemscreate)
 - [`meeco items:create-config TEMPLATENAME`](#meeco-itemscreate-config-templatename)
+- [`meeco items:create-thumbnail`](#meeco-itemscreate-thumbnail)
 - [`meeco items:get ITEMID`](#meeco-itemsget-itemid)
 - [`meeco items:get-attachment ITEMID SLOTID`](#meeco-itemsget-attachment-itemid-slotid)
-- [`meeco items:get-thumbnail THUMBNAILID`](#meeco-itemsget-thumbnail-thumbnailid)
+- [`meeco items:get-thumbnail ITEMID SLOTID THUMBNAILID`](#meeco-itemsget-thumbnail-itemid-slotid-thumbnailid)
 - [`meeco items:list`](#meeco-itemslist)
 - [`meeco items:remove-slot SLOTID`](#meeco-itemsremove-slot-slotid)
 - [`meeco items:update`](#meeco-itemsupdate)
@@ -285,60 +287,75 @@ once approved it can be access with follwoing command
 
 ## `meeco client-task-queue:list`
 
-Read the client task that client is supposed to perform
+Read Client Tasks assigned to the user
 
 ```
 USAGE
   $ meeco client-task-queue:list
 
 OPTIONS
-  -a, --auth=auth                              (required) [default: .user.yaml] Authorization config yaml file (if not
-                                               using the default .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+  -l, --limit=limit              Get at most 'limit' many Client Tasks
 
-  -e, --environment=environment                [default: .environment.yaml] environment config file
+  -s, --state=state              Filter Client Tasks by execution state. Can take multiple values separated by commas. Values can be
+                                 (todo|in_progress|done|failed)
 
-  -s, --state=state                            [default: Todo] Client Task Queue avalible states:
-                                               Todo,InProgress,Done,Failed
+  --all                          Get all possible results from web API, possibly with multiple calls.
 
-  --all                                        Get all possible results from web API, possibly with multiple calls.
+  --update                       Set the state of retrieved "todo" Client Tasks to "in_progress" in the API
 
-  --supressChangingState=supressChangingState  [default: true] suppress transitioning tasks in the response to
-                                               in_progress: true, false
-
-EXAMPLE
-  meeco client-task-queue:list -a path/to/auth.yaml
+EXAMPLES
+  meeco client-task-queue:list --state failed --all
+  meeco client-task-queue:list --update --state todo --limit 5
 ```
 
 _See code: [src/commands/client-task-queue/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/list.ts)_
 
-## `meeco client-task-queue:run-batch [NUMBEROFTASKS]`
+## `meeco client-task-queue:run-batch`
 
-Load and run a batch of ClientTasks from the queue
+Load and run Client Tasks from the queue
 
 ```
 USAGE
-  $ meeco client-task-queue:run-batch [NUMBEROFTASKS]
-
-ARGUMENTS
-  NUMBEROFTASKS  number of tasks to fetch and execute
+  $ meeco client-task-queue:run-batch
 
 OPTIONS
-  -a, --auth=auth                              (required) [default: .user.yaml] Authorization config yaml file (if not
-                                               using the default .user.yaml)
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+  -l, --limit=limit              Run at most 'limit' many Client Tasks. Defaults to the API page size (200)
+  -s, --state=(todo|failed)      [default: todo] Run only Client Tasks with the given state
+  --all                          Get all possible results from web API, possibly with multiple calls.
 
-  -e, --environment=environment                [default: .environment.yaml] environment config file
-
-  -s, --state=state                            [default: Todo] Client Task Queue avalible states:
-                                               Todo,InProgress,Done,Failed
-
-  --supressChangingState=supressChangingState  [default: true] suppress transitioning tasks in the response to
-                                               in_progress: true, false
-
-EXAMPLE
-  meeco client-task-queue:run-batch -a path/to/auth.yaml 10
+EXAMPLES
+  meeco client-task-queue:run-batch --limit 10
+  meeco client-task-queue:run-batch --all --state failed
 ```
 
 _See code: [src/commands/client-task-queue/run-batch.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/run-batch.ts)_
+
+## `meeco client-task-queue:update TASKS_FILE`
+
+Set Client Task states using YAML file
+
+```
+USAGE
+  $ meeco client-task-queue:update TASKS_FILE
+
+ARGUMENTS
+  TASKS_FILE  YAML file with a list of Client Tasks to update. Matches output format of client-task-queue:list
+
+OPTIONS
+  -a, --auth=auth                       (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -e, --environment=environment         [default: .environment.yaml] environment config file
+  --set=(todo|in_progress|done|failed)  Set all Client Tasks to this state
+
+EXAMPLES
+  meeco client-task-queue:update updated_tasks.yaml
+  meeco client-task-queue:update --set done tasks.yaml
+```
+
+_See code: [src/commands/client-task-queue/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/client-task-queue/update.ts)_
 
 ## `meeco connections:create`
 
@@ -478,6 +495,25 @@ EXAMPLES
 
 _See code: [src/commands/items/create-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/create-config.ts)_
 
+## `meeco items:create-thumbnail`
+
+Encrypt and attach a thumbnail to an attachment
+
+```
+USAGE
+  $ meeco items:create-thumbnail
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
+  -c, --config=config            (required) thumbnail config yaml
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+EXAMPLES
+  meeco items:thumbnail-create -c ./thumbnail-config.yaml
+```
+
+_See code: [src/commands/items/create-thumbnail.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/create-thumbnail.ts)_
+
 ## `meeco items:get ITEMID`
 
 Get an item from the vault and decrypt its values
@@ -521,27 +557,26 @@ EXAMPLES
 
 _See code: [src/commands/items/get-attachment.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get-attachment.ts)_
 
-## `meeco items:get-thumbnail THUMBNAILID`
+## `meeco items:get-thumbnail ITEMID SLOTID THUMBNAILID`
 
 Download and decrypt an thumbnail by id
 
 ```
 USAGE
-  $ meeco items:get-thumbnail THUMBNAILID
+  $ meeco items:get-thumbnail ITEMID SLOTID THUMBNAILID
 
 ARGUMENTS
+  ITEMID       Id of item containing the slot of the attachment containing the thumbnail
+  SLOTID       Id of the the slot of the attachment containing the thumbnail
   THUMBNAILID  ID of the thumbnail to download
 
 OPTIONS
-  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
-                                 default .user.yaml)
-
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the default .user.yaml)
   -e, --environment=environment  [default: .environment.yaml] environment config file
-
   -o, --outputPath=outputPath    (required) output file path
 
 EXAMPLES
-  meeco items:get-thumbnail my-thumbnail-id -o ./my-thumbnail.png
+  meeco items:get-thumbnail my-thumbnail-id -o ./
 ```
 
 _See code: [src/commands/items/get-thumbnail.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get-thumbnail.ts)_

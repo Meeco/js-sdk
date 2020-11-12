@@ -40,6 +40,7 @@ const response = {
         organization_member_role: 'admin',
         organization_member_id: 'cfbf3f4e-735b-46a1-97ee-8cc13c0bb2dd',
       },
+      user_id: '6b98e09f-9de7-4f7c-b6f7-f234ef5122ed',
       connection_type: 'member',
       user_image: 'http://localhost:3000/images/69074548-24cb-403d-828c-09af6002e1c3',
       user_type: 'organization_agent',
