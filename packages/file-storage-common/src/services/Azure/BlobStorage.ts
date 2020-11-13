@@ -46,6 +46,7 @@ const putBlockList = async (sasUrl, blockIDList, fileType) => {
       ...buildAzureHeaders(),
       'x-ms-blob-content-type': fileType,
       'Content-Type': 'text/xml',
+      'x-ms-blob-cache-control': 'public, max-age=86400',
     },
     data,
   });
