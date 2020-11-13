@@ -1,4 +1,4 @@
-import { EncryptionKey, NewItem, SlotType } from '@meeco/sdk';
+import { NewItem, SlotType, SymmetricKey } from '@meeco/sdk';
 import { ItemTemplate, Slot } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
 import { testUserAuth } from '../test-helpers';
@@ -83,7 +83,7 @@ describe('NewItem', () => {
 
   describe('#toRequest', () => {
     let newItem: NewItem;
-    const dek: EncryptionKey = testUserAuth.data_encryption_key;
+    const dek: SymmetricKey = testUserAuth.data_encryption_key;
 
     beforeEach(() => {
       newItem = new NewItem('label', 'template');

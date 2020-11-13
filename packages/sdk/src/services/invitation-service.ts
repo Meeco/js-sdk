@@ -1,7 +1,7 @@
 import { Keypair } from '@meeco/keystore-api-sdk';
 import { Connection, Invitation, InvitationApi } from '@meeco/vault-api-sdk';
-import { EncryptionKey } from '../models/encryption-key';
 import { MeecoServiceError } from '../models/service-error';
+import { SymmetricKey } from '../models/symmetric-key';
 import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
 
 export class InvitationService extends Service<InvitationApi> {
@@ -98,7 +98,7 @@ export class InvitationService extends Service<InvitationApi> {
       .then(res => res.connection);
   }
 
-  private encryptName(name: string, dek: EncryptionKey) {
+  private encryptName(name: string, dek: SymmetricKey) {
     return Service.cryppo
       .encryptWithKey({
         data: name,
@@ -121,7 +121,7 @@ export class InvitationService extends Service<InvitationApi> {
     }
   }
 
-  private async createAndStoreKeyPair(keystoreToken: string, keyEncryptionKey: EncryptionKey) {
+  private async createAndStoreKeyPair(keystoreToken: string, keyEncryptionKey: SymmetricKey) {
     this.logger.log('Generating key pair');
     const keyPair = await Service.cryppo.generateRSAKeyPair();
 

@@ -1,5 +1,5 @@
-import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
+import { SymmetricKey } from '../models/symmetric-key';
 import cryppo from '../services/cryppo-service';
 import {
   KeystoreAPIFactory,
@@ -20,11 +20,11 @@ export interface IVaultToken {
 }
 
 export interface IDEK {
-  data_encryption_key: EncryptionKey;
+  data_encryption_key: SymmetricKey;
 }
 
 export interface IKEK {
-  key_encryption_key: EncryptionKey;
+  key_encryption_key: SymmetricKey;
 }
 
 export interface IKeystoreToken {

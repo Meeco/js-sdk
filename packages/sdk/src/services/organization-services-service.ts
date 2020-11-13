@@ -1,7 +1,7 @@
 import { OrganizationsManagingServicesApi, PostServiceRequest } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
-import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
+import { SymmetricKey } from '../models/symmetric-key';
 import { Logger, noopLogger } from '../util/logger';
 import Service, { IVaultToken } from './service';
 
@@ -40,9 +40,9 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
       secret: '',
       keystore_access_token: '',
       vault_access_token: decryptedVaultSessionToken,
-      data_encryption_key: EncryptionKey.fromRaw(''),
-      key_encryption_key: EncryptionKey.fromRaw(''),
-      passphrase_derived_key: EncryptionKey.fromRaw(''),
+      data_encryption_key: SymmetricKey.fromRaw(''),
+      key_encryption_key: SymmetricKey.fromRaw(''),
+      passphrase_derived_key: SymmetricKey.fromRaw(''),
     });
   }
 

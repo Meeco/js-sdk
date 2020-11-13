@@ -1,9 +1,9 @@
 import { KeyEncryptionKey, Keypair } from '@meeco/keystore-api-sdk';
 import { MeResponse, User, UserApi } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
-import { EncryptionKey } from '../models/encryption-key';
 import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import { SRPSession } from '../models/srp-session';
+import { SymmetricKey } from '../models/symmetric-key';
 import Secrets from '../util/secrets';
 import Service, { IKeystoreToken, IVaultToken } from './service';
 
@@ -234,9 +234,9 @@ export class UserService extends Service<UserApi> {
       secret,
       ...sessionAuthenticationToken,
       vault_access_token,
-      data_encryption_key: EncryptionKey.fromRaw(privateEncryptionSpace.key),
-      key_encryption_key: EncryptionKey.fromRaw(kek),
-      passphrase_derived_key: EncryptionKey.fromRaw(derivedKey),
+      data_encryption_key: SymmetricKey.fromRaw(privateEncryptionSpace.key),
+      key_encryption_key: SymmetricKey.fromRaw(kek),
+      passphrase_derived_key: SymmetricKey.fromRaw(derivedKey),
     });
   }
 
@@ -356,9 +356,9 @@ export class UserService extends Service<UserApi> {
       secret,
       ...sessionAuthenticationToken,
       vault_access_token,
-      data_encryption_key: EncryptionKey.fromRaw(dek),
-      key_encryption_key: EncryptionKey.fromRaw(kek),
-      passphrase_derived_key: EncryptionKey.fromRaw(derivedKey),
+      data_encryption_key: SymmetricKey.fromRaw(dek),
+      key_encryption_key: SymmetricKey.fromRaw(kek),
+      passphrase_derived_key: SymmetricKey.fromRaw(derivedKey),
     });
   }
 

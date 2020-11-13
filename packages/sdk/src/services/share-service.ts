@@ -11,9 +11,9 @@ import {
   ShareWithItemData,
 } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
-import { EncryptionKey } from '../models/encryption-key';
 import { SDKDecryptedSlot, SlotHelpers } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
+import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, reducePages } from '../util/paged';
 import { ConnectionService } from './connection-service';
 import { ItemService } from './item-service';
@@ -111,7 +111,7 @@ export class ShareService extends Service<SharesApi> {
     const { slots } = item;
 
     this.logger.log('Encrypting slots with generated DEK');
-    const dek = EncryptionKey.fromRaw(Service.cryppo.generateRandomKey());
+    const dek = SymmetricKey.new();
 
     let encryptions: EncryptedSlotValue[];
     if (shareOptions.slot_id) {
@@ -223,8 +223,8 @@ export class ShareService extends Service<SharesApi> {
   public async getShareDEK(
     credentials: IKeystoreToken & IKEK & IDEK,
     share: Share
-  ): Promise<EncryptionKey> {
-    let dataEncryptionKey: EncryptionKey;
+  ): Promise<SymmetricKey> {
+    let dataEncryptionKey: SymmetricKey;
 
     if (share.encrypted_dek) {
       const { keypair } = await this.keystoreAPIFactory(
@@ -241,7 +241,7 @@ export class ShareService extends Service<SharesApi> {
           privateKeyPem: decryptedPrivateKey,
           serialized: share.encrypted_dek,
         })
-        .then(EncryptionKey.fromRaw);
+        .then(SymmetricKey.fromRaw);
     } else {
       dataEncryptionKey = credentials.data_encryption_key;
     }
@@ -350,7 +350,7 @@ export class ShareService extends Service<SharesApi> {
 
         this.logger.log('Re-Encrypt all slots');
         const slot_values = await item.toEncryptedSlotValues({
-          data_encryption_key: EncryptionKey.fromRaw(dek),
+          data_encryption_key: SymmetricKey.fromRaw(dek),
         });
 
         // server create default slots for template

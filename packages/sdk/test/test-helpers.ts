@@ -3,9 +3,9 @@ import test from '@oclif/test';
 import { join } from 'path';
 import { createSandbox } from 'sinon';
 import { AuthData } from '../src/models/auth-data';
-import { EncryptionKey } from '../src/models/encryption-key';
 import { Environment } from '../src/models/environment';
 import { SRPSession } from '../src/models/srp-session';
+import { SymmetricKey } from '../src/models/symmetric-key';
 import { _mockCryppo } from './mock-cryppo';
 
 // Temp soln: rather than using regex, test against keys for now
@@ -68,9 +68,9 @@ export const buildTestAuthData = (config: {
   new AuthData({
     secret: config.secret || '',
     keystore_access_token: config.keystore_access_token,
-    data_encryption_key: EncryptionKey.fromSerialized(config.data_encryption_key),
-    key_encryption_key: EncryptionKey.fromSerialized(config.key_encryption_key),
-    passphrase_derived_key: EncryptionKey.fromSerialized(config.passphrase_derived_key),
+    data_encryption_key: SymmetricKey.fromSerialized(config.data_encryption_key),
+    key_encryption_key: SymmetricKey.fromSerialized(config.key_encryption_key),
+    passphrase_derived_key: SymmetricKey.fromSerialized(config.passphrase_derived_key),
     vault_access_token: config.vault_access_token,
   });
 
