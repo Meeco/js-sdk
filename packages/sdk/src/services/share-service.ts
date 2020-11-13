@@ -15,9 +15,7 @@ import { EncryptionKey } from '../models/encryption-key';
 import { SDKDecryptedSlot, SlotHelpers } from '../models/local-slot';
 import { MeecoServiceError } from '../models/service-error';
 import { getAllPaged, reducePages } from '../util/paged';
-import { VALUE_VERIFICATION_KEY_LENGTH, valueVerificationHash } from '../util/value-verification';
 import { ConnectionService } from './connection-service';
-import cryppo from './cryppo-service';
 import { ItemService } from './item-service';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 
@@ -55,10 +53,6 @@ export class ShareService extends Service<SharesApi> {
    * @ignore
    */
   static Date = global.Date;
-
-  // for mocking during testing
-  private static valueVerificationHash =
-    (<any>global).valueVerificationHash || valueVerificationHash;
 
   /**
    * When a share is initially created it is encrypted with a generated
@@ -397,53 +391,5 @@ export class ShareService extends Service<SharesApi> {
     });
 
     return slot_values;
-  }
-
-  /**
-   * In the API: a share expects an `encrypted_value` property.
-   * For a tile item - this is a stringified json payload of key/value
-   * pairs where the key is the slot id and the value is the slot value
-   * encrypted with a shared data encryption key.
-   */
-  public async convertSlotsToEncryptedValuesForShare(
-    slots: SDKDecryptedSlot[],
-    sharedDataEncryptionKey: EncryptionKey
-  ): Promise<EncryptedSlotValue[]> {
-    const encryptions = slots
-      .filter(slot => slot.value && slot.id)
-      .map(async slot => {
-        const encrypted_value = await Service.cryppo
-          .encryptWithKey({
-            data: slot.value as string,
-            key: sharedDataEncryptionKey.key,
-            strategy: Service.cryppo.CipherStrategy.AES_GCM,
-          })
-          .then(result => result.serialized);
-
-        const valueVerificationKey = slot.own
-          ? cryppo.generateRandomKey(VALUE_VERIFICATION_KEY_LENGTH)
-          : slot.value_verification_key;
-
-        const encryptedValueVerificationKey = await Service.cryppo
-          .encryptWithKey({
-            data: valueVerificationKey as string,
-            key: sharedDataEncryptionKey.key,
-            strategy: Service.cryppo.CipherStrategy.AES_GCM,
-          })
-          .then(result => result.serialized);
-
-        // this will be replace by cryppo call later
-        const verificationHash = slot.own
-          ? ShareService.valueVerificationHash(valueVerificationKey as string, slot.value as string)
-          : undefined;
-
-        return {
-          slot_id: slot.id as string,
-          encrypted_value: encrypted_value as string,
-          encrypted_value_verification_key: encryptedValueVerificationKey || undefined,
-          value_verification_hash: verificationHash,
-        };
-      });
-    return Promise.all(encryptions);
   }
 }
