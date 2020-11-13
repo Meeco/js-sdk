@@ -1,7 +1,5 @@
 import { OrganizationsManagingServicesApi, PostServiceRequest } from '@meeco/vault-api-sdk';
-import { AuthData } from '../models/auth-data';
 import { Environment } from '../models/environment';
-import { SymmetricKey } from '../models/symmetric-key';
 import { Logger, noopLogger } from '../util/logger';
 import Service, { IVaultToken } from './service';
 
@@ -25,7 +23,7 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
     organizationId: string,
     serviceId: string,
     privateKey: string
-  ): Promise<AuthData> {
+  ): Promise<IVaultToken> {
     const result = await this.vaultAPIFactory(
       this.vaultAccessToken
     ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesIdLoginPost(
@@ -36,14 +34,9 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
       privateKeyPem: privateKey,
       serialized: result.encrypted_access_token,
     });
-    return new AuthData({
-      secret: '',
-      keystore_access_token: '',
+    return {
       vault_access_token: decryptedVaultSessionToken,
-      data_encryption_key: SymmetricKey.fromRaw(''),
-      key_encryption_key: SymmetricKey.fromRaw(''),
-      passphrase_derived_key: SymmetricKey.fromRaw(''),
-    });
+    };
   }
 
   public async create(organizationId: string, service: PostServiceRequest) {

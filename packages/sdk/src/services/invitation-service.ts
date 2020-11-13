@@ -98,14 +98,14 @@ export class InvitationService extends Service<InvitationApi> {
       .then(res => res.connection);
   }
 
-  private encryptName(name: string, dek: SymmetricKey) {
-    return Service.cryppo
-      .encryptWithKey({
-        data: name,
-        key: dek.key,
-        strategy: Service.cryppo.CipherStrategy.AES_GCM,
-      })
-      .then(result => result.serialized);
+  private async encryptName(name: string, dek: SymmetricKey): Promise<string> {
+    return dek.encryptString(name).then(res => {
+      if (!res) {
+        throw new Error('Connection Name cannot be empty');
+      } else {
+        return res;
+      }
+    });
   }
 
   private async getKeyPair(keystoreToken: string, id: string): Promise<Keypair> {

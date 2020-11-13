@@ -334,13 +334,13 @@ export class ShareService extends Service<SharesApi> {
     // prepare request body
 
     // use the same DEK for all updates, it's the same data...
-    const dek = Service.cryppo.generateRandomKey();
+    const dek = SymmetricKey.new();
 
     const result = await Promise.all(
       shares.map(async shareKey => {
         const encryptedDek = await Service.cryppo.encryptWithPublicKey({
           publicKeyPem: shareKey.public_key,
-          data: dek,
+          data: dek.key,
         });
 
         const shareDek: ItemsIdSharesShareDeks = {
@@ -350,7 +350,7 @@ export class ShareService extends Service<SharesApi> {
 
         this.logger.log('Re-Encrypt all slots');
         const slot_values = await item.toEncryptedSlotValues({
-          data_encryption_key: SymmetricKey.fromRaw(dek),
+          data_encryption_key: dek,
         });
 
         // server create default slots for template
