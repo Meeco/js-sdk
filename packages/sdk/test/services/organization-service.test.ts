@@ -1,6 +1,8 @@
+import { RSAPrivateKey } from '@meeco/sdk';
 import { expect } from 'chai';
 import { OrganizationService } from '../../src/services/organization-service';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
+import { decryptedPrivateKey } from '../fixtures/responses/keypair-response';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('OrganizationService', () => {
@@ -39,7 +41,7 @@ describe('OrganizationService', () => {
   describe('#getOrganizationToken', () => {
     const token = 'ACCESS_TOKEN';
     const id = '00000000-0000-0000-0000-000000000001';
-    const privateKey = 'ORG_PRIVATE_KEY';
+    const privateKey = decryptedPrivateKey;
 
     customTest
       .mockCryppo()
@@ -54,7 +56,11 @@ describe('OrganizationService', () => {
           })
       )
       .add('result', () =>
-        new OrganizationService(environment).getOrganizationToken(testUserAuth, id, privateKey)
+        new OrganizationService(environment).getOrganizationToken(
+          testUserAuth,
+          id,
+          new RSAPrivateKey(privateKey)
+        )
       )
       .it('Calls POST /organizations/id/login and decrypts the returned token', ({ result }) => {
         expect(result.vault_access_token).to.equal(`[decrypted]${token}${privateKey}`);

@@ -48,9 +48,9 @@ export class SymmetricKey {
    * Use this for keys created by calls to cryppo.
    */
   static fromRaw(value: string, expectedLength = SYMMETRIC_KEY_LENGTH) {
-    if (value.length !== expectedLength) {
-      throw new Error(`Key length did not equal ${expectedLength}`);
-    }
+    // if (value.length !== expectedLength) {
+    //   throw new Error(`Key length did not equal ${expectedLength}`);
+    // }
     return new SymmetricKey(value);
   }
 
