@@ -3,6 +3,9 @@
  */
 export * from './models/auth-data';
 export * from './models/symmetric-key';
+export { default as DecryptedKeypair } from './models/decrypted-keypair';
+export { default as RSAPrivateKey } from './models/rsa-private-key';
+export { default as RSAPublicKey } from './models/rsa-public-key';
 export * from './models/environment';
 export * from './models/file-attachment-data';
 export * from './models/item-change';

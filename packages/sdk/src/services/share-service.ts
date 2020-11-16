@@ -11,7 +11,9 @@ import {
   ShareWithItemData,
 } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
+import DecryptedKeypair from '../models/decrypted-keypair';
 import { SDKDecryptedSlot, SlotHelpers } from '../models/local-slot';
+import RSAPublicKey from '../models/rsa-public-key';
 import { MeecoServiceError } from '../models/service-error';
 import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, reducePages } from '../util/paged';
@@ -105,6 +107,7 @@ export class ShareService extends Service<SharesApi> {
       user_keypair_external_id,
       user_id: recipientId,
     } = fromUserConnection.the_other_user;
+    const publicKey = new RSAPublicKey(user_public_key);
 
     this.logger.log('Preparing item to share');
     const item = await new ItemService(this.environment).get(credentials, itemId);
@@ -126,10 +129,7 @@ export class ShareService extends Service<SharesApi> {
       });
     }
 
-    const encryptedDek = await Service.cryppo.encryptWithPublicKey({
-      publicKeyPem: user_public_key,
-      data: dek.key,
-    });
+    const encryptedDek = await publicKey.encryptKey(dek);
 
     this.logger.log('Sending shared data');
     const shareResult = await this.vaultAPIFactory(vault_access_token).SharesApi.itemsIdSharesPost(
@@ -142,7 +142,7 @@ export class ShareService extends Service<SharesApi> {
             keypair_external_id: user_keypair_external_id || undefined,
             ...shareOptions,
             slot_values: encryptions,
-            encrypted_dek: encryptedDek.serialized,
+            encrypted_dek: encryptedDek,
           },
         ],
       }
@@ -231,17 +231,12 @@ export class ShareService extends Service<SharesApi> {
         credentials.keystore_access_token
       ).KeypairApi.keypairsIdGet(share.keypair_external_id!);
 
-      const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
-        serialized: keypair.encrypted_serialized_key,
-        key: credentials.key_encryption_key.key,
-      });
+      const decryptedPrivateKey = await DecryptedKeypair.fromAPI(
+        credentials.key_encryption_key,
+        keypair
+      ).then(k => k.privateKey);
 
-      dataEncryptionKey = await Service.cryppo
-        .decryptSerializedWithPrivateKey({
-          privateKeyPem: decryptedPrivateKey,
-          serialized: share.encrypted_dek,
-        })
-        .then(SymmetricKey.fromRaw);
+      dataEncryptionKey = await decryptedPrivateKey.decryptKey(share.encrypted_dek);
     } else {
       dataEncryptionKey = credentials.data_encryption_key;
     }
@@ -338,14 +333,12 @@ export class ShareService extends Service<SharesApi> {
 
     const result = await Promise.all(
       shares.map(async shareKey => {
-        const encryptedDek = await Service.cryppo.encryptWithPublicKey({
-          publicKeyPem: shareKey.public_key,
-          data: dek.key,
-        });
+        const sharePublicKey = new RSAPublicKey(shareKey.public_key!);
+        const encryptedDek = await sharePublicKey.encryptKey(dek);
 
         const shareDek: ItemsIdSharesShareDeks = {
           share_id: shareKey.id,
-          dek: encryptedDek.serialized,
+          dek: encryptedDek,
         };
 
         this.logger.log('Re-Encrypt all slots');

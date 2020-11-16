@@ -1,5 +1,7 @@
 import { OrganizationsManagingServicesApi, PostServiceRequest } from '@meeco/vault-api-sdk';
+import DecryptedKeypair from '../models/decrypted-keypair';
 import { Environment } from '../models/environment';
+import RSAPrivateKey from '../models/rsa-private-key';
 import { Logger, noopLogger } from '../util/logger';
 import Service, { IVaultToken } from './service';
 
@@ -22,7 +24,7 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
   public async getLogin(
     organizationId: string,
     serviceId: string,
-    privateKey: string
+    privateKey: RSAPrivateKey
   ): Promise<IVaultToken> {
     const result = await this.vaultAPIFactory(
       this.vaultAccessToken
@@ -30,18 +32,15 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
       organizationId,
       serviceId
     );
-    const decryptedVaultSessionToken = await Service.cryppo.decryptSerializedWithPrivateKey({
-      privateKeyPem: privateKey,
-      serialized: result.encrypted_access_token,
-    });
+    const decryptedVaultSessionToken = await privateKey.decryptToken(result.encrypted_access_token);
     return {
       vault_access_token: decryptedVaultSessionToken,
     };
   }
 
   public async create(organizationId: string, service: PostServiceRequest) {
-    const rsaKeyPair = await Service.cryppo.generateRSAKeyPair(4096);
-    service.public_key = rsaKeyPair.publicKey;
+    const rsaKeyPair = await DecryptedKeypair.new();
+    service.public_key = rsaKeyPair.publicKey.key;
     const result = await this.vaultAPIFactory(
       this.vaultAccessToken
     ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesPost(organizationId, {

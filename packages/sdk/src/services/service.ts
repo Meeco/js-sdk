@@ -1,6 +1,5 @@
 import { Environment } from '../models/environment';
 import { SymmetricKey } from '../models/symmetric-key';
-import cryppo from '../services/cryppo-service';
 import {
   KeystoreAPIFactory,
   keystoreAPIFactory,
@@ -35,7 +34,6 @@ export interface IKeystoreToken {
  * Abstract SDK Service.
  */
 export default abstract class Service<API> {
-  protected static readonly cryppo = (<any>global).cryppo || cryppo;
   protected vaultAPIFactory: VaultAPIFactory;
   protected keystoreAPIFactory: KeystoreAPIFactory;
   protected logger: IFullLogger;
