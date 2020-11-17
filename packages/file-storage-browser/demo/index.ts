@@ -1,4 +1,4 @@
-import { EncryptionKey, Environment, ItemService, ItemUpdateData } from '@meeco/sdk';
+import { Environment, ItemService, SymmetricKey, UpdateItem } from '@meeco/sdk';
 import {
   downloadThumbnail,
   encryptAndUploadThumbnail,
@@ -82,8 +82,6 @@ async function attachFile() {
 
     const keyEncryptionKey = localStorage.getItem('keyEncryptionKey') || '';
     const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
-    const passphraseDerivedKey = localStorage.getItem('passphraseDerivedKey') || '';
-    const secret = localStorage.getItem('secret') || '';
     $('fileUploadProgressBar').hidden = false;
     $('cancelAttachFile').hidden = false;
 
@@ -108,9 +106,9 @@ async function attachFile() {
     const itemService = new ItemService(environment);
     const itemFetchResult = await itemService.get(
       {
-        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
+        data_encryption_key: SymmetricKey.fromSerialized(privateDek),
         vault_access_token: vaultAccessToken,
-        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: SymmetricKey.fromSerialized(keyEncryptionKey),
         keystore_access_token: keystoreAccessToken,
       },
       itemId
@@ -163,8 +161,7 @@ async function attachFile() {
       });
 
     const existingItem = itemFetchResult.item;
-    const itemUpdateData = new ItemUpdateData({
-      id: existingItem.id,
+    const itemUpdateData = new UpdateItem(existingItem.id, {
       slots: [
         {
           label,
@@ -180,7 +177,7 @@ async function attachFile() {
     const updated = await itemService.update(
       {
         vault_access_token: vaultAccessToken,
-        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
+        data_encryption_key: SymmetricKey.fromSerialized(privateDek),
       },
       itemUpdateData
     );
@@ -271,9 +268,9 @@ async function downloadAttachment() {
     const itemService = new ItemService(environment);
     const itemFetchResult: any = await itemService.get(
       {
-        data_encryption_key: EncryptionKey.fromSerialized(dek),
+        data_encryption_key: SymmetricKey.fromSerialized(dek),
         vault_access_token: vaultAccessToken,
-        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: SymmetricKey.fromSerialized(keyEncryptionKey),
         keystore_access_token: keystoreAccessToken,
       },
       itemId
@@ -347,9 +344,9 @@ async function attachThumbnail() {
     const itemService = new ItemService(environment);
     const itemFetchResult: any = await itemService.get(
       {
-        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
+        data_encryption_key: SymmetricKey.fromSerialized(privateDek),
         vault_access_token: vaultAccessToken,
-        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: SymmetricKey.fromSerialized(keyEncryptionKey),
         keystore_access_token: keystoreAccessToken,
       },
       itemId
@@ -419,9 +416,9 @@ async function thumbnailDownload() {
     const itemService = new ItemService(environment);
     const itemFetchResult: any = await itemService.get(
       {
-        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
+        data_encryption_key: SymmetricKey.fromSerialized(privateDek),
         vault_access_token: vaultAccessToken,
-        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: SymmetricKey.fromSerialized(keyEncryptionKey),
         keystore_access_token: keystoreAccessToken,
       },
       itemId
