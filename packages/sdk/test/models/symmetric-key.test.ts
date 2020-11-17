@@ -20,10 +20,6 @@ describe('SymmetricKey', () => {
     it('reads the correct key', () => {
       expect(SymmetricKey.fromRaw(rawKey).toJSON()).to.eql(serializedKey);
     });
-
-    it('throws an error if given a serialized key', () => {
-      expect(() => SymmetricKey.fromRaw(serializedKey)).to.throw();
-    });
   });
 
   describe('string encryption', () => {

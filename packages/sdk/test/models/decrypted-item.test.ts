@@ -1,4 +1,4 @@
-import { DecryptedItem, SymmetricKey, SlotHelpers } from '@meeco/sdk';
+import { DecryptedItem, SlotHelpers, SymmetricKey } from '@meeco/sdk';
 import { Attachment, Slot } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
 import sinon from 'sinon';

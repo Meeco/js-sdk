@@ -51,10 +51,7 @@ export class SymmetricKey {
    * Create an {@link SymmetricKey} from a binary string version of the key.
    * Use this for keys created by calls to cryppo.
    */
-  static fromRaw(value: string, expectedLength = SYMMETRIC_KEY_LENGTH) {
-    // if (value.length !== expectedLength) {
-    //   throw new Error(`Key length did not equal ${expectedLength}`);
-    // }
+  static fromRaw(value: string) {
     return new SymmetricKey(value);
   }
 

@@ -1,4 +1,3 @@
-import { RSAPrivateKey } from '@meeco/sdk';
 import { expect } from 'chai';
 import { OrganizationService } from '../../src/services/organization-service';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
@@ -56,11 +55,7 @@ describe('OrganizationService', () => {
           })
       )
       .add('result', () =>
-        new OrganizationService(environment).getOrganizationToken(
-          testUserAuth,
-          id,
-          new RSAPrivateKey(privateKey)
-        )
+        new OrganizationService(environment).getOrganizationToken(testUserAuth, id, privateKey)
       )
       .it('Calls POST /organizations/id/login and decrypts the returned token', ({ result }) => {
         expect(result.vault_access_token).to.equal(`[decrypted]${token}${privateKey}`);
