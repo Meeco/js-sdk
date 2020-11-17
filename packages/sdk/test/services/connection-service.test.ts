@@ -184,8 +184,7 @@ describe('ConnectionService', () => {
       })
       .add('connections', () => new ConnectionService(environment).list(testUserAuth))
       .it('handles connections with null encrypted_recipient_name', ({ connections }) => {
-        // tslint:disable-next-line:no-unused-expression
-        expect(connections[0].recipient_name).to.be.null;
+        expect(connections[0].recipient_name).to.match(/^\[decrypted with .*\]$/);
       });
   });
 

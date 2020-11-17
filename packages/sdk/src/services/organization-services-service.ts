@@ -24,15 +24,19 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
   public async getLogin(
     organizationId: string,
     serviceId: string,
-    privateKey: RSAPrivateKey
+    privateKey: string
   ): Promise<IVaultToken> {
+    const orgKey = new RSAPrivateKey(privateKey);
+
+    this.logger.log('Logging in');
     const result = await this.vaultAPIFactory(
       this.vaultAccessToken
     ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesIdLoginPost(
       organizationId,
       serviceId
     );
-    const decryptedVaultSessionToken = await privateKey.decryptToken(result.encrypted_access_token);
+
+    const decryptedVaultSessionToken = await orgKey.decryptToken(result.encrypted_access_token);
     return {
       vault_access_token: decryptedVaultSessionToken,
     };

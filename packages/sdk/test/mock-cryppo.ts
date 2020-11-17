@@ -88,8 +88,8 @@ export function _mockCryppo() {
 
       sandbox.stub(<any>_cryppoService, 'generateRSAKeyPair').callsFake(() => {
         return Promise.resolve({
-          privateKey: '--PRIVATE_KEY--12324',
-          publicKey: '--PUBLIC_KEY--ABCD',
+          privateKey: '-----BEGIN RSA PRIVATE KEY-----ABCD',
+          publicKey: '-----BEGIN PUBLIC KEY-----ABCD',
           bits: 256,
         });
       });

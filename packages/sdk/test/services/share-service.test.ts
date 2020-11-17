@@ -19,6 +19,7 @@ describe('ShareService', () => {
     let service: ShareService;
     const itemId = itemResponse.item.id;
     const connectionId = '123';
+    const fakePublicKey = '-----BEGIN PUBLIC KEY-----ABCD';
 
     beforeEach(() => {
       service = new ShareService(environment);
@@ -30,7 +31,9 @@ describe('ShareService', () => {
       sinon
         .stub()
         .withArgs(connectionId)
-        .returns({ the_other_user: { user_public_key: 'abc', user_keypair_external_id: '123' } })
+        .returns({
+          the_other_user: { user_public_key: fakePublicKey, user_keypair_external_id: '123' },
+        })
     );
 
     connectionStub
@@ -46,7 +49,7 @@ describe('ShareService', () => {
         api.get(`/items/${itemId}`).reply(200, itemResponse);
         api
           .post(`/items/${itemId}/shares`, body =>
-            body.shares[0].encrypted_dek.endsWith('[with abc]')
+            body.shares[0].encrypted_dek.endsWith(`[with ${fakePublicKey}]`)
           )
           .reply(201, { shares: [] });
       })
@@ -171,14 +174,18 @@ describe('ShareService', () => {
   describe('#getShareDEK', () => {
     const keypairId = '123';
     const dek = 'pineapple';
-    const publicKey = 'public_key';
+    const publicKey = '-----BEGIN PUBLIC KEY-----ABCD';
+    const privateKey = '-----BEGIN RSA PRIVATE KEY-----ABCD';
 
     customTest
       .mockCryppo()
       .nock('https://sandbox.meeco.me/keystore', api => {
-        api
-          .get(`/keypairs/${keypairId}`)
-          .reply(200, { keypair: { encrypted_serialized_key: publicKey } });
+        api.get(`/keypairs/${keypairId}`).reply(200, {
+          keypair: {
+            public_key: publicKey,
+            encrypted_serialized_key: privateKey,
+          },
+        });
       })
       .add('result', () =>
         new ShareService(environment).getShareDEK(testUserAuth, {
@@ -188,7 +195,7 @@ describe('ShareService', () => {
       )
       .it('decrypts a shared DEK using the correct keypair', ({ result }) => {
         expect(result.key).to.equal(
-          `[decrypted]${dek}${publicKey}[decrypted with ${testUserAuth.key_encryption_key.key}]`
+          `[decrypted]${dek}${privateKey}[decrypted with ${testUserAuth.key_encryption_key.key}]`
         );
       });
 

@@ -12,7 +12,7 @@ describe('InvitationService', () => {
       api
         .post('/keypairs', body =>
           body.encrypted_serialized_key.match(
-            /^\[serialized\]\[encrypted\]--PRIVATE_KEY--.*\[with my_key_encryption_key\]$/
+            /^\[serialized\]\[encrypted\]-----BEGIN RSA PRIVATE KEY-----.*\[with my_key_encryption_key\]$/
           )
         )
         .matchHeader('Authorization', testUserAuth.keystore_access_token)
