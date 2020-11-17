@@ -1,7 +1,7 @@
 import cryppo from '../services/cryppo-service';
 
 export const SYMMETRIC_KEY_LENGTH = 32;
-export const SYMMETRIC_KEY_STRATEGY = cryppo.CipherStrategy.AES_GCM;
+const SYMMETRIC_KEY_STRATEGY = cryppo.CipherStrategy.AES_GCM;
 
 /**
  * An key that can be used to encrypt and decrypt data travelling to and from Meeco's services.
