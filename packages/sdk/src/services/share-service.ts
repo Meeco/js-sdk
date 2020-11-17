@@ -24,10 +24,22 @@ export enum SharingMode {
   anyone = 'anyone',
 }
 
-/** The API may return accepted or rejected, but those are set via their own API calls. */
+/** The result of an API call */
 export enum AcceptanceStatus {
   required = 'acceptance_required',
   notRequired = 'acceptance_not_required',
+  accepted = 'accepted',
+  rejected = 'rejected ',
+}
+
+/** Values which can be set by the user */
+export enum AcceptanceRequest {
+  required = 'acceptance_required',
+  notRequired = 'acceptance_not_required',
+}
+
+function hasAccepted(status: string) {
+  return status === AcceptanceStatus.accepted || status === AcceptanceStatus.notRequired;
 }
 
 interface IShareOptions {
@@ -35,7 +47,7 @@ interface IShareOptions {
   expires_at?: Date;
   terms?: string;
   sharing_mode?: SharingMode;
-  acceptance_required?: AcceptanceStatus;
+  acceptance_required?: AcceptanceRequest;
 }
 
 export enum ShareType {
@@ -145,7 +157,7 @@ export class ShareService extends Service<SharesApi> {
   public async listShares(
     user: IVaultToken,
     shareType: ShareType = ShareType.incoming,
-    acceptanceStatus?: AcceptanceStatus | string,
+    mustAccept?: AcceptanceRequest | string,
     options?: IPageOptions
   ): Promise<Share[]> {
     const api = this.vaultAPIFactory(user.vault_access_token).SharesApi;
@@ -159,7 +171,7 @@ export class ShareService extends Service<SharesApi> {
         response = await api.incomingSharesGet(
           options?.nextPageAfter,
           options?.perPage,
-          acceptanceStatus
+          mustAccept
         );
         break;
     }
@@ -262,7 +274,7 @@ export class ShareService extends Service<SharesApi> {
       });
 
       // assumes it is incoming share from here
-      if (shareWithItemData.share.acceptance_required !== 'accepted') {
+      if (!hasAccepted(shareWithItemData.share.acceptance_required)) {
         // data is not decrypted as terms are not accepted
         throw new Error(
           `Share terms not accepted (${shareWithItemData.share.acceptance_required}); Item cannot be decrypted`

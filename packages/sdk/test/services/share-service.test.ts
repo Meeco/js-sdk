@@ -1,4 +1,11 @@
-import { AcceptanceStatus, ConnectionService, ShareService, ShareType } from '@meeco/sdk';
+import {
+  AcceptanceRequest,
+  ConnectionService,
+  DecryptedItem,
+  ItemService,
+  ShareService,
+  ShareType,
+} from '@meeco/sdk';
 import { Share, SharesIncomingResponse, SharesOutgoingResponse } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -205,13 +212,27 @@ describe('ShareService', () => {
           ...itemResponse,
           share: {
             item_id: itemResponse.item.id,
-            acceptance_required: AcceptanceStatus.required,
+            acceptance_required: AcceptanceRequest.required,
           },
         });
       })
       .do(() => new ShareService(environment).getSharedItem(testUserAuth, shareId))
       .catch(e => expect(e).to.be.ok)
       .it('does not decrypt the Item if it is not accepted');
+
+    customTest
+      .mockCryppo()
+      .nock('https://sandbox.meeco.me/vault', api => {
+        api.get(`/incoming_shares/${shareId}/item`).reply(200, {
+          ...itemResponse,
+          share: {
+            item_id: itemResponse.item.id,
+            acceptance_required: AcceptanceRequest.notRequired,
+          },
+        });
+      })
+      .do(() => new ShareService(environment).getSharedItem(testUserAuth, shareId))
+      .it('decrypts if acceptance is not required');
 
     customTest
       .mockCryppo()
@@ -247,8 +268,43 @@ describe('ShareService', () => {
   });
 
   describe('#updateSharedItem', () => {
-    it('does not update a received Item');
-    it('sends the update');
+    const shareId = '123';
+    customTest
+      .mockCryppo()
+      .stub(ItemService.prototype, 'get', sinon.stub().resolves({ isOwned: () => false }))
+      .do(() => new ShareService(environment).updateSharedItem(testUserAuth, shareId))
+      .catch(/^Only Item owner can update.*/)
+      .it('does not update a received Item');
+
+    const fakePublicKey = '-----BEGIN PUBLIC KEY-----ABCD';
+
+    customTest
+      .mockCryppo()
+      .nock('https://sandbox.meeco.me/vault', api => {
+        api
+          .get(`/items/${shareId}/shares`)
+          .reply(200, { shares: [{ id: '123', public_key: fakePublicKey }] });
+        api
+          .put(
+            `/items/${shareId}/shares`,
+            body =>
+              body.share_deks[0].share_id === '123' &&
+              body.share_deks[0].dek.endsWith(`[with ${fakePublicKey}]`) &&
+              body.slot_values.every(
+                slot =>
+                  slot.encrypted_value.endsWith('[with randomly_generated_key]') &&
+                  slot.encrypted_value_verification_key.endsWith('[with randomly_generated_key]')
+              )
+          )
+          .reply(201, { shares: [] });
+      })
+      .stub(
+        ItemService.prototype,
+        'get',
+        sinon.fake(() => DecryptedItem.fromAPI(testUserAuth, itemResponse))
+      )
+      .do(() => new ShareService(environment).updateSharedItem(testUserAuth, shareId))
+      .it('sends the update');
   });
 
   describe('#listShares', () => {
