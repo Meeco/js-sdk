@@ -88,7 +88,11 @@ export class ShareService extends Service<SharesApi> {
       credentials,
       connectionId
     );
-    const { user_public_key, user_keypair_external_id } = fromUserConnection.the_other_user;
+    const {
+      user_public_key,
+      user_keypair_external_id,
+      user_id: recipientId,
+    } = fromUserConnection.the_other_user;
 
     this.logger.log('Preparing item to share');
     const item = await new ItemService(this.environment).get(credentials, itemId);
@@ -122,6 +126,7 @@ export class ShareService extends Service<SharesApi> {
         shares: [
           {
             public_key: user_public_key,
+            recipient_id: recipientId,
             keypair_external_id: user_keypair_external_id || undefined,
             ...shareOptions,
             slot_values: encryptions,
