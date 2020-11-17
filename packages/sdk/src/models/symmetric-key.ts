@@ -35,6 +35,10 @@ export class SymmetricKey {
    * Use this for keys received via API calls or printed from the CLI.
    */
   static fromSerialized(value: string) {
+    if (!value) {
+      throw new Error('Symmetric Key cannot be constructed from an empty string');
+    }
+
     if (!value.match(SymmetricKey.base64RE)) {
       throw new Error(`Serialized key ${value} did not match base64 format`);
     }

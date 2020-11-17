@@ -4,22 +4,6 @@ import sinon from 'sinon';
 import { customTest, inputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('shares:create', () => {
-  const testAuth = {
-    data_encryption_key: {
-      _value: 'from_user_data_encryption_key',
-    },
-
-    key_encryption_key: {
-      _value: 'from_user_key_encryption_key',
-    },
-    keystore_access_token: 'from_user_keystore_access_token',
-    passphrase_derived_key: {
-      _value: '',
-    },
-    secret: undefined,
-    vault_access_token: 'from_user_vault_access_token',
-  };
-
   const stub1 = sinon.stub();
   stub1.returns({
     shares: [
@@ -55,18 +39,16 @@ describe('shares:create', () => {
       '2020-12-30T13:00:00.000Z',
       ...testEnvironmentFile,
     ])
-    .it('can setup sharing between two users', ctx => {
-      expect(stub1.args[0]).to.deep.equal([
-        testAuth,
-        'from_user_connection_id',
-        'from_user_vault_item_to_share_id',
-        {
-          expires_at: new Date('2020-12-30T13:00:00.000Z'),
-          sharing_mode: 'anyone',
-          acceptance_required: 'acceptance_not_required',
-          terms: undefined,
-        },
-      ]);
+    .it('can setup sharing between two users', () => {
+      const [, fromConnection, itemId, options] = stub1.args[0];
+      expect(fromConnection).to.eql('from_user_connection_id');
+      expect(itemId).to.eql('from_user_vault_item_to_share_id');
+      expect(options).to.deep.equal({
+        expires_at: new Date('2020-12-30T13:00:00.000Z'),
+        sharing_mode: 'anyone',
+        acceptance_required: 'acceptance_not_required',
+        terms: undefined,
+      });
     });
 
   const stub2 = sinon.stub();
@@ -103,18 +85,13 @@ describe('shares:create', () => {
       '2020-12-30T13:00:00.000Z',
       ...testEnvironmentFile,
     ])
-    .it('can share a single slot', ctx => {
-      expect(stub2.args[0]).to.deep.equal([
-        testAuth,
-        'from_user_connection_id',
-        'from_user_vault_item_to_share_id',
-        {
-          expires_at: new Date('2020-12-30T13:00:00.000Z'),
-          sharing_mode: 'owner',
-          slot_id: 'slot_a',
-          acceptance_required: 'acceptance_not_required',
-          terms: undefined,
-        },
-      ]);
+    .it('can share a single slot', () => {
+      expect(stub2.args[0][3]).to.deep.equal({
+        expires_at: new Date('2020-12-30T13:00:00.000Z'),
+        sharing_mode: 'owner',
+        slot_id: 'slot_a',
+        acceptance_required: 'acceptance_not_required',
+        terms: undefined,
+      });
     });
 });

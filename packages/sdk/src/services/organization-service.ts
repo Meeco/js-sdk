@@ -24,13 +24,14 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
   public async getOrganizationToken(
     credentials: IVaultToken,
     organizationId: string,
-    privateKey: RSAPrivateKey
+    privateKey: string
   ): Promise<IVaultToken> {
+    const orgKey = new RSAPrivateKey(privateKey);
     const result = await this.vaultAPIFactory(
       credentials.vault_access_token
     ).OrganizationsManagingOrganizationsApi.organizationsIdLoginPost(organizationId);
 
-    const decryptedVaultSessionToken = await privateKey.decryptToken(result.encrypted_access_token);
+    const decryptedVaultSessionToken = await orgKey.decryptToken(result.encrypted_access_token);
 
     return { vault_access_token: decryptedVaultSessionToken };
   }
