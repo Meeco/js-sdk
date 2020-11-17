@@ -203,26 +203,7 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
   // note that POST /items/id/encrypt takes slots with just id, encrypted_value
   async toEncryptedSlotValues(credentials: IDEK): Promise<EncryptedSlotValue[]> {
     return Promise.all(
-      this.slots.map(async slot => {
-        const withHash = await SlotHelpers.addVerificationHash(
-          slot,
-          credentials.data_encryption_key
-        );
-        const {
-          id,
-          encrypted_value,
-          encrypted_value_verification_key,
-          value_verification_hash,
-        } = await SlotHelpers.encryptSlot(credentials, withHash);
-
-        // TODO due to an API bug, this doesn't typecheck when encrypted_value is undefined
-        return {
-          slot_id: id,
-          encrypted_value,
-          encrypted_value_verification_key,
-          value_verification_hash,
-        } as EncryptedSlotValue;
-      })
+      this.slots.map(async slot => SlotHelpers.toEncryptedSlotValue(credentials, slot))
     );
   }
 }

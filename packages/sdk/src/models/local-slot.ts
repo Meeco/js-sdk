@@ -7,7 +7,6 @@ import {
   valueVerificationHash,
   verifyHashedValue,
 } from '../util/value-verification';
-import { EncryptionKey } from './encryption-key';
 
 /**
  * After decryption all `encrypted_X` props are replaced with `X` props.
@@ -148,15 +147,27 @@ export class SlotHelpers {
    * @param slot
    * @param dek Data Encryption Key
    */
-  static async encryptSlot<T extends { value?: string | null | undefined }>(
+  static async encryptSlot<
+    T extends {
+      value?: string | null | undefined;
+      value_verification_key?: string | null | undefined;
+    }
+  >(
     credentials: IDEK,
     slot: T
-  ): Promise<Omit<T, 'value'> & { encrypted: boolean; encrypted_value: string | undefined }> {
+  ): Promise<
+    Omit<T, 'value'> & {
+      encrypted: boolean;
+      encrypted_value: string | undefined;
+      encrypted_value_verification_key: string | undefined;
+    }
+  > {
     const { data_encryption_key: dek } = credentials;
     const encrypted = {
       ...slot,
       encrypted: false,
       encrypted_value: undefined,
+      encrypted_value_verification_key: undefined,
     };
 
     if (slot.value) {
@@ -172,51 +183,44 @@ export class SlotHelpers {
       encrypted.encrypted = true;
     }
 
+    if (slot.value_verification_key) {
+      encrypted.encrypted_value_verification_key = await SlotHelpers.cryppo
+        .encryptWithKey({
+          strategy: SlotHelpers.cryppo.CipherStrategy.AES_GCM,
+          key: dek.key,
+          data: slot.value_verification_key,
+        })
+        .then(result => result.serialized);
+
+      delete encrypted.value_verification_key;
+    }
+
     return encrypted;
   }
 
   /**
-   * Add a verification hash and (encrypted) key to the Slot.
+   * Add a verification hash and key to the Slot.
    * This is necessary to share an Item that you own.
-   * If you do not own the Item, then just add the fields but leave them undefined.
-   * @param slot
-   * @param dek Data Encryption Key
+   * This should only be done for items you own, not on-shared items!
    */
-  public static async addVerificationHash<
-    T extends { own: boolean; value: string | undefined | null }
-  >(
-    slot: T,
-    dek: EncryptionKey
-  ): Promise<
-    T & {
-      value_verification_hash: string | undefined;
-      encrypted_value_verification_key: string | undefined;
+  public static async addHashAndKey(slot: SDKDecryptedSlot) {
+    if (!slot.own) {
+      throw new Error('Overwriting verification hash of a non-owned Slot');
     }
-  > {
-    if (slot.own && slot.value) {
+
+    if (slot.value) {
       const valueVerificationKey = SlotHelpers.cryppo.generateRandomKey(
         VALUE_VERIFICATION_KEY_LENGTH
       ) as string;
       const verificationHash = SlotHelpers.valueVerificationHash(valueVerificationKey, slot.value);
-      const encryptedValueVerificationKey = await SlotHelpers.cryppo
-        .encryptWithKey({
-          data: valueVerificationKey,
-          key: dek.key,
-          strategy: SlotHelpers.cryppo.CipherStrategy.AES_GCM,
-        })
-        .then(result => result.serialized);
 
       return {
         ...slot,
-        encrypted_value_verification_key: encryptedValueVerificationKey,
+        value_verification_key: valueVerificationKey,
         value_verification_hash: verificationHash,
       };
     } else {
-      return {
-        ...slot,
-        encrypted_value_verification_key: undefined,
-        value_verification_hash: undefined,
-      };
+      return slot;
     }
   }
 
@@ -246,11 +250,28 @@ export class SlotHelpers {
     return parameterize(label, undefined, '_');
   }
 
+  /**
+   * Encrypts a slot and adds verification hash and key.
+   */
   static async toEncryptedSlotValue(
     credentials: IDEK,
     slot: SDKDecryptedSlot
   ): Promise<EncryptedSlotValue> {
-    const withHash = await SlotHelpers.addVerificationHash(slot, credentials.data_encryption_key);
+    let withHash = slot;
+    if (slot.own) {
+      withHash = await SlotHelpers.addHashAndKey(slot);
+    } else {
+      // re-encrypt key, keep hash
+      if (!slot.value_verification_hash || !slot.value_verification_key) {
+        throw Error('value verification key or hash missing in on-shared slot');
+      }
+
+      // verification hash must be null (API constraint)
+      withHash = {
+        ...slot,
+        value_verification_hash: null,
+      };
+    }
 
     const {
       id,

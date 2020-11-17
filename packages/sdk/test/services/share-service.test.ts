@@ -5,11 +5,13 @@ import {
   ItemService,
   ShareService,
   ShareType,
+  SlotHelpers,
 } from '@meeco/sdk';
 import { Share, SharesIncomingResponse, SharesOutgoingResponse } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { default as itemResponse } from '../fixtures/responses/item-response/basic';
+import { default as receivedItem } from '../fixtures/responses/item-response/received';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('ShareService', () => {
@@ -96,6 +98,36 @@ describe('ShareService', () => {
       })
       .do(() => service.shareItem(testUserAuth, connectionId, itemId, { slot_id: 'pizza' }))
       .it('shares a single slot');
+
+    connectionStub
+      .stub(
+        SlotHelpers,
+        'decryptSlot',
+        sinon.fake((cred, slot) => ({
+          ...slot,
+          value: 'abc',
+          value_verification_key: '123',
+          value_verification_hash: '123',
+        }))
+      )
+      .stub(
+        ItemService.prototype,
+        'get',
+        sinon.fake(() => DecryptedItem.fromAPI(testUserAuth, receivedItem))
+      )
+      .nock('https://sandbox.meeco.me/vault', api => {
+        api
+          .post(`/items/${itemId}/shares`, body =>
+            body.shares[0].slot_values.every(
+              slot =>
+                slot.encrypted_value_verification_key ===
+                '[serialized][encrypted]123[with randomly_generated_key]'
+            )
+          )
+          .reply(201, { shares: [] });
+      })
+      .do(() => service.shareItem(testUserAuth, connectionId, itemId))
+      .it('re-encrypts value verification hash when on-sharing');
   });
 
   describe('#acceptIncomingShare', () => {

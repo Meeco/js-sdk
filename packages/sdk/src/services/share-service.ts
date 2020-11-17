@@ -117,7 +117,7 @@ export class ShareService extends Service<SharesApi> {
     if (shareOptions.slot_id) {
       const shareSlot = slots.find(slot => slot.id === shareOptions.slot_id);
       if (!shareSlot) {
-        throw new Error('could not find slot with id');
+        throw new Error(`could not find slot with id ${shareOptions.slot_id}`);
       }
       encryptions = [await SlotHelpers.toEncryptedSlotValue(credentials, shareSlot)];
     } else {
