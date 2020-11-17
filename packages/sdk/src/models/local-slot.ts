@@ -144,7 +144,6 @@ export class SlotHelpers {
    * Encrypt the value in the Slot. Undefined values are not changed.
    *
    * After successful encryption, Slot.encrypted = true and Slot.value is deleted.
-   * @param slot
    * @param dek Data Encryption Key
    */
   static async encryptSlot<
@@ -156,7 +155,7 @@ export class SlotHelpers {
     credentials: IDEK,
     slot: T
   ): Promise<
-    Omit<T, 'value'> & {
+    Omit<T, 'value' | 'value_verification_key'> & {
       encrypted: boolean;
       encrypted_value: string | undefined;
       encrypted_value_verification_key: string | undefined;
@@ -203,7 +202,7 @@ export class SlotHelpers {
    * This is necessary to share an Item that you own.
    * This should only be done for items you own, not on-shared items!
    */
-  public static async addHashAndKey(slot: SDKDecryptedSlot) {
+  public static async addHashAndKey(slot: SDKDecryptedSlot): Promise<SDKDecryptedSlot> {
     if (!slot.own) {
       throw new Error('Overwriting verification hash of a non-owned Slot');
     }

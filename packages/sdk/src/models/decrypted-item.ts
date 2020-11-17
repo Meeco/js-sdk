@@ -96,12 +96,6 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
     this.associations_to = extra.associations_to || [];
   }
 
-  // TODO: the origianl copy of an Item is not updated with a share_id
-  /** True if the Item is shared either with you or someone else */
-  // isShared(): boolean {
-  //   return !!this.existingItem && !!this.existingItem['share_id'];
-  // }
-
   /** True if you are the original creator of this Item */
   isOwned(): boolean {
     return this.own;
@@ -185,18 +179,6 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
       })
     );
   }
-
-  /**
-   * Clone the Item
-   * @param templateName Required, as the API doesn't provide it in the Item type.
-   */
-  // toNewItem(templateName: string): NewItem {
-  //   return new NewItem(
-  //     this.label,
-  //     templateName,
-  //     this._slots.map(s => toNestedSlot(s))
-  //   );
-  // }
 
   // for POST /items/id/share
   // note that for PUT /items/id/share these must be zipped with share_ids

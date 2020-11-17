@@ -24,10 +24,6 @@ export class ItemService extends Service<ItemApi> {
     return this.vaultAPIFactory(token.vault_access_token).ItemApi;
   }
 
-  // TODO this should:
-  // - encrypt all item slots with the given DEK
-  // - remove 'value' from encrypted slots
-  // - handle attachments?
   public async create(credentials: IVaultToken & IDEK, item: NewItem): Promise<DecryptedItem> {
     const { vault_access_token, data_encryption_key } = credentials;
     const request = await item.toRequest(data_encryption_key);
