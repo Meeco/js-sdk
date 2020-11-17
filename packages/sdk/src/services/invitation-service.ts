@@ -36,8 +36,11 @@ export class InvitationService extends Service<InvitationApi> {
       keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
     }
 
-    this.logger.log('Encrypting recipient name');
-    const encryptedName: string = await this.encryptName(connectionName, data_encryption_key);
+    const encryptedName: string = await this.encryptNameOrDefault(
+      data_encryption_key,
+      connectionName,
+      'New Connection'
+    );
 
     this.logger.log('Sending invitation request');
     return this.vaultAPIFactory(vault_access_token)
@@ -81,8 +84,11 @@ export class InvitationService extends Service<InvitationApi> {
       keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
     }
 
-    this.logger.log('Encrypting connection name');
-    const encryptedName: string = await this.encryptName(name, data_encryption_key);
+    const encryptedName: string = await this.encryptNameOrDefault(
+      data_encryption_key,
+      name,
+      'New Connection'
+    );
 
     this.logger.log('Accepting invitation');
     return this.vaultAPIFactory(vault_access_token)
@@ -99,14 +105,19 @@ export class InvitationService extends Service<InvitationApi> {
       .then(res => res.connection);
   }
 
-  private async encryptName(name: string, dek: SymmetricKey): Promise<string> {
-    return dek.encryptString(name).then(res => {
-      if (!res) {
-        throw new Error('Connection Name cannot be empty');
-      } else {
-        return res;
-      }
-    });
+  private async encryptNameOrDefault(
+    dek: SymmetricKey,
+    name: string,
+    defaultName: string
+  ): Promise<string> {
+    let input = name;
+    if (name === '') {
+      this.logger.warn('Connection Name was empty, using default');
+      input = defaultName;
+    }
+
+    this.logger.log('Encrypting recipient name');
+    return <Promise<string>>dek.encryptString(input);
   }
 
   private async getKeyPair(keystoreToken: string, id: string): Promise<APIKeypair> {
