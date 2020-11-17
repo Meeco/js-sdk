@@ -128,7 +128,7 @@ export class ShareService extends Service<SharesApi> {
 
     const encryptedDek = await Service.cryppo.encryptWithPublicKey({
       publicKeyPem: user_public_key,
-      data: dek,
+      data: dek.key,
     });
 
     this.logger.log('Sending shared data');
@@ -227,12 +227,12 @@ export class ShareService extends Service<SharesApi> {
     let dataEncryptionKey: EncryptionKey;
 
     if (share.encrypted_dek) {
-      const keyPairExternal = await this.keystoreAPIFactory(
+      const { keypair } = await this.keystoreAPIFactory(
         credentials.keystore_access_token
       ).KeypairApi.keypairsIdGet(share.keypair_external_id!);
 
       const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
-        serialized: keyPairExternal.keypair.encrypted_serialized_key,
+        serialized: keypair.encrypted_serialized_key,
         key: credentials.key_encryption_key.key,
       });
 
@@ -293,8 +293,10 @@ export class ShareService extends Service<SharesApi> {
         this.logger.log(str);
       }
 
+      this.logger.log('Getting share key');
       const dek = await this.getShareDEK(user, shareWithItemData.share);
 
+      this.logger.log('Decrypting shared Item');
       return {
         ...shareWithItemData,
         item: await DecryptedItem.fromAPI({ data_encryption_key: dek }, shareWithItemData),

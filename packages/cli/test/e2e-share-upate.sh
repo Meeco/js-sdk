@@ -36,7 +36,7 @@ echo "connection id alice to bob: ${connectionIdAB}"
 
 echo "Share alice to bob"
 run shares:create-config --from .Alice.yaml --connection .connection_Alice_Bob.created.yaml -i .item_alice.yaml > .share_Alice_Bob.yaml
-run shares:create -c .share_Alice_Bob.yaml -m anyone > .share_Alice_Bob.created.yaml
+run shares:create -c .share_Alice_Bob.yaml --onshare > .share_Alice_Bob.created.yaml
 
 bobsShareId=$(cat .share_Alice_Bob.created.yaml | yq -r '.shares[0].id')
 echo "bob's share id: ${bobsShareId}"
