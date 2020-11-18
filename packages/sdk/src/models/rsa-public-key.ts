@@ -5,7 +5,7 @@ export const ASYMMETRIC_KEY_STRATEGY = 'RSA-OAEP';
 
 /**
  * PEM formatted public key, e.g. '-----BEGIN PUBLIC KEY--- base64 encoded key...'.
- * Unlike [SymmetricKey] it is never written in raw bytes
+ * Unlike {@link SymmetricKey} it is never written in raw bytes.
  */
 export default class RSAPublicKey {
   constructor(private readonly _value: string) {
@@ -14,6 +14,7 @@ export default class RSAPublicKey {
     }
   }
 
+  /** PEM formatted key string */
   get key() {
     return this._value;
   }
@@ -32,10 +33,6 @@ export default class RSAPublicKey {
       .then(r => r.serialized);
   }
 
-  /**
-   * This is used to encode a new Share DEK for example.
-   * @param key
-   */
   async encryptKey(key: SymmetricKey): Promise<string> {
     return this.encryptToken(key.key);
   }
