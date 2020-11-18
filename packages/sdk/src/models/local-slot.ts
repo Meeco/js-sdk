@@ -105,7 +105,10 @@ export class SlotHelpers {
 
     let decryptedValueVerificationKey: SymmetricKey | null = null;
 
-    if (slot.encrypted_value_verification_key !== null) {
+    if (
+      slot.encrypted_value_verification_key !== null &&
+      slot.encrypted_value_verification_key !== undefined
+    ) {
       decryptedValueVerificationKey = await dek
         .decryptKey(slot.encrypted_value_verification_key)
         .then(throwIfNull('Slot decrypted value_verification_key'));

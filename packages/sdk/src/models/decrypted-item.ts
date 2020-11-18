@@ -136,6 +136,7 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
   /**
    * For updating shared data (i.e. `PUT items/id/shares`).
    * The Item's slots are encrypted with the given DEK and value verification hashes are appended.
+   * You must own the Item to update it like this.
    */
   async toShareSlots(credentials: IDEK, shareId: string): Promise<ItemsIdSharesSlotValues[]> {
     if (!this.own) {

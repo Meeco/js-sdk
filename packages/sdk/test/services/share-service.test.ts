@@ -6,6 +6,7 @@ import {
   ShareService,
   ShareType,
   SlotHelpers,
+  SymmetricKey,
 } from '@meeco/sdk';
 import { Share, SharesIncomingResponse, SharesOutgoingResponse } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
@@ -109,7 +110,7 @@ describe('ShareService', () => {
         sinon.fake((cred, slot) => ({
           ...slot,
           value: 'abc',
-          value_verification_key: '123',
+          value_verification_key: SymmetricKey.fromRaw('123'),
           value_verification_hash: '123',
         }))
       )
@@ -130,7 +131,7 @@ describe('ShareService', () => {
           .reply(201, { shares: [] });
       })
       .do(() => service.shareItem(testUserAuth, connectionId, itemId))
-      .it('re-encrypts value verification hash when on-sharing');
+      .it('re-encrypts value verification key when on-sharing');
   });
 
   describe('#acceptIncomingShare', () => {
@@ -227,7 +228,11 @@ describe('ShareService', () => {
           },
         });
       })
-      .stub(ShareService.prototype, 'getShareDEK', sinon.stub().returns({ key: 'some_key' }))
+      .stub(
+        ShareService.prototype,
+        'getShareDEK',
+        sinon.stub().returns(SymmetricKey.fromRaw('some_key'))
+      )
       .do(() => new ShareService(environment).getSharedItem(testUserAuth, shareId))
       .it('calls GET /incoming_shares/id/item by default');
 
@@ -293,7 +298,11 @@ describe('ShareService', () => {
           },
         });
       })
-      .stub(ShareService.prototype, 'getShareDEK', sinon.stub().returns({ key: 'some_key' }))
+      .stub(
+        ShareService.prototype,
+        'getShareDEK',
+        sinon.stub().returns(SymmetricKey.fromRaw('some_key'))
+      )
       .do(() => new ShareService(environment).getSharedItem(testUserAuth, shareId))
       .it('retrieves the original if an item was already shared');
 
