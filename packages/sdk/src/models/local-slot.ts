@@ -1,12 +1,12 @@
 import { EncryptedSlotValue, NestedSlotAttributes, Slot } from '@meeco/vault-api-sdk';
 import parameterize from 'parameterize';
-import cryppo from '../services/cryppo-service';
 import { IDEK } from '../services/service';
 import {
-  VALUE_VERIFICATION_KEY_LENGTH,
+  newValueVerificationKey,
   valueVerificationHash,
   verifyHashedValue,
 } from '../util/value-verification';
+import { SymmetricKey } from './symmetric-key';
 
 /**
  * After decryption all `encrypted_X` props are replaced with `X` props.
@@ -17,7 +17,7 @@ export type SDKDecryptedSlot = Omit<
   'encrypted_value' | 'encrypted_value_verification_key'
 > & {
   value: string | null;
-  value_verification_key: string | null;
+  value_verification_key: SymmetricKey | null;
 };
 
 export enum SlotType {
@@ -47,15 +47,13 @@ export type SlotAttributes = Omit<NestedSlotAttributes, 'name' | 'label'>;
 export type NewSlot = MinimalSlot & SlotAttributes;
 
 export class SlotHelpers {
-  /** @ignore */
-  private static readonly cryppo = (<any>global).cryppo || cryppo;
-
   // for mocking during testing
   private static valueVerificationHash =
     (<any>global).valueVerificationHash || valueVerificationHash;
 
   /**
-   * Updates 'value' to the decrypted 'encrypted_value' and sets 'encrypted' to false.
+   * Updates 'value' to the decrypted 'encrypted_value', decrypts encrypted_value_verification_key
+   * and checks value_verification_hash (if present), and sets 'encrypted' to false.
    */
   static async decryptSlot(credentials: IDEK, slot: Slot): Promise<SDKDecryptedSlot> {
     const { data_encryption_key: dek } = credentials;
@@ -73,7 +71,7 @@ export class SlotHelpers {
     function cleanResult(spec: {
       encrypted: boolean;
       value: string | null;
-      value_verification_key: string | null;
+      value_verification_key: SymmetricKey | null;
     }): SDKDecryptedSlot {
       const decrypted: any = {
         ...slot,
@@ -101,31 +99,21 @@ export class SlotHelpers {
       });
     }
 
-    const value = await SlotHelpers.cryppo
-      .decryptStringWithKey({
-        key: dek.key,
-        serialized: slot.encrypted_value,
-      })
+    const value = await dek
+      .decryptString(slot.encrypted_value)
       .then(throwIfNull('Slot decrypted value'));
 
-    let decryptedValueVerificationKey: string | null = null;
+    let decryptedValueVerificationKey: SymmetricKey | null = null;
 
-    if (slot.encrypted_value_verification_key != null) {
-      decryptedValueVerificationKey = await SlotHelpers.cryppo
-        .decryptStringWithKey({
-          serialized: slot.encrypted_value_verification_key,
-          key: dek.key,
-        })
+    if (slot.encrypted_value_verification_key !== null) {
+      decryptedValueVerificationKey = await dek
+        .decryptKey(slot.encrypted_value_verification_key)
         .then(throwIfNull('Slot decrypted value_verification_key'));
 
       if (
         !slot.own &&
         slot.value_verification_hash !== null &&
-        !verifyHashedValue(
-          <string>decryptedValueVerificationKey,
-          value,
-          slot.value_verification_hash
-        )
+        !verifyHashedValue(decryptedValueVerificationKey!, value, slot.value_verification_hash)
       ) {
         throw new Error(
           `Decrypted slot ${slot.name} with value ${value} does not match original value.`
@@ -149,7 +137,7 @@ export class SlotHelpers {
   static async encryptSlot<
     T extends {
       value?: string | null | undefined;
-      value_verification_key?: string | null | undefined;
+      value_verification_key?: SymmetricKey | null | undefined;
     }
   >(
     credentials: IDEK,
@@ -165,31 +153,21 @@ export class SlotHelpers {
     const encrypted = {
       ...slot,
       encrypted: false,
-      encrypted_value: undefined,
-      encrypted_value_verification_key: undefined,
+      encrypted_value: <string | undefined>undefined,
+      encrypted_value_verification_key: <string | undefined>undefined,
     };
 
     if (slot.value) {
-      encrypted.encrypted_value = await SlotHelpers.cryppo
-        .encryptWithKey({
-          strategy: SlotHelpers.cryppo.CipherStrategy.AES_GCM,
-          key: dek.key,
-          data: slot.value,
-        })
-        .then(result => result.serialized);
+      encrypted.encrypted_value = (await dek.encryptString(slot.value))!;
 
       delete encrypted.value;
       encrypted.encrypted = true;
     }
 
     if (slot.value_verification_key) {
-      encrypted.encrypted_value_verification_key = await SlotHelpers.cryppo
-        .encryptWithKey({
-          strategy: SlotHelpers.cryppo.CipherStrategy.AES_GCM,
-          key: dek.key,
-          data: slot.value_verification_key,
-        })
-        .then(result => result.serialized);
+      encrypted.encrypted_value_verification_key = await dek.encryptKey(
+        slot.value_verification_key
+      );
 
       delete encrypted.value_verification_key;
     }
@@ -208,9 +186,7 @@ export class SlotHelpers {
     }
 
     if (slot.value) {
-      const valueVerificationKey = SlotHelpers.cryppo.generateRandomKey(
-        VALUE_VERIFICATION_KEY_LENGTH
-      ) as string;
+      const valueVerificationKey = newValueVerificationKey();
       const verificationHash = SlotHelpers.valueVerificationHash(valueVerificationKey, slot.value);
 
       return {
@@ -250,7 +226,8 @@ export class SlotHelpers {
   }
 
   /**
-   * Encrypts a slot and adds verification hash and key.
+   * Encrypts a slot and adds verification hash and verification key for sharing.
+   * Use to POST share data.
    */
   static async toEncryptedSlotValue(
     credentials: IDEK,
