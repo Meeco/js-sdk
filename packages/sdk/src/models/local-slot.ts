@@ -57,15 +57,6 @@ export class SlotHelpers {
    */
   static async decryptSlot(credentials: IDEK, slot: Slot): Promise<SDKDecryptedSlot> {
     const { data_encryption_key: dek } = credentials;
-    function throwIfNull<T>(descriptor: string) {
-      return (x: T | null) => {
-        if (x === null) {
-          throw new Error(`${descriptor} was null, but should have a value`);
-        }
-
-        return x;
-      };
-    }
 
     // ensure result really does match the type
     function cleanResult(spec: {
@@ -99,9 +90,7 @@ export class SlotHelpers {
       });
     }
 
-    const value = await dek
-      .decryptString(slot.encrypted_value)
-      .then(throwIfNull('Slot decrypted value'));
+    const value: string = (await dek.decryptString(slot.encrypted_value))!;
 
     let decryptedValueVerificationKey: SymmetricKey | null = null;
 
@@ -109,9 +98,7 @@ export class SlotHelpers {
       slot.encrypted_value_verification_key !== null &&
       slot.encrypted_value_verification_key !== undefined
     ) {
-      decryptedValueVerificationKey = await dek
-        .decryptKey(slot.encrypted_value_verification_key)
-        .then(throwIfNull('Slot decrypted value_verification_key'));
+      decryptedValueVerificationKey = await dek.decryptKey(slot.encrypted_value_verification_key);
 
       if (
         !slot.own &&
