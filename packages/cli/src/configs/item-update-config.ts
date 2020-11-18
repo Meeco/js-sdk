@@ -1,6 +1,6 @@
 import { DecryptedItem } from '@meeco/sdk';
 import { CLIError } from '@oclif/errors';
-import { IItemTemplate, ItemNewConfig } from './item-new-config';
+import { IItemTemplate, NewItemConfig } from './new-item-config';
 import { ConfigReader, IYamlConfig } from './yaml-config';
 
 @ConfigReader<ItemUpdateConfig>()
@@ -21,6 +21,6 @@ export class ItemUpdateConfig {
   }
 
   static encodeFromJSON(data: DecryptedItem) {
-    return ItemNewConfig.encodeFromJSON(data);
+    return NewItemConfig.encodeFromJSON(data);
   }
 }

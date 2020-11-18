@@ -1,6 +1,6 @@
 import { ItemService } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
-import { ItemNewConfig } from '../../configs/item-new-config';
+import { NewItemConfig } from '../../configs/new-item-config';
 import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 import ItemsList from './list';
@@ -32,7 +32,7 @@ export default class ItemsGet extends MeecoCommand {
       const result = await service.get(authConfig, itemId);
       // TODO: remove it properly, this is temp fix to make e2e test pass as jq/yq fails to parse value_verification_key in yml file.
       result.slots.forEach(f => delete f['value_verification_key']);
-      this.printYaml(ItemNewConfig.encodeFromJSON(result));
+      this.printYaml(NewItemConfig.encodeFromJSON(result));
     } catch (error) {
       await this.handleException(error);
     }

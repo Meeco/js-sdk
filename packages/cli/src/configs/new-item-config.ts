@@ -15,17 +15,17 @@ export interface IItemMetadata {
   shareId?: string;
 }
 
-@ConfigReader<ItemNewConfig>()
-export class ItemNewConfig {
+@ConfigReader<NewItemConfig>()
+export class NewItemConfig {
   static kind = 'Item';
 
   /** Template Name is mandatory when creating an Item */
   constructor(public readonly templateName: string, public readonly itemConfig?: IItemTemplate) {}
 
-  static fromYamlConfig(yamlConfigObj: IYamlConfig<IItemMetadata, IItemTemplate>): ItemNewConfig {
-    if (yamlConfigObj.kind !== ItemNewConfig.kind) {
+  static fromYamlConfig(yamlConfigObj: IYamlConfig<IItemMetadata, IItemTemplate>): NewItemConfig {
+    if (yamlConfigObj.kind !== NewItemConfig.kind) {
       throw new CLIError(
-        `Config file of incorrect kind: ${yamlConfigObj.kind} (expected '${ItemNewConfig.kind}')`
+        `Config file of incorrect kind: ${yamlConfigObj.kind} (expected '${NewItemConfig.kind}')`
       );
     }
     if ((<any>yamlConfigObj.metadata)?.template) {
@@ -37,7 +37,7 @@ export class ItemNewConfig {
       throw new CLIError(`Metadata value 'template_name' is required)`);
     }
 
-    return new ItemNewConfig(yamlConfigObj.metadata!.template_name, yamlConfigObj.spec);
+    return new NewItemConfig(yamlConfigObj.metadata!.template_name, yamlConfigObj.spec);
   }
 
   // Print the response after creating an object
@@ -45,7 +45,7 @@ export class ItemNewConfig {
   static encodeFromJSON(data: DecryptedItem) {
     const { item, slots, classification_nodes } = data;
     return {
-      kind: ItemNewConfig.kind,
+      kind: NewItemConfig.kind,
       spec: {
         ...item,
         slots,
@@ -59,7 +59,7 @@ export class ItemNewConfig {
     const notBlacklisted = (slot: Slot) => !SLOT_TYPE_BLACKLIST.includes(slot.slot_type_name);
 
     return {
-      kind: ItemNewConfig.kind,
+      kind: NewItemConfig.kind,
       metadata: {
         template_name: template.template.name,
       },
