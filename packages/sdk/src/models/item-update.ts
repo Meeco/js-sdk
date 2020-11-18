@@ -11,11 +11,11 @@ import { NewSlot, SlotHelpers } from './local-slot';
 import { NewItem } from './new-item';
 
 /** Construct an update for an existing Item given its id. */
-export class UpdateItem extends ItemChange {
+export class ItemUpdate extends ItemChange {
   public label?: string;
 
   static fromJSON(json: any) {
-    return new UpdateItem(json.id, json);
+    return new ItemUpdate(json.id, json);
   }
 
   toJSON() {

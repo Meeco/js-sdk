@@ -1,4 +1,4 @@
-import { NewItem, NewSlot, SlotType, UpdateItem } from '@meeco/sdk';
+import { ItemUpdate, NewItem, NewSlot, SlotType } from '@meeco/sdk';
 import { ItemApi, ItemResponse } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
 import nock from 'nock/types';
@@ -376,7 +376,7 @@ describe('ItemService', () => {
       .nock('https://sandbox.meeco.me/vault', mockVault)
       .it('Updates the item', async () => {
         const input = getInputFixture('update-item.input.json');
-        const updateData = new UpdateItem(input.id, {
+        const updateData = new ItemUpdate(input.id, {
           label: input.label,
           slots: input.slots,
         });

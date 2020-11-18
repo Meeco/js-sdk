@@ -232,11 +232,11 @@ const itemDetails = await service.get(items[0].id, authData);
 The SDK provides several convenience classes for the various interactions you will have with Items:
 - `NewItem`: describe an Item that doesn't yet exist in the backend (as above)
 - `DecryptedItem`: an Item retrieved with ItemService.get, automatically decrypted using user credentials
-- `UpdateItem`: describe an Item update using only its id (i.e. you don't download the Item first).
+- `ItemUpdate`: describe an Item update using only its id (i.e. you don't download the Item first).
 
 There are two uses for `DecryptedItem` within the SDK: updating or sharing it.
 
-`DecryptedItem` is immutable (the API object it represents can be updated though), so an update must create an `UpdateItem`:
+`DecryptedItem` is immutable (the API object it represents can be updated though), so an update must create an `ItemUpdate`:
 
 ``` typescript
 const decryptedItem = await new ItemService(environment).get(...);

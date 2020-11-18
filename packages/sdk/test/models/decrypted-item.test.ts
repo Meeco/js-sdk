@@ -37,12 +37,12 @@ describe('DecryptedItem', () => {
     it('applies classification nodes to slots');
   });
 
-  describe('#toUpdateItem', () => {
+  describe('#toItemUpdate', () => {
     customTest
       .mockCryppo()
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, BasicItem))
       .add('result', ({ item }) =>
-        item.toUpdateItem({ slots: [{ name: 'pizza', value: 'quattro formaggi' }] })
+        item.toItemUpdate({ slots: [{ name: 'pizza', value: 'quattro formaggi' }] })
       )
       .it('stores its id in the update', ({ item, result }) => {
         expect(result.id).to.equal(item.id);

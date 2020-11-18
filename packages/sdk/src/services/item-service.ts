@@ -1,8 +1,8 @@
 // import * as MeecoAzure from '@meeco/azure-block-upload';
 import { Item, ItemApi, ItemsResponse } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
+import { ItemUpdate } from '../models/item-update';
 import { NewItem } from '../models/new-item';
-import { UpdateItem } from '../models/update-item';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 import { ShareService } from './share-service';
@@ -33,7 +33,7 @@ export class ItemService extends Service<ItemApi> {
 
   public async update(
     credentials: IVaultToken & IDEK,
-    newData: UpdateItem
+    newData: ItemUpdate
   ): Promise<DecryptedItem> {
     const response = await this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsIdPut(
       newData.id,

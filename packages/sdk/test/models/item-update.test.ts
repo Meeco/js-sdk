@@ -1,20 +1,20 @@
-import { IDEK, UpdateItem } from '@meeco/sdk';
+import { IDEK, ItemUpdate } from '@meeco/sdk';
 import { expect } from 'chai';
 import { testUserAuth } from '../test-helpers';
 
-describe('UpdateItem', () => {
+describe('ItemUpdate', () => {
   describe('#constructor', () => {
     it('throws an Error when given an empty label', () => {
-      expect(() => new UpdateItem('itemId', { label: '' })).to.throw();
+      expect(() => new ItemUpdate('itemId', { label: '' })).to.throw();
     });
   });
 
   describe('#toRequest', () => {
-    let item: UpdateItem;
+    let item: ItemUpdate;
     const dek: IDEK = testUserAuth;
 
     beforeEach(() => {
-      item = new UpdateItem('itemId', {});
+      item = new ItemUpdate('itemId', {});
     });
 
     it('encrypts any slots with values', async () => {

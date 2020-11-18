@@ -12,8 +12,8 @@ import cryppo from '../services/cryppo-service';
 import { IDEK } from '../services/service';
 import { VALUE_VERIFICATION_KEY_LENGTH, valueVerificationHash } from '../util/value-verification';
 import ItemMap from './item-map';
+import { ItemUpdate } from './item-update';
 import { NewSlot, SDKDecryptedSlot, SlotHelpers } from './local-slot';
-import { UpdateItem } from './update-item';
 
 /**
  * Wraps Items returned from the API that have been decrypted, usually by {@link ItemService}.
@@ -22,7 +22,7 @@ import { UpdateItem } from './update-item';
  * Note that {@link classification_nodes} is not the same as `ItemResponse.classification_nodes`, it is just the
  * classifications that apply to the Item!
  *
- * `DecryptedItem` is immutable, you should use {@link toUpdateItem} to stage modifications.
+ * `DecryptedItem` is immutable, you should use {@link toItemUpdate} to stage modifications.
  */
 export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
   public static readonly cryppo = (<any>global).cryppo || cryppo;
@@ -121,17 +121,17 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
   }
 
   /**
-   * Stage updated values in an UpdateItem.
+   * Stage updated values in an ItemUpdate.
    * This has no effect on the values stored in this DecryptedItem.
    */
-  toUpdateItem(
+  toItemUpdate(
     update: Partial<{
       label: string;
       classificationNodes: ClassificationNode[];
       slots: NewSlot[];
     }>
-  ): UpdateItem {
-    return new UpdateItem(this.id, update);
+  ): ItemUpdate {
+    return new ItemUpdate(this.id, update);
   }
 
   /**
