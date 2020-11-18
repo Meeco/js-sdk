@@ -26,20 +26,20 @@ export enum SharingMode {
 
 /** The result of an API call */
 export enum AcceptanceStatus {
-  required = 'acceptance_required',
-  notRequired = 'acceptance_not_required',
-  accepted = 'accepted',
-  rejected = 'rejected ',
+  Required = 'acceptance_required',
+  NotRequired = 'acceptance_not_required',
+  Accepted = 'accepted',
+  Rejected = 'rejected ',
 }
 
 /** Values which can be set by the user */
 export enum AcceptanceRequest {
-  required = 'acceptance_required',
-  notRequired = 'acceptance_not_required',
+  Required = 'acceptance_required',
+  NotRequired = 'acceptance_not_required',
 }
 
 function hasAccepted(status: string) {
-  return status === AcceptanceStatus.accepted || status === AcceptanceStatus.notRequired;
+  return status === AcceptanceStatus.Accepted || status === AcceptanceStatus.NotRequired;
 }
 
 interface IShareOptions {

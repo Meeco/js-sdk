@@ -46,7 +46,7 @@ export default class SharesAccept extends MeecoCommand {
         .then(resp => resp.share);
 
       // if acceptance is required prompt for user input
-      if (share.acceptance_required === AcceptanceStatus.required) {
+      if (share.acceptance_required === AcceptanceStatus.Required) {
         this.log('Share Terms: ' + share.terms);
         if (!yes) {
           const willAccept = await cli.confirm('Do you accept the terms?');

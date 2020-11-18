@@ -65,9 +65,9 @@ export default class SharesCreate extends MeecoCommand {
       const service = new ShareService(environment, this.updateStatus);
       const sharing_mode = onshare ? SharingMode.anyone : SharingMode.owner;
 
-      let acceptance_required = AcceptanceRequest.notRequired;
+      let acceptance_required = AcceptanceRequest.NotRequired;
       if (terms !== undefined && terms !== '') {
-        acceptance_required = AcceptanceRequest.required;
+        acceptance_required = AcceptanceRequest.Required;
       }
 
       const result = await service.shareItem(share.from, share.connectionId, share.itemId, {

@@ -244,7 +244,7 @@ describe('ShareService', () => {
           ...itemResponse,
           share: {
             item_id: itemResponse.item.id,
-            acceptance_required: AcceptanceRequest.required,
+            acceptance_required: AcceptanceRequest.Required,
           },
         });
       })
@@ -259,7 +259,7 @@ describe('ShareService', () => {
           ...itemResponse,
           share: {
             item_id: itemResponse.item.id,
-            acceptance_required: AcceptanceRequest.notRequired,
+            acceptance_required: AcceptanceRequest.NotRequired,
           },
         });
       })
