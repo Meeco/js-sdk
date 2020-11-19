@@ -12,7 +12,7 @@ import { NewItem } from './new-item';
 
 /**
  * Local copy of an API ItemTemplate.
- * View slots as a map with `toMap()` or create a new Item with `toNewItem()`
+ * View slots as a map with `template.slotsByName` or create a new Item with `toNewItem()`
  */
 export class SDKTemplate extends ItemMap<Slot> {
   public readonly id: string;

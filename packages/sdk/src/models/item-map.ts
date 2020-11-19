@@ -1,23 +1,27 @@
 import { MinimalSlot, SlotHelpers } from './local-slot';
 
 /**
- * This class adds `toMap` which is a specialization of `toNameSlotMap` for the particular type of
- * Slot that the Item contains.
+ * This class adds the ability to represent an array of Slots (or Slot-like things) as
+ * a map from names to Slots or values.
+ * Where Slots are only given a label, then an appropriate name is computed.
  */
 export default class ItemMap<SlotType extends MinimalSlot> {
   /**
-   * Represent an Item as a map from Slot.names to Slots.
-   * @param item
+   * Represent an Item or ItemChange as a map from Slot.names to Slots.
+   * @param transform Optionally transform the values in the resulting map. By default returns the Slot itself.
    */
-  static toNameSlotMap<S extends MinimalSlot>(slots: S[]): Record<string, S> {
+  static toNameSlotMap<S extends MinimalSlot, T>(
+    slots: S[],
+    transform?: (_: S) => T
+  ): Record<string, S | T> {
     function getSlotName(slot: S): string {
       return slot.name || SlotHelpers.nameFromLabel(slot.label!);
     }
 
-    const map: Record<string, S> = {};
+    const map = {};
 
     slots.forEach(slot => {
-      map[getSlotName(slot)] = slot;
+      map[getSlotName(slot)] = transform ? transform(slot) : slot;
     });
 
     return map;
@@ -26,9 +30,16 @@ export default class ItemMap<SlotType extends MinimalSlot> {
   constructor(public readonly slots: SlotType[]) {}
 
   /**
-   * The Item represented as a map from Slot names to Slots.
+   * The Slots in this ItemMap keyed by their names.
    */
-  toMap(): Record<string, SlotType> {
+  get slotsByName(): Record<string, SlotType> {
     return ItemMap.toNameSlotMap(this.slots);
+  }
+
+  /**
+   * The values of Slots in this ItemMap keyed by names.
+   */
+  get values(): Record<string, string | undefined> {
+    return ItemMap.toNameSlotMap(this.slots, slot => slot['value']);
   }
 }

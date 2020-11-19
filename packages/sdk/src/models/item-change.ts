@@ -1,5 +1,4 @@
 import { ClassificationNode } from '@meeco/vault-api-sdk';
-import cryppo from '../services/cryppo-service';
 import ItemMap from './item-map';
 import { NewSlot } from './local-slot';
 
@@ -8,8 +7,6 @@ import { NewSlot } from './local-slot';
  * It can be modified, and contains only partial information about the Item.
  */
 export default class ItemChange extends ItemMap<NewSlot> {
-  protected static readonly cryppo = (<any>global).cryppo || cryppo;
-
   constructor(
     public slots: NewSlot[] = [],
     public classification_nodes: ClassificationNode[] = []
@@ -18,12 +15,12 @@ export default class ItemChange extends ItemMap<NewSlot> {
   }
 
   /**
-   * Set Slot values. Existing values in `this.slots` are overwritten if present in `assignment`.
+   * Existing values in `this.slots` are overwritten if present in `assignment`.
    * `assignment` names that do not correspond to existing names in `this.slots` are created.
    * @param assignment A map from Slot.name to Slot.value.
    */
-  assignSlots(assignment: Record<string, string>) {
-    const slotNameMap: Record<string, NewSlot> = this.toMap();
+  assignValues(assignment: Record<string, string | undefined>) {
+    const slotNameMap: Record<string, NewSlot> = this.slotsByName;
     Object.entries(assignment).forEach(([name, value]) => {
       if (name in slotNameMap) {
         slotNameMap[name].value = value;
@@ -31,6 +28,25 @@ export default class ItemChange extends ItemMap<NewSlot> {
         this.slots.push({ name, value });
       }
     });
+  }
+
+  /**
+   * Set the Slot values in this change-set to *exactly* the given values.
+   * Properties of existing Slots will be preserved.
+   * Any Slots not in `assignment` will be removed from the change-set.
+   */
+  set values(assignment: Record<string, string | undefined>) {
+    const slotNameMap: Record<string, NewSlot> = this.slotsByName;
+    const newSlots: NewSlot[] = Object.entries(assignment).map(([name, value]) => {
+      if (name in slotNameMap) {
+        const existingSlot = slotNameMap[name];
+        existingSlot.value = value;
+        return existingSlot;
+      } else {
+        return { name, value };
+      }
+    });
+    this.slots = newSlots;
   }
 
   /**

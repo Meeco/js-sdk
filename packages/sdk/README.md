@@ -245,7 +245,9 @@ const decryptedItem = await new ItemService(environment).get(...);
 decryptedItem.name;
 decryptedItem.id;
 // view the Item as a map of slot names to slots
-decryptedItem.toMap();
+decryptedItem.slotsByName
+// view the Item as a map of slot names to slot values
+decryptedItem.values  // e.g. { email: 'jim@example.com' }
 
 // if you need to see the Item as it was sent from the API
 decryptedItem.item;
