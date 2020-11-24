@@ -4,14 +4,14 @@ import { expect } from '@oclif/test';
 import * as Nock from 'nock';
 import { customTest, environment, getOutputFixture } from '../test-helpers';
 
-describe('Users get', () => {
+describe('UserService.getAuthData', () => {
   customTest
     .nock('https://sandbox.meeco.me/keystore', stubKeystore)
     .nock('https://sandbox.meeco.me/vault', stubVault)
     .mockCryppo()
     .mockSRP()
     .it('retrieves all user details with credentials (secret, password)', async () => {
-      const user = await new UserService(environment).get(
+      const user = await new UserService(environment).getAuthData(
         '123.asupersecretpassphrase',
         '1.user-1.my_secret_key'
       );

@@ -1,14 +1,12 @@
 import {
   ClientTask,
+  ClientTaskQueueApi,
   ClientTaskQueueGetStateEnum as ClientTaskState,
   ClientTaskQueueResponse,
 } from '@meeco/vault-api-sdk';
-import { AuthData } from '../models/auth-data';
-import { Environment } from '../models/environment';
 import { MeecoServiceError } from '../models/service-error';
-import { VaultAPIFactory, vaultAPIFactory } from '../util/api-factory';
-import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
+import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 import { ShareService } from './share-service';
 
 export { ClientTaskQueueGetStateEnum as ClientTaskState } from '@meeco/vault-api-sdk';
@@ -31,22 +29,9 @@ export interface IClientTaskExecResult {
  * A ClientTask describes a set of API actions the client has been requested to perform,
  * usually encrypting some data with their private keys.
  */
-export class ClientTaskQueueService {
-  private vaultAPIFactory: VaultAPIFactory;
-
-  private logger: IFullLogger;
-
-  constructor(private environment: Environment, log: Logger = noopLogger) {
-    this.vaultAPIFactory = vaultAPIFactory(environment);
-    this.logger = toFullLogger(log);
-  }
-
-  public setLogger(logger: Logger) {
-    this.logger = toFullLogger(logger);
-  }
-
-  public getAPI(vaultToken: string) {
-    return this.vaultAPIFactory(vaultToken).ClientTaskQueueApi;
+export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
+  public getAPI(token: IVaultToken): ClientTaskQueueApi {
+    return this.vaultAPIFactory(token.vault_access_token).ClientTaskQueueApi;
   }
 
   /**
@@ -55,14 +40,14 @@ export class ClientTaskQueueService {
    * @param target_id Filter results by target_id.
    */
   public async list(
-    vaultAccessToken: string,
+    credentials: IVaultToken,
     change_state: boolean = false,
     states: ClientTaskState[] = [ClientTaskState.Todo],
     target_id?: string,
-    options?: { nextPageAfter?: string; perPage?: number }
+    options?: IPageOptions
   ): Promise<ClientTaskQueueResponse> {
     const result = await this.vaultAPIFactory(
-      vaultAccessToken
+      credentials.vault_access_token
     ).ClientTaskQueueApi.clientTaskQueueGet(
       options?.nextPageAfter,
       options?.perPage,
@@ -79,12 +64,12 @@ export class ClientTaskQueueService {
   }
 
   public async listAll(
-    vaultAccessToken: string,
+    credentials: IVaultToken,
     change_state: boolean = false,
     states: ClientTaskState[] = [ClientTaskState.Todo],
     target_id?: string
   ): Promise<ClientTask[]> {
-    const api = this.vaultAPIFactory(vaultAccessToken).ClientTaskQueueApi;
+    const api = this.vaultAPIFactory(credentials.vault_access_token).ClientTaskQueueApi;
     return getAllPaged(cursor =>
       api.clientTaskQueueGet(cursor, undefined, change_state, target_id, states)
     )
@@ -96,8 +81,8 @@ export class ClientTaskQueueService {
    * Count all tasks that have state either 'todo' or 'in_progress'.
    * May make multiple API calls, depending on number of tasks.
    */
-  public async countOutstandingTasks(vaultAccessToken: string): Promise<IOutstandingClientTasks> {
-    const allTasks = await this.listAll(vaultAccessToken, false, [
+  public async countOutstandingTasks(credentials: IVaultToken): Promise<IOutstandingClientTasks> {
+    const allTasks = await this.listAll(credentials, false, [
       ClientTaskState.Todo,
       ClientTaskState.InProgress,
     ]);
@@ -127,7 +112,10 @@ export class ClientTaskQueueService {
    * @param tasks ClientTasks to be executed. Each must have state 'todo' or 'failed'.
    * @param authData
    */
-  public async execute(tasks: ClientTask[], authData: AuthData): Promise<IClientTaskExecResult> {
+  public async execute(
+    credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
+    tasks: ClientTask[]
+  ): Promise<IClientTaskExecResult> {
     this.logger.log(`Executing ${tasks.length} tasks`);
 
     for (const task of tasks) {
@@ -145,8 +133,8 @@ export class ClientTaskQueueService {
     }
 
     const updateSharesTasksResult: IClientTaskExecResult = await this.updateSharesClientTasks(
-      tasks,
-      authData
+      credentials,
+      tasks
     );
 
     return updateSharesTasksResult;
@@ -159,8 +147,8 @@ export class ClientTaskQueueService {
    * @param authData
    */
   private async updateSharesClientTasks(
-    tasks: ClientTask[],
-    authData: AuthData
+    credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
+    tasks: ClientTask[]
   ): Promise<IClientTaskExecResult> {
     const shareService = new ShareService(this.environment, this.logger.log);
 
@@ -171,7 +159,7 @@ export class ClientTaskQueueService {
 
     const runTask = async (task: ClientTask) => {
       try {
-        await shareService.updateSharedItem(authData, task.target_id);
+        await shareService.updateSharedItem(credentials, task.target_id);
         task.state = ClientTaskState.Done;
         taskReport.completed.push(task);
       } catch (error) {
@@ -182,7 +170,9 @@ export class ClientTaskQueueService {
     };
 
     // Set all tasks to in_progress
-    await this.vaultAPIFactory(authData.vault_access_token).ClientTaskQueueApi.clientTaskQueuePut({
+    await this.vaultAPIFactory(
+      credentials.vault_access_token
+    ).ClientTaskQueueApi.clientTaskQueuePut({
       client_tasks: tasks.map(({ id }) => ({ id, state: ClientTaskState.InProgress })),
     });
     this.logger.log('Set: in_progress');
@@ -196,7 +186,9 @@ export class ClientTaskQueueService {
       .concat(taskReport.failed)
       .map(({ id, state, report }) => ({ id, state, report }));
 
-    await this.vaultAPIFactory(authData.vault_access_token).ClientTaskQueueApi.clientTaskQueuePut({
+    await this.vaultAPIFactory(
+      credentials.vault_access_token
+    ).ClientTaskQueueApi.clientTaskQueuePut({
       client_tasks: allTasks,
     });
 

@@ -67,17 +67,15 @@ export default class ClientTaskQueueList extends MeecoCommand {
     try {
       let response: ClientTask[];
       if (all) {
-        response = await service.listAll(authConfig.vault_access_token, update, state);
+        response = await service.listAll(authConfig, update, state);
       } else if (limit) {
         response = await service
-          .list(authConfig.vault_access_token, update, state, undefined, {
+          .list(authConfig, update, state, undefined, {
             nextPageAfter: limit.toString(),
           })
           .then(r => r.client_tasks);
       } else {
-        response = await service
-          .list(authConfig.vault_access_token, update, state)
-          .then(r => r.client_tasks);
+        response = await service.list(authConfig, update, state).then(r => r.client_tasks);
       }
 
       this.printYaml({

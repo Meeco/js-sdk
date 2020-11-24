@@ -1,4 +1,4 @@
-import { ItemService } from '@meeco/sdk';
+import { ItemService, SlotType } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import * as nock from 'nock';
@@ -113,7 +113,7 @@ const sharedItemResponse = {
       required: false,
       updated_at: new Date(1),
       created_at: new Date(1),
-      slot_type_name: 'key_value',
+      slot_type_name: SlotType.KeyValue,
       creator: 'system',
       encrypted_value:
         'Aes256Gcm.1_8t6Av7RQg=.QUAAAAAFaXYADAAAAABl_Fw4p0LWHJ7WQh8FYXQAEAAAAABchj_6fbEYtgI_vzvx6nJGAmFkAAUAAABub25lAAA=',

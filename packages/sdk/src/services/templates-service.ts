@@ -2,22 +2,28 @@ import { ItemTemplateApi } from '@meeco/vault-api-sdk';
 import { Environment } from '../models/environment';
 import { MeecoServiceError } from '../models/service-error';
 import { ITemplateData } from '../models/template-data';
-import { vaultAPIFactory } from '../util/api-factory';
+import { Logger, noopLogger } from '../util/logger';
+import Service, { IVaultToken } from './service';
 
 /**
  * List and fetch available templates for Meeco Items from the API.
  *
  * @deprecated Use [vaultApiFactory] ItemTemplateApi list instead.
  */
-export class TemplatesService {
+export class TemplatesService extends Service<ItemTemplateApi> {
   private api: ItemTemplateApi;
 
-  constructor(environment: Environment, vaultAccessToken: string) {
-    this.api = vaultAPIFactory(environment)(vaultAccessToken).ItemTemplateApi;
+  constructor(environment: Environment, vaultAccessToken: string, log: Logger = noopLogger) {
+    super(environment, log);
+    this.api = this.getAPI({ vault_access_token: vaultAccessToken });
   }
 
   public async listTemplates(classificationScheme?: string, classificationName?: string) {
     return await this.api.itemTemplatesGet(classificationScheme, classificationName);
+  }
+
+  public getAPI(token: IVaultToken): ItemTemplateApi {
+    return this.vaultAPIFactory(token.vault_access_token).ItemTemplateApi;
   }
 
   /**

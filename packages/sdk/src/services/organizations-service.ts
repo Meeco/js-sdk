@@ -5,25 +5,31 @@ import {
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
-import { vaultAPIFactory } from '../util/api-factory';
-import cryppo from './cryppo-service';
+import { Logger, noopLogger } from '../util/logger';
+import Service, { IVaultToken } from './service';
 
 /**
  * Manage organizations from the API.
  */
-export class OrganizationsService {
-  private api: OrganizationsManagingOrganizationsApi;
+export class OrganizationsService extends Service<OrganizationsManagingOrganizationsApi> {
+  public getAPI(token: IVaultToken) {
+    return this.vaultAPIFactory(token.vault_access_token).OrganizationsManagingOrganizationsApi;
+  }
 
-  // for mocking during testing
-  private cryppo = (<any>global).cryppo || cryppo;
-
-  constructor(environment: Environment, vaultAccessToken: string) {
-    this.api = vaultAPIFactory(environment)(vaultAccessToken).OrganizationsManagingOrganizationsApi;
+  // TODO this doesn't match the signature of other services!
+  constructor(
+    environment: Environment,
+    private vaultAccessToken: string,
+    log: Logger = noopLogger
+  ) {
+    super(environment, log);
   }
 
   public async getLogin(id: string, privateKey: string): Promise<AuthData> {
-    const result = await this.api.organizationsIdLoginPost(id);
-    const decryptedVaultSessionToken = await this.cryppo.decryptSerializedWithPrivateKey({
+    const result = await this.vaultAPIFactory(
+      this.vaultAccessToken
+    ).OrganizationsManagingOrganizationsApi.organizationsIdLoginPost(id);
+    const decryptedVaultSessionToken = await Service.cryppo.decryptSerializedWithPrivateKey({
       privateKeyPem: privateKey,
       serialized: result.encrypted_access_token,
     });
@@ -38,9 +44,11 @@ export class OrganizationsService {
   }
 
   public async create(organization: PostOrganizationRequest) {
-    const rsaKeyPair = await this.cryppo.generateRSAKeyPair(4096);
+    const rsaKeyPair = await Service.cryppo.generateRSAKeyPair(4096);
     organization.public_key = rsaKeyPair.publicKey;
-    const result = await this.api.organizationsPost(organization);
+    const result = await this.vaultAPIFactory(
+      this.vaultAccessToken
+    ).OrganizationsManagingOrganizationsApi.organizationsPost(organization);
     return {
       organization: result.organization,
       privateKey: rsaKeyPair.privateKey,
@@ -49,7 +57,7 @@ export class OrganizationsService {
   }
 }
 
-export enum MemberRoles {
+export enum OrganizationMemberRoles {
   Admin = 'admin',
   Owner = 'owner',
 }

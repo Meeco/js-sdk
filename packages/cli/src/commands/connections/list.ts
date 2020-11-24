@@ -30,9 +30,7 @@ export default class ConnectionsList extends MeecoCommand {
         log: this.updateStatus,
       });
 
-      const result = all
-        ? await service.listAll(authConfig.vault_access_token, authConfig.data_encryption_key)
-        : await service.list(authConfig.vault_access_token, authConfig.data_encryption_key);
+      const result = all ? await service.listAll(authConfig) : await service.list(authConfig);
 
       this.printYaml(result);
     } catch (err) {

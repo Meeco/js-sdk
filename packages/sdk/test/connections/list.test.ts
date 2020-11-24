@@ -36,10 +36,7 @@ describe('Connections list', () => {
         .reply(200, connectionResponse);
     })
     .it('lists a users connections', async () => {
-      const connections = await new ConnectionService(environment).list(
-        testUserAuth.vault_access_token,
-        testUserAuth.data_encryption_key
-      );
+      const connections = await new ConnectionService(environment).list(testUserAuth);
 
       const expected = getOutputFixture('list-connections.output.json');
       expect(replaceUndefinedWithNull(connections)).to.deep.members(expected);
@@ -61,10 +58,7 @@ describe('Connections list', () => {
         .reply(200, responsePart2);
     })
     .it('lists all users connections when paginated', async () => {
-      const connections = await new ConnectionService(environment).listAll(
-        testUserAuth.vault_access_token,
-        testUserAuth.data_encryption_key
-      );
+      const connections = await new ConnectionService(environment).listAll(testUserAuth);
 
       const expected = getOutputFixture('list-connections.output.json');
       expect(replaceUndefinedWithNull(connections)).to.deep.members(expected);

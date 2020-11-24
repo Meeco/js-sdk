@@ -1,5 +1,7 @@
 import { hmacSha256Digest } from '@meeco/cryppo/dist/src/digests/hmac-digest';
 
+export const VALUE_VERIFICATION_KEY_LENGTH = 64;
+
 /**
  * Verify integrity of shared Slot Values using message authentication hashing.
  * @param verificationKey Recommended to be 64 bytes long.

@@ -1,29 +1,22 @@
-import { Environment } from '../models/environment';
-import { vaultAPIFactory, VaultAPIFactory } from '../util/api-factory';
-import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
+import { OrganizationsManagingMembersApi } from '@meeco/vault-api-sdk';
+import { OrganizationMemberRoles } from './organizations-service';
+import Service, { IVaultToken } from './service';
+
 /**
  * Manage organization members from the API.
  */
-export class OrganizationMembersService {
-  private vaultApiFactory: VaultAPIFactory;
-  private logger: IFullLogger;
-
-  constructor(environment: Environment, log: Logger = noopLogger) {
-    this.vaultApiFactory = vaultAPIFactory(environment);
-    this.logger = toFullLogger(log);
-  }
-
-  public setLogger(logger: Logger) {
-    this.logger = toFullLogger(logger);
+export class OrganizationMembersService extends Service<OrganizationsManagingMembersApi> {
+  public getAPI(token: IVaultToken) {
+    return this.vaultAPIFactory(token.vault_access_token).OrganizationsManagingMembersApi;
   }
 
   public async createInvite(
-    vaultAccessToken: string,
+    credentials: IVaultToken,
     organizationAgentPublicKey: string,
     role: OrganizationMemberRoles = OrganizationMemberRoles.Admin
   ) {
     this.logger.log('Creating invitation request');
-    return await this.vaultApiFactory(vaultAccessToken)
+    return this.vaultAPIFactory(credentials.vault_access_token)
       .InvitationApi.invitationsPost({
         public_key: {
           keypair_external_id: 'org-agent-keypair',
@@ -35,9 +28,4 @@ export class OrganizationMembersService {
       })
       .then(result => result.invitation);
   }
-}
-
-export enum OrganizationMemberRoles {
-  Admin = 'admin',
-  Owner = 'owner',
 }

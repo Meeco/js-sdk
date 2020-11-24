@@ -2,19 +2,23 @@ import { OrganizationsManagingServicesApi, PostServiceRequest } from '@meeco/vau
 import { AuthData } from '../models/auth-data';
 import { EncryptionKey } from '../models/encryption-key';
 import { Environment } from '../models/environment';
-import { vaultAPIFactory } from '../util/api-factory';
-import cryppo from './cryppo-service';
+import { Logger, noopLogger } from '../util/logger';
+import Service, { IVaultToken } from './service';
+
 /**
  * Manage organizations from the API.
  */
-export class OrganizationServicesService {
-  private api: OrganizationsManagingServicesApi;
+export class OrganizationServicesService extends Service<OrganizationsManagingServicesApi> {
+  public getAPI(token: IVaultToken) {
+    return this.vaultAPIFactory(token.vault_access_token).OrganizationsManagingServicesApi;
+  }
 
-  // for mocking during testing
-  private cryppo = (<any>global).cryppo || cryppo;
-
-  constructor(environment: Environment, vaultAccessToken: string) {
-    this.api = vaultAPIFactory(environment)(vaultAccessToken).OrganizationsManagingServicesApi;
+  constructor(
+    environment: Environment,
+    private vaultAccessToken: string,
+    log: Logger = noopLogger
+  ) {
+    super(environment, log);
   }
 
   public async getLogin(
@@ -22,11 +26,13 @@ export class OrganizationServicesService {
     serviceId: string,
     privateKey: string
   ): Promise<AuthData> {
-    const result = await this.api.organizationsOrganizationIdServicesIdLoginPost(
+    const result = await this.vaultAPIFactory(
+      this.vaultAccessToken
+    ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesIdLoginPost(
       organizationId,
       serviceId
     );
-    const decryptedVaultSessionToken = await this.cryppo.decryptSerializedWithPrivateKey({
+    const decryptedVaultSessionToken = await Service.cryppo.decryptSerializedWithPrivateKey({
       privateKeyPem: privateKey,
       serialized: result.encrypted_access_token,
     });
@@ -41,9 +47,11 @@ export class OrganizationServicesService {
   }
 
   public async create(organizationId: string, service: PostServiceRequest) {
-    const rsaKeyPair = await this.cryppo.generateRSAKeyPair(4096);
+    const rsaKeyPair = await Service.cryppo.generateRSAKeyPair(4096);
     service.public_key = rsaKeyPair.publicKey;
-    const result = await this.api.organizationsOrganizationIdServicesPost(organizationId, {
+    const result = await this.vaultAPIFactory(
+      this.vaultAccessToken
+    ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesPost(organizationId, {
       service,
     });
     return {

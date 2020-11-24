@@ -1,4 +1,4 @@
-import { ClientTaskQueueService, ItemService } from '@meeco/sdk';
+import { ClientTaskQueueService, ItemService, SlotType } from '@meeco/sdk';
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
 import {
@@ -75,7 +75,7 @@ function update(vaultAccessToken, dataEncryptionKey, updateData) {
         required: null,
         updated_at: new Date(1),
         created_at: new Date(1),
-        slot_type_name: 'key_value',
+        slot_type_name: SlotType.KeyValue,
         creator: null,
         encrypted_value: 'Supreme',
         encrypted_value_verification_key: null,

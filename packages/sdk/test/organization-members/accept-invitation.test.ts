@@ -1,6 +1,6 @@
-import { ConnectionService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import nock from 'nock/types';
+import { InvitationService } from 'packages/sdk/src/services/invitation-service';
 import {
   customTest,
   environment,
@@ -16,10 +16,10 @@ describe('Organization-members accept-invitation', () => {
     .nock('https://sandbox.meeco.me/keystore', stubKeystore)
     .it('Requests the creation of a new organization member invitation', async () => {
       const input = getInputFixture('accept-organization-members-invitation.input.json');
-      const result = await new ConnectionService(environment).acceptInvitation(
+      const result = await new InvitationService(environment).accept(
+        testUserAuthFixture,
         '',
-        input.token,
-        testUserAuthFixture
+        input.token
       );
 
       const { privateKey, publicKey, ...expectedSpec } = getOutputFixture(

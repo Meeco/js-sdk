@@ -3,8 +3,8 @@ import { expect } from '@oclif/test';
 import open from 'cli-ux/lib/open';
 import nock from 'nock';
 import * as request from 'node-fetch';
-import { SecretService } from '../../src/services/secret-service';
 import { UserService } from '../../src/services/user-service';
+import Secrets from '../../src/util/secrets';
 import { customTest, environment, getOutputFixture } from '../test-helpers';
 
 describe('User creation', () => {
@@ -39,9 +39,8 @@ describe('User creation', () => {
     .mockSRP()
     .it('generates a new user from parameters (generated username)', async () => {
       const userService = new UserService(environment);
-      const secretService = new SecretService();
       const username = await userService.generateUsername();
-      const secret = await secretService.generateSecret(username);
+      const secret = await Secrets.generateSecret(username);
       const user = await userService.create('123.asupersecretpassphrase', secret);
 
       const expected = getOutputFixture('create-user-generated-username.output.json');

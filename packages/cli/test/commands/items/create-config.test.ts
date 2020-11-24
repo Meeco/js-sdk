@@ -1,4 +1,5 @@
 import * as sdk from '@meeco/sdk';
+import { SlotType } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
@@ -36,7 +37,7 @@ const templates = {
       required: null,
       updated_at: null,
       created_at: null,
-      slot_type_name: 'key_value',
+      slot_type_name: SlotType.KeyValue,
       creator: null,
       encrypted_value: 'Hawaiian',
       encrypted_value_verification_key: null,
@@ -61,7 +62,7 @@ const templates = {
       required: null,
       updated_at: null,
       created_at: null,
-      slot_type_name: 'key_value',
+      slot_type_name: SlotType.KeyValue,
       creator: null,
       encrypted_value: 'Rump',
       encrypted_value_verification_key: null,
@@ -86,7 +87,7 @@ const templates = {
       required: null,
       updated_at: null,
       created_at: null,
-      slot_type_name: 'key_value',
+      slot_type_name: SlotType.KeyValue,
       creator: null,
       encrypted_value: 'Session Ale',
       encrypted_value_verification_key: null,

@@ -1,6 +1,5 @@
 import { expect } from '@oclif/test';
 import * as nock from 'nock';
-import { ConnectionCreateData } from '../../src/models/connection-create-data';
 import { ConnectionService } from '../../src/services/connection-service';
 import {
   buildTestAuthData,
@@ -26,7 +25,7 @@ describe('Connections create', () => {
       const connectionMetadata = {
         ...input,
       };
-      const connectionConfig = new ConnectionCreateData(fromUser, toUser, connectionMetadata);
+      const connectionConfig = { from: fromUser, to: toUser, options: connectionMetadata };
       const result = await new ConnectionService(environment).createConnection(connectionConfig);
 
       const expected = getOutputFixture('create-connection.output.json');

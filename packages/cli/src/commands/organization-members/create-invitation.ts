@@ -56,11 +56,7 @@ export default class OrganizationMembersCreateInvitation extends MeecoCommand {
     try {
       this.updateStatus('Creating organization members invitation');
       const service = new OrganizationMembersService(environment, this.updateStatus);
-      const result = await service.createInvite(
-        authConfig!.vault_access_token,
-        metadata.publicKey,
-        member_role
-      );
+      const result = await service.createInvite(authConfig, metadata.publicKey, member_role);
       this.finish();
       this.printYaml(InvitationConfig.encodeFromJSON(result));
     } catch (err) {

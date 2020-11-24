@@ -14,10 +14,7 @@ describe('organization-members:create-invitation', () => {
     .it('Requests the creation of a new organization member invitation', async () => {
       const input = getInputFixture('create-organization-members-invitation.input.json');
       const service = new OrganizationMembersService(environment);
-      const result = await service.createInvite(
-        testUserAuthFixture.vault_access_token,
-        input.publicKey
-      );
+      const result = await service.createInvite(testUserAuthFixture, input.publicKey);
 
       const expected = getOutputFixture('create-organization-members-invitation.output.json');
       expect(result).to.eql(expected);

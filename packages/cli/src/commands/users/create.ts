@@ -1,4 +1,4 @@
-import { SecretService, UserService } from '@meeco/sdk';
+import { Secrets, UserService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import cli from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
@@ -37,7 +37,6 @@ export default class CreateUser extends MeecoCommand {
       const environment = await this.readEnvironmentFile();
       const userService = new UserService(environment, this.updateStatus);
       // const captchaService = new CaptchaService(environment, port);
-      const secretService = new SecretService();
 
       if (!password) {
         while (!password) {
@@ -48,7 +47,7 @@ export default class CreateUser extends MeecoCommand {
       if (!secret) {
         // const captchaToken = await captchaService.requestCaptchaToken();
         const username = await userService.generateUsername();
-        secret = await secretService.generateSecret(username);
+        secret = await Secrets.generateSecret(username);
       }
 
       const result = await userService.create(password, secret);

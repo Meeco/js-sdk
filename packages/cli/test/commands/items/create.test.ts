@@ -46,8 +46,7 @@ describe('item:create', () => {
 });
 
 function create(
-  vaultAccessToken: string,
-  dataEncryptionKey: string,
+  credentials: { vault_access_token: string; data_encryption_key: any },
   itemCreateData: ItemCreateData
 ) {
   const testIdsToUse = ['a', 'b', 'c', 'd', 'e'].reverse();

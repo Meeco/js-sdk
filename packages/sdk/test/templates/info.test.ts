@@ -1,3 +1,4 @@
+import { SlotType } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { vaultAPIFactory } from '../../src/util/api-factory';
 import {
@@ -52,33 +53,12 @@ const response = {
       slot_ids: ['yoghurt', 'water', 'beer'],
     },
   ],
-  slots: [
-    {
-      id: 'pizza',
-      created_at: new Date(1),
-      updated_at: new Date(1),
-    },
-    {
-      id: 'steak',
-      created_at: new Date(1),
-      updated_at: new Date(1),
-    },
-    {
-      id: 'yoghurt',
-      created_at: new Date(1),
-      updated_at: new Date(1),
-    },
-    {
-      id: 'water',
-      created_at: new Date(1),
-      updated_at: new Date(1),
-    },
-    {
-      id: 'beer',
-      created_at: new Date(1),
-      updated_at: new Date(1),
-    },
-  ],
+  slots: ['pizza', 'steak', 'yoghurt', 'water', 'beer'].map(x => ({
+    id: x,
+    created_at: new Date(1),
+    updated_at: new Date(1),
+    slot_type_name: SlotType.KeyValue,
+  })),
   attachments: [],
   thumbnails: [],
   classification_nodes: [],
