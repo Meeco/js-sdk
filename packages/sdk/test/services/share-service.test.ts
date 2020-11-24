@@ -233,7 +233,7 @@ describe('ShareService', () => {
         api.get(`/items/${itemResponse.item.id}`).reply(200, itemResponse);
       })
       .do(() =>
-        new ShareService(environment).getSharedItem(testUserAuth, shareId, ShareType.outgoing)
+        new ShareService(environment).getSharedItem(testUserAuth, shareId, ShareType.Outgoing)
       )
       .it('gets an outgoing shared item');
 
@@ -393,7 +393,7 @@ describe('ShareService', () => {
       .nock('https://sandbox.meeco.me/vault', api =>
         api.get('/outgoing_shares').reply(200, response)
       )
-      .do(() => new ShareService(environment).listShares(testUserAuth, ShareType.outgoing))
+      .do(() => new ShareService(environment).listShares(testUserAuth, ShareType.Outgoing))
       .it('calls GET /outgoing_shares when passed a param');
   });
 });

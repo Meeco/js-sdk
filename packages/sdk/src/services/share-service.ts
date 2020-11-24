@@ -20,8 +20,8 @@ import { ItemService } from './item-service';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 
 export enum SharingMode {
-  owner = 'owner',
-  anyone = 'anyone',
+  Owner = 'owner',
+  Anyone = 'anyone',
 }
 
 /** The result of an API call */
@@ -51,8 +51,8 @@ interface IShareOptions {
 }
 
 export enum ShareType {
-  incoming = 'incoming',
-  outgoing = 'outgoing',
+  Incoming = 'incoming',
+  Outgoing = 'outgoing',
 }
 
 /**
@@ -156,7 +156,7 @@ export class ShareService extends Service<SharesApi> {
    */
   public async listShares(
     user: IVaultToken,
-    shareType: ShareType = ShareType.incoming,
+    shareType: ShareType = ShareType.Incoming,
     mustAccept?: AcceptanceRequest | string,
     options?: IPageOptions
   ): Promise<Share[]> {
@@ -164,10 +164,10 @@ export class ShareService extends Service<SharesApi> {
 
     let response: SharesIncomingResponse | SharesOutgoingResponse;
     switch (shareType) {
-      case ShareType.outgoing:
+      case ShareType.Outgoing:
         response = await api.outgoingSharesGet(options?.nextPageAfter, options?.perPage);
         break;
-      case ShareType.incoming:
+      case ShareType.Incoming:
         response = await api.incomingSharesGet(
           options?.nextPageAfter,
           options?.perPage,
@@ -180,10 +180,10 @@ export class ShareService extends Service<SharesApi> {
 
   public async listAll(
     user: IVaultToken,
-    shareType: ShareType = ShareType.incoming
+    shareType: ShareType = ShareType.Incoming
   ): Promise<Share[]> {
     const api = this.vaultAPIFactory(user.vault_access_token).SharesApi;
-    const method = shareType === ShareType.incoming ? api.incomingSharesGet : api.outgoingSharesGet;
+    const method = shareType === ShareType.Incoming ? api.incomingSharesGet : api.outgoingSharesGet;
 
     const result = await getAllPaged(cursor => method(cursor)).then(reducePages);
     return result.shares;
@@ -258,12 +258,12 @@ export class ShareService extends Service<SharesApi> {
   public async getSharedItem(
     user: IVaultToken & IKeystoreToken & IKEK & IDEK,
     shareId: string,
-    shareType: ShareType = ShareType.incoming
+    shareType: ShareType = ShareType.Incoming
   ): Promise<{ share: Share; item: DecryptedItem }> {
     const shareAPI = this.vaultAPIFactory(user.vault_access_token).SharesApi;
 
     let shareWithItemData: ShareWithItemData;
-    if (shareType === ShareType.incoming) {
+    if (shareType === ShareType.Incoming) {
       shareWithItemData = await shareAPI.incomingSharesIdItemGet(shareId).catch(err => {
         if ((<Response>err).status === 404) {
           throw new MeecoServiceError(

@@ -56,10 +56,10 @@ describe('shares:list', () => {
       'listShares',
       sinon
         .stub()
-        .withArgs({ vault_access_token: '2FPN4n5T68xy78i6HHuQ' }, ShareType.incoming)
+        .withArgs({ vault_access_token: '2FPN4n5T68xy78i6HHuQ' }, ShareType.Incoming)
         .returns(response)
     )
-    .run(['shares:list', ...testUserAuth, ...testEnvironmentFile, '-t', ShareType.incoming])
+    .run(['shares:list', ...testUserAuth, ...testEnvironmentFile, '-t', ShareType.Incoming])
     .it('shows a list of incoming shared items', ctx => {
       const expected = readFileSync(outputFixture('list-incoming-shares.output.yaml'), 'utf-8');
       expect(ctx.stdout.trim()).to.contain(expected.trim());
@@ -73,7 +73,7 @@ describe('shares:list', () => {
       'listAll',
       sinon
         .stub()
-        .withArgs({ vault_access_token: '2FPN4n5T68xy78i6HHuQ' }, ShareType.incoming)
+        .withArgs({ vault_access_token: '2FPN4n5T68xy78i6HHuQ' }, ShareType.Incoming)
         .returns(response)
     )
     .run([
@@ -81,7 +81,7 @@ describe('shares:list', () => {
       ...testUserAuth,
       ...testEnvironmentFile,
       '-t',
-      ShareType.incoming,
+      ShareType.Incoming,
       ...testGetAll,
     ])
     .it('shows a list of shared items when paginated', ctx => {
@@ -135,10 +135,10 @@ describe('shares:list', () => {
       'listShares',
       sinon
         .stub()
-        .withArgs({ vault_access_token: '2FPN4n5T68xy78i6HHuQ' }, ShareType.outgoing)
+        .withArgs({ vault_access_token: '2FPN4n5T68xy78i6HHuQ' }, ShareType.Outgoing)
         .returns(response2)
     )
-    .run(['shares:list', ...testUserAuth, ...testEnvironmentFile, '-t', ShareType.outgoing])
+    .run(['shares:list', ...testUserAuth, ...testEnvironmentFile, '-t', ShareType.Outgoing])
     .it('shows a list of shared items (to and from the user)', ctx => {
       const expected = readFileSync(outputFixture('list-outgoing-shares.output.yaml'), 'utf-8');
       expect(ctx.stdout.trim()).to.contain(expected.trim());

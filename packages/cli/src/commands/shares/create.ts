@@ -63,7 +63,7 @@ export default class SharesCreate extends MeecoCommand {
       }
 
       const service = new ShareService(environment, this.updateStatus);
-      const sharing_mode = onshare ? SharingMode.anyone : SharingMode.owner;
+      const sharing_mode = onshare ? SharingMode.Anyone : SharingMode.Owner;
 
       let acceptance_required = AcceptanceRequest.NotRequired;
       if (terms !== undefined && terms !== '') {
