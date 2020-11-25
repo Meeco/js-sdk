@@ -1,7 +1,8 @@
 import { ItemTemplate, NestedSlotAttributes, PostItemsRequest, Slot } from '@meeco/vault-api-sdk';
+import SlotHelpers from '../util/slot-helpers';
 import { slotToNewSlot } from '../util/transformers';
 import ItemChange from './item-change';
-import { NewSlot, SlotHelpers } from './local-slot';
+import { NewSlot } from './local-slot';
 import { SymmetricKey } from './symmetric-key';
 
 /** An Item which does not exist in the API */

@@ -10,9 +10,10 @@ import {
 } from '@meeco/vault-api-sdk';
 import cryppo from '../services/cryppo-service';
 import { IDEK } from '../services/service';
+import SlotHelpers from '../util/slot-helpers';
 import ItemMap from './item-map';
 import { ItemUpdate } from './item-update';
-import { NewSlot, SDKDecryptedSlot, SlotHelpers } from './local-slot';
+import { NewSlot, SDKDecryptedSlot } from './local-slot';
 
 /**
  * Wraps Items returned from the API that have been decrypted, usually by {@link ItemService}.

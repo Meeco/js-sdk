@@ -12,11 +12,12 @@ import {
 } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
 import DecryptedKeypair from '../models/decrypted-keypair';
-import { SDKDecryptedSlot, SlotHelpers } from '../models/local-slot';
+import { SDKDecryptedSlot } from '../models/local-slot';
 import RSAPublicKey from '../models/rsa-public-key';
 import { MeecoServiceError } from '../models/service-error';
 import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, reducePages } from '../util/paged';
+import SlotHelpers from '../util/slot-helpers';
 import { ConnectionService } from './connection-service';
 import { ItemService } from './item-service';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';

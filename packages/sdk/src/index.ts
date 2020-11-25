@@ -33,6 +33,7 @@ export * from './util/api-factory';
 export * from './util/find-connection-between';
 export { default as Secrets } from './util/secrets';
 export * from './util/paged';
+export { default as SlotHelpers } from './util/slot-helpers';
 export * from './util/transformers';
 export * from './util/value-verification';
 import _cryppo from './services/cryppo-service';
