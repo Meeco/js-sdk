@@ -1,5 +1,6 @@
-import { Share } from '@meeco/vault-api-sdk';
 import m = require('mithril'); // prevents a weird compilation error
+
+import { Share } from '@meeco/vault-api-sdk';
 import {
   AcceptanceRequest,
   AuthData,
@@ -13,6 +14,7 @@ import {
   SDKTemplate,
   Secrets,
   ShareService,
+  ShareType,
   SharingMode,
   TemplateService,
   UserService,
@@ -78,39 +80,50 @@ configureFetch(window.fetch);
 
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 
+const showAcceptShare = async (share: Share) => {
+  const shareWithItem = await new ShareService(environment, log).getSharedItem(
+    STATE.otherUsers[0],
+    share.id,
+    ShareType.incoming
+  );
+  m.mount($('share2'), AcceptShareComponent({ share: shareWithItem }));
+};
+
+const showExistingItem = (item: DecryptedItem) => {
+  m.mount(
+    $('item'),
+    ExistingItemComponent({
+      item,
+      onshare: showAcceptShare,
+    })
+  );
+};
+
 m.mount(
-  document.getElementById('user1')!,
+  $('user1'),
   UserComponent({
-    // show item create after login
     onlogin: auth => {
       STATE.user = auth;
       getTemplates();
-      m.mount(
-        document.getElementById('item')!,
-        CreateItemComponent({
-          // show existing item after creating it
-          oncreated: item =>
-            m.mount(document.getElementById('item')!, ExistingItemComponent({ item })),
-        })
-      );
+      m.mount($('item'), CreateItemComponent({ oncreated: showExistingItem }));
     },
   })
 );
 
 m.mount(
-  document.getElementById('user2')!,
+  $('user2'),
   UserComponent({
     onlogin: auth => STATE.otherUsers.push(auth),
   })
 );
 m.mount(
-  document.getElementById('user3-col')!,
+  $('user3-col'),
   UserComponent({
     onlogin: auth => STATE.otherUsers.push(auth),
   })
 );
 
-m.mount(document.getElementById('share2')!, AcceptShareComponent);
+// m.mount($('share2'), AcceptShareComponent);
 
 /*
 async function getItems() {
@@ -487,7 +500,9 @@ function CreateShareComponent(vInit) {
   };
 }
 
-function AcceptShareComponent(vInit) {
+function AcceptShareComponent(vInit: { share: { share: Share; item: DecryptedItem } }) {
+  const { share, item } = vInit.share;
+
   return {
     view: vNode =>
       m('.card', [
@@ -495,15 +510,18 @@ function AcceptShareComponent(vInit) {
         m('hr'),
         m('input', { type: 'button', value: 'Accept' }),
         m('input', { type: 'button', value: 'Reject' }),
-        m('div', [m('label', 'Item Label'), m('input', { disabled: true, value: '' })]),
-        m('div', [m('label', 'Item Template'), m('input', { disabled: true, value: '' })]),
-        m('div', [m('label', 'Expiry'), m('input', { type: 'date' })]),
-        m('div', [m('label', 'Terms:'), m('textarea', { rows: '10' })]),
+        m('div', [m('label', 'Item Label'), m('input', { disabled: true, value: item?.label })]),
+        m('div', [
+          m('label', 'Item Template'),
+          m('input', { disabled: true, value: item?.item.item_template_label }),
+        ]),
+        m('div', [m('label', 'Expiry'), m('input', { type: 'date', value: share.expires_at })]),
+        m('div', [m('label', 'Terms:'), m('textarea', { rows: '10', value: share.terms })]),
         m('div', [
           m('label', 'Owner:'),
-          m('input', { disabled: true, value: '' }),
+          m('input', { disabled: true, value: share.owner_id }),
           m('label', 'Sender:'),
-          m('input', { disabled: true, value: '' }),
+          m('input', { disabled: true, value: share.sender_id }),
         ]),
       ]),
   };
