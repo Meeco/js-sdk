@@ -356,7 +356,8 @@ function CreateItemComponent(vInit) {
   function changeTemplate(e) {
     itemTemplate = STATE.templates.find(t => t.name === e.target.value)!;
     // refresh state of newSlots
-    newSlots = itemTemplate.slots.map(({ label, slot_type_name }) => ({
+    newSlots = itemTemplate.slots.map(({ name, label, slot_type_name }) => ({
+      name,
       label,
       slot_type_name,
     }));
