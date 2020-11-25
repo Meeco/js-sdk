@@ -125,22 +125,10 @@ m.mount(
 
 // m.mount($('share2'), AcceptShareComponent);
 
-/*
-async function getItems() {
-  clearLog();
-  if (!STATE.user) {
-    return alert('Fetch user data above before fetching user items');
-  }
-  $set('items', '');
-  try {
-    const items = await new ItemService(environment, log).list(STATE.user);
-    $set('items', JSON.stringify(items, null, 2));
-  } catch (error) {
-    $set('items', `Error (See Action Log for Details)`);
-    return handleException(error);
-  }
+function getUsername(auth: AuthData): string {
+  return Secrets.usernameFromSecret(auth.secret);
 }
-*/
+
 async function getTemplates() {
   clearLog();
   if (!STATE.user) {
@@ -227,8 +215,16 @@ function UserComponent(vInit) {
   let secret = '';
   let passphrase = '';
   let user: AuthData;
+  let title = 'User Login';
 
   const loginCallback: (_: AuthData) => void = vInit.onlogin;
+
+  function onlogin(auth: AuthData) {
+    username = username || Secrets.usernameFromSecret(secret);
+    title = 'User ' + username;
+    loginCallback(auth);
+    m.redraw();
+  }
 
   async function generateUsername() {
     try {
@@ -255,8 +251,7 @@ function UserComponent(vInit) {
 
     try {
       user = await new UserService(environment, log).getAuthData(passphrase, secret);
-      loginCallback(user);
-      m.redraw();
+      onlogin(user);
     } catch (error) {
       return handleException(error);
     }
@@ -275,8 +270,7 @@ function UserComponent(vInit) {
     }
     try {
       user = await new UserService(environment, log).create(passphrase, secret);
-      loginCallback(user);
-      m.redraw();
+      onlogin(user);
     } catch (error) {
       return handleException(error);
     }
@@ -285,7 +279,7 @@ function UserComponent(vInit) {
   return {
     view: vnode =>
       m('.card', [
-        m('h4', 'User Login'),
+        m('h4', title),
         m('hr'),
         m('input', {
           placeholder: 'Enter or Generate Username',
