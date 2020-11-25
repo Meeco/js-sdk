@@ -72,14 +72,16 @@ const STATE: {
   user?: AuthData;
   otherUsers: AuthData[];
   templates: SDKTemplate[];
-  connections: Array<{ id: string; name: string }>;
-} = { otherUsers: [], templates: [], connections: [] };
+  // username to array of <connectionId, username>
+  connections: Record<string, Array<{ connectionId: string; name: string }>>;
+} = { otherUsers: [], templates: [], connections: {} };
 
 // Assumes modern browser with fetch
 configureFetch(window.fetch);
 
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 
+// Mount components
 const showAcceptShare = async (share: Share) => {
   const shareWithItem = await new ShareService(environment, log).getSharedItem(
     STATE.otherUsers[0],
@@ -95,6 +97,7 @@ const showExistingItem = (item: DecryptedItem) => {
     ExistingItemComponent({
       item,
       onshare: showAcceptShare,
+      username: getUsername(STATE.user!),
     })
   );
 };
@@ -113,13 +116,19 @@ m.mount(
 m.mount(
   $('user2'),
   UserComponent({
-    onlogin: auth => STATE.otherUsers.push(auth),
+    onlogin: auth => {
+      STATE.otherUsers.push(auth);
+      connect(auth);
+    },
   })
 );
 m.mount(
   $('user3-col'),
   UserComponent({
-    onlogin: auth => STATE.otherUsers.push(auth),
+    onlogin: auth => {
+      STATE.otherUsers.push(auth);
+      connect(auth);
+    },
   })
 );
 
@@ -145,26 +154,41 @@ async function getTemplates() {
   }
 }
 
-// Connect all users together, assume max 3
-async function connectAll() {
+// connect the given user to all other users
+// checks to ensure no self connections
+async function connect(fromUser: AuthData) {
   const service = new ConnectionService(environment, log);
-  let count = 1;
-  for (const user of STATE.otherUsers) {
-    const { fromUserConnection } = await service.createConnection({
-      from: STATE.user!,
-      to: user,
-      options: { fromName: 'any', toName: 'any' },
-    });
-    STATE.connections.push({ name: `user${count}`, id: fromUserConnection.own.id });
-    count += 1;
+  const fromUsername = getUsername(fromUser);
+
+  // init
+  if (!STATE.connections[fromUsername]) {
+    STATE.connections[fromUsername] = [];
   }
 
-  if (STATE.otherUsers.length > 1) {
-    service.createConnection({
-      from: STATE.otherUsers[0],
-      to: STATE.otherUsers[1],
-      options: { fromName: 'any', toName: 'any' },
-    });
+  for (const user of STATE.otherUsers.concat(STATE.user!)) {
+    if (fromUser.secret !== user.secret) {
+      const toUsername = getUsername(user);
+      log(`Connecting ${fromUsername} to ${toUsername}`);
+      // init
+      if (!STATE.connections[toUsername]) {
+        STATE.connections[toUsername] = [];
+      }
+
+      const { fromUserConnection, toUserConnection } = await service.createConnection({
+        from: fromUser,
+        to: user,
+        options: { fromName: 'any', toName: 'any' },
+      });
+
+      STATE.connections[fromUsername].push({
+        name: toUsername,
+        connectionId: fromUserConnection.own.id,
+      });
+      STATE.connections[toUsername].push({
+        name: fromUsername,
+        connectionId: toUserConnection.own.id,
+      });
+    }
   }
 }
 
@@ -313,7 +337,6 @@ function UserComponent(vInit) {
           'Fetch User Data'
         ),
         m('button', { onclick: createUser }, 'Create New User'),
-        m('button', { disabled: !STATE.otherUsers.length, onclick: connectAll }, 'Connect Users'),
         user
           ? m('textarea', { disabled: true, rows: 10, value: JSON.stringify(user, null, 2) })
           : null,
@@ -407,8 +430,12 @@ function CreateItemComponent(vInit) {
   };
 }
 
-function ExistingItemComponent(vInit) {
-  const item: DecryptedItem = vInit.item || {};
+function ExistingItemComponent(vInit: {
+  item: DecryptedItem;
+  username: string;
+  onshare: (_: Share) => void;
+}) {
+  const item = vInit.item;
 
   return {
     view: vNode =>
@@ -437,14 +464,19 @@ function ExistingItemComponent(vInit) {
   };
 }
 
-function CreateShareComponent(vInit) {
+function CreateShareComponent(vInit: {
+  item: DecryptedItem;
+  username: string;
+  onshare: (_: Share) => void;
+}) {
   let expiry = '';
   const canOnshare = false;
   const mustAcceptTerms = false;
   let terms = '';
-  const item: DecryptedItem = vInit.item;
+  const item = vInit.item;
   let connectionId = '';
-  const callback: (_: Share) => void = vInit.onshare;
+  const callback = vInit.onshare;
+  const ownerName = vInit.username;
 
   async function createShare() {
     clearLog();
@@ -472,7 +504,9 @@ function CreateShareComponent(vInit) {
         m(
           'select',
           { onchange: e => (connectionId = e.target.value) },
-          STATE.connections.map(({ name, id }) => m('option', { value: id }, name))
+          STATE.connections[ownerName].map(({ name, connectionId: id }) =>
+            m('option', { value: id }, name)
+          )
         ),
       ]),
       m('div', [

@@ -100,6 +100,12 @@ input[type="button"], input[type="reset"] {
   display: inline-block;
 }
 
+input[type="checkbox"] {
+  width: auto;
+  margin-left: 1em;
+  display: inline;
+}
+
 button:disabled {
   background-color: lightgray;
 }
