@@ -76,23 +76,7 @@ const STATE: {
 // Assumes modern browser with fetch
 configureFetch(window.fetch);
 
-// const captcha = readCaptchaTokenFromUrl();
-// if (captcha) {
-//   $set('captcha', captcha);
-// }
-
-// $('getCaptcha').addEventListener('click', () => {
-// getCaptchaToken();
-// });
-
-// $('getUsername').addEventListener('click', getUsername);
-// $('getSecret').addEventListener('click', getSecret);
-// $('fetchUserData').addEventListener('click', fetchUserData);
-// $('createUser').addEventListener('click', createUser);
-// $('getItems').addEventListener('click', getItems);
-// $('getTemplates').addEventListener('click', getTemplates);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
-// $('createItem').addEventListener('click', createItem);
 
 m.mount(
   document.getElementById('user1')!,
@@ -129,65 +113,6 @@ m.mount(
 m.mount(document.getElementById('share2')!, AcceptShareComponent);
 
 /*
-async function getUsername() {
-  try {
-    const username = await new UserService(environment, log).generateUsername();
-    $set('username', username);
-  } catch (error) {
-    $set('username', `Error (See Action Log for Details)`);
-    return handleException(error);
-  }
-}
-
-async function getSecret() {
-  clearLog();
-  const username = $get('username');
-  if (!username) {
-    return alert('Generating a secret requires a username');
-  }
-  const secret = Secrets.generateSecret(username);
-  $set('secret', secret);
-}
-
-async function fetchUserData() {
-  clearLog();
-  $set('userData', '');
-  const passphrase = $get('passphrase');
-  const secret = $get('secret');
-
-  if (!passphrase || !secret) {
-    return alert('Passphrase and secret are required for fetching user data');
-  }
-
-  try {
-    const user = await new UserService(environment, log).getAuthData(passphrase, secret);
-    STATE.user = user;
-    $set('userData', JSON.stringify(user, null, 2));
-  } catch (error) {
-    $set('userData', `Error (See Action Log for Details)`);
-    return handleException(error);
-  }
-}
-
-async function createUser() {
-  clearLog();
-  $set('userData', '');
-  const passphrase = $get('passphrase');
-  const secret = $get('secret');
-
-  if (!passphrase || !secret) {
-    return alert('Passphrase and secret are required for creating a user');
-  }
-  try {
-    const user = await new UserService(environment, log).create(passphrase, secret);
-    STATE.user = user;
-    $set('userData', JSON.stringify(user, null, 2));
-  } catch (error) {
-    $set('userData', `Error (See Action Log for Details)`);
-    return handleException(error);
-  }
-} */
-/*
 async function getItems() {
   clearLog();
   if (!STATE.user) {
@@ -208,77 +133,16 @@ async function getTemplates() {
   if (!STATE.user) {
     return alert('Fetch user data above before fetching templates');
   }
-  // $set('templates', '');
   try {
     const templates = await new TemplateService(environment, log).list(STATE.user);
-    // $set('templates', JSON.stringify(templates, null, 2));
 
     // note that SDKtemplate constructor filters the correct slots from the response
     STATE.templates = templates.item_templates.map(t => new SDKTemplate(t, templates.slots));
     m.redraw();
-    // seed template selector
-    // const options = templates.item_templates
-    //   .map(t => `<option value="${t.name}">${t.label}</option>`)
-    //   .join('');
-    // $('templateSelect').innerHTML = options;
-
-    // const templateSelectHandler = () => {
-    //   const templateName = $get('templateSelect');
-    //   const sdkTemplate = new SDKTemplate(
-    //     templates.item_templates.find(t => t.name === templateName)!,
-    //     templates.slots
-    //   );
-    //   const slotHTML = sdkTemplate.slots
-    //     .map(
-    //       s =>
-    //         `<label>${s.label}</label><input name="${s.name}" type="${slotTypeToInputType(
-    //           s.slot_type_name
-    //         )}">`
-    //     )
-    //     .join('');
-    //   $('formSlots').innerHTML = slotHTML;
-    // };
-
-    // seed new item slots on select
-    // $('templateSelect').addEventListener('change', templateSelectHandler);
-
-    // initialize slots with the first selection
-    // templateSelectHandler();
   } catch (error) {
-    // $set('templates', `Error (See Action Log for Details)`);
     return handleException(error);
   }
 }
-/*
-async function createItem() {
-  clearLog();
-  if (!STATE.user) {
-    return alert('Fetch user data above first');
-  }
-  $set('newItem', '');
-  try {
-    // get field values
-    const label = $get('labelField');
-    const templateName = $get('templateSelect');
-    // construct Item with slot values
-    const item = new NewItem(label, templateName, readItemSlots());
-    const newItem = await new ItemService(environment, log).create(STATE.user, item);
-    // $set('newItem', JSON.stringify(newItem, null, 2));
-    $set('newItem', JSON.stringify(newItem.values, null, 2));
-  } catch (error) {
-    $set('newItem', `Error (See Action Log for Details)`);
-    return handleException(error);
-  }
-}
-
-function readItemSlots(): Array<{ name: string; value: string }> {
-  const result: any[] = [];
-  $('formSlots')
-    .querySelectorAll('input')
-    .forEach((input: any) => result.push({ name: input.name, value: input.value }));
-  return result;
-}
-*/
 
 // Connect all users together, assume max 3
 async function connectAll() {
@@ -353,7 +217,7 @@ function UserComponent(vInit) {
 
   const loginCallback: (_: AuthData) => void = vInit.onlogin;
 
-  async function _getUsername() {
+  async function generateUsername() {
     try {
       username = await new UserService(environment, log).generateUsername();
       m.redraw();
@@ -362,7 +226,7 @@ function UserComponent(vInit) {
     }
   }
 
-  function _getSecret() {
+  function generateSecret() {
     clearLog();
     if (!username) {
       return alert('Generating a secret requires a username');
@@ -370,7 +234,7 @@ function UserComponent(vInit) {
     secret = Secrets.generateSecret(username);
   }
 
-  async function _fetchUserData() {
+  async function fetchUserData() {
     clearLog();
     if (!passphrase || !secret) {
       return alert('Passphrase and secret are required for fetching user data');
@@ -385,10 +249,16 @@ function UserComponent(vInit) {
     }
   }
 
-  async function _createUser() {
+  async function createUser() {
     clearLog();
-    if (!passphrase || !secret) {
-      return alert('Passphrase and secret are required for creating a user');
+    if (!secret) {
+      if (!username) {
+        await generateUsername();
+      }
+      generateSecret();
+    }
+    if (!passphrase) {
+      return alert('Passphrase is required for creating a user');
     }
     try {
       user = await new UserService(environment, log).create(passphrase, secret);
@@ -411,7 +281,7 @@ function UserComponent(vInit) {
           value: username,
           onchange: e => (username = e.target.value),
         }),
-        m('button', { onclick: _getUsername }, 'Generate'),
+        m('button', { onclick: generateUsername }, 'Generate'),
         m('input', {
           placeholder: 'Enter or Generate User Secret',
           autocapitalize: 'off',
@@ -419,20 +289,27 @@ function UserComponent(vInit) {
           value: secret,
           onchange: e => (secret = e.target.value),
         }),
-        m('button', { onclick: _getSecret }, 'Generate'),
+        m('button', { onclick: generateSecret, disabled: !username }, 'Generate'),
         m('input', {
           placeholder: 'Enter Passphrase',
           type: 'password',
           autocapitalize: 'off',
           autocomplete: 'off',
           value: passphrase,
+          required: true,
           onchange: e => (passphrase = e.target.value),
         }),
         m('hr'),
-        m('button', { onclick: _fetchUserData }, 'Fetch User Data'),
-        m('button', { onclick: _createUser }, 'Create New User'),
+        m(
+          'button',
+          { onclick: fetchUserData, disabled: !(passphrase && secret) },
+          'Fetch User Data'
+        ),
+        m('button', { onclick: createUser }, 'Create New User'),
         m('button', { disabled: !STATE.otherUsers.length, onclick: connectAll }, 'Connect Users'),
-        m('textarea', { disabled: true, rows: 10, value: user && JSON.stringify(user, null, 2) }),
+        user
+          ? m('textarea', { disabled: true, rows: 10, value: JSON.stringify(user, null, 2) })
+          : null,
       ]),
   };
 }

@@ -67,11 +67,6 @@ body {
   display: flex;
 }
 
-// input {
-//   width: 70%;
-//   display: inline-block;
-// }
-
 div.card {
   * {
     margin: 0 0 8px 0;
@@ -85,11 +80,6 @@ div.card {
   label {
     display: inline-block;
   }
-  input[type="text"] {
-    // width: 100%;
-    width: 70%;
-    display: inline-block;
-  }
 }
 
 #logCard {
@@ -100,8 +90,16 @@ div.card {
   width: 450px;
 }
 
+select {
+  @extend input;
+}
+
 input[type="button"], input[type="reset"] {
   @extend button;
   width: auto;
   display: inline-block;
+}
+
+button:disabled {
+  background-color: lightgray;
 }
