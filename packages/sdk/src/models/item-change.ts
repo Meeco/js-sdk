@@ -1,6 +1,6 @@
 import { ClassificationNode } from '@meeco/vault-api-sdk';
 import ItemMap from './item-map';
-import { NewSlot } from './local-slot';
+import { NewSlot } from './slot-types';
 
 /**
  * Represents a change to the Item that hasn't been posted to the API.

@@ -12,9 +12,9 @@ import {
 } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
 import DecryptedKeypair from '../models/decrypted-keypair';
-import { SDKDecryptedSlot } from '../models/local-slot';
 import RSAPublicKey from '../models/rsa-public-key';
 import { MeecoServiceError } from '../models/service-error';
+import { SDKDecryptedSlot } from '../models/slot-types';
 import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, reducePages } from '../util/paged';
 import SlotHelpers from '../util/slot-helpers';

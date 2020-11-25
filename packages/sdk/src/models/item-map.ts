@@ -1,5 +1,5 @@
 import SlotHelpers from '../util/slot-helpers';
-import { MinimalSlot } from './local-slot';
+import { MinimalSlot } from './slot-types';
 
 /**
  * Index an array of Slot-like objects by their name (or label if name is missing).

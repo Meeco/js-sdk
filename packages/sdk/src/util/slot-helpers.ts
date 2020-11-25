@@ -1,6 +1,6 @@
 import { EncryptedSlotValue, Slot } from '@meeco/vault-api-sdk';
 import parameterize from 'parameterize';
-import { SDKDecryptedSlot } from '../models/local-slot';
+import { SDKDecryptedSlot } from '../models/slot-types';
 import { SymmetricKey } from '../models/symmetric-key';
 import { IDEK } from '../services/service';
 import {

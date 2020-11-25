@@ -13,7 +13,7 @@ export { default as ItemMap } from './models/item-map';
 export * from './models/new-item';
 export * from './models/item-update';
 export * from './models/decrypted-item';
-export * from './models/local-slot';
+export * from './models/slot-types';
 export * from './models/sdk-template';
 export * from './models/service-error';
 export * from './models/srp-session';
