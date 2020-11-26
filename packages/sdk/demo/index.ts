@@ -84,70 +84,6 @@ $('updateEnvironment').addEventListener('click', updateEnvironment);
 
 m.mount($('app-main'), AppComponent);
 
-// These are actions/callbacks called after user clicks on the appropriate buttons
-/*
-// user 0 created a share with user 1 or 2, now show the share for the user to accept terms
-const showAcceptShare = async (share: Share, receiver: AuthData) => {
-  const shareWithItem = await new ShareService(environment, log).getSharedItem(
-    receiver,
-    share.id,
-    ShareType.incoming
-  );
-
-  m.mount(
-    $('share2'), // TODO - which user?
-    AcceptShareComponent({
-      share: shareWithItem,
-      user: receiver,
-      onaccept: showExistingItem,
-      onreject: () => m.mount($('share2'), null),
-    })
-  );
-};
-
-// An item is created or shared, show it
-const showExistingItem = (item: DecryptedItem) => {
-  m.mount(
-    $('item'),
-    ExistingItemComponent({
-      item,
-      onshare: showAcceptShare,
-      username: getUsername(STATE.user!),
-    })
-  );
-};
-
-// Mount components
-m.mount(
-  $('user1'),
-  UserComponent({
-    onlogin: auth => {
-      STATE.user = auth;
-      getTemplates();
-      m.mount($('item'), CreateItemComponent({ oncreated: showExistingItem }));
-    },
-  })
-);
-
-m.mount(
-  $('user2'),
-  UserComponent({
-    onlogin: auth => {
-      STATE.otherUsers.push(auth);
-      connect(auth);
-    },
-  })
-);
-m.mount(
-  $('user3-col'),
-  UserComponent({
-    onlogin: auth => {
-      STATE.otherUsers.push(auth);
-      connect(auth);
-    },
-  })
-);
-*/
 function getUsername(auth: AuthData): string {
   return Secrets.usernameFromSecret(auth.secret);
 }
@@ -246,7 +182,12 @@ function slotTypeToInputType(ty: string): string {
 }
 
 // tslint:disable-next-line:interface-over-type-literal
-type UserState = { username: string; item: any; share: any; connections: any; auth: AuthData };
+type UserState = {
+  username: string;
+  item: DecryptedItem | null;
+  share: Share | null;
+  auth: AuthData;
+};
 
 function AppComponent() {
   // this is passed to the user's components
@@ -268,7 +209,6 @@ function AppComponent() {
         username: getUsername(auth),
         item: null,
         share: null,
-        connections: [],
         auth,
       };
       STATE.templates = await getTemplates(auth);
@@ -285,7 +225,6 @@ function AppComponent() {
         username: getUsername(auth),
         item: null,
         share: null,
-        connections: [],
         auth,
       };
       user2ItemComponent = SharedItemComponent({ auth, onshare: _showAcceptShare });
@@ -301,7 +240,6 @@ function AppComponent() {
         username: getUsername(auth),
         item: null,
         share: null,
-        connections: [],
         auth,
       };
       user3ItemComponent = SharedItemComponent({ auth, onshare: _showAcceptShare });
@@ -371,19 +309,17 @@ function CardComponent() {
   };
 }
 
-function UserComponent(vInit) {
+function UserComponent(vInit: { onlogin: (_: AuthData) => void }) {
   let username = '';
   let secret = '';
   let passphrase = '';
   let user: AuthData;
   let title = 'User Login';
 
-  const loginCallback: (_: AuthData) => void = vInit.onlogin;
-
   function onlogin(auth: AuthData) {
     username = username || Secrets.usernameFromSecret(secret);
     title = 'User ' + username;
-    loginCallback(auth);
+    vInit.onlogin(auth);
     m.redraw();
   }
 
@@ -438,7 +374,7 @@ function UserComponent(vInit) {
   }
 
   return {
-    view: vnode =>
+    view: () =>
       m(CardComponent, { title }, [
         m('input', {
           placeholder: 'Enter or Generate Username',
@@ -564,6 +500,10 @@ function CreateItemComponent(vInit: { oncreated: (_: DecryptedItem) => void }) {
   };
 }
 
+/**
+ * Either an AcceptShareComponent or ExistingItemComponent depending on userState.
+ * Attrs: userState
+ */
 function SharedItemComponent(vInit: {
   auth: AuthData;
   onshare: (_: Share, receiver: string) => void;
@@ -590,11 +530,14 @@ function SharedItemComponent(vInit: {
   };
 }
 
+/**
+ * An Item that has be created or received via share.
+ * Attrs: item, share
+ */
 function ExistingItemComponent(vInit: {
   auth: AuthData;
   onshare: (_: Share, receiver: string) => void;
 }) {
-  // const item = vInit.item;
   const shareComponent = CreateShareComponent(vInit);
 
   return {
@@ -606,7 +549,6 @@ function ExistingItemComponent(vInit: {
             : null,
           m('input', { type: 'button', value: 'Delete', onclick: () => alert('TODO') }),
 
-          // m('input', { type: 'reset', value: 'Reset' }),
           m('div', [
             m('label', 'Template'),
             m('input', { disabled: true, value: vnode.attrs.item.item.item_template_label }),
@@ -642,16 +584,16 @@ function CreateShareComponent(vInit: {
   let canOnshare = false;
   let mustAcceptTerms = false;
   let terms = '';
-  // const item = vInit.item;
-  const callback = vInit.onshare;
   const ownerName = getUsername(vInit.auth);
   const ownerAuth = vInit.auth;
   let connectionId = '';
 
+  const callback = vInit.onshare;
+
   async function createShare(item: DecryptedItem) {
     clearLog();
     const service = new ShareService(environment, log);
-    // note: connectionId may be unset if users were created after the item
+    // connectionId may be unset if users were created after the item
     const connectionValue = connectionId || $get('connection-select');
     const receiverUsername = STATE.connections[ownerName].find(
       x => x.connectionId === connectionValue
@@ -663,16 +605,19 @@ function CreateShareComponent(vInit: {
     }
 
     try {
-      const {
-        shares: [share],
-      } = await service.shareItem(ownerAuth, connectionValue, item.id, {
+      const shareOptions = {
         expires_at: expiry ? new Date(expiry) : undefined,
         terms,
         sharing_mode: canOnshare ? SharingMode.anyone : SharingMode.owner,
         acceptance_required: mustAcceptTerms
           ? AcceptanceRequest.Required
           : AcceptanceRequest.NotRequired,
-      });
+      };
+
+      // this API endpoint lets us create multiple shares, but we only create one
+      const {
+        shares: [share],
+      } = await service.shareItem(ownerAuth, connectionValue, item.id, shareOptions);
 
       callback(share, receiverUsername);
     } catch (error) {
@@ -686,6 +631,7 @@ function CreateShareComponent(vInit: {
       m('h4', 'Sharing'),
       m('hr'),
       m('input', { type: 'button', value: 'Share', onclick: () => createShare(vnode.attrs.item) }),
+
       m('div', [
         m('label', 'Share with:'),
         m(
@@ -730,26 +676,36 @@ function CreateShareComponent(vInit: {
 }
 
 /**
- * Attrs: share, item
+ * Shows terms if applicable, user may accept or reject.
+ * Attrs: userstate
  */
 function AcceptShareComponent(vInit: {
   onaccept: (item: DecryptedItem, share: Share) => void;
   onreject: () => void;
 }) {
-  // const { share, item } = vInit.share;
   const acceptCallback = vInit.onaccept;
-  const rejectCallback: () => void = vInit.onreject;
+  const rejectCallback = vInit.onreject;
 
   async function acceptShare(userState: UserState) {
+    clearLog();
     const service = new ShareService(environment, log);
-    if (userState.share.acceptance_required === AcceptanceRequest.Required) {
-      await service.acceptIncomingShare(userState.auth, userState.share.id);
+    const shareId = userState.share!.id;
+
+    try {
+      // cannot use this API method if acceptance is not required
+      if (userState.share!.acceptance_required === AcceptanceRequest.Required) {
+        await service.acceptIncomingShare(userState.auth, shareId);
+      }
+
+      // update user state
+      const { share, item } = await service.getSharedItem(userState.auth, shareId);
+      userState.share = share;
+      userState.item = item;
+      acceptCallback(item, share);
+    } catch (error) {
+      handleException(error);
+      throw error;
     }
-    // update user state
-    const { share, item } = await service.getSharedItem(userState.auth, userState.share.id);
-    userState.share = share;
-    userState.item = item;
-    acceptCallback(item, share);
   }
 
   function rejectShare(userState: UserState) {
@@ -771,6 +727,7 @@ function AcceptShareComponent(vInit: {
           value: 'Reject',
           onclick: () => rejectShare(vnode.attrs.userState),
         }),
+
         m('div', [
           m('label', 'Expiry'),
           m('input', {
@@ -779,12 +736,14 @@ function AcceptShareComponent(vInit: {
             value: vnode.attrs.userState.share.expires_at.toISOString().slice(0, 10),
           }),
         ]),
+
         vnode.attrs.userState.share.terms
           ? m('div', [
               m('label', 'Terms:'),
               m('textarea', { rows: '10', value: vnode.attrs.userState.share.terms }),
             ])
           : null,
+
         m('div', [
           m('label', 'Owner:'),
           m('input', { disabled: true, value: vnode.attrs.userState.share.owner_id }),

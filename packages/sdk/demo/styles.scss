@@ -3,7 +3,6 @@
 html,
 body {
   width: 100vw;
-  // max-width: 600px;
   margin: auto;
   padding-top: 40px;
   font-family: sans-serif;
@@ -31,37 +30,14 @@ body {
 }
 
 .subtitle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: absolute;
+  @extend .title;
   top: 64px;
-  left: 0;
-  right: 0;
   background-color: gray;
-  color: white;
-  padding: 12px;
-  font-size: 12px;
-  height: 64px;
-  a {
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-  }
   div {
     display: flex;
     align-items: center;
   }
 }
-
-// .subtitle label {
-//   min-width: 6em;
-//   margin-left: 2em;
-// }
-
-// .subtitle input {
-//   max-width: 12em;
-// }
 
 .columns {
   display: flex;
