@@ -7,7 +7,8 @@ module.exports = {
   entry: './demo/index.ts',
   mode: 'development',
   devServer: {
-    port: 1234
+    port: 1234,
+    hot: true
   },
   watchOptions: {
     ignored:/.*\.#.*/

@@ -3,6 +3,7 @@ import m = require('mithril'); // prevents a weird compilation error
 import { Share } from '@meeco/vault-api-sdk';
 import {
   AcceptanceRequest,
+  AcceptanceStatus,
   AuthData,
   configureFetch,
   ConnectionService,
@@ -81,16 +82,30 @@ configureFetch(window.fetch);
 
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 
-// Mount components
-const showAcceptShare = async (share: Share) => {
+m.mount($('app-main'), AppComponent);
+
+// These are actions/callbacks called after user clicks on the appropriate buttons
+/*
+// user 0 created a share with user 1 or 2, now show the share for the user to accept terms
+const showAcceptShare = async (share: Share, receiver: AuthData) => {
   const shareWithItem = await new ShareService(environment, log).getSharedItem(
-    STATE.otherUsers[0],
+    receiver,
     share.id,
     ShareType.incoming
   );
-  m.mount($('share2'), AcceptShareComponent({ share: shareWithItem }));
+
+  m.mount(
+    $('share2'), // TODO - which user?
+    AcceptShareComponent({
+      share: shareWithItem,
+      user: receiver,
+      onaccept: showExistingItem,
+      onreject: () => m.mount($('share2'), null),
+    })
+  );
 };
 
+// An item is created or shared, show it
 const showExistingItem = (item: DecryptedItem) => {
   m.mount(
     $('item'),
@@ -102,6 +117,7 @@ const showExistingItem = (item: DecryptedItem) => {
   );
 };
 
+// Mount components
 m.mount(
   $('user1'),
   UserComponent({
@@ -131,26 +147,21 @@ m.mount(
     },
   })
 );
-
-// m.mount($('share2'), AcceptShareComponent);
-
+*/
 function getUsername(auth: AuthData): string {
   return Secrets.usernameFromSecret(auth.secret);
 }
 
-async function getTemplates() {
+async function getTemplates(auth: AuthData): Promise<SDKTemplate[]> {
   clearLog();
-  if (!STATE.user) {
-    return alert('Fetch user data above before fetching templates');
-  }
   try {
-    const templates = await new TemplateService(environment, log).list(STATE.user);
+    const templates = await new TemplateService(environment, log).list(auth);
 
     // note that SDKtemplate constructor filters the correct slots from the response
-    STATE.templates = templates.item_templates.map(t => new SDKTemplate(t, templates.slots));
-    m.redraw();
+    return templates.item_templates.map(t => new SDKTemplate(t, templates.slots));
   } catch (error) {
-    return handleException(error);
+    handleException(error);
+    throw error;
   }
 }
 
@@ -234,6 +245,132 @@ function slotTypeToInputType(ty: string): string {
   }
 }
 
+// tslint:disable-next-line:interface-over-type-literal
+type UserState = { username: string; item: any; share: any; connections: any; auth: AuthData };
+
+function AppComponent() {
+  // this is passed to the user's components
+  const userState: UserState[] = [];
+
+  function getStateFor(username: string): UserState {
+    const result = userState.find(x => x.username === username);
+    if (!result) {
+      throw new Error(`Reference to non-existing username ${username}`);
+    }
+    return result;
+  }
+
+  let mainItem;
+  const user1 = UserComponent({
+    onlogin: async auth => {
+      STATE.user = auth;
+      userState[0] = {
+        username: getUsername(auth),
+        item: null,
+        share: null,
+        connections: [],
+        auth,
+      };
+      STATE.templates = await getTemplates(auth);
+      mainItem = CreateItemComponent({ oncreated: _showExistingItem });
+      m.redraw();
+    },
+  });
+
+  let user2ItemComponent;
+  const user2 = UserComponent({
+    onlogin: auth => {
+      STATE.otherUsers.push(auth);
+      userState[1] = {
+        username: getUsername(auth),
+        item: null,
+        share: null,
+        connections: [],
+        auth,
+      };
+      user2ItemComponent = SharedItemComponent({ auth, onshare: _showAcceptShare });
+      connect(auth);
+    },
+  });
+
+  let user3ItemComponent;
+  const user3 = UserComponent({
+    onlogin: auth => {
+      STATE.otherUsers.push(auth);
+      userState[2] = {
+        username: getUsername(auth),
+        item: null,
+        share: null,
+        connections: [],
+        auth,
+      };
+      user3ItemComponent = SharedItemComponent({ auth, onshare: _showAcceptShare });
+      connect(auth);
+    },
+  });
+
+  // actions
+  // An item is created by user1
+  const _showExistingItem = (item: DecryptedItem) => {
+    userState[0].item = item;
+    mainItem = ExistingItemComponent({
+      onshare: _showAcceptShare,
+      auth: STATE.user!,
+    });
+  };
+
+  // user 0 created a share with user 1 or 2, now show the share for the user to accept terms
+  const _showAcceptShare = async (share: Share, receiver: string) => {
+    const username = receiver;
+    const state = getStateFor(username);
+
+    try {
+      const response = await new ShareService(environment, log)
+        .getAPI(state.auth)
+        .incomingSharesIdGet(share.id);
+
+      state.share = response.share;
+
+      // get the item if acceptance is not required
+      if (response.share.acceptance_required === AcceptanceRequest.NotRequired) {
+        const { item } = await new ShareService(environment, log).getSharedItem(
+          state.auth,
+          share.id,
+          ShareType.incoming
+        );
+
+        state.item = item;
+      }
+    } catch (error) {
+      handleException(error);
+      throw error;
+    }
+    m.redraw();
+  };
+
+  return {
+    view: vnode =>
+      m('div.columns', [
+        m('div', [m(user1), mainItem ? m(mainItem, { item: userState[0].item }) : null]),
+        m('div', [
+          m(user2),
+          userState[1]?.share ? m(user2ItemComponent, { userState: userState[1] }) : null,
+        ]),
+        m('div', [
+          m(user3),
+          userState[2]?.share ? m(user3ItemComponent, { userState: userState[2] }) : null,
+        ]),
+      ]),
+  };
+}
+
+/** Simple component for styling headers */
+function CardComponent() {
+  return {
+    view: vnode => m('.card', [m('h4', vnode.attrs.title), m('hr'), vnode.children]),
+  };
+}
+
 function UserComponent(vInit) {
   let username = '';
   let secret = '';
@@ -302,9 +439,7 @@ function UserComponent(vInit) {
 
   return {
     view: vnode =>
-      m('.card', [
-        m('h4', title),
-        m('hr'),
+      m(CardComponent, { title }, [
         m('input', {
           placeholder: 'Enter or Generate Username',
           autocapitalize: 'off',
@@ -363,12 +498,13 @@ function SlotComponent() {
   };
 }
 
-function CreateItemComponent(vInit) {
+/** Used by the primary user to create an Item from a Template */
+function CreateItemComponent(vInit: { oncreated: (_: DecryptedItem) => void }) {
   let itemTemplate: SDKTemplate;
   let itemLabel = '';
   // store the state of the form inputs
   let newSlots: NewSlot[] = [];
-  const createdCallback: (_: DecryptedItem) => void = vInit.oncreated;
+  const createdCallback = vInit.oncreated;
 
   function changeTemplate(e) {
     itemTemplate = STATE.templates.find(t => t.name === e.target.value)!;
@@ -398,9 +534,7 @@ function CreateItemComponent(vInit) {
 
   return {
     view: vNode =>
-      m('.card', [
-        m('h4', 'Create Item'),
-        m('hr'),
+      m(CardComponent, { title: 'Create Item' }, [
         m('form', [
           m('input', { type: 'button', value: 'Create', onclick: _createItem }),
           m('input', { type: 'reset', value: 'Reset' }),
@@ -430,96 +564,162 @@ function CreateItemComponent(vInit) {
   };
 }
 
-function ExistingItemComponent(vInit: {
-  item: DecryptedItem;
-  username: string;
-  onshare: (_: Share) => void;
+function SharedItemComponent(vInit: {
+  auth: AuthData;
+  onshare: (_: Share, receiver: string) => void;
 }) {
-  const item = vInit.item;
+  const acceptComponent = AcceptShareComponent({
+    onaccept: () => {
+      m.redraw();
+    },
+    onreject: () => {
+      m.redraw();
+    },
+  });
+
+  const itemComponent = ExistingItemComponent({
+    auth: vInit.auth,
+    onshare: vInit.onshare,
+  });
 
   return {
-    view: vNode =>
-      m('.card', [
-        m('h4', 'Item'),
-        m('hr'),
+    view: vnode =>
+      vnode.attrs.userState.share.acceptance_required === AcceptanceStatus.Required
+        ? m(acceptComponent, { userState: vnode.attrs.userState })
+        : m(itemComponent, { item: vnode.attrs.userState.item }),
+  };
+}
+
+function ExistingItemComponent(vInit: {
+  auth: AuthData;
+  onshare: (_: Share, receiver: string) => void;
+}) {
+  // const item = vInit.item;
+  const shareComponent = CreateShareComponent(vInit);
+
+  return {
+    view: vnode =>
+      m(CardComponent, { title: 'Item' }, [
         m('form', [
-          m('input', { type: 'button', value: 'Edit' }),
-          m('input', { type: 'button', value: 'Delete' }),
+          vnode.attrs.item.isOwned()
+            ? m('input', { type: 'button', value: 'Edit', onclick: () => alert('TODO') })
+            : null,
+          m('input', { type: 'button', value: 'Delete', onclick: () => alert('TODO') }),
 
           // m('input', { type: 'reset', value: 'Reset' }),
           m('div', [
             m('label', 'Template'),
-            m('input', { disabled: true, value: item.item.item_template_label }),
+            m('input', { disabled: true, value: vnode.attrs.item.item.item_template_label }),
             m('label', 'Label'),
-            m('input', { name: 'label', value: item.label }),
+            m('input', { name: 'label', value: vnode.attrs.item.label }),
           ]),
           m(
             'div',
-            item.slots.map(s => m(SlotComponent, { slot: s }))
+            vnode.attrs.item.slots.map(s => m(SlotComponent, { slot: s }))
           ),
         ]),
-        m('textarea', { disabled: true, rows: '10', value: JSON.stringify(item, null, 2) }),
-        m(CreateShareComponent(vInit)),
+        m('textarea', {
+          disabled: true,
+          rows: '10',
+          value: JSON.stringify(vnode.attrs.item, null, 2),
+        }),
+        // only if we can onshare
+        vnode.attrs.item.isOwned || vnode.attrs.share?.sharing_mode === SharingMode.anyone
+          ? m(shareComponent, { item: vnode.attrs.item })
+          : null,
       ]),
   };
 }
 
+/**
+ * attrs: item: DecryptedItem
+ */
 function CreateShareComponent(vInit: {
-  item: DecryptedItem;
-  username: string;
-  onshare: (_: Share) => void;
+  auth: AuthData;
+  onshare: (_: Share, receiver: string) => void;
 }) {
   let expiry = '';
-  const canOnshare = false;
-  const mustAcceptTerms = false;
+  let canOnshare = false;
+  let mustAcceptTerms = false;
   let terms = '';
-  const item = vInit.item;
-  let connectionId = '';
+  // const item = vInit.item;
   const callback = vInit.onshare;
-  const ownerName = vInit.username;
+  const ownerName = getUsername(vInit.auth);
+  const ownerAuth = vInit.auth;
+  let connectionId = '';
 
-  async function createShare() {
+  async function createShare(item: DecryptedItem) {
     clearLog();
     const service = new ShareService(environment, log);
-    const {
-      shares: [share],
-    } = await service.shareItem(STATE.user!, connectionId, item.id, {
-      expires_at: expiry ? new Date(expiry) : undefined,
-      terms,
-      sharing_mode: canOnshare ? SharingMode.anyone : SharingMode.owner,
-      acceptance_required: mustAcceptTerms
-        ? AcceptanceRequest.Required
-        : AcceptanceRequest.NotRequired,
-    });
-    callback(share);
+    // note: connectionId may be unset if users were created after the item
+    const connectionValue = connectionId || $get('connection-select');
+    const receiverUsername = STATE.connections[ownerName].find(
+      x => x.connectionId === connectionValue
+    )!.name;
+
+    if (!connectionValue) {
+      alert('No connection selected for share');
+      return;
+    }
+
+    try {
+      const {
+        shares: [share],
+      } = await service.shareItem(ownerAuth, connectionValue, item.id, {
+        expires_at: expiry ? new Date(expiry) : undefined,
+        terms,
+        sharing_mode: canOnshare ? SharingMode.anyone : SharingMode.owner,
+        acceptance_required: mustAcceptTerms
+          ? AcceptanceRequest.Required
+          : AcceptanceRequest.NotRequired,
+      });
+
+      callback(share, receiverUsername);
+    } catch (error) {
+      handleException(error);
+      throw error;
+    }
   }
 
   return {
-    view: vNode => [
+    view: vnode => [
       m('h4', 'Sharing'),
       m('hr'),
-      m('input', { type: 'button', value: 'Share', onclick: createShare }),
+      m('input', { type: 'button', value: 'Share', onclick: () => createShare(vnode.attrs.item) }),
       m('div', [
         m('label', 'Share with:'),
         m(
-          'select',
+          'select#connection-select',
           { onchange: e => (connectionId = e.target.value) },
-          STATE.connections[ownerName].map(({ name, connectionId: id }) =>
+          (STATE.connections[ownerName] || []).map(({ name, connectionId: id }) =>
             m('option', { value: id }, name)
           )
         ),
       ]),
       m('div', [
         m('label', 'Expiry'),
-        m('input', { type: 'date', value: expiry, onchange: e => (expiry = e.target.value) }),
+        m('input', {
+          type: 'date',
+          required: true,
+          value: expiry,
+          onchange: e => (expiry = e.target.value),
+        }),
       ]),
       m('div', [
         m('label', 'Allow on-sharing:'),
-        m('input', { type: 'checkbox', checked: canOnshare }),
+        m('input', {
+          type: 'checkbox',
+          checked: canOnshare,
+          onchange: e => (canOnshare = e.target.value),
+        }),
       ]),
       m('div', [
         m('label', 'Receiver must accept terms:'),
-        m('input', { type: 'checkbox', checked: mustAcceptTerms }),
+        m('input', {
+          type: 'checkbox',
+          checked: mustAcceptTerms,
+          onchange: e => (mustAcceptTerms = e.target.value),
+        }),
       ]),
       m('div', [
         m('label', 'Terms:'),
@@ -529,55 +729,68 @@ function CreateShareComponent(vInit: {
   };
 }
 
-function AcceptShareComponent(vInit: { share: { share: Share; item: DecryptedItem } }) {
-  const { share, item } = vInit.share;
+/**
+ * Attrs: share, item
+ */
+function AcceptShareComponent(vInit: {
+  onaccept: (item: DecryptedItem, share: Share) => void;
+  onreject: () => void;
+}) {
+  // const { share, item } = vInit.share;
+  const acceptCallback = vInit.onaccept;
+  const rejectCallback: () => void = vInit.onreject;
+
+  async function acceptShare(userState: UserState) {
+    const service = new ShareService(environment, log);
+    if (userState.share.acceptance_required === AcceptanceRequest.Required) {
+      await service.acceptIncomingShare(userState.auth, userState.share.id);
+    }
+    // update user state
+    const { share, item } = await service.getSharedItem(userState.auth, userState.share.id);
+    userState.share = share;
+    userState.item = item;
+    acceptCallback(item, share);
+  }
+
+  function rejectShare(userState: UserState) {
+    userState.item = null;
+    userState.share = null;
+    rejectCallback();
+  }
 
   return {
-    view: vNode =>
-      m('.card', [
-        m('h4', 'Incoming Share'),
-        m('hr'),
-        m('input', { type: 'button', value: 'Accept' }),
-        m('input', { type: 'button', value: 'Reject' }),
-        m('div', [m('label', 'Item Label'), m('input', { disabled: true, value: item?.label })]),
+    view: vnode =>
+      m(CardComponent, { title: 'Incoming Share' }, [
+        m('input', {
+          type: 'button',
+          value: 'Accept',
+          onclick: () => acceptShare(vnode.attrs.userState),
+        }),
+        m('input', {
+          type: 'button',
+          value: 'Reject',
+          onclick: () => rejectShare(vnode.attrs.userState),
+        }),
         m('div', [
-          m('label', 'Item Template'),
-          m('input', { disabled: true, value: item?.item.item_template_label }),
+          m('label', 'Expiry'),
+          m('input', {
+            type: 'date',
+            // expires_at is a Date object
+            value: vnode.attrs.userState.share.expires_at.toISOString().slice(0, 10),
+          }),
         ]),
-        m('div', [m('label', 'Expiry'), m('input', { type: 'date', value: share.expires_at })]),
-        m('div', [m('label', 'Terms:'), m('textarea', { rows: '10', value: share.terms })]),
+        vnode.attrs.userState.share.terms
+          ? m('div', [
+              m('label', 'Terms:'),
+              m('textarea', { rows: '10', value: vnode.attrs.userState.share.terms }),
+            ])
+          : null,
         m('div', [
           m('label', 'Owner:'),
-          m('input', { disabled: true, value: share.owner_id }),
+          m('input', { disabled: true, value: vnode.attrs.userState.share.owner_id }),
           m('label', 'Sender:'),
-          m('input', { disabled: true, value: share.sender_id }),
+          m('input', { disabled: true, value: vnode.attrs.userState.share.sender_id }),
         ]),
       ]),
   };
 }
-
-/*
-function ReceivedItemComponent() {
-  return {
-    view: vNode =>
-      m('.card', [
-        m('h4', 'Shared Item'),
-        m('hr'),
-        m('form', [
-          m('input#createItem', { type: 'button', value: 'Create' }),
-          m('input', { type: 'reset', value: 'Reset' }),
-          m('div', [
-            m('label', { for: 'templateSelect' }, 'Template'),
-            m('select', { id: 'templateSelect', name: 'template_name' }),
-          ]),
-          m('div', [
-            m('label', { for: 'labelField' }, 'Label'),
-            m('input', { name: 'label', id: 'labelField', required: true }),
-          ]),
-          m('div#formSlots'),
-        ]),
-        m('textarea', { disabled: true, id: 'newItem', rows: '10' }),
-      ]),
-  };
-}
-*/
