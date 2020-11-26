@@ -13,7 +13,7 @@ import Service, { IVaultToken } from './service';
  */
 export class OrganizationService extends Service<OrganizationsManagingOrganizationsApi> {
   public getAPI(token: IVaultToken) {
-    return this.vaultAPIFactory(token.vault_access_token).OrganizationsManagingOrganizationsApi;
+    return this.vaultAPIFactory(token).OrganizationsManagingOrganizationsApi;
   }
 
   /**
@@ -28,7 +28,7 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
   ): Promise<IVaultToken> {
     const orgKey = new RSAPrivateKey(privateKey);
     const result = await this.vaultAPIFactory(
-      credentials.vault_access_token
+      credentials
     ).OrganizationsManagingOrganizationsApi.organizationsIdLoginPost(organizationId);
 
     const decryptedVaultSessionToken = await orgKey.decryptToken(result.encrypted_access_token);
@@ -53,7 +53,7 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
     // must have name and public_key
     // notice that public_key is used to encrypt the session token of the org
     const result = await this.vaultAPIFactory(
-      credentials.vault_access_token
+      credentials
     ).OrganizationsManagingOrganizationsApi.organizationsPost({
       name,
       public_key: public_key.key,
@@ -74,7 +74,7 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
     credentials: IVaultToken,
     mode?: 'requested' | 'member'
   ): Promise<{ organizations: Organization[]; services: APIService[] }> {
-    const api = this.vaultAPIFactory(credentials.vault_access_token).OrganizationsForVaultUsersApi;
+    const api = this.vaultAPIFactory(credentials).OrganizationsForVaultUsersApi;
 
     return getAllPaged(cursor => api.organizationsGet(mode, cursor))
       .then(reducePages)

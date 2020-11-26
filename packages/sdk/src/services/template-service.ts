@@ -8,7 +8,7 @@ import Service, { IPageOptions, IVaultToken } from './service';
  */
 export class TemplateService extends Service<ItemTemplateApi> {
   public getAPI(token: IVaultToken): ItemTemplateApi {
-    return this.vaultAPIFactory(token.vault_access_token).ItemTemplateApi;
+    return this.vaultAPIFactory(token).ItemTemplateApi;
   }
 
   public async list(
@@ -20,7 +20,7 @@ export class TemplateService extends Service<ItemTemplateApi> {
     },
     options?: IPageOptions
   ): Promise<ItemTemplatesResponse> {
-    return this.vaultAPIFactory(credentials.vault_access_token).ItemTemplateApi.itemTemplatesGet(
+    return this.vaultAPIFactory(credentials).ItemTemplateApi.itemTemplatesGet(
       spec?.classificationScheme,
       spec?.classificationName,
       spec?.like,
@@ -37,7 +37,7 @@ export class TemplateService extends Service<ItemTemplateApi> {
       like?: string;
     }
   ): Promise<ItemTemplatesResponse> {
-    const api = this.vaultAPIFactory(credentials.vault_access_token).ItemTemplateApi;
+    const api = this.vaultAPIFactory(credentials).ItemTemplateApi;
 
     return getAllPaged(cursor =>
       api.itemTemplatesGet(spec?.classificationScheme, spec?.classificationName, spec?.like, cursor)
@@ -45,9 +45,7 @@ export class TemplateService extends Service<ItemTemplateApi> {
   }
 
   public async get(credentials: IVaultToken, id: string): Promise<SDKTemplate> {
-    const response = await this.vaultAPIFactory(
-      credentials.vault_access_token
-    ).ItemTemplateApi.itemTemplatesIdGet(id);
+    const response = await this.vaultAPIFactory(credentials).ItemTemplateApi.itemTemplatesIdGet(id);
     return SDKTemplate.fromAPI(response);
   }
 
@@ -66,7 +64,7 @@ export class TemplateService extends Service<ItemTemplateApi> {
       like?: string;
     }
   ): Promise<SDKTemplate | undefined> {
-    const api = this.vaultAPIFactory(credentials.vault_access_token).ItemTemplateApi;
+    const api = this.vaultAPIFactory(credentials).ItemTemplateApi;
 
     const pages = pagedToGenerator(cursor =>
       api.itemTemplatesGet(spec?.classificationScheme, spec?.classificationName, spec?.like, cursor)

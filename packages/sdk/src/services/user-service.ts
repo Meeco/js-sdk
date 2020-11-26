@@ -18,11 +18,11 @@ export class UserService extends Service<UserApi> {
   private keyGen = Secrets;
 
   public getAPI(token: IVaultToken): UserApi {
-    return this.vaultAPIFactory(token.vault_access_token).UserApi;
+    return this.vaultAPIFactory(token).UserApi;
   }
 
   private async requestKeyPair(credentials: IKeystoreToken & IKEK): Promise<DecryptedKeypair> {
-    const vaultUserApi = this.keystoreAPIFactory(credentials.keystore_access_token).KeypairApi;
+    const vaultUserApi = this.keystoreAPIFactory(credentials).KeypairApi;
     const { keypair } = await vaultUserApi.keypairsExternalIdExternalIdGet(
       this.vaultKeypairExternalId
     );
@@ -30,7 +30,7 @@ export class UserService extends Service<UserApi> {
   }
 
   private async requestExternalAdmissionTokens(credentials: IKeystoreToken) {
-    const keystoreExternalAdmissionApi = this.keystoreAPIFactory(credentials.keystore_access_token)
+    const keystoreExternalAdmissionApi = this.keystoreAPIFactory(credentials)
       .ExternalAdmissionTokensApi;
     this.logger.log('Request external admission tokens from keystore');
     return keystoreExternalAdmissionApi
@@ -46,8 +46,7 @@ export class UserService extends Service<UserApi> {
     const kek = SymmetricKey.new();
 
     const encryptedKEK = await derivedKey.encryptKey(kek);
-    const keystoreKeyEncryptionKeyApi = this.keystoreAPIFactory(credentials.keystore_access_token)
-      .KeyEncryptionKeyApi;
+    const keystoreKeyEncryptionKeyApi = this.keystoreAPIFactory(credentials).KeyEncryptionKeyApi;
 
     await keystoreKeyEncryptionKeyApi.keyEncryptionKeyPost({
       serialized_key_encryption_key: encryptedKEK,
@@ -60,8 +59,7 @@ export class UserService extends Service<UserApi> {
     derivedKey: SymmetricKey
   ): Promise<SymmetricKey> {
     this.logger.log('Requesting key encryption key');
-    const keystoreKeyEncryptionKeyApi = this.keystoreAPIFactory(credentials.keystore_access_token)
-      .KeyEncryptionKeyApi;
+    const keystoreKeyEncryptionKeyApi = this.keystoreAPIFactory(credentials).KeyEncryptionKeyApi;
 
     const { key_encryption_key } = await keystoreKeyEncryptionKeyApi.keyEncryptionKeyGet();
 
@@ -75,8 +73,9 @@ export class UserService extends Service<UserApi> {
     this.logger.log('Generate and store data encryption key');
     const dek = SymmetricKey.new();
     const dekEncryptedWithKEK = await keyEncryptionKey.encryptKey(dek);
-    const keystoreDataEncryptionKeyApi = this.keystoreAPIFactory(sessionAuthentication)
-      .DataEncryptionKeyApi;
+    const keystoreDataEncryptionKeyApi = this.keystoreAPIFactory({
+      keystore_access_token: sessionAuthentication,
+    }).DataEncryptionKeyApi;
     const stored = await keystoreDataEncryptionKeyApi.dataEncryptionKeysPost({
       serialized_data_encryption_key: dekEncryptedWithKEK,
     });
@@ -92,8 +91,7 @@ export class UserService extends Service<UserApi> {
     encryptionSpaceId: string
   ): Promise<SymmetricKey> {
     this.logger.log('Requesting data encryption key');
-    const keystoreDataEncryptionKeyApi = this.keystoreAPIFactory(credentials.keystore_access_token)
-      .DataEncryptionKeyApi;
+    const keystoreDataEncryptionKeyApi = this.keystoreAPIFactory(credentials).DataEncryptionKeyApi;
 
     const { data_encryption_key } = await keystoreDataEncryptionKeyApi.dataEncryptionKeysIdGet(
       encryptionSpaceId
@@ -108,8 +106,7 @@ export class UserService extends Service<UserApi> {
     this.logger.log('Generate and store vault key pair');
     const keyPair = await DecryptedKeypair.new();
 
-    const keystoreKeypairApi = this.keystoreAPIFactory(credentials.keystore_access_token)
-      .KeypairApi;
+    const keystoreKeypairApi = this.keystoreAPIFactory(credentials).KeypairApi;
 
     const privateKeyEncryptedWithKEK = await credentials.key_encryption_key.encryptKey(
       keyPair.privateKey
@@ -130,7 +127,7 @@ export class UserService extends Service<UserApi> {
   ): Promise<{ user: User } & IVaultToken> {
     this.logger.log('Create vault api user');
     // No key required as we're only registering a new user
-    const vaultUserApi = this.vaultAPIFactory('').UserApi;
+    const vaultUserApi = this.vaultAPIFactory({ vault_access_token: '' }).UserApi;
 
     const vaultUser = await vaultUserApi.mePost({
       public_key: keyPair.publicKey.key,
@@ -148,7 +145,7 @@ export class UserService extends Service<UserApi> {
 
   private async getVaultSession(keyPair: DecryptedKeypair): Promise<{ user: User } & IVaultToken> {
     // No auth key required as we're only logging in
-    const sessionApi = this.vaultAPIFactory('').SessionApi;
+    const sessionApi = this.vaultAPIFactory({ vault_access_token: '' }).SessionApi;
 
     const { session } = await sessionApi.sessionPost({
       public_key: keyPair.publicKey.key,
@@ -169,7 +166,7 @@ export class UserService extends Service<UserApi> {
     credentials: IVaultToken & IKeystoreToken,
     keyEncryptionKey: SymmetricKey
   ) {
-    const vaultUserApi = this.vaultAPIFactory(credentials.vault_access_token).UserApi;
+    const vaultUserApi = this.vaultAPIFactory(credentials).UserApi;
 
     const dek = await this.generateAndStoreDataEncryptionKey(
       keyEncryptionKey,
@@ -191,7 +188,7 @@ export class UserService extends Service<UserApi> {
    */
   public async generateUsername(captcha_token?: string): Promise<string> {
     this.logger.log('Generating username');
-    return this.keystoreAPIFactory('')
+    return this.keystoreAPIFactory({ keystore_access_token: '' })
       .UserApi.srpUsernamePost({
         captcha_token,
       })
@@ -242,7 +239,7 @@ export class UserService extends Service<UserApi> {
     const verifier = await srpSession.createVerifier();
 
     this.logger.log('Create SRP keystore user');
-    await this.keystoreAPIFactory('')
+    await this.keystoreAPIFactory({ keystore_access_token: '' })
       .UserApi.srpUsersPost({
         username,
         srp_salt: verifier.salt,
@@ -271,7 +268,7 @@ export class UserService extends Service<UserApi> {
     const srp_a = await srpSession.getClientPublic();
 
     this.logger.log('Requesting SRP challenge from server');
-    const challenge = await this.keystoreAPIFactory('')
+    const challenge = await this.keystoreAPIFactory({ keystore_access_token: '' })
       .UserApi.srpChallengesPost({
         srp_a,
         username,
@@ -284,7 +281,7 @@ export class UserService extends Service<UserApi> {
     });
 
     this.logger.log('Creating SRP session with proof');
-    const authString = await this.keystoreAPIFactory('')
+    const authString = await this.keystoreAPIFactory({ keystore_access_token: '' })
       .SessionApi.srpSessionPost({
         username,
         srp_a,
@@ -376,16 +373,23 @@ export class UserService extends Service<UserApi> {
   }
 
   public getUser(credentials: IVaultToken): Promise<MeResponse> {
-    return this.vaultAPIFactory(credentials.vault_access_token).UserApi.meGet();
+    return this.vaultAPIFactory(credentials).UserApi.meGet();
   }
 
   /**
    * Invalidate all of the provided tokens.
    */
-  public async deleteSessionTokens(vaultToken?: string, keystoreToken?: string): Promise<void> {
+  public async deleteSessionTokens(
+    vault_access_token?: string,
+    keystore_access_token?: string
+  ): Promise<void> {
     return Promise.all([
-      vaultToken ? this.vaultAPIFactory(vaultToken).SessionApi.sessionDelete() : null,
-      keystoreToken ? this.keystoreAPIFactory(keystoreToken).SessionApi.sessionDelete() : null,
+      vault_access_token
+        ? this.vaultAPIFactory({ vault_access_token }).SessionApi.sessionDelete()
+        : null,
+      keystore_access_token
+        ? this.keystoreAPIFactory({ keystore_access_token }).SessionApi.sessionDelete()
+        : null,
     ]).then(); // elide the individual responses
   }
 }

@@ -7,7 +7,7 @@ import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
 
 export class InvitationService extends Service<InvitationApi> {
   public getAPI(token: IVaultToken): InvitationApi {
-    return this.vaultAPIFactory(token.vault_access_token).InvitationApi;
+    return this.vaultAPIFactory(token).InvitationApi;
   }
 
   /**
@@ -43,7 +43,7 @@ export class InvitationService extends Service<InvitationApi> {
     );
 
     this.logger.log('Sending invitation request');
-    return this.vaultAPIFactory(vault_access_token)
+    return this.vaultAPIFactory({ vault_access_token })
       .InvitationApi.invitationsPost({
         public_key: {
           keypair_external_id: keyPair.id,
@@ -91,7 +91,7 @@ export class InvitationService extends Service<InvitationApi> {
     );
 
     this.logger.log('Accepting invitation');
-    return this.vaultAPIFactory(vault_access_token)
+    return this.vaultAPIFactory({ vault_access_token })
       .ConnectionApi.connectionsPost({
         public_key: {
           keypair_external_id: keyPair.id,
@@ -122,7 +122,7 @@ export class InvitationService extends Service<InvitationApi> {
 
   private async getKeyPair(keystoreToken: string, id: string): Promise<APIKeypair> {
     try {
-      return await this.keystoreAPIFactory(keystoreToken)
+      return await this.keystoreAPIFactory({ keystore_access_token: keystoreToken })
         .KeypairApi.keypairsIdGet(id)
         .then(result => result.keypair);
     } catch (error) {
@@ -142,9 +142,9 @@ export class InvitationService extends Service<InvitationApi> {
 
     const toPrivateKeyEncrypted = await keyEncryptionKey.encryptKey(keyPair.privateKey);
 
-    const { keypair: resultKeypair } = await this.keystoreAPIFactory(
-      keystoreToken
-    ).KeypairApi.keypairsPost({
+    const { keypair: resultKeypair } = await this.keystoreAPIFactory({
+      keystore_access_token: keystoreToken,
+    }).KeypairApi.keypairsPost({
       public_key: keyPair.publicKey.key,
       encrypted_serialized_key: toPrivateKeyEncrypted,
       // API will 500 without

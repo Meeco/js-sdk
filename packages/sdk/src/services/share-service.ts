@@ -80,7 +80,7 @@ export class ShareService extends Service<SharesApi> {
   }
 
   public getAPI(token: IVaultToken) {
-    return this.vaultAPIFactory(token.vault_access_token).SharesApi;
+    return this.vaultAPIFactory(token).SharesApi;
   }
 
   /**
@@ -133,21 +133,20 @@ export class ShareService extends Service<SharesApi> {
     const encryptedDek = await publicKey.encryptKey(dek);
 
     this.logger.log('Sending shared data');
-    const shareResult = await this.vaultAPIFactory(vault_access_token).SharesApi.itemsIdSharesPost(
-      itemId,
-      {
-        shares: [
-          {
-            public_key: user_public_key,
-            recipient_id: recipientId,
-            keypair_external_id: user_keypair_external_id || undefined,
-            ...shareOptions,
-            slot_values: encryptions,
-            encrypted_dek: encryptedDek,
-          },
-        ],
-      }
-    );
+    const shareResult = await this.vaultAPIFactory({
+      vault_access_token,
+    }).SharesApi.itemsIdSharesPost(itemId, {
+      shares: [
+        {
+          public_key: user_public_key,
+          recipient_id: recipientId,
+          keypair_external_id: user_keypair_external_id || undefined,
+          ...shareOptions,
+          slot_values: encryptions,
+          encrypted_dek: encryptedDek,
+        },
+      ],
+    });
     return shareResult;
   }
 
@@ -161,7 +160,7 @@ export class ShareService extends Service<SharesApi> {
     mustAccept?: AcceptanceRequest | string,
     options?: IPageOptions
   ): Promise<Share[]> {
-    const api = this.vaultAPIFactory(user.vault_access_token).SharesApi;
+    const api = this.vaultAPIFactory(user).SharesApi;
 
     let response: SharesIncomingResponse | SharesOutgoingResponse;
     switch (shareType) {
@@ -183,7 +182,7 @@ export class ShareService extends Service<SharesApi> {
     user: IVaultToken,
     shareType: ShareType = ShareType.Incoming
   ): Promise<Share[]> {
-    const api = this.vaultAPIFactory(user.vault_access_token).SharesApi;
+    const api = this.vaultAPIFactory(user).SharesApi;
     const method = shareType === ShareType.Incoming ? api.incomingSharesGet : api.outgoingSharesGet;
 
     const result = await getAllPaged(cursor => method(cursor)).then(reducePages);
@@ -192,9 +191,7 @@ export class ShareService extends Service<SharesApi> {
 
   public async acceptIncomingShare(user: IVaultToken, shareId: string): Promise<GetShareResponse> {
     try {
-      return await this.vaultAPIFactory(
-        user.vault_access_token
-      ).SharesApi.incomingSharesIdAcceptPut(shareId);
+      return await this.vaultAPIFactory(user).SharesApi.incomingSharesIdAcceptPut(shareId);
     } catch (error) {
       if ((<Response>error).status === 404) {
         throw new MeecoServiceError(`Share with id '${shareId}' not found for the specified user`);
@@ -205,7 +202,7 @@ export class ShareService extends Service<SharesApi> {
 
   public async deleteSharedItem(user: IVaultToken, shareId: string) {
     try {
-      return await this.vaultAPIFactory(user.vault_access_token).SharesApi.sharesIdDelete(shareId);
+      return await this.vaultAPIFactory(user).SharesApi.sharesIdDelete(shareId);
     } catch (error) {
       if ((<Response>error).status === 404) {
         throw new MeecoServiceError(`Share with id '${shareId}' not found for the specified user`);
@@ -228,9 +225,9 @@ export class ShareService extends Service<SharesApi> {
     let dataEncryptionKey: SymmetricKey;
 
     if (share.encrypted_dek) {
-      const { keypair } = await this.keystoreAPIFactory(
-        credentials.keystore_access_token
-      ).KeypairApi.keypairsIdGet(share.keypair_external_id!);
+      const { keypair } = await this.keystoreAPIFactory(credentials).KeypairApi.keypairsIdGet(
+        share.keypair_external_id!
+      );
 
       const decryptedPrivateKey = await DecryptedKeypair.fromAPI(
         credentials.key_encryption_key,
@@ -256,7 +253,7 @@ export class ShareService extends Service<SharesApi> {
     shareId: string,
     shareType: ShareType = ShareType.Incoming
   ): Promise<{ share: Share; item: DecryptedItem }> {
-    const shareAPI = this.vaultAPIFactory(user.vault_access_token).SharesApi;
+    const shareAPI = this.vaultAPIFactory(user).SharesApi;
 
     let shareWithItemData: ShareWithItemData;
     if (shareType === ShareType.Incoming) {
@@ -323,9 +320,7 @@ export class ShareService extends Service<SharesApi> {
 
     this.logger.log('Retrieving Share Public Keys');
     // retrieve the list of shares IDs and public keys via
-    const { shares } = await this.vaultAPIFactory(
-      user.vault_access_token
-    ).SharesApi.itemsIdSharesGet(itemId);
+    const { shares } = await this.vaultAPIFactory(user).SharesApi.itemsIdSharesGet(itemId);
 
     // prepare request body
 
@@ -378,7 +373,7 @@ export class ShareService extends Service<SharesApi> {
 
     // put items/{id}/shares
     // TODO skip/alert if no shares
-    return this.vaultAPIFactory(user.vault_access_token)
+    return this.vaultAPIFactory(user)
       .SharesApi.itemsIdSharesPut(itemId, putItemSharesRequest)
       .catch(err => {
         if ((<Response>err).status === 400) {

@@ -10,7 +10,7 @@ import Service, { IVaultToken } from './service';
  */
 export class OrganizationServicesService extends Service<OrganizationsManagingServicesApi> {
   public getAPI(token: IVaultToken) {
-    return this.vaultAPIFactory(token.vault_access_token).OrganizationsManagingServicesApi;
+    return this.vaultAPIFactory(token).OrganizationsManagingServicesApi;
   }
 
   constructor(
@@ -29,9 +29,9 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
     const orgKey = new RSAPrivateKey(privateKey);
 
     this.logger.log('Logging in');
-    const result = await this.vaultAPIFactory(
-      this.vaultAccessToken
-    ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesIdLoginPost(
+    const result = await this.vaultAPIFactory({
+      vault_access_token: this.vaultAccessToken,
+    }).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesIdLoginPost(
       organizationId,
       serviceId
     );
@@ -45,9 +45,9 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
   public async create(organizationId: string, service: PostServiceRequest) {
     const rsaKeyPair = await DecryptedKeypair.new();
     service.public_key = rsaKeyPair.publicKey.key;
-    const result = await this.vaultAPIFactory(
-      this.vaultAccessToken
-    ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesPost(organizationId, {
+    const result = await this.vaultAPIFactory({
+      vault_access_token: this.vaultAccessToken,
+    }).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesPost(organizationId, {
       service,
     });
     return {
