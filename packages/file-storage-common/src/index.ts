@@ -24,9 +24,10 @@ export { BlobStorage } from './services/Azure';
 
 export interface IFileStorageAuthConfiguration {
   data_encryption_key?: string;
-  vault_access_token: string;
+  vault_access_token?: string;
   delegation_id?: string;
   subscription_key?: string;
+  oidc_token?: string;
 }
 
 export async function directAttachmentUpload(
@@ -172,6 +173,7 @@ function getHeaders(auth: IFileStorageAuthConfiguration) {
   headers['Meeco-Delegation-Id'] = auth.delegation_id || '';
   headers['Meeco-Subscription-Key'] = auth.subscription_key || '';
   headers['Authorization'] = auth.vault_access_token || '';
+  headers['authorizationoidc2'] = auth.oidc_token || '';
   return headers;
 }
 
