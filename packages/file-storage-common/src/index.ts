@@ -173,7 +173,7 @@ function getHeaders(auth: IFileStorageAuthConfiguration) {
   headers['Meeco-Delegation-Id'] = auth.delegation_id || '';
   headers['Meeco-Subscription-Key'] = auth.subscription_key || '';
   headers['Authorization'] = auth.vault_access_token || '';
-  headers['authorizationoidc2'] = auth.oidc_token || '';
+  headers['authorizationoidc2'] = auth.oidc_token ? 'Bearer ' + auth.oidc_token : '';
   return headers;
 }
 
