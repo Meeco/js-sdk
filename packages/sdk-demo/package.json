@@ -8,7 +8,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.prod.js",
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "docs": "npm run build",
+    "lint": "tslint -p . -t stylish -c ../../tslint.json && tslint -p test/tsconfig.json -t stylish -c ../../tslint.json"
   },
   "dependencies": {
     "@meeco/sdk": "^1.0.0",
