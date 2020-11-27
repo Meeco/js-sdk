@@ -19,10 +19,6 @@ export interface IVaultToken {
   delegation_id?: string;
 }
 
-export interface IDelegationId {
-  delegation_id?: string;
-}
-
 export interface IDEK {
   data_encryption_key: SymmetricKey;
 }

@@ -4,7 +4,7 @@ import { Configuration } from '@meeco/vault-api-sdk';
 import { blue, green } from 'chalk';
 import { debug } from 'debug';
 import { Environment } from '../models/environment';
-import { IDelegationId, IKeystoreToken, IVaultToken } from '../services/service';
+import { IKeystoreToken, IVaultToken } from '../services/service';
 import SDKFormData from './sdk-form-data';
 
 let fetchLib = (<any>global).fetch;
@@ -33,18 +33,6 @@ interface IHeaders {
   [key: string]: string;
 }
 
-const vaultToken = (userAuth: IVaultToken) => {
-  return typeof userAuth === 'string' ? userAuth : userAuth.vault_access_token;
-};
-
-const delegationId = (userAuth: IDelegationId) => {
-  return typeof userAuth !== 'string' && userAuth.delegation_id ? userAuth.delegation_id : '';
-};
-
-const keystoreToken = (userAuth: IKeystoreToken) => {
-  return typeof userAuth === 'string' ? userAuth : userAuth.keystore_access_token;
-};
-
 /**
  * Pluck environment and user auth values to create `apiKey` [Keystore.Configuration] parameter
  */
@@ -53,8 +41,8 @@ const keystoreAPIKeys = (environment: Environment, userAuth: IKeystoreToken) => 
     'Meeco-Subscription-Key': environment.keystore.subscription_key,
     // Must be uppercase
     // prettier-ignore
-    'Authorization': keystoreToken(userAuth),
-    'Meeco-Delegation-Id': delegationId(userAuth),
+    'Authorization': userAuth.keystore_access_token,
+    'Meeco-Delegation-Id': userAuth.delegation_id || '',
   }[name]);
 
 /**
@@ -65,8 +53,8 @@ const vaultAPIKeys = (environment: Environment, userAuth: IVaultToken) => (name:
     'Meeco-Subscription-Key': environment.vault.subscription_key,
     // Must be uppercase
     // prettier-ignore
-    'Authorization': vaultToken(userAuth),
-    'Meeco-Delegation-Id': delegationId(userAuth),
+    'Authorization': userAuth.vault_access_token,
+    'Meeco-Delegation-Id': userAuth.delegation_id || '',
   }[name]);
 
 function fetchInterceptor(url, options) {

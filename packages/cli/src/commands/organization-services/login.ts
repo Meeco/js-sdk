@@ -56,10 +56,7 @@ export default class OrganizationServicesLogin extends MeecoCommand {
     }
 
     try {
-      const orgService = new OrganizationServicesService(
-        environment,
-        authConfig!.vault_access_token
-      );
+      const orgService = new OrganizationServicesService(environment, authConfig);
       this.updateStatus('Fetching organization service agent credentials');
       const result = await orgService.getLogin(
         service.organization_id,

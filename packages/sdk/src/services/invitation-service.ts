@@ -21,19 +21,14 @@ export class InvitationService extends Service<InvitationApi> {
     connectionName: string,
     keypairId?: string
   ): Promise<Invitation> {
-    const {
-      vault_access_token,
-      keystore_access_token,
-      key_encryption_key,
-      data_encryption_key,
-    } = credentials;
+    const { key_encryption_key, data_encryption_key } = credentials;
 
     let keyPair: APIKeypair;
 
     if (keypairId) {
-      keyPair = await this.getKeyPair(keystore_access_token, keypairId);
+      keyPair = await this.getKeyPair(credentials, keypairId);
     } else {
-      keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
+      keyPair = await this.createAndStoreKeyPair(credentials, key_encryption_key);
     }
 
     const encryptedName: string = await this.encryptNameOrDefault(
@@ -43,7 +38,7 @@ export class InvitationService extends Service<InvitationApi> {
     );
 
     this.logger.log('Sending invitation request');
-    return this.vaultAPIFactory({ vault_access_token })
+    return this.vaultAPIFactory(credentials)
       .InvitationApi.invitationsPost({
         public_key: {
           keypair_external_id: keyPair.id,
@@ -69,19 +64,14 @@ export class InvitationService extends Service<InvitationApi> {
     invitationToken: string,
     keypairId?: string
   ): Promise<Connection> {
-    const {
-      keystore_access_token,
-      vault_access_token,
-      key_encryption_key,
-      data_encryption_key,
-    } = credentials;
+    const { key_encryption_key, data_encryption_key } = credentials;
 
     let keyPair: APIKeypair;
 
     if (keypairId) {
-      keyPair = await this.getKeyPair(keystore_access_token, keypairId);
+      keyPair = await this.getKeyPair(credentials, keypairId);
     } else {
-      keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
+      keyPair = await this.createAndStoreKeyPair(credentials, key_encryption_key);
     }
 
     const encryptedName: string = await this.encryptNameOrDefault(
@@ -91,7 +81,7 @@ export class InvitationService extends Service<InvitationApi> {
     );
 
     this.logger.log('Accepting invitation');
-    return this.vaultAPIFactory({ vault_access_token })
+    return this.vaultAPIFactory(credentials)
       .ConnectionApi.connectionsPost({
         public_key: {
           keypair_external_id: keyPair.id,
@@ -120,9 +110,9 @@ export class InvitationService extends Service<InvitationApi> {
     return <Promise<string>>dek.encryptString(input);
   }
 
-  private async getKeyPair(keystoreToken: string, id: string): Promise<APIKeypair> {
+  private async getKeyPair(credentials: IKeystoreToken, id: string): Promise<APIKeypair> {
     try {
-      return await this.keystoreAPIFactory({ keystore_access_token: keystoreToken })
+      return await this.keystoreAPIFactory(credentials)
         .KeypairApi.keypairsIdGet(id)
         .then(result => result.keypair);
     } catch (error) {
@@ -134,7 +124,7 @@ export class InvitationService extends Service<InvitationApi> {
   }
 
   private async createAndStoreKeyPair(
-    keystoreToken: string,
+    credentials: IKeystoreToken,
     keyEncryptionKey: SymmetricKey
   ): Promise<APIKeypair> {
     this.logger.log('Generating key pair');
@@ -142,9 +132,9 @@ export class InvitationService extends Service<InvitationApi> {
 
     const toPrivateKeyEncrypted = await keyEncryptionKey.encryptKey(keyPair.privateKey);
 
-    const { keypair: resultKeypair } = await this.keystoreAPIFactory({
-      keystore_access_token: keystoreToken,
-    }).KeypairApi.keypairsPost({
+    const { keypair: resultKeypair } = await this.keystoreAPIFactory(
+      credentials
+    ).KeypairApi.keypairsPost({
       public_key: keyPair.publicKey.key,
       encrypted_serialized_key: toPrivateKeyEncrypted,
       // API will 500 without

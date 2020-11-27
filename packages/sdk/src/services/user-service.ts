@@ -68,14 +68,12 @@ export class UserService extends Service<UserApi> {
 
   private async generateAndStoreDataEncryptionKey(
     keyEncryptionKey: SymmetricKey,
-    sessionAuthentication: string
+    credentials: IKeystoreToken
   ) {
     this.logger.log('Generate and store data encryption key');
     const dek = SymmetricKey.new();
     const dekEncryptedWithKEK = await keyEncryptionKey.encryptKey(dek);
-    const keystoreDataEncryptionKeyApi = this.keystoreAPIFactory({
-      keystore_access_token: sessionAuthentication,
-    }).DataEncryptionKeyApi;
+    const keystoreDataEncryptionKeyApi = this.keystoreAPIFactory(credentials).DataEncryptionKeyApi;
     const stored = await keystoreDataEncryptionKeyApi.dataEncryptionKeysPost({
       serialized_data_encryption_key: dekEncryptedWithKEK,
     });
@@ -168,10 +166,7 @@ export class UserService extends Service<UserApi> {
   ) {
     const vaultUserApi = this.vaultAPIFactory(credentials).UserApi;
 
-    const dek = await this.generateAndStoreDataEncryptionKey(
-      keyEncryptionKey,
-      credentials.keystore_access_token
-    );
+    const dek = await this.generateAndStoreDataEncryptionKey(keyEncryptionKey, credentials);
 
     this.logger.log('Update vault encryption space');
     await vaultUserApi.mePut({

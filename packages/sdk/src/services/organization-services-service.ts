@@ -6,7 +6,7 @@ import { Logger, noopLogger } from '../util/logger';
 import Service, { IVaultToken } from './service';
 
 /**
- * Manage organizations from the API.
+ * Manage organization services from the API.
  */
 export class OrganizationServicesService extends Service<OrganizationsManagingServicesApi> {
   public getAPI(token: IVaultToken) {
@@ -15,7 +15,7 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
 
   constructor(
     environment: Environment,
-    private vaultAccessToken: string,
+    private credentials: IVaultToken,
     log: Logger = noopLogger
   ) {
     super(environment, log);
@@ -29,9 +29,9 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
     const orgKey = new RSAPrivateKey(privateKey);
 
     this.logger.log('Logging in');
-    const result = await this.vaultAPIFactory({
-      vault_access_token: this.vaultAccessToken,
-    }).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesIdLoginPost(
+    const result = await this.vaultAPIFactory(
+      this.credentials
+    ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesIdLoginPost(
       organizationId,
       serviceId
     );
@@ -45,9 +45,9 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
   public async create(organizationId: string, service: PostServiceRequest) {
     const rsaKeyPair = await DecryptedKeypair.new();
     service.public_key = rsaKeyPair.publicKey.key;
-    const result = await this.vaultAPIFactory({
-      vault_access_token: this.vaultAccessToken,
-    }).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesPost(organizationId, {
+    const result = await this.vaultAPIFactory(
+      this.credentials
+    ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesPost(organizationId, {
       service,
     });
     return {
