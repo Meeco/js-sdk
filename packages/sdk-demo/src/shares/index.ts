@@ -1,6 +1,5 @@
 import m = require('mithril'); // prevents a weird compilation error
 
-import { Share } from '@meeco/vault-api-sdk';
 import {
   AcceptanceRequest,
   AcceptanceStatus,
@@ -20,6 +19,7 @@ import {
   TemplateService,
   UserService,
 } from '@meeco/sdk';
+import { Share } from '@meeco/vault-api-sdk';
 import './styles.scss';
 
 const $ = id => document.getElementById(id)!;
@@ -96,7 +96,7 @@ async function getTemplates(auth: AuthData): Promise<SDKTemplate[]> {
     // note that SDKtemplate constructor filters the correct slots from the response
     return templates.item_templates.map(t => new SDKTemplate(t, templates.slots));
   } catch (error) {
-    handleException(error);
+    log(error.message || error);
     throw error;
   }
 }
@@ -228,7 +228,7 @@ function AppComponent() {
         auth,
       };
       user2ItemComponent = SharedItemComponent({ auth, onshare: _showAcceptShare });
-      connect(auth);
+      return connect(auth);
     },
   });
 
@@ -243,7 +243,7 @@ function AppComponent() {
         auth,
       };
       user3ItemComponent = SharedItemComponent({ auth, onshare: _showAcceptShare });
-      connect(auth);
+      return connect(auth);
     },
   });
 
@@ -274,13 +274,13 @@ function AppComponent() {
         const { item } = await new ShareService(environment, log).getSharedItem(
           state.auth,
           share.id,
-          ShareType.incoming
+          ShareType.Incoming
         );
 
         state.item = item;
       }
     } catch (error) {
-      handleException(error);
+      log(error.message || error);
       throw error;
     }
     m.redraw();
@@ -566,7 +566,7 @@ function ExistingItemComponent(vInit: {
           value: JSON.stringify(vnode.attrs.item, null, 2),
         }),
         // only if we can onshare
-        vnode.attrs.item.isOwned || vnode.attrs.share?.sharing_mode === SharingMode.anyone
+        vnode.attrs.item.isOwned || vnode.attrs.share?.sharing_mode === SharingMode.Anyone
           ? m(shareComponent, { item: vnode.attrs.item })
           : null,
       ]),
@@ -608,7 +608,7 @@ function CreateShareComponent(vInit: {
       const shareOptions = {
         expires_at: expiry ? new Date(expiry) : undefined,
         terms,
-        sharing_mode: canOnshare ? SharingMode.anyone : SharingMode.owner,
+        sharing_mode: canOnshare ? SharingMode.Anyone : SharingMode.Owner,
         acceptance_required: mustAcceptTerms
           ? AcceptanceRequest.Required
           : AcceptanceRequest.NotRequired,
@@ -621,7 +621,7 @@ function CreateShareComponent(vInit: {
 
       callback(share, receiverUsername);
     } catch (error) {
-      handleException(error);
+      log(error.message || error);
       throw error;
     }
   }
@@ -703,7 +703,7 @@ function AcceptShareComponent(vInit: {
       userState.item = item;
       acceptCallback(item, share);
     } catch (error) {
-      handleException(error);
+      log(error.message || error);
       throw error;
     }
   }

@@ -6,11 +6,11 @@
   "private": true,
   "source": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo 'SDK-DEMO: no tests, linting...' && npm run lint",
     "build": "webpack --config webpack.config.prod.js",
     "start": "webpack-dev-server",
     "docs": "npm run build",
-    "lint": "tslint -p . -t stylish -c ../../tslint.json && tslint -p test/tsconfig.json -t stylish -c ../../tslint.json"
+    "lint": "tslint -p . -t stylish -c ../../tslint.json"
   },
   "dependencies": {
     "@meeco/sdk": "^1.0.0",
