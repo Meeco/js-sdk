@@ -14,21 +14,24 @@ export default class DecryptedKeypair {
   publicKey: RSAPublicKey;
   privateKey: RSAPrivateKey;
 
-  /** A new random keypair with default length. */
-  static async new(keyBits = 4096): Promise<DecryptedKeypair> {
+  /** A new random keypair. */
+  static async generate(keyBits = 4096, externalIds: string[] = []): Promise<DecryptedKeypair> {
     const { privateKey, publicKey } = await cryppo.generateRSAKeyPair(keyBits);
-    return new DecryptedKeypair(publicKey, privateKey);
+    return new DecryptedKeypair(publicKey, privateKey, externalIds);
   }
 
   /**
    * Decrypts a keypair from the Meeco Keystore.
-   * @param masterKey Usually the user's key encryption key.
+   * @param keyEncryptionKey Key used to encrypt the private key.
    * @param keypair From the API response.
    */
-  static async fromAPI(masterKey: SymmetricKey, keypair: APIKeypair): Promise<DecryptedKeypair> {
+  static async fromAPI(
+    keyEncryptionKey: SymmetricKey,
+    keypair: APIKeypair
+  ): Promise<DecryptedKeypair> {
     const { id, public_key, encrypted_serialized_key, external_identifiers } = keypair;
     // decrypt serialized private key, check correct
-    const privateKey = await masterKey.decryptKey(encrypted_serialized_key);
+    const privateKey = await keyEncryptionKey.decryptKey(encrypted_serialized_key);
     return new DecryptedKeypair(public_key, privateKey!.key, external_identifiers, id);
   }
 

@@ -138,7 +138,7 @@ export class InvitationService extends Service<InvitationApi> {
     keyEncryptionKey: SymmetricKey
   ): Promise<APIKeypair> {
     this.logger.log('Generating key pair');
-    const keyPair = await DecryptedKeypair.new();
+    const keyPair = await DecryptedKeypair.generate();
 
     const toPrivateKeyEncrypted = await keyEncryptionKey.encryptKey(keyPair.privateKey);
 

@@ -28,7 +28,7 @@ export class SymmetricKey {
   }
 
   /** A new, random symmetric key with default length. */
-  static new(length = SYMMETRIC_KEY_LENGTH): SymmetricKey {
+  static generate(length = SYMMETRIC_KEY_LENGTH): SymmetricKey {
     return SymmetricKey.fromRaw(cryppo.generateRandomKey(length));
   }
 

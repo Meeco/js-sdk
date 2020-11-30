@@ -47,7 +47,7 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
     name: string,
     info: Partial<{ description: string; url: string; email: string }> = {}
   ) {
-    const rsaKeyPair = await DecryptedKeypair.new();
+    const rsaKeyPair = await DecryptedKeypair.generate();
     const public_key = rsaKeyPair.publicKey;
 
     // must have name and public_key

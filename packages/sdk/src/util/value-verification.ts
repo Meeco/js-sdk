@@ -4,7 +4,7 @@ import { SymmetricKey } from '../models/symmetric-key';
 export const VALUE_VERIFICATION_KEY_LENGTH = 64;
 
 export function newValueVerificationKey(): SymmetricKey {
-  return SymmetricKey.new(VALUE_VERIFICATION_KEY_LENGTH);
+  return SymmetricKey.generate(VALUE_VERIFICATION_KEY_LENGTH);
 }
 
 /**

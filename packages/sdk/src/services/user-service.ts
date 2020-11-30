@@ -43,7 +43,7 @@ export class UserService extends Service<UserApi> {
     derivedKey: SymmetricKey
   ) {
     this.logger.log('Generate and store key encryption key');
-    const kek = SymmetricKey.new();
+    const kek = SymmetricKey.generate();
 
     const encryptedKEK = await derivedKey.encryptKey(kek);
     const keystoreKeyEncryptionKeyApi = this.keystoreAPIFactory(credentials.keystore_access_token)
@@ -73,7 +73,7 @@ export class UserService extends Service<UserApi> {
     sessionAuthentication: string
   ) {
     this.logger.log('Generate and store data encryption key');
-    const dek = SymmetricKey.new();
+    const dek = SymmetricKey.generate();
     const dekEncryptedWithKEK = await keyEncryptionKey.encryptKey(dek);
     const keystoreDataEncryptionKeyApi = this.keystoreAPIFactory(sessionAuthentication)
       .DataEncryptionKeyApi;
@@ -106,7 +106,7 @@ export class UserService extends Service<UserApi> {
 
   private async generateAndStoreVaultKeyPair(credentials: IKeystoreToken & IKEK) {
     this.logger.log('Generate and store vault key pair');
-    const keyPair = await DecryptedKeypair.new();
+    const keyPair = await DecryptedKeypair.generate();
 
     const keystoreKeypairApi = this.keystoreAPIFactory(credentials.keystore_access_token)
       .KeypairApi;

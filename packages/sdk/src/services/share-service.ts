@@ -115,7 +115,7 @@ export class ShareService extends Service<SharesApi> {
     const { slots } = item;
 
     this.logger.log('Encrypting slots with generated DEK');
-    const dek = SymmetricKey.new();
+    const dek = SymmetricKey.generate();
 
     let encryptions: EncryptedSlotValue[];
     if (shareOptions.slot_id) {
@@ -330,7 +330,7 @@ export class ShareService extends Service<SharesApi> {
     // prepare request body
 
     // use the same DEK for all updates, it's the same data...
-    const dek = SymmetricKey.new();
+    const dek = SymmetricKey.generate();
 
     const result = await Promise.all(
       shares.map(async shareKey => {
