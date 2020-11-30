@@ -1,9 +1,7 @@
-import { SlotType } from '@meeco/sdk';
-import { ItemApi, ItemResponse, NestedSlotAttributes } from '@meeco/vault-api-sdk';
+import { ItemUpdate, NewItem, NewSlot, SlotType } from '@meeco/sdk';
+import { ItemApi, ItemResponse } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
 import nock from 'nock/types';
-import { ItemCreateData } from '../../src/models/item-create-data';
-import { ItemUpdateData } from '../../src/models/item-update-data';
 import { ItemService } from '../../src/services/item-service';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
 import { default as MockItemResponse } from '../fixtures/responses/item-response/basic';
@@ -51,17 +49,12 @@ describe('ItemService', () => {
 
     customTest
       .stub(ItemApi.prototype, 'itemsPost', createItem as any)
-      .it('creates an empty item from a template', async () => {
-        const input = getInputFixture('create-item-from-template.input.json');
+      .add('input', () => getInputFixture('create-item-from-template.input.json'))
+      .add('expected', () => getOutputFixture('create-item-from-template.output.json'))
+      .it('creates an empty item given template_name and label', async ({ input, expected }) => {
+        const item = new NewItem(input.label, input.template_name, []);
+        const result = await new ItemService(environment).create(testUserAuth, item);
 
-        const itemCreateData = new ItemCreateData({
-          template_name: input.template_name,
-          slots: [],
-          item: { label: input.label },
-        });
-        const result = await new ItemService(environment).create(testUserAuth, itemCreateData);
-
-        const expected = getOutputFixture('create-item-from-template.output.json');
         const { slots, ...expectedItem } = expected;
         expect(result.item).to.eql(expectedItem);
         expect(result.slots).to.deep.members(slots);
@@ -70,24 +63,16 @@ describe('ItemService', () => {
     customTest
       .stub(ItemApi.prototype, 'itemsPost', createItem as any)
       .mockCryppo()
-      .it('creates an item with slots provided in a config file', async () => {
-        const input = getInputFixture('create-item-with-slots.input.json');
-
-        const inputSlots: NestedSlotAttributes[] = [];
-        input.slots.forEach(x => {
-          inputSlots.push({
-            ...x,
-          });
-        });
-
-        const itemCreateData = new ItemCreateData({
-          template_name: input.template_name,
-          slots: inputSlots,
-          item: { label: input.label },
-        });
+      .add('input', () => getInputFixture('create-item-with-slots.input.json'))
+      .add('expected', () => getOutputFixture('create-item-with-slots.output.json'))
+      .it('creates an item with slots provided in a config file', async ({ input, expected }) => {
+        const itemCreateData = new NewItem(
+          input.label,
+          input.template_name,
+          input.slots as NewSlot[]
+        );
         const result = await new ItemService(environment).create(testUserAuth, itemCreateData);
 
-        const expected = getOutputFixture('create-item-with-slots.output.json');
         const { slots, ...expectedItem } = expected;
         expect(result.item).to.eql(expectedItem);
         expect(result.slots).to.deep.members(slots);
@@ -108,14 +93,13 @@ describe('ItemService', () => {
     customTest
       .mockCryppo()
       .nock('https://sandbox.meeco.me/vault', getItem(MockItemResponse))
-      .it('returns an item with all slots decrypted', async () => {
-        const result = await new ItemService(environment).get(testUserAuth, 'my-item');
-
-        const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
-          'get-item.output.json'
-        );
-        expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
-        expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
+      .add('result', () => new ItemService(environment).get(testUserAuth, 'my-item'))
+      .it('returns an item with all slots decrypted', async ({ result }) => {
+        for (const s of result.slots) {
+          if (s.value) {
+            expect(s.value).to.match(/.*\[decrypted with my_generated_dek\]$/);
+          }
+        }
       });
 
     // gets a shared item
@@ -392,8 +376,7 @@ describe('ItemService', () => {
       .nock('https://sandbox.meeco.me/vault', mockVault)
       .it('Updates the item', async () => {
         const input = getInputFixture('update-item.input.json');
-        const updateData = new ItemUpdateData({
-          id: input.id,
+        const updateData = new ItemUpdate(input.id, {
           label: input.label,
           slots: input.slots,
         });

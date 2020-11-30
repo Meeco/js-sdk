@@ -1,4 +1,4 @@
-import { ConnectionService, DecryptedSlot } from '@meeco/sdk';
+import { ConnectionService, SDKDecryptedSlot } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
@@ -51,9 +51,9 @@ export default class SharesCreateConfig extends MeecoCommand {
       const connectionId = connectionConfig.from_user_connection_id;
 
       await new ConnectionService(environment, this.updateStatus)
-        .fetchConnectionWithId(fromUser, connectionId)
+        .get(fromUser, connectionId)
         .then(() => {
-          const slots = (itemConfigFile as any).spec.slots as DecryptedSlot[];
+          const slots = (itemConfigFile as any).spec.slots as SDKDecryptedSlot[];
           const itemId = (itemConfigFile as any).spec.id as string;
 
           let slotId: string | undefined;

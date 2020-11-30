@@ -46,7 +46,7 @@
       <button id="getCaptcha">Get Captcha Token</button>
       <input placeholder="captcha" id="captcha" />
     </div> -->
-    <div class="card">
+    <div id="logCard" class="card">
       <h4>Event Log</h4>
       <hr />
       <sub>Any log events that the SDK output will appear here:</sub>
@@ -97,6 +97,34 @@
       <hr />
       <button id="getItems">Get Items</button>
       <textarea disabled id="items" rows="10"></textarea>
+    </div>
+
+    <div class="card">
+      <h4>Get Templates</h4>
+      <hr />
+      <button id="getTemplates">Get Templates</button>
+      <textarea disabled id="templates" rows="10"> </textarea>
+    </div>
+
+    <div class="card">
+      <h4>Create Items</h4>
+      <hr />
+
+      <form>
+        <input type="button" id="createItem" value="Create">
+        <input type="reset" value="Reset">
+        <div>
+          <label for="templateSelect">Template</label>
+          <select id="templateSelect" name="template_name"></select>
+        </div>
+        <div>
+          <label for="labelField">Label</label>
+          <input name="label" id="labelField" required>
+        </div>
+        <div id="formSlots">
+        </div>
+      </form>
+      <textarea disabled id="newItem" rows="10"> </textarea>
     </div>
   </body>
 </html>

@@ -1,7 +1,7 @@
-import { ItemCreateData, ItemService } from '@meeco/sdk';
+import { ItemService, NewItem } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
-import { ItemConfig } from '../../configs/item-config';
+import { NewItemConfig } from '../../configs/new-item-config';
 import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
 
@@ -20,7 +20,7 @@ export default class ItemsCreate extends MeecoCommand {
     const { item, auth } = flags;
     const environment = await this.readEnvironmentFile();
 
-    const itemConfigFile = await this.readConfigFromFile(ItemConfig, item);
+    const itemConfigFile = await this.readConfigFromFile(NewItemConfig, item);
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
 
     const service = new ItemService(environment);
@@ -34,15 +34,11 @@ export default class ItemsCreate extends MeecoCommand {
 
     const { itemConfig } = itemConfigFile;
 
-    const itemCreateData = new ItemCreateData({
-      template_name: itemConfigFile.templateName,
-      slots: itemConfig!.slots,
-      item: { label: itemConfig!.label },
-    });
+    const newItem = new NewItem(itemConfig!.label, itemConfigFile.templateName, itemConfig!.slots);
 
     try {
-      const createdItem = await service.create(authConfig, itemCreateData);
-      this.printYaml(ItemConfig.encodeFromJSON(createdItem));
+      const createdItem = await service.create(authConfig, newItem);
+      this.printYaml(NewItemConfig.encodeFromJSON(createdItem));
     } catch (err) {
       await this.handleException(err);
     }

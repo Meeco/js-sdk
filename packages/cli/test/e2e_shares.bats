@@ -8,9 +8,9 @@ shopt -s expand_aliases
 alias meeco="node --require tsconfig-paths/register ./bin/run"
 
 
-@test "Create user Alice and retrive user login detail" {    
+@test "Create user Alice and retrive user login detail" {
     meeco users:create -p supersecretpassword > .Alice.yaml
-    assert [ -e '.Alice.yaml' ] 
+    assert [ -e '.Alice.yaml' ]
 
     meeco users:login -p supersecretpassword -a .Alice.yaml > .Alice_login.yaml
 
@@ -18,12 +18,12 @@ alias meeco="node --require tsconfig-paths/register ./bin/run"
     cat .Alice_login | assert_output
 }
 
-@test "Create a 'Esafe Vehicle' item template for Alice" {    
+@test "Create a 'Esafe Vehicle' item template for Alice" {
     meeco items:create-config vehicle -a .Alice.yaml > .template_vehicle.yaml
 
     cat .template_vehicle.yaml |
     yq -y '(.spec.label) = "My Vehicle"'|
-    yq -y '(.spec.slots[0].value) = "20000101"' | 
+    yq -y '(.spec.slots[0].value) = "20000101"' |
     yq -y '(.spec.slots[1].value) = "ABC123"' |
     yq -y '(.spec.slots[2].value) = "Mazda"' |
     yq -y '(.spec.slots[3].value) = "Familia"' |
@@ -33,7 +33,7 @@ alias meeco="node --require tsconfig-paths/register ./bin/run"
     cat ./e2e-assert-output/template_updated_alice_vehicle.yaml | assert_output
 }
 
-@test "Create a 'Esafe Vehicle' item for Alice" {    
+@test "Create a 'Esafe Vehicle' item for Alice" {
     meeco items:create -i .template_updated_alice_vehicle.yaml -a .Alice.yaml > .vehicle_alice.yaml
     assert_success
 }
@@ -42,7 +42,7 @@ alias meeco="node --require tsconfig-paths/register ./bin/run"
 
     echo "Create user 'Bob'"
     meeco users:create -p supersecretpassword > .Bob.yaml
-    assert [ -e '.Bob.yaml' ] 
+    assert [ -e '.Bob.yaml' ]
 
     meeco users:login -p supersecretpassword -a .Bob.yaml > .Bob_login.yaml
 
@@ -89,7 +89,7 @@ alias meeco="node --require tsconfig-paths/register ./bin/run"
     cat ./e2e-assert-output/template_updated_alice_profile.yaml | assert_output
 }
 
-@test "Create a profile item for Alice" {    
+@test "Create a profile item for Alice" {
     meeco items:create -i .template_updated_alice_profile.yaml -a .Alice.yaml > .profile_alice.yaml
     assert_success
 }
@@ -126,7 +126,7 @@ alias meeco="node --require tsconfig-paths/register ./bin/run"
     cat ./e2e-assert-output/template_updated_bob_profile.yaml | assert_output
 }
 
-@test "Create a profile item for Bob" {    
+@test "Create a profile item for Bob" {
     meeco items:create -i .template_updated_bob_profile.yaml -a .Bob.yaml > .profile_bob.yaml
     assert_success
 }
@@ -135,7 +135,7 @@ alias meeco="node --require tsconfig-paths/register ./bin/run"
 
     echo "Create user 'Jane'"
     meeco users:create -p supersecretpassword > .Jane.yaml
-    assert [ -e '.Bob.yaml' ] 
+    assert [ -e '.Jane.yaml' ]
 }
 
 @test "Create Connection from Bob to Jane" {

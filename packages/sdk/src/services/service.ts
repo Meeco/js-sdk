@@ -31,21 +31,6 @@ export interface IKeystoreToken {
   keystore_access_token: string;
 }
 
-export interface ICreate<T> {
-  create(args: any): Promise<T>;
-}
-
-export interface IList<T> {
-  list(...args: any[]): Promise<T>;
-  listAll(...args: any[]): Promise<T>;
-  // list(vaultAccessToken: string,supressChangingState: boolean = true,state: State = State.Todo,options?: { nextPageAfter?: string; perPage?: number }
-  // list(vaultAccessToken: string, dek: EncryptionKey,nextPageAfter?: string,perPage?: number)
-  // templateType, shareType
-
-  // list(token: string, options?: IPageOptions, ...args: any[]): Promise<T[]>;
-  // list(args: VaultToken & IPageOptions & any): Promise<T[]>;
-}
-
 /**
  * Abstract SDK Service.
  */
@@ -69,7 +54,4 @@ export default abstract class Service<API> {
   public setLogger(logger: Logger) {
     this.logger = toFullLogger(logger);
   }
-
-  // TODO replace IBaseApi like this:
-  // public abstract api(token: string): T;
 }

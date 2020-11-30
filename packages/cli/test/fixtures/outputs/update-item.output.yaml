@@ -48,7 +48,6 @@ spec:
       label: Pizza
       original_id: null
       owner_id: null
-  thumbnails: []
-  attachments: []
+  classification_nodes: []
 
 # Item updated. There are 5 outstanding client tasks. Todo: 2 & InProgress: 3

@@ -1,6 +1,7 @@
 import { ClientTaskQueueService, ItemService, SlotType } from '@meeco/sdk';
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
+import sinon from 'sinon';
 import {
   customTest,
   inputFixture,
@@ -11,7 +12,14 @@ import {
 
 describe('items:update', () => {
   customTest
-    .stub(ClientTaskQueueService.prototype, 'countOutstandingTasks', countOutstandingTasks as any)
+    .stub(
+      ClientTaskQueueService.prototype,
+      'countOutstandingTasks',
+      sinon.stub().returns({
+        todo: 2,
+        in_progress: 3,
+      })
+    )
     .stub(ItemService.prototype, 'update', update as any)
     .stdout()
     .stderr()
@@ -87,12 +95,5 @@ function update(vaultAccessToken, dataEncryptionKey, updateData) {
       },
     ],
     thumbnails: [],
-  });
-}
-
-function countOutstandingTasks(vaultAccessToken) {
-  return Promise.resolve({
-    todo: 2,
-    in_progress: 3,
   });
 }

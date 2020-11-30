@@ -14,7 +14,7 @@ export default class SharesList extends MeecoCommand {
     ...pageFlags,
     type: _flags.enum({
       char: 't',
-      default: ShareType.incoming,
+      default: ShareType.Incoming,
       required: false,
       options: Object.values(ShareType),
       description:

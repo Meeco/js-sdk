@@ -7,6 +7,7 @@ body {
   margin: auto;
   padding-top: 40px;
   font-family: sans-serif;
+  padding-bottom: 250px;
 }
 
 .title {
@@ -42,7 +43,21 @@ div.card {
   label {
     display: inline-block;
   }
-  input {
+  input[type="text"] {
     width: 100%;
   }
+}
+
+#logCard {
+  background: white;
+  position: fixed;
+  right: 0px;
+  bottom: 0px;
+  width: 450px;
+}
+
+input[type="button"], input[type="reset"] {
+  @extend button;
+  width: auto;
+  display: inline-block;
 }
