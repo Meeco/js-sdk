@@ -1,4 +1,4 @@
-import { DecryptedItem, EncryptionKey, SlotHelpers } from '@meeco/sdk';
+import { DecryptedItem, SlotHelpers, SymmetricKey } from '@meeco/sdk';
 import { Attachment, Slot } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -54,7 +54,7 @@ describe('DecryptedItem', () => {
       .mockCryppo()
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
       .add('result', ({ item }) => item.toShareSlots(testUserAuth, '123'))
-      .it('inclues all slot ids in the parent, including null data', ({ item, result }) => {
+      .it('includes all slot ids in the parent, including null data', ({ item, result }) => {
         expect(result.map(({ slot_id }) => slot_id)).to.include.all.members(item.item.slot_ids);
         expect(result.length).to.equal(item.slots.length);
       });
@@ -63,7 +63,7 @@ describe('DecryptedItem', () => {
       .mockCryppo()
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, BasicItem))
       .add('result', ({ item }) =>
-        item.toShareSlots({ data_encryption_key: EncryptionKey.fromRaw('fake') }, '123')
+        item.toShareSlots({ data_encryption_key: SymmetricKey.fromRaw('fake') }, '123')
       )
       .it('encrypts slot values with the given DEK', ({ item, result }) => {
         expect(result.map(({ encrypted_value }) => encrypted_value)).to.satisfy(values =>
@@ -90,7 +90,25 @@ describe('DecryptedItem', () => {
       )
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, ReceivedItem))
       .add('result', ({ item }) =>
-        item.toShareSlots({ data_encryption_key: EncryptionKey.fromRaw('fake') }, '123')
+        item.toShareSlots({ data_encryption_key: SymmetricKey.fromRaw('fake') }, '123')
+      )
+      .catch(/^cannot share non-owned.*/)
+      .it('throws if not owned');
+
+    const fakeDecryptedOwnSlotFn = (key, slot) => ({
+      id: slot.id,
+      own: true,
+      value: '123',
+      value_verification_key: SymmetricKey.fromRaw('KEY'),
+      value_verification_hash: '123',
+    });
+
+    customTest
+      .mockCryppo()
+      .stub(SlotHelpers, 'decryptSlot', sinon.fake(fakeDecryptedOwnSlotFn))
+      .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
+      .add('result', ({ item }) =>
+        item.toShareSlots({ data_encryption_key: SymmetricKey.fromRaw('fake') }, '123')
       )
       .it('overwrites Slot value-verification key, if present', ({ result }) => {
         expect(result[0].encrypted_value_verification_key).to.equal(
@@ -100,19 +118,10 @@ describe('DecryptedItem', () => {
 
     customTest
       .mockCryppo()
-      .stub(
-        SlotHelpers,
-        'decryptSlot',
-        sinon.fake((key, slot) => ({
-          id: slot.id,
-          value: '123',
-          value_verification_key: 'KEY',
-          value_verification_hash: 'HASH',
-        }))
-      )
-      .add('item', () => DecryptedItem.fromAPI(testUserAuth, ReceivedItem))
+      .stub(SlotHelpers, 'decryptSlot', sinon.fake(fakeDecryptedOwnSlotFn))
+      .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
       .add('result', ({ item }) =>
-        item.toShareSlots({ data_encryption_key: EncryptionKey.fromRaw('fake') }, '123')
+        item.toShareSlots({ data_encryption_key: SymmetricKey.fromRaw('fake') }, '123')
       )
       .it('generates a new value-verification key if none is given', ({ result }) => {
         expect(result[0].encrypted_value_verification_key).to.equal(
@@ -122,19 +131,10 @@ describe('DecryptedItem', () => {
 
     customTest
       .mockCryppo()
-      .stub(
-        SlotHelpers,
-        'decryptSlot',
-        sinon.fake((key, slot) => ({
-          id: slot.id,
-          value: '123',
-          value_verification_key: 'KEY',
-          value_verification_hash: 'STALE_HASH',
-        }))
-      )
-      .add('item', () => DecryptedItem.fromAPI(testUserAuth, ReceivedItem))
+      .stub(SlotHelpers, 'decryptSlot', sinon.fake(fakeDecryptedOwnSlotFn))
+      .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
       .add('result', ({ item }) =>
-        item.toShareSlots({ data_encryption_key: EncryptionKey.fromRaw('fake') }, '123')
+        item.toShareSlots({ data_encryption_key: SymmetricKey.fromRaw('fake') }, '123')
       )
       .it('generates a new value-verification hash, overwriting the old', ({ result }) => {
         expect(result[0].value_verification_hash).to.not.match(/.*STALE_HASH.*/);

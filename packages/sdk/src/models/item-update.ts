@@ -5,10 +5,11 @@ import {
   PutItemsRequest,
 } from '@meeco/vault-api-sdk';
 import { IDEK } from '../services/service';
+import SlotHelpers from '../util/slot-helpers';
 import { toNestedClassificationNode } from '../util/transformers';
 import ItemChange from './item-change';
-import { NewSlot, SlotHelpers } from './local-slot';
 import { NewItem } from './new-item';
+import { NewSlot } from './slot-types';
 
 /** Construct an update for an existing Item given its id. */
 export class ItemUpdate extends ItemChange {

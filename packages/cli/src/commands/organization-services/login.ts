@@ -67,7 +67,11 @@ export default class OrganizationServicesLogin extends MeecoCommand {
         metadata.privateKey
       );
       this.finish();
-      this.printYaml(AuthConfig.encodeFromAuthData(result));
+      this.printYaml({
+        kind: AuthConfig.kind,
+        metadata: result,
+        spec: {},
+      });
     } catch (err) {
       await this.handleException(err);
     }

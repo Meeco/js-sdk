@@ -6,6 +6,7 @@ import {
   ShareService,
   ShareType,
   SlotHelpers,
+  SymmetricKey,
 } from '@meeco/sdk';
 import { Share, SharesIncomingResponse, SharesOutgoingResponse } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
@@ -19,6 +20,7 @@ describe('ShareService', () => {
     let service: ShareService;
     const itemId = itemResponse.item.id;
     const connectionId = '123';
+    const fakePublicKey = '-----BEGIN PUBLIC KEY-----ABCD';
 
     beforeEach(() => {
       service = new ShareService(environment);
@@ -30,7 +32,9 @@ describe('ShareService', () => {
       sinon
         .stub()
         .withArgs(connectionId)
-        .returns({ the_other_user: { user_public_key: 'abc', user_keypair_external_id: '123' } })
+        .returns({
+          the_other_user: { user_public_key: fakePublicKey, user_keypair_external_id: '123' },
+        })
     );
 
     connectionStub
@@ -46,7 +50,7 @@ describe('ShareService', () => {
         api.get(`/items/${itemId}`).reply(200, itemResponse);
         api
           .post(`/items/${itemId}/shares`, body =>
-            body.shares[0].encrypted_dek.endsWith('[with abc]')
+            body.shares[0].encrypted_dek.endsWith(`[with ${fakePublicKey}]`)
           )
           .reply(201, { shares: [] });
       })
@@ -106,7 +110,7 @@ describe('ShareService', () => {
         sinon.fake((cred, slot) => ({
           ...slot,
           value: 'abc',
-          value_verification_key: '123',
+          value_verification_key: SymmetricKey.fromRaw('123'),
           value_verification_hash: '123',
         }))
       )
@@ -127,7 +131,7 @@ describe('ShareService', () => {
           .reply(201, { shares: [] });
       })
       .do(() => service.shareItem(testUserAuth, connectionId, itemId))
-      .it('re-encrypts value verification hash when on-sharing');
+      .it('re-encrypts value verification key when on-sharing');
   });
 
   describe('#acceptIncomingShare', () => {
@@ -171,14 +175,18 @@ describe('ShareService', () => {
   describe('#getShareDEK', () => {
     const keypairId = '123';
     const dek = 'pineapple';
-    const publicKey = 'public_key';
+    const publicKey = '-----BEGIN PUBLIC KEY-----ABCD';
+    const privateKey = '-----BEGIN RSA PRIVATE KEY-----ABCD';
 
     customTest
       .mockCryppo()
       .nock('https://sandbox.meeco.me/keystore', api => {
-        api
-          .get(`/keypairs/${keypairId}`)
-          .reply(200, { keypair: { encrypted_serialized_key: publicKey } });
+        api.get(`/keypairs/${keypairId}`).reply(200, {
+          keypair: {
+            public_key: publicKey,
+            encrypted_serialized_key: privateKey,
+          },
+        });
       })
       .add('result', () =>
         new ShareService(environment).getShareDEK(testUserAuth, {
@@ -188,7 +196,7 @@ describe('ShareService', () => {
       )
       .it('decrypts a shared DEK using the correct keypair', ({ result }) => {
         expect(result.key).to.equal(
-          `[decrypted]${dek}${publicKey}[decrypted with ${testUserAuth.key_encryption_key.key}]`
+          `[decrypted]${dek}${privateKey}[decrypted with ${testUserAuth.key_encryption_key.key}]`
         );
       });
 
@@ -220,7 +228,11 @@ describe('ShareService', () => {
           },
         });
       })
-      .stub(ShareService.prototype, 'getShareDEK', sinon.stub().returns({ key: 'some_key' }))
+      .stub(
+        ShareService.prototype,
+        'getShareDEK',
+        sinon.stub().returns(SymmetricKey.fromRaw('some_key'))
+      )
       .do(() => new ShareService(environment).getSharedItem(testUserAuth, shareId))
       .it('calls GET /incoming_shares/id/item by default');
 
@@ -286,7 +298,11 @@ describe('ShareService', () => {
           },
         });
       })
-      .stub(ShareService.prototype, 'getShareDEK', sinon.stub().returns({ key: 'some_key' }))
+      .stub(
+        ShareService.prototype,
+        'getShareDEK',
+        sinon.stub().returns(SymmetricKey.fromRaw('some_key'))
+      )
       .do(() => new ShareService(environment).getSharedItem(testUserAuth, shareId))
       .it('retrieves the original if an item was already shared');
 

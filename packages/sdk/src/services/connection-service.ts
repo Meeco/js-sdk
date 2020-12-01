@@ -1,5 +1,6 @@
 import { Connection, ConnectionApi, ConnectionsResponse } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
+import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, resultHasNext } from '../util/paged';
 import { InvitationService } from './invitation-service';
 import Service, { IDEK, IPageOptions, IVaultToken } from './service';
@@ -97,23 +98,7 @@ export class ConnectionService extends Service<ConnectionApi> {
     }
 
     this.logger.log('Decrypting connection names');
-    const decryptions = (result.connections || []).map(connection =>
-      connection.own.encrypted_recipient_name
-        ? Service.cryppo
-            .decryptWithKey({
-              serialized: connection.own.encrypted_recipient_name!,
-              key: data_encryption_key.key,
-            })
-            .then((name: string) => ({
-              recipient_name: name,
-              connection,
-            }))
-        : {
-            recipient_name: null,
-            connection,
-          }
-    );
-    return Promise.all(decryptions);
+    return Promise.all((result.connections || []).map(this.decryptConnection(data_encryption_key)));
   }
 
   public async listAll(credentials: IVaultToken & IDEK): Promise<IDecryptedConnection[]> {
@@ -125,25 +110,20 @@ export class ConnectionService extends Service<ConnectionApi> {
         (a: Connection[], b: ConnectionsResponse) => a.concat(b.connections),
         []
       );
-      const decryptions = responses.map(connection =>
-        connection.own.encrypted_recipient_name
-          ? Service.cryppo
-              .decryptWithKey({
-                serialized: connection.own.encrypted_recipient_name!,
-                key: data_encryption_key.key,
-              })
-              .then((name: string) => ({
-                recipient_name: name,
-                connection,
-              }))
-          : {
-              recipient_name: null,
-              connection,
-            }
-      );
-      return Promise.all(decryptions);
+      return Promise.all((responses || []).map(this.decryptConnection(data_encryption_key)));
     });
   }
+
+  private decryptConnection(dek: SymmetricKey) {
+    return async (connection: Connection) => {
+      const encryptedName = connection.own.encrypted_recipient_name;
+      return {
+        recipient_name: await dek.decryptString(encryptedName || ''),
+        connection,
+      };
+    };
+  }
+
   /**
    * @deprecated Use `get` instead.
    */

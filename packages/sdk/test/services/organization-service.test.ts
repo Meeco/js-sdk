@@ -1,14 +1,15 @@
 import { expect } from 'chai';
 import { OrganizationService } from '../../src/services/organization-service';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
+import { decryptedPrivateKey } from '../fixtures/responses/keypair-response';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('OrganizationService', () => {
   describe('#create', () => {
     const orgName = 'SuperData Inc.';
     // defined by mockCryppo
-    const publicKey = '--PUBLIC_KEY--ABCD';
-    const privateKey = '--PRIVATE_KEY--12324';
+    const publicKey = '-----BEGIN PUBLIC KEY-----ABCD';
+    const privateKey = '-----BEGIN RSA PRIVATE KEY-----ABCD';
 
     const info = {
       description: 'My super data handling organization',
@@ -31,15 +32,15 @@ describe('OrganizationService', () => {
       )
       .add('result', () => new OrganizationService(environment).create(testUserAuth, orgName, info))
       .it('Calls POST /organizations and returns generated keys', ({ result }) => {
-        expect(result.publicKey).to.equal(publicKey);
-        expect(result.privateKey).to.equal(privateKey);
+        expect(result.publicKey.key).to.equal(publicKey);
+        expect(result.privateKey.key).to.equal(privateKey);
       });
   });
 
   describe('#getOrganizationToken', () => {
     const token = 'ACCESS_TOKEN';
     const id = '00000000-0000-0000-0000-000000000001';
-    const privateKey = 'ORG_PRIVATE_KEY';
+    const privateKey = decryptedPrivateKey;
 
     customTest
       .mockCryppo()

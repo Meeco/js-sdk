@@ -1,8 +1,9 @@
 import { ItemTemplate, NestedSlotAttributes, PostItemsRequest, Slot } from '@meeco/vault-api-sdk';
+import SlotHelpers from '../util/slot-helpers';
 import { slotToNewSlot } from '../util/transformers';
-import { EncryptionKey } from './encryption-key';
 import ItemChange from './item-change';
-import { NewSlot, SlotHelpers } from './local-slot';
+import { NewSlot } from './slot-types';
+import { SymmetricKey } from './symmetric-key';
 
 /** An Item which does not exist in the API */
 export class NewItem extends ItemChange {
@@ -44,7 +45,7 @@ export class NewItem extends ItemChange {
    * - slot type must be a valid type
    * @param dek
    */
-  async toRequest(dek: EncryptionKey): Promise<PostItemsRequest> {
+  async toRequest(dek: SymmetricKey): Promise<PostItemsRequest> {
     const badValue = SlotHelpers.findWithEncryptedValue(this.slots);
     if (badValue) {
       throw new Error(

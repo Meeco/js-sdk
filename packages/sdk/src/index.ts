@@ -2,7 +2,10 @@
  * The publicly exposed API
  */
 export * from './models/auth-data';
-export * from './models/encryption-key';
+export * from './models/symmetric-key';
+export { default as DecryptedKeypair } from './models/decrypted-keypair';
+export { default as RSAPrivateKey } from './models/rsa-private-key';
+export { default as RSAPublicKey } from './models/rsa-public-key';
 export * from './models/environment';
 export * from './models/file-attachment-data';
 export * from './models/item-change';
@@ -10,7 +13,7 @@ export { default as ItemMap } from './models/item-map';
 export * from './models/new-item';
 export * from './models/item-update';
 export * from './models/decrypted-item';
-export * from './models/local-slot';
+export * from './models/slot-types';
 export * from './models/sdk-template';
 export * from './models/service-error';
 export * from './models/srp-session';
@@ -30,6 +33,7 @@ export * from './util/api-factory';
 export * from './util/find-connection-between';
 export { default as Secrets } from './util/secrets';
 export * from './util/paged';
+export { default as SlotHelpers } from './util/slot-helpers';
 export * from './util/transformers';
 export * from './util/value-verification';
 import _cryppo from './services/cryppo-service';

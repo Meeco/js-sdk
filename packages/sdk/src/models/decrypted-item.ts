@@ -10,10 +10,10 @@ import {
 } from '@meeco/vault-api-sdk';
 import cryppo from '../services/cryppo-service';
 import { IDEK } from '../services/service';
-import { VALUE_VERIFICATION_KEY_LENGTH, valueVerificationHash } from '../util/value-verification';
+import SlotHelpers from '../util/slot-helpers';
 import ItemMap from './item-map';
 import { ItemUpdate } from './item-update';
-import { NewSlot, SDKDecryptedSlot, SlotHelpers } from './local-slot';
+import { NewSlot, SDKDecryptedSlot } from './slot-types';
 
 /**
  * Wraps Items returned from the API that have been decrypted, usually by {@link ItemService}.
@@ -137,43 +137,29 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
   /**
    * For updating shared data (i.e. `PUT items/id/shares`).
    * The Item's slots are encrypted with the given DEK and value verification hashes are appended.
-   * If verificationKey is not set, a new key will be generated for this share and used on each slot.
-   * Any existing Slot verification key is overwritten whether or not a `verificationKey` argument is provided.
-   * @param verificationKey a random key that is {@link VALUE_VERIFICATION_KEY_LENGTH} bits long.
+   * You must own the Item to update it like this.
    */
-  async toShareSlots(
-    credentials: IDEK,
-    shareId: string,
-    verificationKey?: string
-  ): Promise<ItemsIdSharesSlotValues[]> {
-    const valueVerificationKey =
-      verificationKey ||
-      (DecryptedItem.cryppo.generateRandomKey(VALUE_VERIFICATION_KEY_LENGTH) as string);
-
-    const encryptedValueVerificationKey: string = await DecryptedItem.cryppo
-      .encryptStringWithKey({
-        data: valueVerificationKey,
-        key: credentials.data_encryption_key.key,
-        strategy: DecryptedItem.cryppo.CipherStrategy.AES_GCM,
-      })
-      .then(result => result.serialized!);
-
+  async toShareSlots(credentials: IDEK, shareId: string): Promise<ItemsIdSharesSlotValues[]> {
+    if (!this.own) {
+      throw new Error('cannot share non-owned Item');
+    }
     return Promise.all(
-      this.slots.map(async s => {
-        const encrypted = await SlotHelpers.encryptSlot(credentials, s);
+      this.slots.map(async slot => {
+        const withHash = await SlotHelpers.addHashAndKey(slot);
+        const encrypted = await SlotHelpers.encryptSlot(credentials, withHash);
 
-        if (s.value) {
+        if (slot.value) {
           return {
             share_id: shareId,
-            slot_id: s.id,
+            slot_id: slot.id,
             encrypted_value: encrypted.encrypted_value,
-            encrypted_value_verification_key: encryptedValueVerificationKey,
-            value_verification_hash: valueVerificationHash(valueVerificationKey, s.value),
+            encrypted_value_verification_key: encrypted.encrypted_value_verification_key,
+            value_verification_hash: encrypted.value_verification_hash || undefined,
           };
         } else {
           return {
             share_id: shareId,
-            slot_id: s.id,
+            slot_id: slot.id,
           };
         }
       })

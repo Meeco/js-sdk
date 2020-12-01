@@ -3,6 +3,8 @@ import {
   OrganizationsManagingOrganizationsApi,
   Service as APIService,
 } from '@meeco/vault-api-sdk';
+import DecryptedKeypair from '../models/decrypted-keypair';
+import RSAPrivateKey from '../models/rsa-private-key';
 import { getAllPaged, reducePages } from '../util/paged';
 import Service, { IVaultToken } from './service';
 
@@ -24,14 +26,12 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
     organizationId: string,
     privateKey: string
   ): Promise<IVaultToken> {
+    const orgKey = new RSAPrivateKey(privateKey);
     const result = await this.vaultAPIFactory(
       credentials.vault_access_token
     ).OrganizationsManagingOrganizationsApi.organizationsIdLoginPost(organizationId);
 
-    const decryptedVaultSessionToken = await Service.cryppo.decryptSerializedWithPrivateKey({
-      privateKeyPem: privateKey,
-      serialized: result.encrypted_access_token,
-    });
+    const decryptedVaultSessionToken = await orgKey.decryptToken(result.encrypted_access_token);
 
     return { vault_access_token: decryptedVaultSessionToken };
   }
@@ -47,7 +47,7 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
     name: string,
     info: Partial<{ description: string; url: string; email: string }> = {}
   ) {
-    const rsaKeyPair = await Service.cryppo.generateRSAKeyPair(4096);
+    const rsaKeyPair = await DecryptedKeypair.generate();
     const public_key = rsaKeyPair.publicKey;
 
     // must have name and public_key
@@ -56,7 +56,7 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
       credentials.vault_access_token
     ).OrganizationsManagingOrganizationsApi.organizationsPost({
       name,
-      public_key,
+      public_key: public_key.key,
       ...info,
     });
 

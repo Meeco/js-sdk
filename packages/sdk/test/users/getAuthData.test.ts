@@ -68,8 +68,8 @@ function stubKeystore(api: Nock.Scope) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       keypair: {
-        public_key: '--PUBLIC_KEY--ABCD',
-        encrypted_serialized_key: '--PRIVATE_KEY--12324',
+        public_key: '-----BEGIN PUBLIC KEY-----ABCD',
+        encrypted_serialized_key: '-----BEGIN RSA PRIVATE KEY-----ABCD',
         external_identifiers: [UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER],
       },
     });
@@ -81,7 +81,7 @@ function stubVault(api: Nock.Scope) {
     .matchHeader(
       'Authorization',
       [
-        '[decrypted]vault_auth_token--PRIVATE_KEY--12324[decrypted with key_encryption_key[decrypted with derived_key_123.asupersecretpassphrase]]',
+        '[decrypted]vault_auth_token-----BEGIN RSA PRIVATE KEY-----ABCD[decrypted with key_encryption_key[decrypted with derived_key_123.asupersecretpassphrase]]',
       ].join('')
     )
     .reply(200, {
@@ -93,7 +93,7 @@ function stubVault(api: Nock.Scope) {
     });
   api
     .post('/session', {
-      public_key: '--PUBLIC_KEY--ABCD',
+      public_key: '-----BEGIN PUBLIC KEY-----ABCD',
     })
     .reply(200, {
       session: {

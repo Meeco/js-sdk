@@ -2,6 +2,7 @@
 const baseX = require('base-x');
 import { Buffer as _buffer } from 'buffer';
 import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
+import { SymmetricKey } from '../models/symmetric-key';
 import cryppo from '../services/cryppo-service';
 
 /**
@@ -28,7 +29,7 @@ export default class Secrets {
   public static async derivePDKFromSecret(
     userEnteredPassword: string,
     secret: string
-  ): Promise<string> {
+  ): Promise<SymmetricKey> {
     const { secretKey } = Secrets.destructureSecret(secret);
     return Secrets.derivePDK(userEnteredPassword, secretKey);
   }
@@ -99,7 +100,7 @@ export default class Secrets {
     return key;
   }
 
-  private static async derivePDK(password: string, secretKey: string) {
+  private static async derivePDK(password: string, secretKey: string): Promise<SymmetricKey> {
     if (secretKey.indexOf('.') >= 0) {
       throw new Error('Incorrect secret provided. Please destructure the secret_key.');
     }
@@ -110,6 +111,6 @@ export default class Secrets {
       useSalt: secretKey,
     });
 
-    return key;
+    return SymmetricKey.fromRaw(key);
   }
 }

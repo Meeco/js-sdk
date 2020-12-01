@@ -1,11 +1,11 @@
-import { KeyEncryptionKey, Keypair } from '@meeco/keystore-api-sdk';
 import { MeResponse, User, UserApi } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
-import { EncryptionKey } from '../models/encryption-key';
+import DecryptedKeypair from '../models/decrypted-keypair';
 import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import { SRPSession } from '../models/srp-session';
+import { SymmetricKey } from '../models/symmetric-key';
 import Secrets from '../util/secrets';
-import Service, { IKeystoreToken, IVaultToken } from './service';
+import Service, { IKEK, IKeystoreToken, IVaultToken } from './service';
 
 /**
  * Create and update Meeco Users.
@@ -21,11 +21,12 @@ export class UserService extends Service<UserApi> {
     return this.vaultAPIFactory(token.vault_access_token).UserApi;
   }
 
-  private async requestKeyPair(credentials: IKeystoreToken): Promise<Keypair> {
+  private async requestKeyPair(credentials: IKeystoreToken & IKEK): Promise<DecryptedKeypair> {
     const vaultUserApi = this.keystoreAPIFactory(credentials.keystore_access_token).KeypairApi;
-    return vaultUserApi
-      .keypairsExternalIdExternalIdGet(this.vaultKeypairExternalId)
-      .then(res => res.keypair);
+    const { keypair } = await vaultUserApi.keypairsExternalIdExternalIdGet(
+      this.vaultKeypairExternalId
+    );
+    return DecryptedKeypair.fromAPI(credentials.key_encryption_key, keypair);
   }
 
   private async requestExternalAdmissionTokens(credentials: IKeystoreToken) {
@@ -37,88 +38,86 @@ export class UserService extends Service<UserApi> {
       .then(res => res.external_admission_token);
   }
 
-  private async generateAndStoreKeyEncryptionKey(credentials: IKeystoreToken, derivedKey: string) {
+  private async generateAndStoreKeyEncryptionKey(
+    credentials: IKeystoreToken,
+    derivedKey: SymmetricKey
+  ) {
     this.logger.log('Generate and store key encryption key');
-    const kek = Service.cryppo.generateRandomKey();
+    const kek = SymmetricKey.generate();
 
-    const encryptedKEK = await Service.cryppo.encryptWithKey({
-      strategy: Service.cryppo.CipherStrategy.AES_GCM,
-      key: derivedKey,
-      data: kek,
-    });
+    const encryptedKEK = await derivedKey.encryptKey(kek);
     const keystoreKeyEncryptionKeyApi = this.keystoreAPIFactory(credentials.keystore_access_token)
       .KeyEncryptionKeyApi;
 
     await keystoreKeyEncryptionKeyApi.keyEncryptionKeyPost({
-      serialized_key_encryption_key: encryptedKEK.serialized,
+      serialized_key_encryption_key: encryptedKEK,
     });
     return kek;
   }
 
-  private async getKeyEncryptionKey(credentials: IKeystoreToken): Promise<KeyEncryptionKey> {
+  private async getKeyEncryptionKey(
+    credentials: IKeystoreToken,
+    derivedKey: SymmetricKey
+  ): Promise<SymmetricKey> {
     this.logger.log('Requesting key encryption key');
     const keystoreKeyEncryptionKeyApi = this.keystoreAPIFactory(credentials.keystore_access_token)
       .KeyEncryptionKeyApi;
-    return keystoreKeyEncryptionKeyApi
-      .keyEncryptionKeyGet()
-      .then(result => result.key_encryption_key);
+
+    const { key_encryption_key } = await keystoreKeyEncryptionKeyApi.keyEncryptionKeyGet();
+
+    return derivedKey.decryptKey(key_encryption_key.serialized_key_encryption_key);
   }
 
   private async generateAndStoreDataEncryptionKey(
-    keyEncryptionKey: string,
+    keyEncryptionKey: SymmetricKey,
     sessionAuthentication: string
   ) {
     this.logger.log('Generate and store data encryption key');
-    const dek = Service.cryppo.generateRandomKey();
-    const dekEncryptedWithKEK = await Service.cryppo.encryptWithKey({
-      data: dek,
-      key: keyEncryptionKey,
-      strategy: Service.cryppo.CipherStrategy.AES_GCM,
-    });
+    const dek = SymmetricKey.generate();
+    const dekEncryptedWithKEK = await keyEncryptionKey.encryptKey(dek);
     const keystoreDataEncryptionKeyApi = this.keystoreAPIFactory(sessionAuthentication)
       .DataEncryptionKeyApi;
     const stored = await keystoreDataEncryptionKeyApi.dataEncryptionKeysPost({
-      serialized_data_encryption_key: dekEncryptedWithKEK.serialized,
+      serialized_data_encryption_key: dekEncryptedWithKEK,
     });
     return {
       key: dek,
-      serializedEncrypted: dekEncryptedWithKEK.serialized,
+      serializedEncrypted: dekEncryptedWithKEK,
       id: stored.data_encryption_key.id,
     };
   }
 
-  private getDataEncryptionKey(sessionAuthentication, encryptionSpaceId: string) {
+  private async getDataEncryptionKey(
+    credentials: IKeystoreToken & IKEK,
+    encryptionSpaceId: string
+  ): Promise<SymmetricKey> {
     this.logger.log('Requesting data encryption key');
-    const keystoreDataEncryptionKeyApi = this.keystoreAPIFactory(sessionAuthentication)
+    const keystoreDataEncryptionKeyApi = this.keystoreAPIFactory(credentials.keystore_access_token)
       .DataEncryptionKeyApi;
-    return keystoreDataEncryptionKeyApi
-      .dataEncryptionKeysIdGet(encryptionSpaceId)
-      .then(result => result.data_encryption_key);
+
+    const { data_encryption_key } = await keystoreDataEncryptionKeyApi.dataEncryptionKeysIdGet(
+      encryptionSpaceId
+    );
+
+    return credentials.key_encryption_key.decryptKey(
+      data_encryption_key.serialized_data_encryption_key
+    );
   }
 
-  private async generateAndStoreVaultKeyPair(
-    credentials: IKeystoreToken,
-    keyEncryptionKey: string
-  ) {
+  private async generateAndStoreVaultKeyPair(credentials: IKeystoreToken & IKEK) {
     this.logger.log('Generate and store vault key pair');
-    const keyPair: {
-      privateKey: string;
-      publicKey: string;
-      bits: number;
-    } = await Service.cryppo.generateRSAKeyPair();
+    const keyPair = await DecryptedKeypair.generate();
 
     const keystoreKeypairApi = this.keystoreAPIFactory(credentials.keystore_access_token)
       .KeypairApi;
 
-    const privateKeyEncryptedWithKEK = await Service.cryppo.encryptWithKey({
-      data: keyPair.privateKey,
-      key: keyEncryptionKey,
-      strategy: Service.cryppo.CipherStrategy.AES_GCM,
-    });
+    const privateKeyEncryptedWithKEK = await credentials.key_encryption_key.encryptKey(
+      keyPair.privateKey
+    );
 
     await keystoreKeypairApi.keypairsPost({
-      public_key: keyPair.publicKey,
-      encrypted_serialized_key: privateKeyEncryptedWithKEK.serialized,
+      public_key: keyPair.publicKey.key,
+      encrypted_serialized_key: privateKeyEncryptedWithKEK,
       external_identifiers: [this.vaultKeypairExternalId],
     });
 
@@ -126,10 +125,7 @@ export class UserService extends Service<UserApi> {
   }
 
   private async createNewVaultUser(
-    keyPair: {
-      publicKey: string;
-      privateKey: string;
-    },
+    keyPair: DecryptedKeypair,
     vaultAdmissionToken: string
   ): Promise<{ user: User } & IVaultToken> {
     this.logger.log('Create vault api user');
@@ -137,13 +133,12 @@ export class UserService extends Service<UserApi> {
     const vaultUserApi = this.vaultAPIFactory('').UserApi;
 
     const vaultUser = await vaultUserApi.mePost({
-      public_key: keyPair.publicKey,
+      public_key: keyPair.publicKey.key,
       admission_token: vaultAdmissionToken,
     });
-    const decryptedVaultSessionToken = await Service.cryppo.decryptSerializedWithPrivateKey({
-      privateKeyPem: keyPair.privateKey,
-      serialized: vaultUser.encrypted_session_authentication_string,
-    });
+    const decryptedVaultSessionToken = await keyPair.privateKey.decryptToken(
+      vaultUser.encrypted_session_authentication_string
+    );
 
     return {
       user: vaultUser.user,
@@ -151,22 +146,18 @@ export class UserService extends Service<UserApi> {
     };
   }
 
-  private async getVaultSession(keyPair: {
-    publicKey: string;
-    privateKey: string;
-  }): Promise<{ user: User } & IVaultToken> {
+  private async getVaultSession(keyPair: DecryptedKeypair): Promise<{ user: User } & IVaultToken> {
     // No auth key required as we're only logging in
     const sessionApi = this.vaultAPIFactory('').SessionApi;
 
-    const session = await sessionApi
-      .sessionPost({
-        public_key: keyPair.publicKey,
-      })
-      .then(result => result.session);
-    const decryptedVaultSessionToken = await Service.cryppo.decryptSerializedWithPrivateKey({
-      privateKeyPem: keyPair.privateKey,
-      serialized: session.encrypted_session_authentication_string,
+    const { session } = await sessionApi.sessionPost({
+      public_key: keyPair.publicKey.key,
     });
+
+    const decryptedVaultSessionToken = await keyPair.privateKey.decryptToken(
+      session.encrypted_session_authentication_string
+    );
+
     const userResponse = await this.getUser({ vault_access_token: decryptedVaultSessionToken });
     return {
       user: userResponse.user,
@@ -176,7 +167,7 @@ export class UserService extends Service<UserApi> {
 
   private async createPrivateEncryptionSpaceForUser(
     credentials: IVaultToken & IKeystoreToken,
-    keyEncryptionKey: string
+    keyEncryptionKey: SymmetricKey
   ) {
     const vaultUserApi = this.vaultAPIFactory(credentials.vault_access_token).UserApi;
 
@@ -218,9 +209,12 @@ export class UserService extends Service<UserApi> {
       sessionAuthenticationToken
     );
 
-    const derivedKey = await this.keyGen.derivePDKFromSecret(userPassword, secret);
+    const derivedKey: SymmetricKey = await this.keyGen.derivePDKFromSecret(userPassword, secret);
     const kek = await this.generateAndStoreKeyEncryptionKey(sessionAuthenticationToken, derivedKey);
-    const keyPair = await this.generateAndStoreVaultKeyPair(sessionAuthenticationToken, kek);
+    const keyPair = await this.generateAndStoreVaultKeyPair({
+      ...sessionAuthenticationToken,
+      key_encryption_key: kek,
+    });
     const { vault_access_token } = await this.createNewVaultUser(
       keyPair,
       vault_api_admission_token
@@ -234,9 +228,9 @@ export class UserService extends Service<UserApi> {
       secret,
       ...sessionAuthenticationToken,
       vault_access_token,
-      data_encryption_key: EncryptionKey.fromRaw(privateEncryptionSpace.key),
-      key_encryption_key: EncryptionKey.fromRaw(kek),
-      passphrase_derived_key: EncryptionKey.fromRaw(derivedKey),
+      data_encryption_key: privateEncryptionSpace.key,
+      key_encryption_key: kek,
+      passphrase_derived_key: derivedKey,
     });
   }
 
@@ -323,42 +317,28 @@ export class UserService extends Service<UserApi> {
    */
   public async getAuthData(userPassword: string, secret: string): Promise<AuthData> {
     this.logger.log('Deriving keys');
-    const derivedKey = await this.keyGen.derivePDKFromSecret(userPassword, secret);
+    const derivedKey: SymmetricKey = await this.keyGen.derivePDKFromSecret(userPassword, secret);
     const sessionAuthenticationToken = await this.loginKeystoreViaSRP(userPassword, secret);
 
-    const encryptedKek = await this.getKeyEncryptionKey(sessionAuthenticationToken);
-    const kek = await Service.cryppo.decryptWithKey({
-      serialized: encryptedKek.serialized_key_encryption_key,
-      key: derivedKey,
-    });
+    const kek = await this.getKeyEncryptionKey(sessionAuthenticationToken, derivedKey);
+    const credentials = {
+      ...sessionAuthenticationToken,
+      key_encryption_key: kek,
+    };
 
-    const keyPair = await this.requestKeyPair(sessionAuthenticationToken);
-    const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
-      serialized: keyPair.encrypted_serialized_key,
-      key: kek,
-    });
+    const keyPair = await this.requestKeyPair(credentials);
 
-    const { user, vault_access_token } = await this.getVaultSession({
-      privateKey: decryptedPrivateKey,
-      publicKey: keyPair.public_key,
-    });
+    const { user, vault_access_token } = await this.getVaultSession(keyPair);
 
-    const encryptedDek = await this.getDataEncryptionKey(
-      sessionAuthenticationToken,
-      user.private_dek_external_id!
-    );
-    const dek = await Service.cryppo.decryptWithKey({
-      serialized: encryptedDek.serialized_data_encryption_key,
-      key: kek,
-    });
+    const dek = await this.getDataEncryptionKey(credentials, user.private_dek_external_id!);
 
     return new AuthData({
       secret,
       ...sessionAuthenticationToken,
       vault_access_token,
-      data_encryption_key: EncryptionKey.fromRaw(dek),
-      key_encryption_key: EncryptionKey.fromRaw(kek),
-      passphrase_derived_key: EncryptionKey.fromRaw(derivedKey),
+      data_encryption_key: dek,
+      key_encryption_key: kek,
+      passphrase_derived_key: derivedKey,
     });
   }
 
@@ -383,22 +363,14 @@ export class UserService extends Service<UserApi> {
     // TODO - this is quite similar to getAuthData, only it doesn't download the DEK
     // Could factor out the differences.
     const sessionAuthenticationToken = await this.loginKeystoreViaSRP(userPassword, secret);
-    const derivedKey = await this.keyGen.derivePDKFromSecret(userPassword, secret);
-    const encryptedKek = await this.getKeyEncryptionKey(sessionAuthenticationToken);
-    const kek = await Service.cryppo.decryptWithKey({
-      serialized: encryptedKek.serialized_key_encryption_key,
-      key: derivedKey,
-    });
+    const derivedKey: SymmetricKey = await this.keyGen.derivePDKFromSecret(userPassword, secret);
+    const kek = await this.getKeyEncryptionKey(sessionAuthenticationToken, derivedKey);
 
-    const keyPair = await this.requestKeyPair(sessionAuthenticationToken);
-    const decryptedPrivateKey = await Service.cryppo.decryptWithKey({
-      serialized: keyPair.encrypted_serialized_key,
-      key: kek,
+    const keyPair = await this.requestKeyPair({
+      ...sessionAuthenticationToken,
+      key_encryption_key: kek,
     });
-    const { vault_access_token } = await this.getVaultSession({
-      privateKey: decryptedPrivateKey,
-      publicKey: keyPair.public_key,
-    });
+    const { vault_access_token } = await this.getVaultSession(keyPair);
 
     return { vault_access_token };
   }

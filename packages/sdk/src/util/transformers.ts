@@ -4,7 +4,7 @@ import {
   NestedSlotAttributes,
   Slot,
 } from '@meeco/vault-api-sdk';
-import { NewSlot, SlotType } from '../models/local-slot';
+import { NewSlot, SlotType } from '../models/slot-types';
 
 /** The API typically returns types with null props, but accepts only undefined */
 function fix<T>(x: T | null): T | undefined {

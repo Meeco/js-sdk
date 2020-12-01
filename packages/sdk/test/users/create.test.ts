@@ -125,9 +125,9 @@ function stubKeystore(stubUsername: boolean) {
 
     api
       .post('/keypairs', {
-        public_key: '--PUBLIC_KEY--ABCD',
+        public_key: '-----BEGIN PUBLIC KEY-----ABCD',
         encrypted_serialized_key:
-          '[serialized][encrypted]--PRIVATE_KEY--12324[with randomly_generated_key]',
+          '[serialized][encrypted]-----BEGIN RSA PRIVATE KEY-----ABCD[with randomly_generated_key]',
         external_identifiers: [UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER],
       })
       .matchHeader('Authorization', 'keystore_auth_token')
@@ -139,7 +139,7 @@ function stubKeystore(stubUsername: boolean) {
 function stubVault(api: nock.Scope) {
   api
     .post('/me', {
-      public_key: '--PUBLIC_KEY--ABCD',
+      public_key: '-----BEGIN PUBLIC KEY-----ABCD',
       admission_token: 'vault_token',
     })
     .reply(200, {
@@ -156,7 +156,10 @@ function stubVault(api: nock.Scope) {
         private_dek_external_id: 'data_encryption_key_id',
       },
     })
-    .matchHeader('Authorization', '[decrypted]encrypted_vault_session_string--PRIVATE_KEY--12324')
+    .matchHeader(
+      'Authorization',
+      '[decrypted]encrypted_vault_session_string-----BEGIN RSA PRIVATE KEY-----ABCD'
+    )
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       user: {},

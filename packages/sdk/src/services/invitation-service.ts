@@ -1,7 +1,8 @@
-import { Keypair } from '@meeco/keystore-api-sdk';
+import { Keypair as APIKeypair } from '@meeco/keystore-api-sdk';
 import { Connection, Invitation, InvitationApi } from '@meeco/vault-api-sdk';
-import { EncryptionKey } from '../models/encryption-key';
+import DecryptedKeypair from '../models/decrypted-keypair';
 import { MeecoServiceError } from '../models/service-error';
+import { SymmetricKey } from '../models/symmetric-key';
 import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
 
 export class InvitationService extends Service<InvitationApi> {
@@ -27,7 +28,7 @@ export class InvitationService extends Service<InvitationApi> {
       data_encryption_key,
     } = credentials;
 
-    let keyPair: Keypair;
+    let keyPair: APIKeypair;
 
     if (keypairId) {
       keyPair = await this.getKeyPair(keystore_access_token, keypairId);
@@ -35,8 +36,11 @@ export class InvitationService extends Service<InvitationApi> {
       keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
     }
 
-    this.logger.log('Encrypting recipient name');
-    const encryptedName: string = await this.encryptName(connectionName, data_encryption_key);
+    const encryptedName: string = await this.encryptNameOrDefault(
+      data_encryption_key,
+      connectionName,
+      'New Connection'
+    );
 
     this.logger.log('Sending invitation request');
     return this.vaultAPIFactory(vault_access_token)
@@ -72,7 +76,7 @@ export class InvitationService extends Service<InvitationApi> {
       data_encryption_key,
     } = credentials;
 
-    let keyPair: Keypair;
+    let keyPair: APIKeypair;
 
     if (keypairId) {
       keyPair = await this.getKeyPair(keystore_access_token, keypairId);
@@ -80,8 +84,11 @@ export class InvitationService extends Service<InvitationApi> {
       keyPair = await this.createAndStoreKeyPair(keystore_access_token, key_encryption_key);
     }
 
-    this.logger.log('Encrypting connection name');
-    const encryptedName: string = await this.encryptName(name, data_encryption_key);
+    const encryptedName: string = await this.encryptNameOrDefault(
+      data_encryption_key,
+      name,
+      'New Connection'
+    );
 
     this.logger.log('Accepting invitation');
     return this.vaultAPIFactory(vault_access_token)
@@ -98,17 +105,22 @@ export class InvitationService extends Service<InvitationApi> {
       .then(res => res.connection);
   }
 
-  private encryptName(name: string, dek: EncryptionKey) {
-    return Service.cryppo
-      .encryptWithKey({
-        data: name,
-        key: dek.key,
-        strategy: Service.cryppo.CipherStrategy.AES_GCM,
-      })
-      .then(result => result.serialized);
+  private async encryptNameOrDefault(
+    dek: SymmetricKey,
+    name: string,
+    defaultName: string
+  ): Promise<string> {
+    let input = name;
+    if (name === '') {
+      this.logger.warn('Connection Name was empty, using default');
+      input = defaultName;
+    }
+
+    this.logger.log('Encrypting recipient name');
+    return <Promise<string>>dek.encryptString(input);
   }
 
-  private async getKeyPair(keystoreToken: string, id: string): Promise<Keypair> {
+  private async getKeyPair(keystoreToken: string, id: string): Promise<APIKeypair> {
     try {
       return await this.keystoreAPIFactory(keystoreToken)
         .KeypairApi.keypairsIdGet(id)
@@ -121,26 +133,25 @@ export class InvitationService extends Service<InvitationApi> {
     }
   }
 
-  private async createAndStoreKeyPair(keystoreToken: string, keyEncryptionKey: EncryptionKey) {
+  private async createAndStoreKeyPair(
+    keystoreToken: string,
+    keyEncryptionKey: SymmetricKey
+  ): Promise<APIKeypair> {
     this.logger.log('Generating key pair');
-    const keyPair = await Service.cryppo.generateRSAKeyPair();
+    const keyPair = await DecryptedKeypair.generate();
 
-    const toPrivateKeyEncrypted = await Service.cryppo.encryptWithKey({
-      data: keyPair.privateKey,
-      key: keyEncryptionKey.key,
-      strategy: Service.cryppo.CipherStrategy.AES_GCM,
+    const toPrivateKeyEncrypted = await keyEncryptionKey.encryptKey(keyPair.privateKey);
+
+    const { keypair: resultKeypair } = await this.keystoreAPIFactory(
+      keystoreToken
+    ).KeypairApi.keypairsPost({
+      public_key: keyPair.publicKey.key,
+      encrypted_serialized_key: toPrivateKeyEncrypted,
+      // API will 500 without
+      metadata: {},
+      external_identifiers: [],
     });
 
-    const keystoreStoredKeyPair = await this.keystoreAPIFactory(keystoreToken)
-      .KeypairApi.keypairsPost({
-        public_key: keyPair.publicKey,
-        encrypted_serialized_key: toPrivateKeyEncrypted.serialized,
-        // API will 500 without
-        metadata: {},
-        external_identifiers: [],
-      })
-      .then(result => result.keypair);
-
-    return keystoreStoredKeyPair;
+    return resultKeypair;
   }
 }

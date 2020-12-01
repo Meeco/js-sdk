@@ -127,8 +127,8 @@ describe('ItemService', () => {
           .matchHeader('Meeco-Subscription-Key', environment.keystore.subscription_key)
           .reply(200, {
             keypair: {
-              public_key: '--PUBLIC_KEY--ABCD',
-              encrypted_serialized_key: '--PRIVATE_KEY--12324',
+              public_key: '-----BEGIN PUBLIC KEY-----ABCD',
+              encrypted_serialized_key: '-----BEGIN RSA PRIVATE KEY-----ABCD',
               external_identifiers: ['id'],
             },
           });
@@ -137,7 +137,7 @@ describe('ItemService', () => {
         const result = await new ItemService(environment).get(testUserAuth, 'my-item');
 
         expect(replaceUndefinedWithNull(result.slots[0].value)).to.match(
-          /[^\[]+\[decrypted with \[decrypted\]dek--PRIVATE_KEY--12324\[decrypted with my_key_encryption_key\]\]$/
+          /[^\[]+\[decrypted with \[decrypted\]dek.*\[decrypted with my_key_encryption_key\]\]$/
         );
       });
 
