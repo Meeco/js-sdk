@@ -2,8 +2,8 @@ name: Release Beta SDK
 
 on:
   push:
-    tags:
-      - 'releases/sdk/**-beta'
+    branches:
+      - 'beta-releases'
 
 jobs:
   create_sdk_beta_release:
@@ -24,14 +24,14 @@ jobs:
         env:
           CI: true
       - run: npx lerna run build --scope @meeco/sdk
-      - name: Publish NPM
-        run: |
-          npx lerna exec --scope @meeco/sdk -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
-          npx lerna exec --scope @meeco/sdk -- npm config set scope "@meeco"
-          npx lerna exec --scope @meeco/sdk -- npm publish --access public --tag beta
-        env:
-          CI: true
-          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+      # - name: Publish NPM
+      #   run: |
+      #     npx lerna exec --scope @meeco/sdk -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
+      #     npx lerna exec --scope @meeco/sdk -- npm config set scope "@meeco"
+      #     npx lerna exec --scope @meeco/sdk -- npm publish --access public --tag beta
+      #   env:
+      #     CI: true
+      #     NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
       - name: Build SDK Demo
         run:  npx lerna run build --scope @meeco/sdk-demo
       - name: Deploy SDK Demo GH page
