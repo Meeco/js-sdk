@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npx lerna run test
+      - run: npx lerna run test --scope @meeco/sdk-demo --scope @meeco/sdk
         env:
           CI: true
       - run: npx lerna run build --scope @meeco/sdk
