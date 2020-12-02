@@ -1,7 +1,6 @@
 import { ItemUpdate, NewItem, NewSlot, SlotType } from '@meeco/sdk';
 import { ItemApi, ItemResponse } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
-import nock from 'nock/types';
 import { ItemService } from '../../src/services/item-service';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
 import { default as MockItemResponse } from '../fixtures/responses/item-response/basic';
@@ -349,7 +348,7 @@ describe('ItemService', () => {
       thumbnails: [],
     };
 
-    function mockVault(api: nock.Scope) {
+    function mockVault(api) {
       api
         .put('/items/my-item', {
           item: {

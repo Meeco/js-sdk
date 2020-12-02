@@ -1,6 +1,5 @@
 import { InvitationService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
-import * as nock from 'nock';
 import sinon from 'sinon';
 import { ConnectionService } from '../../src/services/connection-service';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
@@ -76,7 +75,7 @@ describe('ConnectionService', () => {
       });
   });
 
-  function stubVault(api: nock.Scope) {
+  function stubVault(api: any) {
     api
       .get('/connections')
       .matchHeader('Authorization', 'from_vault_access_token')

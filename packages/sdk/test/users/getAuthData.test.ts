@@ -1,7 +1,6 @@
 import { Session, SrpChallenge } from '@meeco/keystore-api-sdk';
 import { UserService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
-import * as Nock from 'nock';
 import { customTest, environment, getOutputFixture } from '../test-helpers';
 
 describe('UserService.getAuthData', () => {
@@ -21,7 +20,7 @@ describe('UserService.getAuthData', () => {
     });
 });
 
-function stubKeystore(api: Nock.Scope) {
+function stubKeystore(api) {
   api
     .post('/srp/challenges', {
       srp_a: '000000000CLIENTPUBLIC',
@@ -75,7 +74,7 @@ function stubKeystore(api: Nock.Scope) {
     });
 }
 
-function stubVault(api: Nock.Scope) {
+function stubVault(api) {
   api
     .get('/me')
     .matchHeader(

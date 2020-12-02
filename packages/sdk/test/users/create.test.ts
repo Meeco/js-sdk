@@ -1,7 +1,6 @@
 import { ExternalAdmissionTokens, Session, SrpChallenge } from '@meeco/keystore-api-sdk';
 import { expect } from '@oclif/test';
 import open from 'cli-ux/lib/open';
-import nock from 'nock';
 import * as request from 'node-fetch';
 import { UserService } from '../../src/services/user-service';
 import Secrets from '../../src/util/secrets';
@@ -49,7 +48,7 @@ describe('User creation', () => {
 });
 
 function stubKeystore(stubUsername: boolean) {
-  return (api: nock.Scope) => {
+  return api => {
     if (stubUsername) {
       api.post('/srp/username', {}).reply(200, {
         username: 'mocked_generated_username',
@@ -136,7 +135,7 @@ function stubKeystore(stubUsername: boolean) {
   };
 }
 
-function stubVault(api: nock.Scope) {
+function stubVault(api) {
   api
     .post('/me', {
       public_key: '-----BEGIN PUBLIC KEY-----ABCD',
