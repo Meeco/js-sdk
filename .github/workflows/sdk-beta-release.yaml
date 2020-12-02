@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
+      - run: npx lerna bootstrap --scope @meeco/sdk --scope @meeco/sdk-demo --include-dependencies
       - run: npx lerna run test --scope @meeco/sdk-demo --scope @meeco/sdk
         env:
           CI: true
@@ -39,7 +39,7 @@ jobs:
         with:
           deploy_key: ${{ secrets.SDK_DOCS_DEPLOY_KEY }}
           publish_dir: ./docs/sdk-demo
-          destination_dir: /stage/sdk-demo
+          destination_dir: stage/sdk-demo
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           external_repository: Meeco/sdk-docs
