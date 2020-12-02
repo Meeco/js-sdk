@@ -19,18 +19,18 @@ export class DelegationService extends Service<DelegationApi> {
     const parentKek = credentials.key_encryption_key;
 
     this.logger.log('Generating keys for child user');
-    const childKek = SymmetricKey.new();
+    const childKek = SymmetricKey.generate();
     const encryptedChildKek = await parentKek.encryptKey(childKek);
 
-    const childDek = SymmetricKey.new();
+    const childDek = SymmetricKey.generate();
     const encryptedChildDek = await childKek.encryptKey(childDek);
 
     const childToParentKeyId = 'parent_connection';
-    const childToParentKey = await DecryptedKeypair.new();
+    const childToParentKey = await DecryptedKeypair.generate();
     const encryptedChildToParentKey = await childKek.encryptKey(childToParentKey.privateKey);
 
     const parentToChildKeyId = childConnectionIdentifier;
-    const parentToChildKey = await DecryptedKeypair.new();
+    const parentToChildKey = await DecryptedKeypair.generate();
     const encryptedParentToChildKey = await parentKek.encryptKey(parentToChildKey.privateKey);
 
     await this.keystoreAPIFactory(credentials).KeypairApi.keypairsPost({
