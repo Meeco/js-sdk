@@ -12,7 +12,7 @@ import Service, { IPageOptions, IVaultToken } from './service';
  */
 export class OrganizationMembersService extends Service<OrganizationsManagingMembersApi> {
   public getAPI(token: IVaultToken) {
-    return this.vaultAPIFactory(token.vault_access_token).OrganizationsManagingMembersApi;
+    return this.vaultAPIFactory(token).OrganizationsManagingMembersApi;
   }
 
   /**
@@ -26,7 +26,7 @@ export class OrganizationMembersService extends Service<OrganizationsManagingMem
     role: OrganizationMemberRoles = OrganizationMemberRoles.Admin
   ): Promise<Invitation> {
     this.logger.log('Creating invitation request');
-    return this.vaultAPIFactory(credentials.vault_access_token)
+    return this.vaultAPIFactory(credentials)
       .InvitationApi.invitationsPost({
         public_key: {
           keypair_external_id: 'org-agent-keypair',
@@ -46,7 +46,7 @@ export class OrganizationMembersService extends Service<OrganizationsManagingMem
     newRole: OrganizationMemberRoles
   ) {
     return this.vaultAPIFactory(
-      credentials.vault_access_token
+      credentials
     ).OrganizationsManagingMembersApi.organizationsOrganizationIdMembersIdPut(
       organizationId,
       userId,
@@ -64,7 +64,7 @@ export class OrganizationMembersService extends Service<OrganizationsManagingMem
     options?: IPageOptions
   ): Promise<ListOrganizationMemberResponse> {
     return this.vaultAPIFactory(
-      credentials.vault_access_token
+      credentials
     ).OrganizationsManagingMembersApi.organizationsOrganizationIdMembersGet(
       organizationId,
       options?.nextPageAfter,
@@ -76,8 +76,7 @@ export class OrganizationMembersService extends Service<OrganizationsManagingMem
     credentials: IVaultToken,
     organizationId: string
   ): Promise<ListOrganizationMemberResponse> {
-    const api = this.vaultAPIFactory(credentials.vault_access_token)
-      .OrganizationsManagingMembersApi;
+    const api = this.vaultAPIFactory(credentials).OrganizationsManagingMembersApi;
     return getAllPaged(cursor =>
       api.organizationsOrganizationIdMembersGet(organizationId, cursor)
     ).then(reducePagesTakeLast);

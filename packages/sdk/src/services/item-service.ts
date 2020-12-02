@@ -21,13 +21,13 @@ export class ItemService extends Service<ItemApi> {
   }
 
   public getAPI(token: IVaultToken) {
-    return this.vaultAPIFactory(token.vault_access_token).ItemApi;
+    return this.vaultAPIFactory(token).ItemApi;
   }
 
   public async create(credentials: IVaultToken & IDEK, item: NewItem): Promise<DecryptedItem> {
-    const { vault_access_token, data_encryption_key } = credentials;
+    const { data_encryption_key } = credentials;
     const request = await item.toRequest(data_encryption_key);
-    const response = await this.vaultAPIFactory(vault_access_token).ItemApi.itemsPost(request);
+    const response = await this.vaultAPIFactory(credentials).ItemApi.itemsPost(request);
     return DecryptedItem.fromAPI(credentials, response);
   }
 
@@ -35,7 +35,7 @@ export class ItemService extends Service<ItemApi> {
     credentials: IVaultToken & IDEK,
     newData: ItemUpdate
   ): Promise<DecryptedItem> {
-    const response = await this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsIdPut(
+    const response = await this.vaultAPIFactory(credentials).ItemApi.itemsIdPut(
       newData.id,
       await newData.toRequest(credentials)
     );
@@ -45,7 +45,7 @@ export class ItemService extends Service<ItemApi> {
 
   public async removeSlot(credentials: IVaultToken, slotId: string): Promise<void> {
     this.logger.log('Removing slot');
-    await this.vaultAPIFactory(credentials.vault_access_token).SlotApi.slotsIdDelete(slotId);
+    await this.vaultAPIFactory(credentials).SlotApi.slotsIdDelete(slotId);
     this.logger.log('Slot successfully removed');
   }
 
@@ -61,17 +61,15 @@ export class ItemService extends Service<ItemApi> {
   ): Promise<DecryptedItem> {
     let dataEncryptionKey = credentials.data_encryption_key;
 
-    const result = await this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsIdGet(
-      id
-    );
+    const result = await this.vaultAPIFactory(credentials).ItemApi.itemsIdGet(id);
     const { item } = result;
 
     // If the Item is from a share, use the share DEK to decrypt instead.
     // Second condition is for typecheck
     if (ItemService.itemIsFromShare(item) && item.share_id !== null) {
-      const { share } = await this.vaultAPIFactory(
-        credentials.vault_access_token
-      ).SharesApi.incomingSharesIdGet(item.share_id);
+      const { share } = await this.vaultAPIFactory(credentials).SharesApi.incomingSharesIdGet(
+        item.share_id
+      );
 
       dataEncryptionKey = await new ShareService(this.environment).getShareDEK(credentials, share);
     }
@@ -84,7 +82,7 @@ export class ItemService extends Service<ItemApi> {
     templateIds?: string,
     options?: IPageOptions
   ): Promise<ItemsResponse> {
-    const result = await this.vaultAPIFactory(credentials.vault_access_token).ItemApi.itemsGet(
+    const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
       templateIds,
       undefined,
       undefined,
@@ -100,7 +98,7 @@ export class ItemService extends Service<ItemApi> {
   }
 
   public async listAll(credentials: IVaultToken, templateIds?: string): Promise<ItemsResponse> {
-    const api = this.vaultAPIFactory(credentials.vault_access_token).ItemApi;
+    const api = this.vaultAPIFactory(credentials).ItemApi;
 
     return getAllPaged(cursor => api.itemsGet(templateIds, undefined, undefined, cursor)).then(
       reducePages

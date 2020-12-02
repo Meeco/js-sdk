@@ -16,6 +16,7 @@ export interface IPageOptions {
 
 export interface IVaultToken {
   vault_access_token: string;
+  delegation_id?: string;
 }
 
 export interface IDEK {
@@ -28,6 +29,7 @@ export interface IKEK {
 
 export interface IKeystoreToken {
   keystore_access_token: string;
+  delegation_id?: string;
 }
 
 /**

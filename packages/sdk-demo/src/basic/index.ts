@@ -1,6 +1,7 @@
 import {
   AuthData,
   configureFetch,
+  DelegationService,
   Environment,
   ItemService,
   NewItem,
@@ -81,6 +82,9 @@ $('getItems').addEventListener('click', getItems);
 $('getTemplates').addEventListener('click', getTemplates);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 $('createItem').addEventListener('click', createItem);
+$('accountOwnerId').addEventListener('blur', checkAccountOwnerId);
+$('enableDelegation').addEventListener('click', enableDelegation);
+$('createChildUser').addEventListener('click', createChildUser);
 
 async function getUsername() {
   try {
@@ -137,6 +141,51 @@ async function createUser() {
     $set('userData', JSON.stringify(user, null, 2));
   } catch (error) {
     $set('userData', `Error (See Action Log for Details)`);
+    return handleException(error);
+  }
+}
+
+function checkAccountOwnerId() {
+  const checkbox = <HTMLInputElement>$('enableDelegation');
+
+  if ($get('accountOwnerId')) {
+    $('enableDelegationLabel').classList.remove('disabled');
+    checkbox.disabled = false;
+  } else {
+    $('enableDelegationLabel').classList.add('disabled');
+    checkbox.disabled = true;
+    checkbox.checked = false;
+  }
+}
+
+function enableDelegation() {
+  if (STATE.user) {
+    if ((<HTMLInputElement>$('enableDelegation')).checked) {
+      STATE.user.delegation_id = $get('accountOwnerId');
+    } else {
+      STATE.user.delegation_id = undefined;
+    }
+  }
+}
+
+async function createChildUser() {
+  clearLog();
+  if (!STATE.user) {
+    return alert('Fetch user data above before fetching user items');
+  }
+  $set('accountOwnerId', '');
+  $set('delegateUserData', '');
+  try {
+    const delegation = await new DelegationService(environment, log).createChildUser(
+      STATE.user,
+      'child_connection_' + Date.now()
+    );
+    $set('accountOwnerId', delegation.vault_account_owner_id);
+    $set('delegateUserData', JSON.stringify(delegation, null, 2));
+
+    checkAccountOwnerId();
+  } catch (error) {
+    $set('delegateUserData', `Error (See Action Log for Details)`);
     return handleException(error);
   }
 }

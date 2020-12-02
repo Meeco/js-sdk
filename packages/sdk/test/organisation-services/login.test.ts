@@ -20,10 +20,7 @@ describe('Organization-services login', () => {
         })
     )
     .it('returns organization service agent login information ', async () => {
-      const orgService = new OrganizationServicesService(
-        environment,
-        testUserAuthFixture.vault_access_token
-      );
+      const orgService = new OrganizationServicesService(environment, testUserAuthFixture);
       const result = await orgService.getLogin(
         input.organization_id,
         input.id,

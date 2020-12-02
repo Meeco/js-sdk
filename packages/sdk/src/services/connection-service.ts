@@ -27,7 +27,7 @@ export interface ConnectionCreateData {
  */
 export class ConnectionService extends Service<ConnectionApi> {
   public getAPI(token: IVaultToken) {
-    return this.vaultAPIFactory(token.vault_access_token).ConnectionApi;
+    return this.vaultAPIFactory(token).ConnectionApi;
   }
 
   /**
@@ -85,10 +85,10 @@ export class ConnectionService extends Service<ConnectionApi> {
     credentials: IVaultToken & IDEK,
     options?: IPageOptions
   ): Promise<IDecryptedConnection[]> {
-    const { vault_access_token, data_encryption_key } = credentials;
+    const { data_encryption_key } = credentials;
 
     this.logger.log('Fetching connections');
-    const result = await this.vaultAPIFactory(vault_access_token).ConnectionApi.connectionsGet(
+    const result = await this.vaultAPIFactory(credentials).ConnectionApi.connectionsGet(
       options?.nextPageAfter,
       options?.perPage
     );
@@ -102,8 +102,8 @@ export class ConnectionService extends Service<ConnectionApi> {
   }
 
   public async listAll(credentials: IVaultToken & IDEK): Promise<IDecryptedConnection[]> {
-    const { vault_access_token, data_encryption_key } = credentials;
-    const api = this.vaultAPIFactory(vault_access_token).ConnectionApi;
+    const { data_encryption_key } = credentials;
+    const api = this.vaultAPIFactory(credentials).ConnectionApi;
 
     return getAllPaged(cursor => api.connectionsGet(cursor)).then(results => {
       const responses = results.reduce(
@@ -136,9 +136,9 @@ export class ConnectionService extends Service<ConnectionApi> {
 
   public async get(credentials: IVaultToken, connectionId: string): Promise<Connection> {
     this.logger.log('Fetching user connection');
-    const response = await this.vaultAPIFactory(
-      credentials.vault_access_token
-    ).ConnectionApi.connectionsIdGet(connectionId);
+    const response = await this.vaultAPIFactory(credentials).ConnectionApi.connectionsIdGet(
+      connectionId
+    );
     const connection = response.connection;
 
     if (!connection || !connection.own.id) {
@@ -155,7 +155,7 @@ export class ConnectionService extends Service<ConnectionApi> {
   public async findConnectionBetween(fromUser: IVaultToken, toUser: IVaultToken) {
     this.logger.log('Fetching from user connections');
     const { connections: fromUserConnections } = await this.vaultAPIFactory(
-      fromUser.vault_access_token
+      fromUser
     ).ConnectionApi.connectionsGet();
 
     if (fromUserConnections.length === 0) {
@@ -164,7 +164,7 @@ export class ConnectionService extends Service<ConnectionApi> {
 
     this.logger.log('Fetching to user connections');
     const { connections: toUserConnections } = await this.vaultAPIFactory(
-      toUser.vault_access_token
+      toUser
     ).ConnectionApi.connectionsGet();
 
     let toUserConnection: Connection | undefined;

@@ -31,7 +31,7 @@ export interface IClientTaskExecResult {
  */
 export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
   public getAPI(token: IVaultToken): ClientTaskQueueApi {
-    return this.vaultAPIFactory(token.vault_access_token).ClientTaskQueueApi;
+    return this.vaultAPIFactory(token).ClientTaskQueueApi;
   }
 
   /**
@@ -46,9 +46,7 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
     target_id?: string,
     options?: IPageOptions
   ): Promise<ClientTaskQueueResponse> {
-    const result = await this.vaultAPIFactory(
-      credentials.vault_access_token
-    ).ClientTaskQueueApi.clientTaskQueueGet(
+    const result = await this.vaultAPIFactory(credentials).ClientTaskQueueApi.clientTaskQueueGet(
       options?.nextPageAfter,
       options?.perPage,
       change_state,
@@ -69,7 +67,7 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
     states: ClientTaskState[] = [ClientTaskState.Todo],
     target_id?: string
   ): Promise<ClientTask[]> {
-    const api = this.vaultAPIFactory(credentials.vault_access_token).ClientTaskQueueApi;
+    const api = this.vaultAPIFactory(credentials).ClientTaskQueueApi;
     return getAllPaged(cursor =>
       api.clientTaskQueueGet(cursor, undefined, change_state, target_id, states)
     )
@@ -170,9 +168,7 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
     };
 
     // Set all tasks to in_progress
-    await this.vaultAPIFactory(
-      credentials.vault_access_token
-    ).ClientTaskQueueApi.clientTaskQueuePut({
+    await this.vaultAPIFactory(credentials).ClientTaskQueueApi.clientTaskQueuePut({
       client_tasks: tasks.map(({ id }) => ({ id, state: ClientTaskState.InProgress })),
     });
     this.logger.log('Set: in_progress');
@@ -186,9 +182,7 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
       .concat(taskReport.failed)
       .map(({ id, state, report }) => ({ id, state, report }));
 
-    await this.vaultAPIFactory(
-      credentials.vault_access_token
-    ).ClientTaskQueueApi.clientTaskQueuePut({
+    await this.vaultAPIFactory(credentials).ClientTaskQueueApi.clientTaskQueuePut({
       client_tasks: allTasks,
     });
 

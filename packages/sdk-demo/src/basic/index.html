@@ -46,7 +46,7 @@
       <button id="getCaptcha">Get Captcha Token</button>
       <input placeholder="captcha" id="captcha" />
     </div> -->
-    <div id="logCard" class="card">
+    <div id="logCard" class="card on-top">
       <h4>Event Log</h4>
       <hr />
       <sub>Any log events that the SDK output will appear here:</sub>
@@ -90,6 +90,24 @@
       <button id="fetchUserData">Fetch User Data</button>
       <button id="createUser">Create New User</button>
       <textarea disabled id="userData" rows="10"></textarea>
+    </div>
+
+    <div class="card">
+      <h4>Setup Delegation</h4>
+      <hr />
+      <input
+        placeholder="Enter or Generate Account Owner ID"
+        autocapitalize="off"
+        autocomplete="off"
+        id="accountOwnerId"
+      />
+      <label id="enableDelegationLabel" class="checkbox-input pull-right disabled">
+        Delegation Active
+        <input type="checkbox" id="enableDelegation" disabled />
+        <span class="checkmark"></span>
+      </label>
+      <button id="createChildUser">Become Delegate for New User</button>
+      <textarea disabled id="delegateUserData" rows="10"></textarea>
     </div>
 
     <div class="card">

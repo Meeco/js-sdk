@@ -61,3 +61,15 @@ input[type="button"], input[type="reset"] {
   width: auto;
   display: inline-block;
 }
+
+.pull-right {
+  float: right;
+}
+
+.disabled {
+  opacity: 50%;
+}
+
+.on-top {
+  z-index: 1;
+}
