@@ -1,6 +1,7 @@
 name: Publish SDK demo on release
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'releases/sdk/**'
