@@ -4,9 +4,18 @@ const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: './demo/index.ts',
+  entry: {
+    styles: './src/styles.scss',
+    basic: './src/basic/index.ts',
+    shares: './src/shares/index.ts',
+  },
+  mode: 'development',
   devServer: {
-    port: 1234
+    port: 1234,
+    hot: true
+  },
+  watchOptions: {
+    ignored:/.*\.#.*/
   },
   module: {
     rules: [
@@ -14,7 +23,7 @@ module.exports = {
         test: /\.ts$/,
         loader: 'ts-loader',
         options: {
-          configFile: path.resolve('./tsconfig.demo.json')
+          configFile: path.resolve('./tsconfig.json')
         }
       },
       {
@@ -32,11 +41,22 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
-    plugins: [new TsconfigPathsPlugin({ configFile: path.resolve('./tsconfig.demo.json') })]
+    plugins: [new TsconfigPathsPlugin({ configFile: path.resolve('./tsconfig.json') })]
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, './demo/index.html')
+      template: path.resolve(__dirname, './src/index.html'),
+      chunks: ['styles']
+    }),
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, './src/basic/index.html'),
+      filename: 'basic/index.html',
+      chunks: [ 'basic' ]
+    }),
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, './src/shares/index.html'),
+      filename: 'shares/index.html',
+      chunks: [ 'shares' ]
     }),
     new ProgressBarPlugin()
   ],

@@ -16,12 +16,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npx lerna bootstrap --hoist
-      - run: npx lerna run test
+      - run: npm install
+      - run: npm run test
         env:
           CI: true
       # We want to ensure there are no issues the demo builds as well
-      - run: npx lerna run docs
+      - run: npm run docs
       - uses: actions/upload-artifact@v2
         with:
           name: Cypress Test Recording
@@ -36,4 +36,4 @@ jobs:
         with:
           name: Cypress Failure Diffs
           path: packages/style-kit/cypress/snapshots/
-      - run: npx lerna run build
+      - run: npm run build

@@ -8,8 +8,8 @@ import {
   Secrets,
   TemplateService,
   UserService,
-} from '../src/index';
-import './styles.scss';
+} from '@meeco/sdk';
+import '../styles.scss';
 
 const $ = id => document.getElementById(id)!;
 const $get = (id: string) => ($(id) as HTMLInputElement)?.value;
