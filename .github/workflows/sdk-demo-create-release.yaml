@@ -1,4 +1,4 @@
-name: Publish SDK demo on beta/stage release
+name: Publish SDK demo on release
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - '!releases/sdk/**-alpha'
 
 jobs:
-  create_sdk_beta_release:
+  push_sdk_demo:
     runs-on: ubuntu-latest
 
     strategy:

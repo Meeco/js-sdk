@@ -6,7 +6,7 @@ on:
       - 'releases/sdk/**-beta'
 
 jobs:
-  create_sdk_beta_release:
+  push_sdk_demo_beta:
     runs-on: ubuntu-latest
 
     strategy:

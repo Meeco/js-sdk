@@ -1,4 +1,4 @@
-name: Release Beta SDK
+name: Release SDK Beta
 
 on:
   push:
