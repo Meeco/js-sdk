@@ -3,7 +3,9 @@ name: Publish SDK demo on beta/stage release
 on:
   push:
     tags:
-      - 'releases/sdk/**-beta'
+      - 'releases/sdk/**'
+      - '!releases/sdk/**-beta'
+      - '!releases/sdk/**-alpha'
 
 jobs:
   create_sdk_beta_release:
@@ -27,7 +29,7 @@ jobs:
         with:
           deploy_key: ${{ secrets.SDK_DOCS_DEPLOY_KEY }}
           publish_dir: ./docs/sdk-demo
-          destination_dir: stage/sdk-demo
+          destination_dir: sdk-demo
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           external_repository: Meeco/sdk-docs
