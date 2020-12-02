@@ -2,8 +2,8 @@ name: Release Beta SDK
 
 on:
   push:
-    branches:
-      - 'beta-releases'
+    tags:
+      - 'releases/sdk/**-beta'
 
 jobs:
   create_sdk_beta_release:
@@ -19,28 +19,16 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npx lerna bootstrap --scope @meeco/sdk --scope @meeco/sdk-demo --include-dependencies
-      - run: npx lerna run test --scope @meeco/sdk-demo --scope @meeco/sdk
+      - run: npm install
+      - run: npx lerna run test --scope '@meeco/{sdk,sdk-demo}'
         env:
           CI: true
       - run: npx lerna run build --scope @meeco/sdk
-      # - name: Publish NPM
-      #   run: |
-      #     npx lerna exec --scope @meeco/sdk -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
-      #     npx lerna exec --scope @meeco/sdk -- npm config set scope "@meeco"
-      #     npx lerna exec --scope @meeco/sdk -- npm publish --access public --tag beta
-      #   env:
-      #     CI: true
-      #     NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
-      - name: Build SDK Demo
-        run:  npx lerna run build --scope @meeco/sdk-demo
-      - name: Deploy SDK Demo GH page
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          deploy_key: ${{ secrets.SDK_DOCS_DEPLOY_KEY }}
-          publish_dir: ./docs/sdk-demo
-          destination_dir: stage/sdk-demo
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          external_repository: Meeco/sdk-docs
-          publish_branch: master
+      - name: Publish NPM
+        run: |
+          npx lerna exec --scope @meeco/sdk -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
+          npx lerna exec --scope @meeco/sdk -- npm config set scope "@meeco"
+          npx lerna exec --scope @meeco/sdk -- npm publish --access public --tag beta
+        env:
+          CI: true
+          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
