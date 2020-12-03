@@ -2,8 +2,7 @@
 
 html,
 body {
-  width: 100vw;
-  max-width: 600px;
+  width: 98vw;
   margin: auto;
   padding-top: 40px;
   font-family: sans-serif;
@@ -30,13 +29,38 @@ body {
   }
 }
 
+.page-subtitle {
+  @extend .title;
+  top: 64px;
+  background-color: map-get($meeco-charcoal-palette, 'tint50');
+  div {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.columns {
+  display: flex;
+  flex-direction: row;
+}
+
+.single-column {
+  margin: auto;
+}
+
+// only used on shares page
+#app-main {
+  padding-top: 40px;
+}
+
 div.card {
   * {
     margin: 0 0 8px 0;
   }
   display: block;
   margin: 2rem;
-  padding: 2rem;
+  padding: 1rem;
+  max-width: 600px;
   textarea {
     width: 100%;
   }
@@ -45,6 +69,12 @@ div.card {
   }
   input[type="text"] {
     width: 100%;
+  }
+}
+
+.content {
+  div:first-child {
+    flex-grow: 1;
   }
 }
 
@@ -62,6 +92,16 @@ input[type="button"], input[type="reset"] {
   display: inline-block;
 }
 
+input[type="checkbox"] {
+  width: auto;
+  margin-left: 1em;
+  display: inline;
+}
+
+select {
+  @extend input;
+}
+
 .pull-right {
   float: right;
 }
@@ -70,6 +110,20 @@ input[type="button"], input[type="reset"] {
   opacity: 50%;
 }
 
+button:disabled {
+  background-color: $meeco-smoke;
+}
+
 .on-top {
   z-index: 1;
+}
+
+.page-footer {
+  position: absolute;
+  bottom: 1em;
+  margin: auto;
+  width: 98vw;
+  * {
+    text-align: center;
+  }
 }

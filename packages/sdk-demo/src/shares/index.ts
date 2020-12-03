@@ -20,7 +20,6 @@ import {
   UserService,
 } from '@meeco/sdk';
 import { Share } from '@meeco/vault-api-sdk';
-import './styles.scss';
 
 const $ = id => document.getElementById(id)!;
 const $get = (id: string) => ($(id) as HTMLInputElement)?.value;
@@ -287,18 +286,17 @@ function AppComponent() {
   };
 
   return {
-    view: vnode =>
-      m('div.columns', [
-        m('div', [m(user1), mainItem ? m(mainItem, { item: userState[0].item }) : null]),
-        m('div', [
-          m(user2),
-          userState[1]?.share ? m(user2ItemComponent, { userState: userState[1] }) : null,
-        ]),
-        m('div', [
-          m(user3),
-          userState[2]?.share ? m(user3ItemComponent, { userState: userState[2] }) : null,
-        ]),
+    view: vnode => [
+      m('div', [m(user1), mainItem ? m(mainItem, { item: userState[0].item }) : null]),
+      m('div', [
+        m(user2),
+        userState[1]?.share ? m(user2ItemComponent, { userState: userState[1] }) : null,
       ]),
+      m('div', [
+        m(user3),
+        userState[2]?.share ? m(user3ItemComponent, { userState: userState[2] }) : null,
+      ]),
+    ],
   };
 }
 

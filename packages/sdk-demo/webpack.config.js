@@ -51,12 +51,15 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/basic/index.html'),
       filename: 'basic/index.html',
-      chunks: [ 'basic' ]
+      chunks: [ 'styles', 'basic' ],
+      // emit non-blocking scripts to improve page load appearance
+      scriptLoading: 'defer',
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/shares/index.html'),
       filename: 'shares/index.html',
-      chunks: [ 'shares' ]
+      chunks: [ 'styles', 'shares' ],
+      scriptLoading: 'defer',
     }),
     new ProgressBarPlugin()
   ],

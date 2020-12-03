@@ -10,7 +10,6 @@ import {
   TemplateService,
   UserService,
 } from '@meeco/sdk';
-import '../styles.scss';
 
 const $ = id => document.getElementById(id)!;
 const $get = (id: string) => ($(id) as HTMLInputElement)?.value;
