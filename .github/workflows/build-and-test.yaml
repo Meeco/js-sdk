@@ -21,19 +21,19 @@ jobs:
         env:
           CI: true
       # We want to ensure there are no issues the demo builds as well
-      - run: npx lerna run docs
-      - uses: actions/upload-artifact@v2
-        with:
-          name: Cypress Test Recording
-          path: packages/style-kit/cypress/videos/
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: Cypress Test Screenshots
-          path: packages/style-kit/cypress/screenshots/
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: Cypress Failure Diffs
-          path: packages/style-kit/cypress/snapshots/
+      # - run: npx lerna run docs
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: Cypress Test Recording
+      #     path: packages/style-kit/cypress/videos/
+      # - uses: actions/upload-artifact@v2
+      #   if: failure()
+      #   with:
+      #     name: Cypress Test Screenshots
+      #     path: packages/style-kit/cypress/screenshots/
+      # - uses: actions/upload-artifact@v2
+      #   if: failure()
+      #   with:
+      #     name: Cypress Failure Diffs
+      #     path: packages/style-kit/cypress/snapshots/
       - run: npx lerna run build
