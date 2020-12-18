@@ -18,7 +18,6 @@ pipeline {
           if (env.CHANGE_TARGET == 'master') {
             env.VAULT_URL = env.SANDBOX_VAULT_URL
             env.KEYSTORE_URL = env.SANDBOX_KEYSTORE_URL
-            // need to set sub key
           } else if (env.CHANGE_TARGET == 'stage') {
             env.VAULT_URL = env.STAGE_VAULT_URL
             env.KEYSTORE_URL = env.STAGE_KEYSTORE_URL
@@ -28,10 +27,9 @@ pipeline {
             env.KEYSTORE_URL = env.DEV_KEYSTORE_URL
           }
 
-          echo "running test for following env"
           echo "The VAULT_URL is ${env.VAULT_URL}"
           echo "The KEYSTORE_URL is ${env.KEYSTORE_URL}"
-          echo "The SUBSCRIPTION_KEY is ${env.SUBSCRIPTION_KEY}"
+          echo "The SUBSCRIPTION_KEY is ${env.SANDBOX_VAULT_SUBSCRIPTION_KEY}"
 
           docker.image('nikolaik/python-nodejs').inside ("--user=root") {
             sh """
