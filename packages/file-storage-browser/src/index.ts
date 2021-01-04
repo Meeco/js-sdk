@@ -109,6 +109,7 @@ export async function fileDownloadBrowser({
   vaultUrl,
   authConfig,
   progressUpdateFunc = null,
+  onCancel = null,
 }: {
   attachmentId: string;
   dek: string;
@@ -117,6 +118,7 @@ export async function fileDownloadBrowser({
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
     | null;
+  onCancel?: any;
 }): Promise<File> {
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
@@ -138,7 +140,8 @@ export async function fileDownloadBrowser({
       dek,
       authConfig,
       environment.vault.url,
-      progressUpdateFunc
+      progressUpdateFunc,
+      onCancel
     );
     buffer = downloaded.byteArray;
   } else {
@@ -152,11 +155,12 @@ export async function fileDownloadBrowser({
 }
 
 async function largeFileDownloadBrowser(
-  attachmentID,
-  dek,
+  attachmentID: string,
+  dek: string | null,
   authConfig: IFileStorageAuthConfiguration,
-  vaultUrl,
-  progressUpdateFunc: ((chunkBuffer, percentageComplete, videoCodec?: string) => void) | null
+  vaultUrl: string,
+  progressUpdateFunc: ((chunkBuffer, percentageComplete, videoCodec?: string) => void) | null,
+  onCancel?: any
 ) {
   const direct_download_encrypted_artifact = await getDirectDownloadInfo(
     attachmentID,
@@ -171,7 +175,7 @@ async function largeFileDownloadBrowser(
     vaultUrl
   );
   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
-  const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
+  const encrypted_artifact_uint8array: any = await client.start(null, null, null, null, onCancel);
   const encrypted_artifact = JSON.parse(binaryBufferToString(encrypted_artifact_uint8array));
   const videoCodec = encrypted_artifact.videoCodec;
   if (progressUpdateFunc && videoCodec) {
@@ -189,7 +193,8 @@ async function largeFileDownloadBrowser(
         ad: encrypted_artifact.ad,
         at: binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
       },
-      encrypted_artifact.range[index]
+      encrypted_artifact.range[index],
+      onCancel
     );
     blocks = new Uint8Array([...(blocks as any), ...block]);
     if (progressUpdateFunc) {
@@ -210,6 +215,36 @@ async function getDirectDownloadInfo(
   const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl));
   const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
   return result.attachment_direct_download_url;
+}
+
+export function fileDownloadBroswerWithCancel({
+  attachmentId,
+  dek,
+  vaultUrl,
+  authConfig,
+  progressUpdateFunc = null,
+}: {
+  attachmentId: string;
+  dek: string;
+  vaultUrl: string;
+  authConfig: IFileStorageAuthConfiguration;
+  progressUpdateFunc?:
+    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
+    | null;
+}) {
+  let cancel;
+  const promise = new Promise((resolve, reject) => (cancel = resolve));
+  return {
+    cancel,
+    success: fileDownloadBrowser({
+      attachmentId,
+      dek,
+      vaultUrl,
+      authConfig,
+      progressUpdateFunc,
+      onCancel: promise,
+    }),
+  };
 }
 
 export function fileUploadBrowserWithCancel({

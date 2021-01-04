@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { CancelToken } from 'axios';
 
 const BLOCK_MAX_SIZE = 1 * 1024 * 1024; // 1MB;
 
@@ -56,7 +56,7 @@ const putBlockList = async (sasUrl, blockIDList, fileType) => {
  * @param {String} sasUrl azure blob storage endpoint with sas auth
  * @param {String} range range in bytes e.g 0-255
  */
-const getBlock = async (sasUrl, range) => {
+const getBlock = async (sasUrl: any, range: any, cancelToken?: CancelToken) => {
   const url = `${sasUrl}`;
   const headers = range ? { 'x-ms-range': range, Range: range } : {};
   return axios({
@@ -64,6 +64,7 @@ const getBlock = async (sasUrl, range) => {
     url,
     headers,
     responseType: 'arraybuffer',
+    cancelToken: cancelToken,
   }).then(result => {
     return result;
   });
