@@ -64,7 +64,7 @@ const getBlock = async (sasUrl: any, range: any, cancelToken?: CancelToken) => {
     url,
     headers,
     responseType: 'arraybuffer',
-    cancelToken: cancelToken,
+    cancelToken,
   }).then(result => {
     return result;
   });
