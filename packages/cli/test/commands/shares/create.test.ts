@@ -4,6 +4,8 @@ import sinon from 'sinon';
 import { customTest, inputFixture, testEnvironmentFile } from '../../test-helpers';
 
 describe('shares:create', () => {
+  const d = new Date();
+  const current_year = d.getFullYear().toString();
   const stub1 = sinon.stub();
   stub1.returns({
     shares: [
@@ -36,7 +38,7 @@ describe('shares:create', () => {
       inputFixture('create-share.input.yaml'),
       '--onshare',
       '-d',
-      '2020-12-30T13:00:00.000Z',
+      current_year + '-12-30T13:00:00.000Z',
       ...testEnvironmentFile,
     ])
     .it('can setup sharing between two users', () => {
@@ -44,7 +46,7 @@ describe('shares:create', () => {
       expect(fromConnection).to.eql('from_user_connection_id');
       expect(itemId).to.eql('from_user_vault_item_to_share_id');
       expect(options).to.deep.equal({
-        expires_at: new Date('2020-12-30T13:00:00.000Z'),
+        expires_at: new Date(current_year + '-12-30T13:00:00.000Z'),
         sharing_mode: 'anyone',
         acceptance_required: 'acceptance_not_required',
         terms: undefined,
@@ -82,12 +84,12 @@ describe('shares:create', () => {
       '-c',
       inputFixture('create-share-oneslot.input.yaml'),
       '-d',
-      '2020-12-30T13:00:00.000Z',
+      current_year + '-12-30T13:00:00.000Z',
       ...testEnvironmentFile,
     ])
     .it('can share a single slot', () => {
       expect(stub2.args[0][3]).to.deep.equal({
-        expires_at: new Date('2020-12-30T13:00:00.000Z'),
+        expires_at: new Date(current_year + '-12-30T13:00:00.000Z'),
         sharing_mode: 'owner',
         slot_id: 'slot_a',
         acceptance_required: 'acceptance_not_required',
