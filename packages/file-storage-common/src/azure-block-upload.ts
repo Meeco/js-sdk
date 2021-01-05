@@ -137,7 +137,7 @@ export class AzureBlockUpload {
       | null,
     onCancel?: any
   ) {
-    const p = new Promise((resolve, reject) => {
+    const p = new Promise<void>((resolve, reject) => {
       const blockIDList: any[] = [];
       const range: any[] = [];
       const iv: any[] = [];

@@ -1,8 +1,8 @@
-import { Environment, ItemService, SymmetricKey, UpdateItem } from '@meeco/sdk';
+import { EncryptionKey, Environment, ItemService, ItemUpdateData } from '@meeco/sdk';
 import {
   downloadThumbnail,
   encryptAndUploadThumbnail,
-  fileDownloadBrowser,
+  fileDownloadBrowserWithCancel,
   fileUploadBrowserWithCancel,
   ThumbnailType,
   ThumbnailTypes,
@@ -57,6 +57,7 @@ function updateEnvironment() {
 $('fileUploadProgressBar').hidden = true;
 $('cancelAttachFile').hidden = true;
 $('attachFile').addEventListener('click', attachFile, false);
+$('cancelDownloadAttachment').hidden = true;
 $('downloadAttachment').addEventListener('click', downloadAttachment);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 $('attachThumbnail').addEventListener('click', attachThumbnail);
@@ -106,9 +107,9 @@ async function attachFile() {
     const itemService = new ItemService(environment);
     const itemFetchResult = await itemService.get(
       {
-        data_encryption_key: SymmetricKey.fromSerialized(privateDek),
+        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
         vault_access_token: vaultAccessToken,
-        key_encryption_key: SymmetricKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
         keystore_access_token: keystoreAccessToken,
       },
       itemId
@@ -141,7 +142,7 @@ async function attachFile() {
     $('cancelAttachFile').addEventListener(
       'click',
       () => {
-        cancel('cancel');
+        cancel();
       },
       false
     );
@@ -161,7 +162,8 @@ async function attachFile() {
       });
 
     const existingItem = itemFetchResult.item;
-    const itemUpdateData = new UpdateItem(existingItem.id, {
+    const itemUpdateData = new ItemUpdateData({
+      id: existingItem.id,
       slots: [
         {
           label,
@@ -177,7 +179,7 @@ async function attachFile() {
     const updated = await itemService.update(
       {
         vault_access_token: vaultAccessToken,
-        data_encryption_key: SymmetricKey.fromSerialized(privateDek),
+        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
       },
       itemUpdateData
     );
@@ -206,6 +208,8 @@ async function downloadAttachment() {
 
     const keyEncryptionKey = localStorage.getItem('keyEncryptionKey') || '';
     const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
+
+    $('cancelDownloadAttachment').hidden = false;
 
     let isSteamingMedia = false;
     const progressUpdateFunc = (
@@ -268,16 +272,16 @@ async function downloadAttachment() {
     const itemService = new ItemService(environment);
     const itemFetchResult: any = await itemService.get(
       {
-        data_encryption_key: SymmetricKey.fromSerialized(dek),
+        data_encryption_key: EncryptionKey.fromSerialized(dek),
         vault_access_token: vaultAccessToken,
-        key_encryption_key: SymmetricKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
         keystore_access_token: keystoreAccessToken,
       },
       itemId
     );
     const attachmentSlot = itemFetchResult.slots.find(slot => slot.id === slotId); // return type from the vault-api-sdk is wrong thus the type to any
 
-    const downloadedFile = await fileDownloadBrowser({
+    const { cancel, success } = fileDownloadBrowserWithCancel({
       attachmentId: attachmentSlot?.attachment_id,
       dek: attachmentSlot?.value,
       vaultUrl,
@@ -288,15 +292,38 @@ async function downloadAttachment() {
       },
       progressUpdateFunc,
     });
-    const fileUrl = URL.createObjectURL(downloadedFile);
 
-    // add download button, click it then remove it
-    const a = document.createElement('a');
-    a.href = fileUrl;
-    a.download = downloadedFile.name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    $('cancelDownloadAttachment').addEventListener(
+      'click',
+      () => {
+        cancel();
+      },
+      false
+    );
+
+    const downloadedFile = await success
+      .then(
+        value => value,
+        reason => {
+          alert(reason);
+        }
+      )
+      .finally(() => {
+        $('cancelDownloadAttachment').hidden = true;
+        $set('fileDownloadProgressBar', '0');
+      });
+
+    if (downloadedFile) {
+      const fileUrl = URL.createObjectURL(downloadedFile);
+
+      // add download button, click it then remove it
+      const a = document.createElement('a');
+      a.href = fileUrl;
+      a.download = downloadedFile.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
   } catch (error) {
     $set('downloadAttachmentDetails', `Error (See Action Log for Details)`);
     return handleException(error);
@@ -344,9 +371,9 @@ async function attachThumbnail() {
     const itemService = new ItemService(environment);
     const itemFetchResult: any = await itemService.get(
       {
-        data_encryption_key: SymmetricKey.fromSerialized(privateDek),
+        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
         vault_access_token: vaultAccessToken,
-        key_encryption_key: SymmetricKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
         keystore_access_token: keystoreAccessToken,
       },
       itemId
@@ -416,9 +443,9 @@ async function thumbnailDownload() {
     const itemService = new ItemService(environment);
     const itemFetchResult: any = await itemService.get(
       {
-        data_encryption_key: SymmetricKey.fromSerialized(privateDek),
+        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
         vault_access_token: vaultAccessToken,
-        key_encryption_key: SymmetricKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
         keystore_access_token: keystoreAccessToken,
       },
       itemId
