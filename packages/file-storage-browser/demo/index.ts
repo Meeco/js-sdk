@@ -2,7 +2,7 @@ import { EncryptionKey, Environment, ItemService, ItemUpdateData } from '@meeco/
 import {
   downloadThumbnail,
   encryptAndUploadThumbnail,
-  fileDownloadBroswerWithCancel,
+  fileDownloadBrowserWithCancel,
   fileUploadBrowserWithCancel,
   ThumbnailType,
   ThumbnailTypes,
@@ -142,7 +142,7 @@ async function attachFile() {
     $('cancelAttachFile').addEventListener(
       'click',
       () => {
-        cancel('cancel');
+        cancel();
       },
       false
     );
@@ -281,7 +281,7 @@ async function downloadAttachment() {
     );
     const attachmentSlot = itemFetchResult.slots.find(slot => slot.id === slotId); // return type from the vault-api-sdk is wrong thus the type to any
 
-    const { cancel, success } = fileDownloadBroswerWithCancel({
+    const { cancel, success } = fileDownloadBrowserWithCancel({
       attachmentId: attachmentSlot?.attachment_id,
       dek: attachmentSlot?.value,
       vaultUrl,
@@ -296,7 +296,7 @@ async function downloadAttachment() {
     $('cancelDownloadAttachment').addEventListener(
       'click',
       () => {
-        cancel('cancel');
+        cancel();
       },
       false
     );

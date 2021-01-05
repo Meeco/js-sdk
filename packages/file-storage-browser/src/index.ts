@@ -217,7 +217,7 @@ async function getDirectDownloadInfo(
   return result.attachment_direct_download_url;
 }
 
-export function fileDownloadBroswerWithCancel({
+export function fileDownloadBrowserWithCancel({
   attachmentId,
   dek,
   vaultUrl,
@@ -233,7 +233,7 @@ export function fileDownloadBroswerWithCancel({
     | null;
 }) {
   let cancel;
-  const promise = new Promise((resolve, reject) => (cancel = resolve));
+  const promise = new Promise((resolve, reject) => (cancel = () => resolve('cancel')));
   return {
     cancel,
     success: fileDownloadBrowser({
@@ -263,7 +263,7 @@ export function fileUploadBrowserWithCancel({
     | null;
 }) {
   let cancel;
-  const promise = new Promise((resolve, reject) => (cancel = resolve));
+  const promise = new Promise((resolve, reject) => (cancel = () => resolve('cancel')));
   return {
     cancel,
     success: fileUploadBrowser({
