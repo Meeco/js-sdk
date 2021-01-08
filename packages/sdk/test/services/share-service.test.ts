@@ -1,3 +1,4 @@
+import { encodeSafe64 } from '@meeco/cryppo';
 import {
   AcceptanceRequest,
   ConnectionService,
@@ -110,7 +111,7 @@ describe('ShareService', () => {
         sinon.fake((cred, slot) => ({
           ...slot,
           value: 'abc',
-          value_verification_key: SymmetricKey.fromRaw('123'),
+          value_verification_key: SymmetricKey.fromSerialized(encodeSafe64('123')),
           value_verification_hash: '123',
         }))
       )
@@ -231,7 +232,7 @@ describe('ShareService', () => {
       .stub(
         ShareService.prototype,
         'getShareDEK',
-        sinon.stub().returns(SymmetricKey.fromRaw('some_key'))
+        sinon.stub().returns(SymmetricKey.fromSerialized(encodeSafe64('some_key')))
       )
       .do(() => new ShareService(environment).getSharedItem(testUserAuth, shareId))
       .it('calls GET /incoming_shares/id/item by default');
@@ -301,7 +302,7 @@ describe('ShareService', () => {
       .stub(
         ShareService.prototype,
         'getShareDEK',
-        sinon.stub().returns(SymmetricKey.fromRaw('some_key'))
+        sinon.stub().returns(SymmetricKey.fromSerialized(encodeSafe64('some_key')))
       )
       .do(() => new ShareService(environment).getSharedItem(testUserAuth, shareId))
       .it('retrieves the original if an item was already shared');

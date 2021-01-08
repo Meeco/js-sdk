@@ -1,3 +1,4 @@
+import { bytesToBinaryString } from '@meeco/cryppo';
 import cryppo from '../services/cryppo-service';
 import { SymmetricKey } from './symmetric-key';
 
@@ -34,6 +35,6 @@ export default class RSAPublicKey {
   }
 
   async encryptKey(key: SymmetricKey): Promise<string> {
-    return this.encryptToken(key.key);
+    return this.encryptToken(bytesToBinaryString(key.key));
   }
 }

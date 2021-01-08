@@ -1,3 +1,4 @@
+import { utf8ToBytes } from '@meeco/cryppo';
 import cryppo from '../services/cryppo-service';
 import { ASYMMETRIC_KEY_STRATEGY } from './rsa-public-key';
 import { SymmetricKey } from './symmetric-key';
@@ -14,8 +15,13 @@ export default class RSAPrivateKey {
     }
   }
 
-  /** PEM formatted key string */
+  /** Key as bytes (used for encryption) */
   get key() {
+    return utf8ToBytes(this._value);
+  }
+
+  /*  PEM formatted key string */
+  get pem() {
     return this._value;
   }
 
@@ -25,13 +31,23 @@ export default class RSAPrivateKey {
    */
   async decryptToken(serialized: string) {
     return cryppo.decryptSerializedWithPrivateKey({
-      privateKeyPem: this.key,
+      privateKeyPem: this.pem,
       serialized,
       scheme: ASYMMETRIC_KEY_STRATEGY,
     });
   }
 
   async decryptKey(serialized: string): Promise<SymmetricKey> {
-    return this.decryptToken(serialized).then(result => SymmetricKey.fromRaw(result!));
+    /// HELP
+    return cryppo
+      .decryptSerializedWithPrivateKey({
+        privateKeyPem: this.pem,
+        serialized,
+        scheme: ASYMMETRIC_KEY_STRATEGY,
+      })
+      .then(decrypted =>
+        // HELP
+        this.decryptToken(serialized).then(result => SymmetricKey.fromSerialized(decrypted!))
+      );
   }
 }

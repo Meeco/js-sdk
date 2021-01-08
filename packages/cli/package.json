@@ -9,7 +9,7 @@
   },
   "bugs": "https://github.com/Meeco/cli/issues",
   "dependencies": {
-    "@meeco/cryppo": "^0.9.0",
+    "@meeco/cryppo": "^2.0.0",
     "@meeco/file-storage-node": "2.1.1",
     "@meeco/keystore-api-sdk": "^5.1.0-stage.20201120123925.3795133",
     "@meeco/sdk": "^2.0.0-beta",

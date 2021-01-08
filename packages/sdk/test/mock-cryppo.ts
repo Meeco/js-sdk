@@ -1,3 +1,4 @@
+import { bytesToUtf8, EncryptionKey, utf8ToBytes } from '@meeco/cryppo';
 import { _cryppoService } from '@meeco/sdk';
 import { createSandbox } from 'sinon';
 
@@ -29,25 +30,10 @@ export function _mockCryppo() {
         };
       });
 
-      // deprecated
       sandbox.stub(<any>_cryppoService, 'encryptWithKey').callsFake(args => {
         return Promise.resolve({
-          serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
-          encrypted: `[encrypted]${args.data}`,
-        });
-      });
-
-      sandbox.stub(<any>_cryppoService, 'encryptStringWithKey').callsFake(args => {
-        return Promise.resolve({
-          serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
-          encrypted: `[encrypted]${args.data}`,
-        });
-      });
-
-      sandbox.stub(<any>_cryppoService, 'encryptBinaryWithKey').callsFake(args => {
-        return Promise.resolve({
-          serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
-          encrypted: `[encrypted]${args.data}`,
+          serialized: `[serialized][encrypted]${bytesToUtf8(args.data)}[with ${args.key}]`,
+          encrypted: `[encrypted]${bytesToUtf8(args.data)}`,
         });
       });
 
@@ -59,15 +45,14 @@ export function _mockCryppo() {
       });
 
       const simpleDecrypt = args => {
-        return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
+        return Promise.resolve(
+          utf8ToBytes(
+            `${args.serialized}[decrypted with ${bytesToUtf8((args.key as EncryptionKey).bytes)}]`
+          )
+        );
       };
 
-      // deprecated
       sandbox.stub(<any>_cryppoService, 'decryptWithKey').callsFake(simpleDecrypt);
-
-      sandbox.stub(<any>_cryppoService, 'decryptStringWithKey').callsFake(simpleDecrypt);
-
-      sandbox.stub(<any>_cryppoService, 'decryptBinaryWithKey').callsFake(simpleDecrypt);
 
       sandbox.stub(<any>_cryppoService, 'signWithPrivateKey').callsFake((pem, data) => {
         return {
@@ -82,7 +67,7 @@ export function _mockCryppo() {
         return `${args.token}.${args.encrypted}`;
       });
 
-      sandbox.stub(<any>_cryppoService, 'generateRandomKey').callsFake((args: any) => {
+      sandbox.stub(<any>_cryppoService.EncryptionKey, 'generateRandom').callsFake((args: any) => {
         return `randomly_generated_key`;
       });
 
