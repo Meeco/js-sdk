@@ -1,4 +1,4 @@
-name: Release Alpha SDK
+name: Release SDK Alpha
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'releases/sdk/**-alpha'
 
 jobs:
-  create_sdk_release:
+  create_sdk_alpha_release:
     runs-on: ubuntu-latest
 
     strategy:
@@ -19,8 +19,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npx lerna bootstrap --hoist
-      - run: npx lerna run test
+      - run: npm install
+      - run: npx lerna run test --scope @meeco/sdk
         env:
           CI: true
       - run: npx lerna run build --scope @meeco/sdk

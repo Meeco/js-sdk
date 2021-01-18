@@ -1,4 +1,4 @@
-name: Release Beta SDK
+name: Release SDK Beta
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npx lerna run test
+      - run: npx lerna run test --scope '@meeco/{sdk,sdk-demo}'
         env:
           CI: true
       - run: npx lerna run build --scope @meeco/sdk
@@ -32,15 +32,3 @@ jobs:
         env:
           CI: true
           NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
-      - name: Build SDK Demo
-        run:  npx lerna run build --scope @meeco/sdk-demo
-      - name: Deploy SDK Demo GH page
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          deploy_key: ${{ secrets.SDK_DOCS_DEPLOY_KEY }}
-          publish_dir: ./docs/sdk-demo
-          destination_dir: /stage/sdk-demo
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          external_repository: Meeco/sdk-docs
-          publish_branch: master
