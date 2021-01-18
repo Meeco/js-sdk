@@ -3,7 +3,7 @@ name: Release Beta File Storage
 on:
   push:
     tags:
-      - 'releases/file-storage/**-beta'
+      - 'releases/file-storage/**-beta*'
 
 jobs:
   create_file_storage_release:
