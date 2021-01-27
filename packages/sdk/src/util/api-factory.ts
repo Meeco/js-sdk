@@ -3,8 +3,8 @@ import * as Vault from '@meeco/vault-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
 import { blue, green } from 'chalk';
 import { debug } from 'debug';
-import { AuthData } from '../models/auth-data';
 import { Environment } from '../models/environment';
+import { IKeystoreToken, IVaultToken } from '../services/service';
 import SDKFormData from './sdk-form-data';
 
 let fetchLib = (<any>global).fetch;
@@ -22,8 +22,6 @@ const X_MEECO_API_VERSION = '2.0.0';
 /**
  * User authentication token for the given API or the entire user with tokens
  */
-type UserAuth = AuthData | string;
-
 type KeystoreAPIConstructor = new () => Keystore.BaseAPI;
 type VaultAPIConstructor = new () => Vault.BaseAPI;
 
@@ -35,39 +33,28 @@ interface IHeaders {
   [key: string]: string;
 }
 
-const vaultToken = (userAuth: UserAuth) => {
-  return typeof userAuth === 'string' ? userAuth : userAuth.vault_access_token;
-};
-
-const delegationId = (userAuth: UserAuth) => {
-  return typeof userAuth !== 'string' && userAuth.delegation_id ? userAuth.delegation_id : '';
-};
-
-const keystoreToken = (userAuth: UserAuth) => {
-  return typeof userAuth === 'string' ? userAuth : userAuth.keystore_access_token;
-};
-
 /**
  * Pluck environment and user auth values to create `apiKey` [Keystore.Configuration] parameter
  */
-const keystoreAPIKeys = (environment: Environment, userAuth: UserAuth) => (name: string) =>
+const keystoreAPIKeys = (environment: Environment, userAuth: IKeystoreToken) => (name: string) =>
   ({
     'Meeco-Subscription-Key': environment.keystore.subscription_key,
     // Must be uppercase
     // prettier-ignore
-    'Authorization': keystoreToken(userAuth)
+    'Authorization': userAuth.keystore_access_token,
+    'Meeco-Delegation-Id': userAuth.delegation_id || '',
   }[name]);
 
 /**
  * Pluck environment and user auth values to create `apiKey` [Vault.Configuration] parameter
  */
-const vaultAPIKeys = (environment: Environment, userAuth: UserAuth) => (name: string) =>
+const vaultAPIKeys = (environment: Environment, userAuth: IVaultToken) => (name: string) =>
   ({
     'Meeco-Subscription-Key': environment.vault.subscription_key,
     // Must be uppercase
     // prettier-ignore
-    'Authorization': vaultToken(userAuth),
-    'Meeco-Delegation-Id': delegationId(userAuth),
+    'Authorization': userAuth.vault_access_token,
+    'Meeco-Delegation-Id': userAuth.delegation_id || '',
   }[name]);
 
 function fetchInterceptor(url, options) {
@@ -132,7 +119,7 @@ const callApiWithHeaders = (
 const keystoreAPI = (
   api: KeystoreAPIName,
   environment: Environment,
-  userAuth: UserAuth,
+  userAuth: IKeystoreToken,
   additionalHeaders: IHeaders = {}
 ) => {
   return new Proxy(
@@ -164,7 +151,7 @@ const keystoreAPI = (
 const vaultAPI = (
   api: VaultAPIName,
   environment: Environment,
-  userAuth: UserAuth,
+  userAuth: IVaultToken,
   additionalHeaders: IHeaders = {}
 ) => {
   return new Proxy(
@@ -217,7 +204,7 @@ const vaultAPI = (
  * ```
  */
 export type KeystoreAPIFactory = (
-  userAuth: UserAuth,
+  userAuth: IKeystoreToken,
   headers?: IHeaders
 ) => KeystoreAPIFactoryInstance;
 export type KeystoreAPIFactoryInstance = {
@@ -250,7 +237,10 @@ export type KeystoreAPIFactoryInstance = {
  * // etc...
  * ```
  */
-export type VaultAPIFactory = (userAuth: UserAuth, headers?: IHeaders) => VaultAPIFactoryInstance;
+export type VaultAPIFactory = (
+  userAuth: IVaultToken,
+  headers?: IHeaders
+) => VaultAPIFactoryInstance;
 export type VaultAPIFactoryInstance = { [key in VaultAPIName]: InstanceType<typeof Vault[key]> };
 
 /**
@@ -258,7 +248,7 @@ export type VaultAPIFactoryInstance = { [key in VaultAPIName]: InstanceType<type
  * arbitrary Keystore api instances to use.
  */
 export const keystoreAPIFactory = (environment: Environment) => (
-  userAuth: UserAuth,
+  userAuth: IKeystoreToken,
   headers?: IHeaders
 ) =>
   new Proxy(
@@ -276,7 +266,7 @@ export const keystoreAPIFactory = (environment: Environment) => (
  */
 export const vaultAPIFactory: (Environment) => (UserAuth, IHeaders?) => VaultAPIFactoryInstance = (
   environment: Environment
-) => (userAuth: UserAuth, headers?: IHeaders) =>
+) => (userAuth: IVaultToken, headers?: IHeaders) =>
   new Proxy(
     {},
     {

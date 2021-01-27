@@ -1,4 +1,4 @@
-import { ItemService } from '@meeco/sdk';
+import { ItemService, SlotType } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
@@ -11,7 +11,7 @@ describe('items:get', () => {
     .run(['items:get', 'my-item', ...testUserAuth, ...testEnvironmentFile])
     .it('returns an item with all slots decrypted', ctx => {
       const expected = readFileSync(outputFixture('get-item.output.yaml'), 'utf-8');
-      expect(ctx.stdout).to.contain(expected);
+      expect(ctx.stdout.trim()).to.equal(expected.trim());
     });
 });
 
@@ -58,7 +58,7 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         required: null,
         updated_at: new Date(1),
         created_at: new Date(1),
-        slot_type_name: 'key_value',
+        slot_type_name: SlotType.KeyValue,
         creator: null,
         encrypted_value: 'Hawaiian',
         encrypted_value_verification_key: null,
@@ -84,7 +84,7 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         required: null,
         updated_at: new Date(1),
         created_at: new Date(1),
-        slot_type_name: 'key_value',
+        slot_type_name: SlotType.KeyValue,
         creator: null,
         encrypted_value: 'Rump',
         encrypted_value_verification_key: null,
@@ -110,7 +110,7 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         required: null,
         updated_at: new Date(1),
         created_at: new Date(1),
-        slot_type_name: 'key_value',
+        slot_type_name: SlotType.KeyValue,
         creator: null,
         encrypted_value: 'Session Ale',
         encrypted_value_verification_key: null,
@@ -124,5 +124,6 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
     ],
     thumbnails: [],
     attachments: [],
+    classification_nodes: [],
   });
 }

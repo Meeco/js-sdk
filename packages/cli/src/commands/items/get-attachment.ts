@@ -45,7 +45,7 @@ export default class ItemsGetAttachment extends MeecoCommand {
       }
 
       const itemService = new ItemService(environment);
-      const itemFetchResult: any = await itemService.get(itemId, authConfig);
+      const itemFetchResult: any = await itemService.get(authConfig, itemId);
       const attachmentSlot = itemFetchResult.slots.find(slot => slot.id === slotId);
       const attachmentSlotValueDek = attachmentSlot.value;
       const attachmentId = attachmentSlot.attachment_id;

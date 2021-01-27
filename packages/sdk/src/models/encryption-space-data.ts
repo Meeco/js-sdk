@@ -1,16 +1,16 @@
-import { EncryptionKey } from './encryption-key';
+import { SymmetricKey } from './symmetric-key';
 
 export class EncryptionSpaceData {
   static readonly kind = 'EncryptionSpace';
 
   from_user_connection_id: string;
   to_user_connection_id?: string;
-  shared_data_encryption_key?: EncryptionKey;
+  shared_data_encryption_key?: SymmetricKey;
 
   constructor(config: {
     from_user_connection_id: string;
     to_user_connection_id?: string;
-    shared_data_encryption_key?: EncryptionKey;
+    shared_data_encryption_key?: SymmetricKey;
   }) {
     this.from_user_connection_id = config.from_user_connection_id;
     this.to_user_connection_id = config.to_user_connection_id;

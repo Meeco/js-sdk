@@ -10,21 +10,24 @@
   "slots": [
     {
       "name": "url",
-      "encrypted_value": "[serialized][encrypted]https://www.example.com[with my_generated_dek]",
-      "encrypted": true,
-      "id": "a"
+      "encrypted": false,
+      "value": "[serialized][encrypted]https://www.example.com[with my_generated_dek][decrypted with my_generated_dek]",
+      "id": "a",
+      "value_verification_key": null
     },
     {
       "name": "account",
-      "encrypted_value": "[serialized][encrypted]jsmith@example.com[with my_generated_dek]",
-      "encrypted": true,
-      "id": "b"
+      "encrypted": false,
+      "value": "[serialized][encrypted]jsmith@example.com[with my_generated_dek][decrypted with my_generated_dek]",
+      "id": "b",
+      "value_verification_key": null
     },
     {
       "name": "password",
-      "encrypted_value": "[serialized][encrypted]mySecretPassword1[with my_generated_dek]",
-      "encrypted": true,
-      "id": "c"
+      "encrypted": false,
+      "value": "[serialized][encrypted]mySecretPassword1[with my_generated_dek][decrypted with my_generated_dek]",
+      "id": "c",
+      "value_verification_key": null
     }
   ]
 }

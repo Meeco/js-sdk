@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npx lerna bootstrap --hoist
+      - run: npm install
       - run: npx lerna run test
         env:
           CI: true
@@ -33,3 +33,14 @@ jobs:
         env:
           CI: true
           NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+      - run: npm run docs
+      - name: Deploy SDK docs to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.SDK_DOCS_DEPLOY_KEY }}
+          publish_dir: ./docs/style-kit
+          destination_dir: style-kit
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          external_repository: Meeco/sdk-docs
+          publish_branch: master

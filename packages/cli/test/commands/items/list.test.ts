@@ -1,4 +1,4 @@
-import { ItemService } from '@meeco/sdk';
+import { ItemService, SlotType } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import {
@@ -56,7 +56,7 @@ const response = {
       required: null,
       updated_at: new Date(1),
       created_at: new Date(1),
-      slot_type_name: null,
+      slot_type_name: SlotType.KeyValue,
       creator: null,
       encrypted_value: null,
       encrypted_value_verification_key: null,
@@ -81,7 +81,7 @@ const response = {
       required: null,
       updated_at: new Date(1),
       created_at: new Date(1),
-      slot_type_name: null,
+      slot_type_name: SlotType.KeyValue,
       creator: null,
       encrypted_value: null,
       encrypted_value_verification_key: null,

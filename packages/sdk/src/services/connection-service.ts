@@ -1,99 +1,51 @@
-import { Connection, ConnectionsResponse } from '@meeco/vault-api-sdk';
+import { Connection, ConnectionApi, ConnectionsResponse } from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
-import { ConnectionCreateData } from '../models/connection-create-data';
-import { EncryptionKey } from '../models/encryption-key';
-import { Environment } from '../models/environment';
-import cryppo from '../services/cryppo-service';
-import {
-  KeystoreAPIFactory,
-  keystoreAPIFactory,
-  VaultAPIFactory,
-  vaultAPIFactory,
-} from '../util/api-factory';
-import { findConnectionBetween } from '../util/find-connection-between';
-import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
+import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, resultHasNext } from '../util/paged';
+import { InvitationService } from './invitation-service';
+import Service, { IDEK, IPageOptions, IVaultToken } from './service';
 
 export interface IDecryptedConnection {
-  name: string;
+  recipient_name: string | null;
   connection: Connection;
+}
+
+export interface IConnectionMetadata {
+  toName: string;
+  fromName: string;
+}
+
+// tslint:disable-next-line:interface-name
+export interface ConnectionCreateData {
+  from: AuthData;
+  to: AuthData;
+  options: IConnectionMetadata;
 }
 
 /**
  * Used for setting up connections between Meeco `User`s to allow the secure sharing of data (see also {@link ShareService})
  */
-export class ConnectionService {
-  private cryppo = (<any>global).cryppo || cryppo;
-  private vaultApiFactory: VaultAPIFactory;
-  private keystoreApiFactory: KeystoreAPIFactory;
-  private logger: IFullLogger;
-
-  constructor(private environment: Environment, log: Logger = noopLogger) {
-    this.vaultApiFactory = vaultAPIFactory(environment);
-    this.keystoreApiFactory = keystoreAPIFactory(environment);
-    this.logger = toFullLogger(log);
-  }
-
-  public setLogger(logger: Logger) {
-    this.logger = toFullLogger(logger);
-  }
-
-  public async createInvitation(name: string, auth: AuthData) {
-    this.logger.log('Generating key pair');
-    const keyPair = await this.createAndStoreKeyPair(auth);
-
-    this.logger.log('Encrypting recipient name');
-    const encryptedName: string = await this.encryptRecipientName(name, auth);
-
-    this.logger.log('Sending invitation request');
-    return await this.vaultApiFactory(auth)
-      .InvitationApi.invitationsPost({
-        public_key: {
-          keypair_external_id: keyPair.keystoreStoredKeyPair.id,
-          public_key: keyPair.keyPair.publicKey,
-        },
-        invitation: {
-          encrypted_recipient_name: encryptedName,
-        },
-      })
-      .then(result => result.invitation);
-  }
-
-  public async acceptInvitation(name: string, invitationToken: string, auth: AuthData) {
-    this.logger.log('Generating key pair');
-    const keyPair = await this.createAndStoreKeyPair(auth);
-
-    this.logger.log('Encrypting connection name');
-    const encryptedName: string = await this.encryptRecipientName(name, auth);
-
-    this.logger.log('Accepting invitation');
-    return await this.vaultApiFactory(auth)
-      .ConnectionApi.connectionsPost({
-        public_key: {
-          keypair_external_id: keyPair.keystoreStoredKeyPair.id,
-          public_key: keyPair.keyPair.publicKey,
-        },
-        connection: {
-          encrypted_recipient_name: encryptedName,
-          invitation_token: invitationToken,
-        },
-      })
-      .then(res => res.connection);
+export class ConnectionService extends Service<ConnectionApi> {
+  public getAPI(token: IVaultToken) {
+    return this.vaultAPIFactory(token).ConnectionApi;
   }
 
   /**
    * Note this only works if we have authentication data for both connecting users.
-   * For more typical use cases you should manually call {@link createInvitation}
-   * as one user and {@link acceptInvitation} as the other user.
+   * For more typical use cases you should manually call {@link InvitationService.create}
+   * as one user and {@link InvitationService.accept} as the other user.
    */
   public async createConnection(config: ConnectionCreateData) {
     const { to, from, options } = config;
 
-    let existingConnection: { fromUserConnection: Connection; toUserConnection: Connection };
+    let existingConnection: {
+      fromUserConnection: Connection;
+      toUserConnection: Connection;
+    };
     try {
       // We want to avoid creating keypairs etc. only to find out that the users were connected from the beginning
       this.logger.log('Checking for an existing connection');
-      existingConnection = await findConnectionBetween(from, to, this.environment, this.logger.log);
+      existingConnection = await this.findConnectionBetween(from, to);
     } catch (err) {
       // Empty catch because getting 404's is expected if the connection does not exist
     }
@@ -103,18 +55,15 @@ export class ConnectionService {
       throw new Error('Connection exists between the specified users');
     }
 
-    const invitation = await this.createInvitation(options.toName, from);
-    await this.acceptInvitation(options.fromName, invitation.token, to);
+    const invitations = new InvitationService(this.environment);
+
+    const invitation = await invitations.create(from, options.toName);
+    await invitations.accept(to, options.fromName, invitation.token);
 
     // Now the connection has been created we need to re-fetch the original user's connection.
     // We might as well fetch both to ensure it's connected both ways correctly.
 
-    const { fromUserConnection, toUserConnection } = await findConnectionBetween(
-      from,
-      to,
-      this.environment,
-      this.logger.log
-    );
+    const { fromUserConnection, toUserConnection } = await this.findConnectionBetween(from, to);
 
     return {
       invitation,
@@ -125,112 +74,117 @@ export class ConnectionService {
   }
 
   /**
-   * @deprecated Use [list] instead.
+   * @deprecated Use {@link list} instead.
    * @param user
    */
-  public async listConnections(user: AuthData) {
-    return this.list(user.vault_access_token, user.data_encryption_key);
+  public async listConnections(credentials: IVaultToken & IDEK) {
+    return this.list(credentials);
   }
 
   public async list(
-    vaultAccessToken: string,
-    dek: EncryptionKey,
-    nextPageAfter?: string,
-    perPage?: number
+    credentials: IVaultToken & IDEK,
+    options?: IPageOptions
   ): Promise<IDecryptedConnection[]> {
+    const { data_encryption_key } = credentials;
+
     this.logger.log('Fetching connections');
-    const result = await this.vaultApiFactory(vaultAccessToken).ConnectionApi.connectionsGet(
-      nextPageAfter,
-      perPage
+    const result = await this.vaultAPIFactory(credentials).ConnectionApi.connectionsGet(
+      options?.nextPageAfter,
+      options?.perPage
     );
 
-    if (resultHasNext(result) && perPage === undefined) {
+    if (resultHasNext(result) && options?.perPage === undefined) {
       this.logger.warn('Some results omitted, but page limit was not explicitly set');
     }
 
     this.logger.log('Decrypting connection names');
-    const decryptions = (result.connections || []).map(connection =>
-      connection.own.encrypted_recipient_name
-        ? this.cryppo
-            .decryptWithKey({
-              serialized: connection.own.encrypted_recipient_name!,
-              key: dek.key,
-            })
-            .then((name: string) => ({
-              recipient_name: name,
-              connection,
-            }))
-        : {
-            recipient_name: null,
-            connection,
-          }
-    );
-    return Promise.all(decryptions);
+    return Promise.all((result.connections || []).map(this.decryptConnection(data_encryption_key)));
   }
 
-  public async listAll(
-    vaultAccessToken: string,
-    dek: EncryptionKey
-  ): Promise<IDecryptedConnection[]> {
-    const api = this.vaultApiFactory(vaultAccessToken).ConnectionApi;
+  public async listAll(credentials: IVaultToken & IDEK): Promise<IDecryptedConnection[]> {
+    const { data_encryption_key } = credentials;
+    const api = this.vaultAPIFactory(credentials).ConnectionApi;
 
     return getAllPaged(cursor => api.connectionsGet(cursor)).then(results => {
       const responses = results.reduce(
         (a: Connection[], b: ConnectionsResponse) => a.concat(b.connections),
         []
       );
-      const decryptions = responses.map(connection =>
-        connection.own.encrypted_recipient_name
-          ? this.cryppo
-              .decryptWithKey({
-                serialized: connection.own.encrypted_recipient_name!,
-                key: dek.key,
-              })
-              .then((name: string) => ({
-                recipient_name: name,
-                connection,
-              }))
-          : {
-              recipient_name: null,
-              connection,
-            }
-      );
-      return Promise.all(decryptions);
+      return Promise.all((responses || []).map(this.decryptConnection(data_encryption_key)));
     });
   }
 
-  private encryptRecipientName(name: string, user: AuthData) {
-    return this.cryppo
-      .encryptWithKey({
-        data: name,
-        key: user.data_encryption_key.key,
-        strategy: this.cryppo.CipherStrategy.AES_GCM,
-      })
-      .then(result => result.serialized);
-  }
-
-  private async createAndStoreKeyPair(user: AuthData) {
-    const keyPair = await this.cryppo.generateRSAKeyPair();
-
-    const toPrivateKeyEncrypted = await this.cryppo.encryptWithKey({
-      data: keyPair.privateKey,
-      key: user.key_encryption_key.key,
-      strategy: this.cryppo.CipherStrategy.AES_GCM,
-    });
-
-    const keystoreStoredKeyPair = await this.keystoreApiFactory(user)
-      .KeypairApi.keypairsPost({
-        public_key: keyPair.publicKey,
-        encrypted_serialized_key: toPrivateKeyEncrypted.serialized,
-        // API will 500 without
-        metadata: {},
-        external_identifiers: [],
-      })
-      .then(result => result.keypair);
-
-    return {
-      keyPair,
-      keystoreStoredKeyPair,
+  private decryptConnection(dek: SymmetricKey) {
+    return async (connection: Connection) => {
+      const encryptedName = connection.own.encrypted_recipient_name;
+      return {
+        recipient_name: await dek.decryptString(encryptedName || ''),
+        connection,
+      };
     };
+  }
+
+  /**
+   * @deprecated Use `get` instead.
+   */
+  public async fetchConnectionWithId(
+    credentials: IVaultToken,
+    connectionId: string
+  ): Promise<Connection> {
+    return this.get(credentials, connectionId);
+  }
+
+  public async get(credentials: IVaultToken, connectionId: string): Promise<Connection> {
+    this.logger.log('Fetching user connection');
+    const response = await this.vaultAPIFactory(credentials).ConnectionApi.connectionsIdGet(
+      connectionId
+    );
+    const connection = response.connection;
+
+    if (!connection || !connection.own.id) {
+      throw new Error(`Connection ${connectionId} not found.`);
+    }
+
+    return connection;
+  }
+
+  /**
+   * Helper to find connection between two users (if one exists)
+   * Throws an Error if no connection exists.
+   */
+  public async findConnectionBetween(fromUser: IVaultToken, toUser: IVaultToken) {
+    this.logger.log('Fetching from user connections');
+    const { connections: fromUserConnections } = await this.vaultAPIFactory(
+      fromUser
+    ).ConnectionApi.connectionsGet();
+
+    if (fromUserConnections.length === 0) {
+      throw new Error('Users are not connected. Please set up a connection first.');
+    }
+
+    this.logger.log('Fetching to user connections');
+    const { connections: toUserConnections } = await this.vaultAPIFactory(
+      toUser
+    ).ConnectionApi.connectionsGet();
+
+    let toUserConnection: Connection | undefined;
+
+    const fromUserConnection = fromUserConnections.find(fromConnection => {
+      const result = toUserConnections.find(
+        toConnection =>
+          fromConnection.own.user_public_key === toConnection.the_other_user.user_public_key
+      );
+      if (result) {
+        toUserConnection = result;
+      }
+      return !!result;
+    });
+
+    if (!fromUserConnection) {
+      throw new Error('Users are not connected. Please set up a connection first.');
+    }
+
+    // toUserConnection must be defined if fromUserConnection is
+    return { fromUserConnection, toUserConnection: toUserConnection! };
   }
 }

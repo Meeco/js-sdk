@@ -16,6 +16,7 @@ import {
   PostAttachmentDirectUploadUrlRequest,
   ThumbnailApi,
 } from '@meeco/vault-api-sdk';
+import axios from 'axios';
 import { AzureBlockUpload } from './azure-block-upload';
 export { AzureBlockDownload } from './azure-block-download';
 export { AzureBlockUpload } from './azure-block-upload';
@@ -23,9 +24,10 @@ export { BlobStorage } from './services/Azure';
 
 export interface IFileStorageAuthConfiguration {
   data_encryption_key?: string;
-  vault_access_token: string;
+  vault_access_token?: string;
   delegation_id?: string;
   subscription_key?: string;
+  oidc_token?: string;
 }
 
 export async function directAttachmentUpload(
@@ -33,7 +35,8 @@ export async function directAttachmentUpload(
   fileUtilsLib,
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
-    | null
+    | null,
+  onCancel?: any
 ): Promise<IDirectAttachmentUploadResponse> {
   let result;
   const client = new AzureBlockUpload(
@@ -55,7 +58,8 @@ export async function directAttachmentUpload(
   );
   await client.start(
     config.encrypt && config.attachmentDek ? config.attachmentDek : null,
-    progressUpdateFunc
+    progressUpdateFunc,
+    onCancel
   );
 
   return result;
@@ -152,10 +156,7 @@ export function buildApiConfig(
   vaultUrl: string,
   fetchApi?: any
 ): Configuration {
-  const headers = {};
-  headers['Meeco-Delegation-Id'] = auth.delegation_id || '';
-  headers['Meeco-Subscription-Key'] = auth.subscription_key || '';
-  headers['Authorization'] = auth.vault_access_token || '';
+  const headers = getHeaders(auth);
 
   const configParams: ConfigurationParameters = {
     basePath: vaultUrl,
@@ -165,6 +166,15 @@ export function buildApiConfig(
     configParams['fetchApi'] = fetchApi;
   }
   return new Configuration(configParams);
+}
+
+function getHeaders(auth: IFileStorageAuthConfiguration) {
+  const headers = {};
+  headers['Meeco-Delegation-Id'] = auth.delegation_id || '';
+  headers['Meeco-Subscription-Key'] = auth.subscription_key || '';
+  headers['Authorization'] = auth.vault_access_token || '';
+  headers['authorizationoidc2'] = auth.oidc_token ? 'Bearer ' + auth.oidc_token : '';
+  return headers;
 }
 
 export async function encryptAndUploadThumbnailCommon({
@@ -217,13 +227,14 @@ export async function downloadThumbnailCommon({
   authConfig: IFileStorageAuthConfiguration;
   fetchApi?: any;
 }) {
-  const thumbnailApi = await new ThumbnailApi(buildApiConfig(authConfig, vaultUrl, fetchApi));
-  const result = await thumbnailApi.thumbnailsIdGet(id);
+  // const thumbnailApi = await new ThumbnailApi(buildApiConfig(authConfig, vaultUrl, fetchApi));
+  const res = await thumbnailsIdGet(authConfig, vaultUrl, id);
+  const result = await thumbnailDownload(res.data.redirect_url);
   // Chrome `Blob` objects support the arrayBuffer() methods but Safari do not - only on `Response`
   // https://stackoverflow.com/questions/15341912/how-to-go-from-blob-to-arraybuffer
   const buffer = await ((<any>result).arrayBuffer
     ? (<any>result).arrayBuffer()
-    : new Response(result).arrayBuffer());
+    : new Response(result.data).arrayBuffer());
   const encryptedContents = await binaryBufferToString(buffer);
   const decryptedContents = await decryptBinaryWithKey({
     serialized: encryptedContents,
@@ -301,3 +312,24 @@ export const ThumbnailTypes: ThumbnailType[] = [
   '256x256/png',
   '512x512/png',
 ];
+
+export const thumbnailsIdGet = async (
+  authConfig: IFileStorageAuthConfiguration,
+  vaultUrl: any,
+  id: string
+) => {
+  const url = vaultUrl + '/thumbnails/' + id;
+  const headers = getHeaders(authConfig);
+  return axios({
+    method: 'get',
+    url,
+    headers,
+  });
+};
+
+export const thumbnailDownload = async (url: string) => {
+  return axios({
+    method: 'get',
+    url,
+  });
+};

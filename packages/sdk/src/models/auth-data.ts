@@ -1,4 +1,4 @@
-import { EncryptionKey } from './encryption-key';
+import { SymmetricKey } from './symmetric-key';
 
 /**
  * `AuthData` is a container for all the data required to perform actions on behalf of a Meeco User.
@@ -6,19 +6,19 @@ import { EncryptionKey } from './encryption-key';
  * *Note:* Actual `AuthData` passed to method calls doesn't need to be an instance of this class - it can just conform to the interface.
  */
 export class AuthData {
-  public data_encryption_key: EncryptionKey;
-  public key_encryption_key: EncryptionKey;
+  public data_encryption_key: SymmetricKey;
+  public key_encryption_key: SymmetricKey;
   public keystore_access_token: string;
-  public passphrase_derived_key: EncryptionKey;
+  public passphrase_derived_key: SymmetricKey;
   public secret: string;
   public vault_access_token: string;
   public delegation_id?: string;
 
   constructor(config: {
-    data_encryption_key: EncryptionKey;
-    key_encryption_key: EncryptionKey;
+    data_encryption_key: SymmetricKey;
+    key_encryption_key: SymmetricKey;
     keystore_access_token: string;
-    passphrase_derived_key: EncryptionKey;
+    passphrase_derived_key: SymmetricKey;
     secret: string;
     vault_access_token: string;
   }) {

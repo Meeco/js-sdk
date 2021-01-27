@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "alias": "alias meeco=\"node --inspect --require tsconfig-paths/register ./packages/cli/bin/run\"",
-    "bootstrap": "lerna bootstrap --hoist",
+    "bootstrap": "lerna bootstrap --hoist --nohoist=mithril --nohoist=@types/mithril",
     "build": "lerna run build",
     "docs": "lerna run docs",
     "postinstall": "npm run bootstrap",

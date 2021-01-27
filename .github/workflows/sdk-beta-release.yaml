@@ -1,4 +1,4 @@
-name: Release Beta SDK
+name: Release SDK Beta
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'releases/sdk/**-beta'
 
 jobs:
-  create_sdk_release:
+  create_sdk_beta_release:
     runs-on: ubuntu-latest
 
     strategy:
@@ -19,8 +19,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npx lerna bootstrap --hoist
-      - run: npx lerna run test
+      - run: npm install
+      - run: npx lerna run test --scope '@meeco/{sdk,sdk-demo}'
         env:
           CI: true
       - run: npx lerna run build --scope @meeco/sdk

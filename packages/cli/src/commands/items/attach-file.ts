@@ -1,5 +1,5 @@
 import { largeFileUploadNode } from '@meeco/file-storage-node';
-import { ItemService, ItemUpdateData } from '@meeco/sdk';
+import { ItemService, ItemUpdate, SlotType } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { lookup } from 'mime-types';
@@ -43,7 +43,7 @@ export default class ItemsAttachFile extends MeecoCommand {
         this.error('Must specify a valid file attachment config');
       }
       const itemService = new ItemService(environment);
-      const itemFetchResult = await itemService.get(fileConfig.itemId, authConfig);
+      const itemFetchResult = await itemService.get(authConfig, fileConfig.itemId);
 
       const filePath = fileConfig.file;
       try {
@@ -64,12 +64,11 @@ export default class ItemsAttachFile extends MeecoCommand {
       });
       const label = fileConfig.label;
       const existingItem = itemFetchResult.item;
-      const itemUpdateData = new ItemUpdateData({
-        id: existingItem.id,
+      const itemUpdateData = new ItemUpdate(existingItem.id, {
         slots: [
           {
             label,
-            slot_type_name: 'attachment',
+            slot_type_name: SlotType.Attachment,
             attachment_attributes: {
               id: uploadedFile.attachment.id,
             },
@@ -78,11 +77,7 @@ export default class ItemsAttachFile extends MeecoCommand {
         ],
         label: existingItem.label,
       });
-      const updated = await itemService.update(
-        authConfig.vault_access_token,
-        authConfig.data_encryption_key,
-        itemUpdateData
-      );
+      const updated = await itemService.update(authConfig, itemUpdateData);
 
       this.printYaml({
         attachment: uploadedFile.attachment,

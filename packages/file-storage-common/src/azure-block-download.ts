@@ -4,6 +4,7 @@ import {
   decryptWithKeyUsingArtefacts,
   stringAsBinaryBuffer,
 } from '@meeco/cryppo';
+import axios from 'axios';
 import { BlobStorage } from './services/Azure';
 
 export class AzureBlockDownload {
@@ -27,10 +28,25 @@ export class AzureBlockDownload {
     dataEncryptionKey: string | null,
     strategy: CipherStrategy | null,
     encryptionArtifact: any,
-    range: string | null
+    range: string | null,
+    onCancel?: any
   ) {
     if (range) {
-      const block = await BlobStorage.getBlock(this.url, range);
+      let block: any;
+      if (onCancel) {
+        const source = axios.CancelToken.source();
+        const cancelToken = source.token;
+        block = await Promise.race([BlobStorage.getBlock(this.url, range, cancelToken), onCancel]);
+        if (block === 'cancel') {
+          source.cancel('cancel');
+          return new Promise((_resolve, reject) => {
+            reject('cancel');
+          });
+        }
+      } else {
+        block = await BlobStorage.getBlock(this.url, range);
+      }
+
       const data = new Uint8Array(block.data);
       let byteNumbers: Uint8Array;
       if (dataEncryptionKey && strategy && encryptionArtifact) {

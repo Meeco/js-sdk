@@ -1,5 +1,5 @@
 import * as FileStorageNode from '@meeco/file-storage-node';
-import { ItemService } from '@meeco/sdk';
+import { ItemService, SlotType } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import * as fileUtils from '../../../src/util/file';
 import { customTest, testEnvironmentFile, testUserAuth } from '../../test-helpers';
@@ -141,7 +141,7 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         required: null,
         updated_at: new Date(1),
         created_at: new Date(1),
-        slot_type_name: 'key_value',
+        slot_type_name: SlotType.KeyValue,
         creator: null,
         encrypted_value: 'Hawaiian',
         encrypted_value_verification_key: null,
@@ -167,7 +167,7 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         required: null,
         updated_at: new Date(1),
         created_at: new Date(1),
-        slot_type_name: 'key_value',
+        slot_type_name: SlotType.KeyValue,
         creator: null,
         encrypted_value: 'Rump',
         encrypted_value_verification_key: null,
@@ -193,7 +193,7 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         required: null,
         updated_at: new Date(1),
         created_at: new Date(1),
-        slot_type_name: 'key_value',
+        slot_type_name: SlotType.KeyValue,
         creator: null,
         encrypted_value: 'Session Ale',
         encrypted_value_verification_key: null,

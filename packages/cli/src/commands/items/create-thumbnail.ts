@@ -47,7 +47,7 @@ export default class ThumbnailsCreate extends MeecoCommand {
         this.error('Please enter a thumbnail size/type');
       }
       const itemService = new ItemService(environment);
-      const itemFetchResult: any = await itemService.get(thumbnailConfig.itemId, authConfig);
+      const itemFetchResult: any = await itemService.get(authConfig, thumbnailConfig.itemId);
       if (!itemFetchResult) {
         this.error('Item not found');
       }

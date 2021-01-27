@@ -1,4 +1,4 @@
-import { ItemCreateData, ItemService } from '@meeco/sdk';
+import { ItemService, NewItem } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import {
@@ -46,9 +46,8 @@ describe('item:create', () => {
 });
 
 function create(
-  vaultAccessToken: string,
-  dataEncryptionKey: string,
-  itemCreateData: ItemCreateData
+  credentials: { vault_access_token: string; data_encryption_key: any },
+  itemCreateData: NewItem
 ) {
   const testIdsToUse = ['a', 'b', 'c', 'd', 'e'].reverse();
   const testNamesToUse = ['Make', 'Model'];
@@ -57,7 +56,7 @@ function create(
   if (itemCreateData.slots && itemCreateData.slots.length) {
     slots = itemCreateData.slots.map(slot => {
       return {
-        name: slot.name,
+        name: slot['name'],
         encrypted_value: `[serialized][encrypted]${slot.value}[with my_generated_dek]`,
         encrypted: true,
         id: testIdsToUse.pop(),
@@ -81,7 +80,7 @@ function create(
     item: {
       id: 'item-foo',
       template_name: itemCreateData.template_name,
-      label: itemCreateData.item.label,
+      label: itemCreateData.label,
       slot_ids,
     },
     slots,

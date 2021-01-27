@@ -29,7 +29,22 @@ export function _mockCryppo() {
         };
       });
 
+      // deprecated
       sandbox.stub(<any>_cryppoService, 'encryptWithKey').callsFake(args => {
+        return Promise.resolve({
+          serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
+          encrypted: `[encrypted]${args.data}`,
+        });
+      });
+
+      sandbox.stub(<any>_cryppoService, 'encryptStringWithKey').callsFake(args => {
+        return Promise.resolve({
+          serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
+          encrypted: `[encrypted]${args.data}`,
+        });
+      });
+
+      sandbox.stub(<any>_cryppoService, 'encryptBinaryWithKey').callsFake(args => {
         return Promise.resolve({
           serialized: `[serialized][encrypted]${args.data}[with ${args.key}]`,
           encrypted: `[encrypted]${args.data}`,
@@ -43,9 +58,16 @@ export function _mockCryppo() {
         });
       });
 
-      sandbox.stub(<any>_cryppoService, 'decryptWithKey').callsFake(args => {
+      const simpleDecrypt = args => {
         return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
-      });
+      };
+
+      // deprecated
+      sandbox.stub(<any>_cryppoService, 'decryptWithKey').callsFake(simpleDecrypt);
+
+      sandbox.stub(<any>_cryppoService, 'decryptStringWithKey').callsFake(simpleDecrypt);
+
+      sandbox.stub(<any>_cryppoService, 'decryptBinaryWithKey').callsFake(simpleDecrypt);
 
       sandbox.stub(<any>_cryppoService, 'signWithPrivateKey').callsFake((pem, data) => {
         return {
@@ -66,8 +88,8 @@ export function _mockCryppo() {
 
       sandbox.stub(<any>_cryppoService, 'generateRSAKeyPair').callsFake(() => {
         return Promise.resolve({
-          privateKey: '--PRIVATE_KEY--12324',
-          publicKey: '--PUBLIC_KEY--ABCD',
+          privateKey: '-----BEGIN RSA PRIVATE KEY-----ABCD',
+          publicKey: '-----BEGIN PUBLIC KEY-----ABCD',
           bits: 256,
         });
       });

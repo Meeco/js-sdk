@@ -1,0 +1,152 @@
+<!-- index.html -->
+<html>
+  <head>
+    <title>Meeco SDK Demo</title>
+  </head>
+  <body>
+    <div class="title">
+      <h6>Meeco JavaScript SDK Demo</h6>
+      <a class="button secondary" href="https://meeco.github.io/js-sdk/">View Documentation</a>
+    </div>
+    <div class="columns">
+      <div class="single-column">
+        <div class="card">
+          <h4>Environment Configuration</h4>
+          <hr />
+          <label for="vaultUrl">Vault API URL:</label>
+          <input
+            placeholder="e.g. https://sandbox.meeco.me/vault"
+            class="full"
+            value="https://sandbox.meeco.me/vault"
+            autocapitalize="off"
+            autocomplete="off"
+            id="vaultUrl"
+            />
+          <label for="keystoreUrl">Keystore API URL:</label>
+          <input
+            placeholder="e.g. https://sandbox.meeco.me/keystore"
+            class="full"
+            value="https://sandbox.meeco.me/keystore"
+            autocapitalize="off"
+            autocomplete="off"
+            id="keystoreUrl"
+            />
+          <label for="subscriptionKey">Meeco Subscription Key:</label>
+          <input
+            placeholder="e.g. aaaaa11111bbbbb22222"
+            class="full"
+            autocapitalize="off"
+            autocomplete="off"
+            id="subscriptionKey"
+            />
+          <button id="updateEnvironment">Save</button>
+          <input value="Not set" class="full" disabled id="environmentStatus" />
+        </div>
+
+        <!-- <div>
+             <h4>Captcha</h4>
+             <button id="getCaptcha">Get Captcha Token</button>
+             <input placeholder="captcha" id="captcha" />
+        </div> -->
+        <div id="logCard" class="card on-top">
+          <h4>Event Log</h4>
+          <hr />
+          <sub>Any log events that the SDK output will appear here:</sub>
+          <textarea disabled id="log" rows="5"></textarea>
+        </div>
+
+        <div class="card">
+          <h4>Username</h4>
+          <hr />
+          <input
+            placeholder="Enter or Generate Username"
+            autocapitalize="off"
+            autocomplete="off"
+            id="username"
+            />
+          <button id="getUsername">Get Username</button>
+        </div>
+
+        <div class="card">
+          <h4>Secrets</h4>
+          <hr />
+          <input
+            placeholder="Enter or Generate User Secret"
+            autocapitalize="off"
+            autocomplete="off"
+            id="secret"
+            />
+          <button id="getSecret">Generate Secret</button>
+          <input
+            placeholder="Enter Passphrase"
+            type="password"
+            autocapitalize="off"
+            autocomplete="off"
+            id="passphrase"
+            />
+        </div>
+
+        <div class="card">
+          <h4>Get User</h4>
+          <hr />
+          <button id="fetchUserData">Fetch User Data</button>
+          <button id="createUser">Create New User</button>
+          <textarea disabled id="userData" rows="10"></textarea>
+        </div>
+
+        <div class="card">
+          <h4>Setup Delegation</h4>
+          <hr />
+          <input
+            placeholder="Enter or Generate Account Owner ID"
+            autocapitalize="off"
+            autocomplete="off"
+            id="accountOwnerId"
+            />
+          <label id="enableDelegationLabel" class="checkbox-input pull-right disabled">
+            Delegation Active
+            <input type="checkbox" id="enableDelegation" disabled />
+            <span class="checkmark"></span>
+          </label>
+          <button id="createChildUser">Become Delegate for New User</button>
+          <textarea disabled id="delegateUserData" rows="10"></textarea>
+        </div>
+
+        <div class="card">
+          <h4>Get Items</h4>
+          <hr />
+          <button id="getItems">Get Items</button>
+          <textarea disabled id="items" rows="10"></textarea>
+        </div>
+
+        <div class="card">
+          <h4>Get Templates</h4>
+          <hr />
+          <button id="getTemplates">Get Templates</button>
+          <textarea disabled id="templates" rows="10"> </textarea>
+        </div>
+
+        <div class="card">
+          <h4>Create Items</h4>
+          <hr />
+
+          <form>
+            <input type="button" id="createItem" value="Create">
+            <input type="reset" value="Reset">
+            <div>
+              <label for="templateSelect">Template</label>
+              <select id="templateSelect" name="template_name"></select>
+            </div>
+            <div>
+              <label for="labelField">Label</label>
+              <input name="label" id="labelField" required>
+            </div>
+            <div id="formSlots">
+            </div>
+          </form>
+          <textarea disabled id="newItem" rows="10"> </textarea>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
