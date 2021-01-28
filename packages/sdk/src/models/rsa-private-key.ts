@@ -1,4 +1,4 @@
-import { utf8ToBytes } from '@meeco/cryppo';
+import { binaryStringToBytes, utf8ToBytes } from '@meeco/cryppo';
 import cryppo from '../services/cryppo-service';
 import { ASYMMETRIC_KEY_STRATEGY } from './rsa-public-key';
 import { SymmetricKey } from './symmetric-key';
@@ -45,9 +45,6 @@ export default class RSAPrivateKey {
         serialized,
         scheme: ASYMMETRIC_KEY_STRATEGY,
       })
-      .then(decrypted =>
-        // HELP
-        this.decryptToken(serialized).then(result => SymmetricKey.fromSerialized(decrypted!))
-      );
+      .then(result => SymmetricKey.fromBytes(binaryStringToBytes(result!)));
   }
 }

@@ -1,4 +1,4 @@
-import { binaryBufferToString, generateRandomKey } from '@meeco/cryppo';
+import { bytesToBinaryString, EncryptionKey } from '@meeco/cryppo';
 import {
   AzureBlockDownload,
   buildApiConfig,
@@ -29,7 +29,7 @@ export async function largeFileUploadNode(
     };
   },
   authConfig: IFileStorageAuthConfiguration
-): Promise<{ attachment: any; dek: string }> {
+): Promise<{ attachment: any; dek: EncryptionKey }> {
   const fileStats = fs.statSync(filePath);
   let fileType: string;
   const fileName = path.basename(filePath);
@@ -51,7 +51,7 @@ export async function largeFileUploadNode(
     environment.vault.url,
     nodeFetch
   );
-  const dek = generateRandomKey();
+  const dek = EncryptionKey.generateRandom();
   const uploadResult = await directAttachmentUpload(
     {
       directUploadUrl: uploadUrl.attachment_direct_upload_url.url,
@@ -132,7 +132,7 @@ export async function fileDownloadNode(
     buffer = downloaded.byteArray;
   } else {
     const downloaded = await downloadAttachment(attachmentId, authConfig, environment.vault.url);
-    buffer = Buffer.from(downloaded as string);
+    buffer = Buffer.from(downloaded || '');
   }
   return { fileName, buffer };
 }
@@ -166,9 +166,9 @@ export async function largeFileDownloadNode(
       dek,
       encrypted_artifact.encryption_strategy,
       {
-        iv: binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
+        iv: bytesToBinaryString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,
-        at: binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
+        at: bytesToBinaryString(new Uint8Array(encrypted_artifact.at[index].data)),
       },
       encrypted_artifact.range[index]
     );
@@ -199,7 +199,7 @@ export async function encryptAndUploadThumbnail({
 }: {
   thumbnailFilePath: string;
   binaryId: string;
-  attachmentDek: string;
+  attachmentDek: EncryptionKey;
   sizeType: ThumbnailType;
   authConfig: IFileStorageAuthConfiguration;
   vaultUrl: string;
@@ -207,7 +207,7 @@ export async function encryptAndUploadThumbnail({
   const thumbnail = fs.readFileSync(thumbnailFilePath);
 
   return encryptAndUploadThumbnailCommon({
-    thumbnailBufferString: binaryBufferToString(thumbnail),
+    thumbnail,
     binaryId,
     attachmentDek,
     sizeType,
@@ -224,7 +224,7 @@ export async function downloadThumbnail({
   authConfig,
 }: {
   id: string;
-  dataEncryptionKey: string;
+  dataEncryptionKey: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
 }) {

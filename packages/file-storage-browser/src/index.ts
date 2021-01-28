@@ -1,4 +1,8 @@
-import { binaryBufferToString, generateRandomKey } from '@meeco/cryppo';
+import {
+  bytesBufferToBinaryString,
+  bytesToBinaryString,
+  generateRandomBytesString,
+} from '@meeco/cryppo';
 import {
   AzureBlockDownload,
   buildApiConfig,
@@ -38,7 +42,7 @@ export async function fileUploadBrowser({
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
-  const dek = generateRandomKey();
+  const dek = generateRandomBytesString();
   const uploadUrl = await directAttachmentUploadUrl(
     {
       fileSize: file.size,
@@ -176,7 +180,7 @@ async function largeFileDownloadBrowser(
   );
   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
   const encrypted_artifact_uint8array: any = await client.start(null, null, null, null, onCancel);
-  const encrypted_artifact = JSON.parse(binaryBufferToString(encrypted_artifact_uint8array));
+  const encrypted_artifact = JSON.parse(bytesBufferToBinaryString(encrypted_artifact_uint8array));
   const videoCodec = encrypted_artifact.videoCodec;
   if (progressUpdateFunc && videoCodec) {
     progressUpdateFunc(null, 0, videoCodec);
@@ -189,9 +193,9 @@ async function largeFileDownloadBrowser(
       dek,
       encrypted_artifact.encryption_strategy,
       {
-        iv: binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
+        iv: bytesToBinaryString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,
-        at: binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
+        at: bytesToBinaryString(new Uint8Array(encrypted_artifact.at[index].data)),
       },
       encrypted_artifact.range[index],
       onCancel

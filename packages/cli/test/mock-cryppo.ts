@@ -63,7 +63,7 @@ export function _mockCryppo() {
         return `${args.token}.${args.encrypted}`;
       });
 
-      sandbox.stub(<any>_cryppoService, 'generateRandomKey').callsFake((args: any) => {
+      sandbox.stub(<any>_cryppoService, 'generateRandomBytesString').callsFake((args: any) => {
         return `randomly_generated_key`;
       });
 

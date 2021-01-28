@@ -1,4 +1,10 @@
-import { bytesToUtf8, EncryptionKey, utf8ToBytes } from '@meeco/cryppo';
+import {
+  binaryStringToBytes,
+  bytesToBinaryString,
+  bytesToUtf8,
+  EncryptionKey,
+  utf8ToBytes,
+} from '@meeco/cryppo';
 import { _cryppoService } from '@meeco/sdk';
 import { createSandbox } from 'sinon';
 
@@ -32,7 +38,9 @@ export function _mockCryppo() {
 
       sandbox.stub(<any>_cryppoService, 'encryptWithKey').callsFake(args => {
         return Promise.resolve({
-          serialized: `[serialized][encrypted]${bytesToUtf8(args.data)}[with ${args.key}]`,
+          serialized: `[serialized][encrypted]${bytesToUtf8(args.data)}[with ${bytesToBinaryString(
+            args.key.bytes
+          )}]`,
           encrypted: `[encrypted]${bytesToUtf8(args.data)}`,
         });
       });
@@ -68,7 +76,7 @@ export function _mockCryppo() {
       });
 
       sandbox.stub(<any>_cryppoService.EncryptionKey, 'generateRandom').callsFake((args: any) => {
-        return `randomly_generated_key`;
+        return EncryptionKey.fromBytes(binaryStringToBytes(`randomly_generated_key`));
       });
 
       sandbox.stub(<any>_cryppoService, 'generateRSAKeyPair').callsFake(() => {

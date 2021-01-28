@@ -270,7 +270,7 @@ interface IDirectAttachmentUploadData {
   directUploadUrl: string;
   file: File | string;
   encrypt: boolean;
-  attachmentDek?: string;
+  attachmentDek?: EncryptionKey;
 }
 
 interface IDirectAttachmentUploadResponse {

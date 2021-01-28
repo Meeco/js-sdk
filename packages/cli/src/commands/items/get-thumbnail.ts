@@ -1,3 +1,4 @@
+import { EncryptionKey } from '@meeco/cryppo';
 import * as fileStorageNode from '@meeco/file-storage-node';
 import { ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
@@ -71,7 +72,7 @@ export default class ItemsGetThumbnail extends MeecoCommand {
         dataEncryptionKey: attachmentSlotValueDek,
         vaultUrl: environment.vault.url,
         authConfig: {
-          data_encryption_key: authConfig.data_encryption_key.key,
+          data_encryption_key: EncryptionKey.fromBytes(authConfig.data_encryption_key.key),
           vault_access_token: authConfig.vault_access_token,
           subscription_key: environment.vault.subscription_key,
         },

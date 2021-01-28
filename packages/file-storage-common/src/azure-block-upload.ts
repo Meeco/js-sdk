@@ -1,9 +1,8 @@
 import {
-  binaryBufferToString,
   CipherStrategy,
+  EncryptionKey,
   encryptWithKeyUsingArtefacts,
-  generateRandomKey,
-  stringAsBinaryBuffer,
+  generateRandomBytesString,
 } from '@meeco/cryppo';
 import { isRunningOnWeb } from './app';
 import { BlobStorage } from './services/Azure';
@@ -131,7 +130,7 @@ export class AzureBlockUpload {
    */
 
   async start(
-    dataEncryptionKey: string | null,
+    dataEncryptionKey: EncryptionKey | null,
     progressUpdateFunc?:
       | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
       | null,
@@ -182,22 +181,18 @@ export class AzureBlockUpload {
 
           let encrypt: any = null;
           if (dataEncryptionKey) {
-            const ivArtifact = stringAsBinaryBuffer(generateRandomKey(12));
-            encrypt = encryptWithKeyUsingArtefacts(
-              dataEncryptionKey,
-              binaryBufferToString(data),
-              CipherStrategy.AES_GCM,
-              binaryBufferToString(ivArtifact)
-            );
+            const ivArtifact = generateRandomBytesString(12);
+            encrypt = encryptWithKeyUsingArtefacts({
+              key: dataEncryptionKey,
+              data,
+              strategy: CipherStrategy.AES_GCM,
+              iv: ivArtifact,
+            });
             artifacts.iv[nBlock] = ivArtifact;
             artifacts.at[nBlock] = encrypt.artifacts.at;
           }
 
-          await BlobStorage.putBlock(
-            this.url,
-            encrypt ? stringAsBinaryBuffer(encrypt.encrypted) : data,
-            blockID
-          );
+          await BlobStorage.putBlock(this.url, encrypt ? encrypt.encrypted : data, blockID);
 
           const progress = (nBlock + 1) / this.totalBlocks;
           if (progressUpdateFunc) {
