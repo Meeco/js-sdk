@@ -8,11 +8,16 @@
 
 - [Documentation](./packages/cli)
 
-### SDK
+### JS SDK
 
 - [Documentation](./packages/sdk)
 - [TypeDoc docs](https://meeco.github.io/js-sdk/)
 - [SDK Demo page](https://meeco.github.io/js-sdk/sdk-demo/)
+
+### File Storage SDK
+
+- [Documentation](./packages/file-storage-browser)
+- [Sample Application Code](./packages/file-storage-browser/demo/index.ts)
 
 ## Style Kit
 
