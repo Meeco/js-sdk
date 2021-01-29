@@ -190,7 +190,7 @@ describe('ShareService', () => {
         });
       })
       .add('result', () =>
-        new ShareService(environment).getShareDEK(testUserAuth, {
+        new ItemService(environment).getShareDEK(testUserAuth, {
           encrypted_dek: dek,
           keypair_external_id: keypairId,
         } as Share)
@@ -206,7 +206,7 @@ describe('ShareService', () => {
     customTest
       .mockCryppo()
       .add('result', () =>
-        new ShareService(environment).getShareDEK(testUserAuth, {
+        new ItemService(environment).getShareDEK(testUserAuth, {
           encrypted_dek: null,
           keypair_external_id: keypairId,
         } as Share)
@@ -232,7 +232,7 @@ describe('ShareService', () => {
         });
       })
       .stub(
-        ShareService.prototype,
+        ItemService.prototype,
         'getShareDEK',
         sinon.stub().returns(SymmetricKey.fromSerialized(encodeSafe64('some_key')))
       )
@@ -302,7 +302,7 @@ describe('ShareService', () => {
         });
       })
       .stub(
-        ShareService.prototype,
+        ItemService.prototype,
         'getShareDEK',
         sinon.stub().returns(SymmetricKey.fromSerialized(encodeSafe64('some_key')))
       )

@@ -1,8 +1,4 @@
-import {
-  bytesBufferToBinaryString,
-  bytesToBinaryString,
-  generateRandomBytesString,
-} from '@meeco/cryppo';
+import { bytesBufferToBinaryString, bytesToBinaryString, EncryptionKey } from '@meeco/cryppo';
 import {
   AzureBlockDownload,
   buildApiConfig,
@@ -38,11 +34,11 @@ export async function fileUploadBrowser({
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null;
   onCancel?: any;
-}): Promise<{ attachment: any; dek: string }> {
+}): Promise<{ attachment: any; dek: EncryptionKey }> {
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
-  const dek = generateRandomBytesString();
+  const dek = EncryptionKey.generateRandom();
   const uploadUrl = await directAttachmentUploadUrl(
     {
       fileSize: file.size,
@@ -116,7 +112,7 @@ export async function fileDownloadBrowser({
   onCancel = null,
 }: {
   attachmentId: string;
-  dek: string;
+  dek: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
   progressUpdateFunc?:
@@ -151,7 +147,7 @@ export async function fileDownloadBrowser({
   } else {
     // was not uploaded in chunks
     const downloaded = await downloadAttachment(attachmentId, authConfig, vaultUrl);
-    buffer = Buffer.from(downloaded as string);
+    buffer = downloaded || new Uint8Array();
   }
   return new File([buffer], fileName, {
     type: attachmentInfo.attachment.content_type,
@@ -160,7 +156,7 @@ export async function fileDownloadBrowser({
 
 async function largeFileDownloadBrowser(
   attachmentID: string,
-  dek: string | null,
+  dek: EncryptionKey | null,
   authConfig: IFileStorageAuthConfiguration,
   vaultUrl: string,
   progressUpdateFunc: ((chunkBuffer, percentageComplete, videoCodec?: string) => void) | null,
@@ -229,7 +225,7 @@ export function fileDownloadBrowserWithCancel({
   progressUpdateFunc = null,
 }: {
   attachmentId: string;
-  dek: string;
+  dek: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
   progressUpdateFunc?:

@@ -11,7 +11,6 @@ import {
   ShareWithItemData,
 } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
-import DecryptedKeypair from '../models/decrypted-keypair';
 import RSAPublicKey from '../models/rsa-public-key';
 import { MeecoServiceError } from '../models/service-error';
 import { SDKDecryptedSlot } from '../models/slot-types';
@@ -214,37 +213,6 @@ export class ShareService extends Service<SharesApi> {
   }
 
   /**
-   * A shared Item may be either encrypted with a shared data-encryption key (DEK) or with
-   * the user's personal DEK. This method inspects the share record and returns the appropriate
-   * key.
-   * @param user
-   * @param shareId
-   */
-  public async getShareDEK(
-    credentials: IKeystoreToken & IKEK & IDEK,
-    share: Share
-  ): Promise<SymmetricKey> {
-    let dataEncryptionKey: SymmetricKey;
-
-    if (share.encrypted_dek) {
-      const { keypair } = await this.keystoreAPIFactory(credentials).KeypairApi.keypairsIdGet(
-        share.keypair_external_id!
-      );
-
-      const decryptedPrivateKey = await DecryptedKeypair.fromAPI(
-        credentials.key_encryption_key,
-        keypair
-      ).then(k => k.privateKey);
-
-      dataEncryptionKey = await decryptedPrivateKey.decryptKey(share.encrypted_dek);
-    } else {
-      dataEncryptionKey = credentials.data_encryption_key;
-    }
-
-    return dataEncryptionKey;
-  }
-
-  /**
    * Get a Share record and the Item it references with all Slots decrypted.
    * @param user
    * @param shareId
@@ -289,7 +257,10 @@ export class ShareService extends Service<SharesApi> {
       }
 
       this.logger.log('Getting share key');
-      const dek = await this.getShareDEK(credentials, shareWithItemData.share);
+      const dek = await new ItemService(this.environment).getShareDEK(
+        credentials,
+        shareWithItemData.share
+      );
 
       this.logger.log('Decrypting shared Item');
       return {

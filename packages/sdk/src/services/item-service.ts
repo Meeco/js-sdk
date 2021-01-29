@@ -1,11 +1,12 @@
 // import * as MeecoAzure from '@meeco/azure-block-upload';
-import { Item, ItemApi, ItemsResponse } from '@meeco/vault-api-sdk';
+import { Item, ItemApi, ItemsResponse, Share } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
+import DecryptedKeypair from '../models/decrypted-keypair';
 import { ItemUpdate } from '../models/item-update';
 import { NewItem } from '../models/new-item';
+import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
-import { ShareService } from './share-service';
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -71,7 +72,7 @@ export class ItemService extends Service<ItemApi> {
         item.share_id
       );
 
-      dataEncryptionKey = await new ShareService(this.environment).getShareDEK(credentials, share);
+      dataEncryptionKey = await this.getShareDEK(credentials, share);
     }
 
     return DecryptedItem.fromAPI({ data_encryption_key: dataEncryptionKey }, result);
@@ -103,5 +104,37 @@ export class ItemService extends Service<ItemApi> {
     return getAllPaged(cursor => api.itemsGet(templateIds, undefined, undefined, cursor)).then(
       reducePages
     );
+  }
+
+  /**
+   * duplicating method from share-service to avoid circular dependencies
+   * A shared Item may be either encrypted with a shared data-encryption key (DEK) or with
+   * the user's personal DEK. This method inspects the share record and returns the appropriate
+   * key.
+   * @param user
+   * @param shareId
+   */
+  public async getShareDEK(
+    credentials: IKeystoreToken & IKEK & IDEK,
+    share: Share
+  ): Promise<SymmetricKey> {
+    let dataEncryptionKey: SymmetricKey;
+
+    if (share.encrypted_dek) {
+      const { keypair } = await this.keystoreAPIFactory(credentials).KeypairApi.keypairsIdGet(
+        share.keypair_external_id!
+      );
+
+      const decryptedPrivateKey = await DecryptedKeypair.fromAPI(
+        credentials.key_encryption_key,
+        keypair
+      ).then(k => k.privateKey);
+
+      dataEncryptionKey = await decryptedPrivateKey.decryptKey(share.encrypted_dek);
+    } else {
+      dataEncryptionKey = credentials.data_encryption_key;
+    }
+
+    return dataEncryptionKey;
   }
 }

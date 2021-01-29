@@ -110,7 +110,7 @@ export async function fileDownloadNode(
     };
   },
   authConfig: IFileStorageAuthConfiguration,
-  attachmentDek?: string,
+  attachmentDek?: EncryptionKey,
   logFunction?: any
 ): Promise<{ fileName: string; buffer: Buffer }> {
   const attachmentInfo = await getDirectAttachmentInfo(

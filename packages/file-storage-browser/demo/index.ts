@@ -1,4 +1,5 @@
-import { EncryptionKey, Environment, ItemService, ItemUpdateData } from '@meeco/sdk';
+import { EncryptionKey } from '@meeco/cryppo';
+import { Environment, ItemService, ItemUpdate } from '@meeco/sdk';
 import {
   downloadThumbnail,
   encryptAndUploadThumbnail,
@@ -76,12 +77,16 @@ async function attachFile() {
   }
   $set('attached', '');
   try {
-    const privateDek = localStorage.getItem('dataEncryptionKey') || '';
+    const privateDek = EncryptionKey.fromSerialized(
+      localStorage.getItem('dataEncryptionKey') || ''
+    );
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
 
-    const keyEncryptionKey = localStorage.getItem('keyEncryptionKey') || '';
+    const keyEncryptionKey = EncryptionKey.fromSerialized(
+      localStorage.getItem('keyEncryptionKey') || ''
+    );
     const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
     $('fileUploadProgressBar').hidden = false;
     $('cancelAttachFile').hidden = false;
@@ -107,9 +112,9 @@ async function attachFile() {
     const itemService = new ItemService(environment);
     const itemFetchResult = await itemService.get(
       {
-        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
+        data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
-        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
       itemId
@@ -162,8 +167,7 @@ async function attachFile() {
       });
 
     const existingItem = itemFetchResult.item;
-    const itemUpdateData = new ItemUpdateData({
-      id: existingItem.id,
+    const itemUpdateData = new ItemUpdate(existingItem.id, {
       slots: [
         {
           label,
@@ -179,7 +183,7 @@ async function attachFile() {
     const updated = await itemService.update(
       {
         vault_access_token: vaultAccessToken,
-        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
+        data_encryption_key: privateDek,
       },
       itemUpdateData
     );
@@ -201,12 +205,14 @@ async function downloadAttachment() {
   let sourceBuffer: SourceBuffer;
 
   try {
-    const dek = localStorage.getItem('dataEncryptionKey') || '';
+    const dek = EncryptionKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
 
-    const keyEncryptionKey = localStorage.getItem('keyEncryptionKey') || '';
+    const keyEncryptionKey = EncryptionKey.fromSerialized(
+      localStorage.getItem('keyEncryptionKey') || ''
+    );
     const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
 
     $('cancelDownloadAttachment').hidden = false;
@@ -272,9 +278,9 @@ async function downloadAttachment() {
     const itemService = new ItemService(environment);
     const itemFetchResult: any = await itemService.get(
       {
-        data_encryption_key: EncryptionKey.fromSerialized(dek),
+        data_encryption_key: dek,
         vault_access_token: vaultAccessToken,
-        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
       itemId
@@ -385,11 +391,11 @@ async function attachThumbnail() {
     if (!attachmentSlot) {
       return alert('Slot not found');
     }
-    const attachmentSlotValueDek = attachmentSlot.value;
+    const attachmentSlotValueDek = EncryptionKey.fromSerialized(attachmentSlot.value);
     const thumbnailBuffer = await file.arrayBuffer();
 
     const thumbnail = await encryptAndUploadThumbnail({
-      thumbnailBufferString: thumbnailBuffer,
+      thumbnail: thumbnailBuffer,
       binaryId: attachmentSlot.attachment_id,
       attachmentDek: attachmentSlotValueDek,
       sizeType,
