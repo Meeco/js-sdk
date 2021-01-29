@@ -1,4 +1,4 @@
-import { encodeSafe64 } from '@meeco/cryppo';
+import { bytesToBinaryString, encodeSafe64 } from '@meeco/cryppo';
 import {
   AcceptanceRequest,
   ConnectionService,
@@ -196,8 +196,10 @@ describe('ShareService', () => {
         } as Share)
       )
       .it('decrypts a shared DEK using the correct keypair', ({ result }) => {
-        expect(result.key).to.equal(
-          `[decrypted]${dek}${privateKey}[decrypted with ${testUserAuth.key_encryption_key.key}]`
+        expect(bytesToBinaryString(result.key)).to.equal(
+          `[decrypted]${dek}${privateKey}[decrypted with ${bytesToBinaryString(
+            testUserAuth.key_encryption_key.key
+          )}]`
         );
       });
 

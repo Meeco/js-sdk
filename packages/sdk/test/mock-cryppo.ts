@@ -20,10 +20,10 @@ export function _mockCryppo() {
 
       sandbox.stub(<any>_cryppoService, 'generateDerivedKey').callsFake(args => {
         return Promise.resolve({
-          key: `derived_key_${args.key}`,
+          key: EncryptionKey.fromBytes(binaryStringToBytes(`derived_key_${args.passphrase}`)),
           options: <any>{
             serialize() {
-              return `serialized.derivation.artifacts.${args.key}`;
+              return `serialized.derivation.artifacts.${args.passphrase}`;
             },
           },
         });
