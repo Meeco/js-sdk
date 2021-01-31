@@ -87,6 +87,8 @@ export class ItemService extends Service<ItemApi> {
       templateIds,
       undefined,
       undefined,
+      undefined,
+      undefined,
       options?.nextPageAfter,
       options?.perPage
     );
@@ -101,9 +103,9 @@ export class ItemService extends Service<ItemApi> {
   public async listAll(credentials: IVaultToken, templateIds?: string): Promise<ItemsResponse> {
     const api = this.vaultAPIFactory(credentials).ItemApi;
 
-    return getAllPaged(cursor => api.itemsGet(templateIds, undefined, undefined, cursor)).then(
-      reducePages
-    );
+    return getAllPaged(cursor =>
+      api.itemsGet(templateIds, undefined, undefined, undefined, undefined, cursor)
+    ).then(reducePages);
   }
 
   /**

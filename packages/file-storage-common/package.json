@@ -17,7 +17,7 @@
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
   },
   "dependencies": {
-    "@meeco/cryppo": "^2.0.0",
+    "@meeco/cryppo": "2.0.0",
     "axios": "^0.20.0"
   },
   "devDependencies": {

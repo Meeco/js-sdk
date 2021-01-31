@@ -1,5 +1,5 @@
 import { EncryptionKey } from '@meeco/cryppo';
-import { Environment, ItemService, ItemUpdate } from '@meeco/sdk';
+import { Environment, ItemService } from '@meeco/sdk';
 import {
   downloadThumbnail,
   encryptAndUploadThumbnail,

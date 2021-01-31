@@ -13,7 +13,7 @@
     "lint": "tslint -p . -t stylish -c ../../tslint.json"
   },
   "dependencies": {
-    "@meeco/sdk": "^2.0.0-beta",
+    "@meeco/sdk": "2.0.1",
     "clean-webpack-plugin": "^3.0.0",
     "html-webpack-plugin": "^4.5.0",
     "mithril": "^2.0.4",

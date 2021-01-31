@@ -11,7 +11,7 @@ import {
   AttachmentDirectUploadUrlResponse,
   Configuration,
   ConfigurationParameters,
-  CreateAttachmentResponse,
+  DirectAttachmentResponse,
   DirectAttachmentsApi,
   PostAttachmentDirectUploadUrlRequest,
   ThumbnailApi,
@@ -94,7 +94,7 @@ export async function directAttachmentAttach(
   auth: IFileStorageAuthConfiguration,
   vaultUrl,
   fetchApi?: any
-): Promise<CreateAttachmentResponse> {
+): Promise<DirectAttachmentResponse> {
   const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
   const attachment = await api.directAttachmentsPost({
     blob: {
