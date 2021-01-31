@@ -1,6 +1,6 @@
 import {
-  binaryStringToBytes,
-  bytesToBinaryString,
+  binaryStringToBytesBuffer,
+  bytesBufferToBinaryString,
   CipherStrategy,
   decryptWithKey,
   EncryptionKey,
@@ -143,7 +143,7 @@ export async function downloadAndDecryptFile<T extends Blob>(
   const buffer = await ((<any>result).arrayBuffer
     ? (<any>result).arrayBuffer()
     : new Response(result).arrayBuffer());
-  const encryptedContents = await buffer;
+  const encryptedContents = await bytesBufferToBinaryString(buffer);
   const decryptedContents = await decryptWithKey({
     serialized: encryptedContents,
     key: dataEncryptionKey,
@@ -206,7 +206,7 @@ export async function encryptAndUploadThumbnailCommon({
   const blob =
     typeof Blob === 'function'
       ? new Blob([encryptedThumbnail.serialized])
-      : binaryStringToBytes(encryptedThumbnail.serialized);
+      : binaryStringToBytesBuffer(encryptedThumbnail.serialized);
   const response = await new ThumbnailApi(
     buildApiConfig(authConfig, vaultUrl, fetchApi)
   ).thumbnailsPost(blob as any, binaryId, sizeType);
@@ -235,7 +235,7 @@ export async function downloadThumbnailCommon({
   const buffer = await ((<any>result).arrayBuffer
     ? (<any>result).arrayBuffer()
     : new Response(result.data).arrayBuffer());
-  const encryptedContents = await bytesToBinaryString(buffer);
+  const encryptedContents = await bytesBufferToBinaryString(buffer);
   const decryptedContents = await decryptWithKey({
     serialized: encryptedContents,
     key: dataEncryptionKey,

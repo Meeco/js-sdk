@@ -1,4 +1,4 @@
-import { bytesBufferToBinaryString, bytesToBinaryString, EncryptionKey } from '@meeco/cryppo';
+import { bytesBufferToBinaryString, EncryptionKey } from '@meeco/cryppo';
 import {
   AzureBlockDownload,
   buildApiConfig,
@@ -189,9 +189,9 @@ async function largeFileDownloadBrowser(
       dek,
       encrypted_artifact.encryption_strategy,
       {
-        iv: bytesToBinaryString(new Uint8Array(encrypted_artifact.iv[index].data)),
+        iv: bytesBufferToBinaryString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,
-        at: bytesToBinaryString(new Uint8Array(encrypted_artifact.at[index].data)),
+        at: bytesBufferToBinaryString(new Uint8Array(encrypted_artifact.at[index].data)),
       },
       encrypted_artifact.range[index],
       onCancel

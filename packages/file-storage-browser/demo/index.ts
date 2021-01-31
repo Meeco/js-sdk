@@ -1,5 +1,5 @@
 import { EncryptionKey } from '@meeco/cryppo';
-import { Environment, ItemService } from '@meeco/sdk';
+import { Environment, ItemService, ItemUpdate, SymmetricKey } from '@meeco/sdk';
 import {
   downloadThumbnail,
   encryptAndUploadThumbnail,
@@ -25,6 +25,7 @@ function loadEnvironmentFromStorage() {
 
   loadKey('vaultUrl');
   loadKey('dataEncryptionKey');
+  loadKey('keyEncryptionKey');
   loadKey('subscriptionKey');
 
   updateEnvironment();
@@ -77,14 +78,12 @@ async function attachFile() {
   }
   $set('attached', '');
   try {
-    const privateDek = EncryptionKey.fromSerialized(
-      localStorage.getItem('dataEncryptionKey') || ''
-    );
+    const privateDek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
 
-    const keyEncryptionKey = EncryptionKey.fromSerialized(
+    const keyEncryptionKey = SymmetricKey.fromSerialized(
       localStorage.getItem('keyEncryptionKey') || ''
     );
     const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
@@ -136,7 +135,7 @@ async function attachFile() {
       file,
       vaultUrl,
       authConfig: {
-        data_encryption_key: privateDek,
+        data_encryption_key: EncryptionKey.fromBytes(privateDek.key),
         vault_access_token: vaultAccessToken,
         subscription_key: subscriptionKey,
       },
@@ -175,11 +174,12 @@ async function attachFile() {
           attachment_attributes: {
             id: attachment.id,
           },
-          value: attachmentDek,
+          value: attachmentDek.serialize,
         },
       ],
       label: existingItem.label,
     });
+
     const updated = await itemService.update(
       {
         vault_access_token: vaultAccessToken,
@@ -205,12 +205,12 @@ async function downloadAttachment() {
   let sourceBuffer: SourceBuffer;
 
   try {
-    const dek = EncryptionKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
+    const dek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
 
-    const keyEncryptionKey = EncryptionKey.fromSerialized(
+    const keyEncryptionKey = SymmetricKey.fromSerialized(
       localStorage.getItem('keyEncryptionKey') || ''
     );
     const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
@@ -289,10 +289,10 @@ async function downloadAttachment() {
 
     const { cancel, success } = fileDownloadBrowserWithCancel({
       attachmentId: attachmentSlot?.attachment_id,
-      dek: attachmentSlot?.value,
+      dek: EncryptionKey.fromSerialized(attachmentSlot?.value),
       vaultUrl,
       authConfig: {
-        data_encryption_key: dek,
+        data_encryption_key: EncryptionKey.fromBytes(dek.key),
         vault_access_token: vaultAccessToken,
         subscription_key: subscriptionKey,
       },
@@ -357,9 +357,11 @@ async function attachThumbnail() {
   try {
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
-    const privateDek = localStorage.getItem('dataEncryptionKey') || '';
+    const privateDek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
-    const keyEncryptionKey = localStorage.getItem('keyEncryptionKey') || '';
+    const keyEncryptionKey = SymmetricKey.fromSerialized(
+      localStorage.getItem('keyEncryptionKey') || ''
+    );
     const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
 
     const environment = new Environment({
@@ -377,9 +379,9 @@ async function attachThumbnail() {
     const itemService = new ItemService(environment);
     const itemFetchResult: any = await itemService.get(
       {
-        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
+        data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
-        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
       itemId
@@ -429,9 +431,11 @@ async function thumbnailDownload() {
   try {
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
-    const privateDek = localStorage.getItem('dataEncryptionKey') || '';
+    const privateDek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
-    const keyEncryptionKey = localStorage.getItem('keyEncryptionKey') || '';
+    const keyEncryptionKey = SymmetricKey.fromSerialized(
+      localStorage.getItem('keyEncryptionKey') || ''
+    );
     const keystoreAccessToken = localStorage.getItem('keystoreAccessToken') || '';
 
     const environment = new Environment({
@@ -449,9 +453,9 @@ async function thumbnailDownload() {
     const itemService = new ItemService(environment);
     const itemFetchResult: any = await itemService.get(
       {
-        data_encryption_key: EncryptionKey.fromSerialized(privateDek),
+        data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
-        key_encryption_key: EncryptionKey.fromSerialized(keyEncryptionKey),
+        key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
       itemId
@@ -463,7 +467,7 @@ async function thumbnailDownload() {
     if (!attachmentSlot) {
       return alert('Slot not found');
     }
-    const attachmentSlotValueDek = attachmentSlot.value;
+    const attachmentSlotValueDek = EncryptionKey.fromSerialized(attachmentSlot.value);
 
     const thumbnailRecord = itemFetchResult.thumbnails.find(
       thumbnail => thumbnail.id === thumbnailId

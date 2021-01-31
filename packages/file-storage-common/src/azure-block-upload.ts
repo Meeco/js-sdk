@@ -1,4 +1,6 @@
 import {
+  binaryStringToBytesBuffer,
+  bytesBufferToBinaryString,
   CipherStrategy,
   EncryptionKey,
   encryptWithKeyUsingArtefacts,
@@ -181,18 +183,22 @@ export class AzureBlockUpload {
 
           let encrypt: any = null;
           if (dataEncryptionKey) {
-            const ivArtifact = generateRandomBytesString(12);
+            const ivArtifact = binaryStringToBytesBuffer(generateRandomBytesString(12));
             encrypt = encryptWithKeyUsingArtefacts({
               key: dataEncryptionKey,
               data,
               strategy: CipherStrategy.AES_GCM,
-              iv: ivArtifact,
+              iv: bytesBufferToBinaryString(ivArtifact),
             });
             artifacts.iv[nBlock] = ivArtifact;
             artifacts.at[nBlock] = encrypt.artifacts.at;
           }
 
-          await BlobStorage.putBlock(this.url, encrypt ? encrypt.encrypted : data, blockID);
+          await BlobStorage.putBlock(
+            this.url,
+            encrypt ? binaryStringToBytesBuffer(encrypt.encrypted) : data,
+            blockID
+          );
 
           const progress = (nBlock + 1) / this.totalBlocks;
           if (progressUpdateFunc) {
