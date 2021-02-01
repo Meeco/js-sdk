@@ -21,7 +21,7 @@
   "dependencies": {
     "@meeco/vault-api-sdk": "19.3.0-stage.20210118010000.e911983",
     "@meeco/file-storage-common": "^3.0.3-beta",
-    "@meeco/cryppo": "2.0.0",
+    "@meeco/cryppo": "^2.0.0",
     "axios": "^0.20.0"
   },
   "devDependencies": {
