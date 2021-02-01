@@ -1,4 +1,4 @@
-import { binaryBufferToString, generateRandomKey } from '@meeco/cryppo';
+import { bytesBufferToBinaryString, EncryptionKey } from '@meeco/cryppo';
 import {
   AzureBlockDownload,
   buildApiConfig,
@@ -34,11 +34,11 @@ export async function fileUploadBrowser({
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null;
   onCancel?: any;
-}): Promise<{ attachment: any; dek: string }> {
+}): Promise<{ attachment: any; dek: EncryptionKey }> {
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
-  const dek = generateRandomKey();
+  const dek = EncryptionKey.generateRandom();
   const uploadUrl = await directAttachmentUploadUrl(
     {
       fileSize: file.size,
@@ -112,7 +112,7 @@ export async function fileDownloadBrowser({
   onCancel = null,
 }: {
   attachmentId: string;
-  dek: string;
+  dek: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
   progressUpdateFunc?:
@@ -147,7 +147,7 @@ export async function fileDownloadBrowser({
   } else {
     // was not uploaded in chunks
     const downloaded = await downloadAttachment(attachmentId, authConfig, vaultUrl);
-    buffer = Buffer.from(downloaded as string);
+    buffer = downloaded || new Uint8Array();
   }
   return new File([buffer], fileName, {
     type: attachmentInfo.attachment.content_type,
@@ -156,7 +156,7 @@ export async function fileDownloadBrowser({
 
 async function largeFileDownloadBrowser(
   attachmentID: string,
-  dek: string | null,
+  dek: EncryptionKey | null,
   authConfig: IFileStorageAuthConfiguration,
   vaultUrl: string,
   progressUpdateFunc: ((chunkBuffer, percentageComplete, videoCodec?: string) => void) | null,
@@ -176,7 +176,7 @@ async function largeFileDownloadBrowser(
   );
   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
   const encrypted_artifact_uint8array: any = await client.start(null, null, null, null, onCancel);
-  const encrypted_artifact = JSON.parse(binaryBufferToString(encrypted_artifact_uint8array));
+  const encrypted_artifact = JSON.parse(bytesBufferToBinaryString(encrypted_artifact_uint8array));
   const videoCodec = encrypted_artifact.videoCodec;
   if (progressUpdateFunc && videoCodec) {
     progressUpdateFunc(null, 0, videoCodec);
@@ -189,9 +189,9 @@ async function largeFileDownloadBrowser(
       dek,
       encrypted_artifact.encryption_strategy,
       {
-        iv: binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
+        iv: bytesBufferToBinaryString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,
-        at: binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
+        at: bytesBufferToBinaryString(new Uint8Array(encrypted_artifact.at[index].data)),
       },
       encrypted_artifact.range[index],
       onCancel
@@ -225,7 +225,7 @@ export function fileDownloadBrowserWithCancel({
   progressUpdateFunc = null,
 }: {
   attachmentId: string;
-  dek: string;
+  dek: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
   progressUpdateFunc?:

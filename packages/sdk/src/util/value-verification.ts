@@ -1,4 +1,4 @@
-import { hmacSha256Digest } from '@meeco/cryppo/dist/src/digests/hmac-digest';
+import { bytesToBinaryString, hmacSha256Digest } from '@meeco/cryppo';
 import { SymmetricKey } from '../models/symmetric-key';
 
 export const VALUE_VERIFICATION_KEY_LENGTH = 64;
@@ -13,7 +13,7 @@ export function newValueVerificationKey(): SymmetricKey {
  * @param value Plaintext to hash.
  */
 export function valueVerificationHash(verificationKey: SymmetricKey, value: string) {
-  return hmacSha256Digest(verificationKey.key, value);
+  return hmacSha256Digest(bytesToBinaryString(verificationKey.key), value);
 }
 
 export function verifyHashedValue(

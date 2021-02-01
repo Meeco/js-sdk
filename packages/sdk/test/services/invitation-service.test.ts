@@ -1,3 +1,4 @@
+import { bytesToBinaryString } from '@meeco/cryppo';
 import { InvitationService } from '@meeco/sdk';
 import { expect } from 'chai';
 import { default as connectionResponse } from '../fixtures/responses/connection-response';
@@ -33,13 +34,15 @@ describe('InvitationService', () => {
     function postInvitationAPI() {
       return api =>
         api
-          .post(
-            '/invitations',
-            body =>
+          .post('/invitations', body => {
+            const ern = `[serialized][encrypted]${connectionName}[with ${bytesToBinaryString(
+              testUserAuth.data_encryption_key.key
+            )}]`;
+            return (
               body.public_key.public_key === 'new_public_key' &&
-              body.invitation.encrypted_recipient_name ===
-                `[serialized][encrypted]${connectionName}[with ${testUserAuth.data_encryption_key.key}]`
-          )
+              body.invitation.encrypted_recipient_name === ern
+            );
+          })
           .matchHeader('Authorization', testUserAuth.vault_access_token)
           .matchHeader('Meeco-Subscription-Key', environment.vault.subscription_key)
           .reply(200, {});
@@ -89,7 +92,9 @@ describe('InvitationService', () => {
             body =>
               body.public_key.public_key === 'new_public_key' &&
               body.connection.encrypted_recipient_name ===
-                `[serialized][encrypted]${connectionName}[with ${testUserAuth.data_encryption_key.key}]` &&
+                `[serialized][encrypted]${connectionName}[with ${bytesToBinaryString(
+                  testUserAuth.data_encryption_key.key
+                )}]` &&
               body.connection.invitation_token === token
           )
           .matchHeader('Authorization', testUserAuth.vault_access_token)

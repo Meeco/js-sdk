@@ -1,6 +1,6 @@
 import { Delegation } from '@meeco/keystore-api-sdk';
 import { DelegationApi } from '@meeco/vault-api-sdk';
-import { DecryptedKeypair } from '..';
+import DecryptedKeypair from '../models/decrypted-keypair';
 import { SymmetricKey } from '../models/symmetric-key';
 import Service, { IKEK, IKeystoreToken, IVaultToken } from './service';
 

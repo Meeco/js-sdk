@@ -15,6 +15,6 @@ describe('connections:create-config', () => {
     ])
     .it('builds an connection template from two user auth files', ctx => {
       const expected = readFileSync(outputFixture('create-config-connection.output.yaml'), 'utf-8');
-      expect(ctx.stdout).to.contain(expected);
+      expect(ctx.stdout.trim()).to.contain(expected.trim());
     });
 });

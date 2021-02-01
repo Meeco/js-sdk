@@ -32,6 +32,7 @@ describe('User creation', () => {
     });
 
   customTest
+    .stub(Secrets, 'generateSecret', generateSecret as any)
     .nock('https://sandbox.meeco.me/keystore', stubKeystore(true))
     .nock('https://sandbox.meeco.me/vault', stubVault)
     .mockCryppo()
@@ -46,6 +47,10 @@ describe('User creation', () => {
       expect(JSON.stringify(user)).to.contain(JSON.stringify(expected));
     });
 });
+
+function generateSecret() {
+  return Promise.resolve('1.mocked_generated_username.Y3ZXUY-tKdUxt-i35BfF-RGn4ZN-uWAxHe');
+}
 
 function stubKeystore(stubUsername: boolean) {
   return api => {
@@ -104,9 +109,10 @@ function stubKeystore(stubUsername: boolean) {
       })
       .matchHeader('Authorization', 'keystore_auth_token')
       .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-      .reply(200, {
+      .reply(201, {
         key_encryption_key: {
           id: 'key_encryption_key_id',
+          serialized_key_encryption_key: `[serialized][encrypted]randomly_generated_key[with derived_key_123.asupersecretpassphrase]`,
         },
       });
 
