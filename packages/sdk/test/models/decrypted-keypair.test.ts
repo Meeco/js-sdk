@@ -13,7 +13,7 @@ describe('DecryptedKeypair', () => {
   describe('#fromAPI', () => {
     it('decrypts the private key', async () => {
       const result = await DecryptedKeypair.fromAPI(kek, keypairResponse.keypair);
-      expect(result.privateKey.key).to.equal(decryptedPrivateKey);
+      expect(result.privateKey.pem).to.equal(decryptedPrivateKey);
     });
 
     test

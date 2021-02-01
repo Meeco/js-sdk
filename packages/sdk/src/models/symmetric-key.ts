@@ -1,3 +1,4 @@
+import { bytesToUtf8, EncryptionKey, utf8ToBytes } from '@meeco/cryppo';
 import cryppo from '../services/cryppo-service';
 
 export const SYMMETRIC_KEY_LENGTH = 32;
@@ -19,17 +20,17 @@ export class SymmetricKey {
    * The constructor is intentionally private as we want the user to be explicit as to whether the value coming
    * in is raw bytes or a base64 encoded version.
    *
-   * @param _value  Value as binary string. Avoid outputting to console but should be used for actual encryption.
+   * @param _key  Value as binary string. Avoid outputting to console but should be used for actual encryption.
    */
-  private constructor(private readonly _value: string) {
-    if (!_value) {
+  private constructor(private readonly _key: EncryptionKey) {
+    if (!_key) {
       throw new Error('Empty encryption key!');
     }
   }
 
   /** A new, random symmetric key with default length. */
   static generate(length = SYMMETRIC_KEY_LENGTH): SymmetricKey {
-    return SymmetricKey.fromRaw(cryppo.generateRandomKey(length));
+    return new SymmetricKey(EncryptionKey.generateRandom(length));
   }
 
   /**
@@ -45,30 +46,29 @@ export class SymmetricKey {
       throw new Error(`Serialized key ${value} did not match base64 format`);
     }
 
-    const parseResult = cryppo.decodeSafe64(value || '');
-    return new SymmetricKey(parseResult);
+    return new SymmetricKey(EncryptionKey.fromSerialized(value));
   }
 
-  /**
-   * Create a {@link SymmetricKey} from a binary string version of the key.
-   * Use this for keys created by calls to cryppo.
-   */
-  static fromRaw(value: string) {
-    return new SymmetricKey(value);
+  static fromBytes(bytes: Uint8Array) {
+    return new SymmetricKey(EncryptionKey.fromBytes(bytes));
+  }
+
+  static fromCryppoKey(key: EncryptionKey) {
+    return new SymmetricKey(key);
   }
 
   /**
    * @returns The raw encryption key as a byte string.
    */
   get key() {
-    return this._value;
+    return this._key.bytes;
   }
 
   /**
    * Implicitly called by `JSON.stringify()` to ensure that the value is safely printable
    */
   toJSON() {
-    return cryppo.encodeSafe64(this._value);
+    return this._key.serialize;
   }
 
   /**
@@ -82,9 +82,9 @@ export class SymmetricKey {
       return null;
     }
     return cryppo
-      .encryptStringWithKey({
-        data: value,
-        key: this.key,
+      .encryptWithKey({
+        data: utf8ToBytes(value),
+        key: this._key,
         strategy: SYMMETRIC_KEY_STRATEGY,
       })
       .then(result => result.serialized);
@@ -95,11 +95,11 @@ export class SymmetricKey {
    * N.B.. Encryption keys are considered binary data even though they are often represented as strings.
    * @returns Base 64 encoded encrypted string.
    */
-  async encryptKey(key: { key: string }): Promise<string> {
+  async encryptKey(key: { key: Uint8Array }): Promise<string> {
     return cryppo
-      .encryptBinaryWithKey({
+      .encryptWithKey({
         data: key.key,
-        key: this.key,
+        key: this._key,
         strategy: SYMMETRIC_KEY_STRATEGY,
       })
       .then(result => result.serialized!);
@@ -117,10 +117,12 @@ export class SymmetricKey {
       return null;
     }
 
-    return cryppo.decryptStringWithKey({
-      key: this.key,
-      serialized,
-    });
+    return cryppo
+      .decryptWithKey({
+        key: this._key,
+        serialized,
+      })
+      .then(result => (result === null ? result : bytesToUtf8(result)));
   }
 
   /**
@@ -129,10 +131,10 @@ export class SymmetricKey {
    */
   async decryptKey(serialized: string): Promise<SymmetricKey> {
     return cryppo
-      .decryptBinaryWithKey({
-        key: this.key,
+      .decryptWithKey({
+        key: this._key,
         serialized,
       })
-      .then(result => SymmetricKey.fromRaw(result!));
+      .then(result => new SymmetricKey(EncryptionKey.fromBytes(result!)));
   }
 }

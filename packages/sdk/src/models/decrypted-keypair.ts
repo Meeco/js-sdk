@@ -31,8 +31,8 @@ export default class DecryptedKeypair {
   ): Promise<DecryptedKeypair> {
     const { id, public_key, encrypted_serialized_key, external_identifiers } = keypair;
     // decrypt serialized private key, check correct
-    const privateKey = await keyEncryptionKey.decryptKey(encrypted_serialized_key);
-    return new DecryptedKeypair(public_key, privateKey!.key, external_identifiers, id);
+    const privateKey = await keyEncryptionKey.decryptString(encrypted_serialized_key);
+    return new DecryptedKeypair(public_key, privateKey!, external_identifiers, id);
   }
 
   /**

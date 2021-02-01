@@ -1,3 +1,4 @@
+import { encodeSafe64 } from '@meeco/cryppo';
 import { DecryptedItem, SlotHelpers, SymmetricKey } from '@meeco/sdk';
 import { Attachment, Slot } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
@@ -63,7 +64,10 @@ describe('DecryptedItem', () => {
       .mockCryppo()
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, BasicItem))
       .add('result', ({ item }) =>
-        item.toShareSlots({ data_encryption_key: SymmetricKey.fromRaw('fake') }, '123')
+        item.toShareSlots(
+          { data_encryption_key: SymmetricKey.fromSerialized(encodeSafe64('fake')) },
+          '123'
+        )
       )
       .it('encrypts slot values with the given DEK', ({ item, result }) => {
         expect(result.map(({ encrypted_value }) => encrypted_value)).to.satisfy(values =>
@@ -90,7 +94,10 @@ describe('DecryptedItem', () => {
       )
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, ReceivedItem))
       .add('result', ({ item }) =>
-        item.toShareSlots({ data_encryption_key: SymmetricKey.fromRaw('fake') }, '123')
+        item.toShareSlots(
+          { data_encryption_key: SymmetricKey.fromSerialized(encodeSafe64('fake')) },
+          '123'
+        )
       )
       .catch(/^cannot share non-owned.*/)
       .it('throws if not owned');
@@ -99,7 +106,7 @@ describe('DecryptedItem', () => {
       id: slot.id,
       own: true,
       value: '123',
-      value_verification_key: SymmetricKey.fromRaw('KEY'),
+      value_verification_key: SymmetricKey.fromSerialized(encodeSafe64('KEY')),
       value_verification_hash: '123',
     });
 
@@ -108,7 +115,10 @@ describe('DecryptedItem', () => {
       .stub(SlotHelpers, 'decryptSlot', sinon.fake(fakeDecryptedOwnSlotFn))
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
       .add('result', ({ item }) =>
-        item.toShareSlots({ data_encryption_key: SymmetricKey.fromRaw('fake') }, '123')
+        item.toShareSlots(
+          { data_encryption_key: SymmetricKey.fromSerialized(encodeSafe64('fake')) },
+          '123'
+        )
       )
       .it('overwrites Slot value-verification key, if present', ({ result }) => {
         expect(result[0].encrypted_value_verification_key).to.equal(
@@ -121,7 +131,10 @@ describe('DecryptedItem', () => {
       .stub(SlotHelpers, 'decryptSlot', sinon.fake(fakeDecryptedOwnSlotFn))
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
       .add('result', ({ item }) =>
-        item.toShareSlots({ data_encryption_key: SymmetricKey.fromRaw('fake') }, '123')
+        item.toShareSlots(
+          { data_encryption_key: SymmetricKey.fromSerialized(encodeSafe64('fake')) },
+          '123'
+        )
       )
       .it('generates a new value-verification key if none is given', ({ result }) => {
         expect(result[0].encrypted_value_verification_key).to.equal(
@@ -134,7 +147,10 @@ describe('DecryptedItem', () => {
       .stub(SlotHelpers, 'decryptSlot', sinon.fake(fakeDecryptedOwnSlotFn))
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
       .add('result', ({ item }) =>
-        item.toShareSlots({ data_encryption_key: SymmetricKey.fromRaw('fake') }, '123')
+        item.toShareSlots(
+          { data_encryption_key: SymmetricKey.fromSerialized(encodeSafe64('fake')) },
+          '123'
+        )
       )
       .it('generates a new value-verification hash, overwriting the old', ({ result }) => {
         expect(result[0].value_verification_hash).to.not.match(/.*STALE_HASH.*/);

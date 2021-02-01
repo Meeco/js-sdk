@@ -8,17 +8,13 @@ describe('SymmetricKey', () => {
 
   describe('#fromSerialized', () => {
     it('reads the correct key', () => {
-      expect(SymmetricKey.fromSerialized(serializedKey).key).to.eql(rawKey);
+      expect(cryppo.bytesToBinaryString(SymmetricKey.fromSerialized(serializedKey).key)).to.eql(
+        rawKey
+      );
     });
 
     it('throws an error if given a raw key', () => {
       expect(() => SymmetricKey.fromSerialized(rawKey)).to.throw();
-    });
-  });
-
-  describe('#fromRaw', () => {
-    it('reads the correct key', () => {
-      expect(SymmetricKey.fromRaw(rawKey).toJSON()).to.eql(serializedKey);
     });
   });
 
@@ -49,7 +45,7 @@ describe('SymmetricKey', () => {
     it('encrypts and decrypts a key', async () => {
       const cipher = await key.encryptKey(key);
       const result = await key.decryptKey(cipher);
-      expect(result!.key).to.eql(rawKey);
+      expect(cryppo.bytesToBinaryString(result!.key)).to.eql(rawKey);
     });
   });
 });

@@ -5,9 +5,10 @@ spec:
   slot_id: a
   connection_id: connection_id
   from:
-    secret: 1.from.secret
-    keystore_access_token: from_keystore_access
-    vault_access_token: from_vault_access
     data_encryption_key: bXlfZ2VuZXJhdGVkX2Rlaw==
     key_encryption_key: w7wIfRkfIVZWFcOaCUE7dsKkw6fDqnPCqnR5AsOyw6o=
+    keystore_access_token: from_keystore_access
     passphrase_derived_key: BsKhFEfDtTfDscK6PMOrwr3DiToiwrFbJ2V4OMO7wqFmw55Q
+    secret: 1.from.secret
+    vault_access_token: from_vault_access
+    delegation_id: null

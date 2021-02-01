@@ -34,6 +34,7 @@
       "visible": null,
       "classification_node_ids": null,
       "attachment_id": null,
+      "attachment_uid": null,
       "item_id": null,
       "required": null,
       "updated_at": "1970-01-01T00:00:00.001Z",

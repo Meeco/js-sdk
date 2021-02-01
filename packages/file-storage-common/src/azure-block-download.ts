@@ -1,8 +1,9 @@
 import {
-  binaryBufferToString,
+  binaryStringToBytes,
+  bytesToBinaryString,
   CipherStrategy,
   decryptWithKeyUsingArtefacts,
-  stringAsBinaryBuffer,
+  EncryptionKey,
 } from '@meeco/cryppo';
 import axios from 'axios';
 import { BlobStorage } from './services/Azure';
@@ -25,7 +26,7 @@ export class AzureBlockDownload {
    * Start downloading
    */
   async start(
-    dataEncryptionKey: string | null,
+    dataEncryptionKey: EncryptionKey | null,
     strategy: CipherStrategy | null,
     encryptionArtifact: any,
     range: string | null,
@@ -52,12 +53,12 @@ export class AzureBlockDownload {
       if (dataEncryptionKey && strategy && encryptionArtifact) {
         const str = decryptWithKeyUsingArtefacts(
           dataEncryptionKey,
-          binaryBufferToString(data),
+          bytesToBinaryString(data),
           strategy,
           encryptionArtifact
         );
 
-        byteNumbers = new Uint8Array(stringAsBinaryBuffer(str || ''));
+        byteNumbers = new Uint8Array(str || binaryStringToBytes(''));
       }
       return new Promise(resolve => {
         resolve(byteNumbers || data);

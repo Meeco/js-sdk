@@ -20,6 +20,7 @@ export class AuthConfig {
   public readonly data_encryption_key: SymmetricKey;
   public readonly key_encryption_key: SymmetricKey;
   public readonly passphrase_derived_key: SymmetricKey;
+  public delegation_id?: string;
 
   constructor(data: {
     secret: string;
@@ -28,6 +29,7 @@ export class AuthConfig {
     data_encryption_key: SymmetricKey;
     key_encryption_key: SymmetricKey;
     passphrase_derived_key: SymmetricKey;
+    delegation_id?: string;
   }) {
     this.secret = data.secret;
     this.keystore_access_token = data.keystore_access_token;
@@ -35,6 +37,7 @@ export class AuthConfig {
     this.data_encryption_key = data.data_encryption_key;
     this.key_encryption_key = data.key_encryption_key;
     this.passphrase_derived_key = data.passphrase_derived_key;
+    this.delegation_id = data.delegation_id;
   }
 
   static fromYamlConfig(yamlConfigObj: IYamlConfig<IAuthMetadata>): AuthConfig {
@@ -73,6 +76,36 @@ export class AuthConfig {
       kind: AuthConfig.kind,
       metadata: payloadSortedAlphabetically, // Note: SymmetricKey's should stringify with their own `toJSON()`
       spec: {},
+    };
+  }
+
+  /**
+   * Create a new AuthData instance from a serialized version
+   */
+  static fromJSON(json: any) {
+    return new AuthData({
+      data_encryption_key: SymmetricKey.fromSerialized(json.data_encryption_key),
+      key_encryption_key: SymmetricKey.fromSerialized(json.key_encryption_key),
+      keystore_access_token: json.keystore_access_token,
+      passphrase_derived_key: SymmetricKey.fromSerialized(json.passphrase_derived_key),
+      secret: json.secret,
+      vault_access_token: json.vault_access_token,
+      delegation_id: json.delegation_id,
+    });
+  }
+
+  /**
+   * Allow AuthData to be serialized for easier storage
+   */
+  toJSON() {
+    return {
+      data_encryption_key: this.data_encryption_key.toJSON(),
+      key_encryption_key: this.key_encryption_key.toJSON(),
+      keystore_access_token: this.keystore_access_token,
+      passphrase_derived_key: this.passphrase_derived_key.toJSON(),
+      secret: this.secret,
+      vault_access_token: this.vault_access_token,
+      delegation_id: this.delegation_id,
     };
   }
 }

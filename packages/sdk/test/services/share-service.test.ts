@@ -1,3 +1,4 @@
+import { bytesToBinaryString, encodeSafe64 } from '@meeco/cryppo';
 import {
   AcceptanceRequest,
   ConnectionService,
@@ -110,7 +111,7 @@ describe('ShareService', () => {
         sinon.fake((cred, slot) => ({
           ...slot,
           value: 'abc',
-          value_verification_key: SymmetricKey.fromRaw('123'),
+          value_verification_key: SymmetricKey.fromSerialized(encodeSafe64('123')),
           value_verification_hash: '123',
         }))
       )
@@ -189,21 +190,23 @@ describe('ShareService', () => {
         });
       })
       .add('result', () =>
-        new ShareService(environment).getShareDEK(testUserAuth, {
+        new ItemService(environment).getShareDEK(testUserAuth, {
           encrypted_dek: dek,
           keypair_external_id: keypairId,
         } as Share)
       )
       .it('decrypts a shared DEK using the correct keypair', ({ result }) => {
-        expect(result.key).to.equal(
-          `[decrypted]${dek}${privateKey}[decrypted with ${testUserAuth.key_encryption_key.key}]`
+        expect(bytesToBinaryString(result.key)).to.equal(
+          `[decrypted]${dek}${privateKey}[decrypted with ${bytesToBinaryString(
+            testUserAuth.key_encryption_key.key
+          )}]`
         );
       });
 
     customTest
       .mockCryppo()
       .add('result', () =>
-        new ShareService(environment).getShareDEK(testUserAuth, {
+        new ItemService(environment).getShareDEK(testUserAuth, {
           encrypted_dek: null,
           keypair_external_id: keypairId,
         } as Share)
@@ -229,9 +232,9 @@ describe('ShareService', () => {
         });
       })
       .stub(
-        ShareService.prototype,
+        ItemService.prototype,
         'getShareDEK',
-        sinon.stub().returns(SymmetricKey.fromRaw('some_key'))
+        sinon.stub().returns(SymmetricKey.fromSerialized(encodeSafe64('some_key')))
       )
       .do(() => new ShareService(environment).getSharedItem(testUserAuth, shareId))
       .it('calls GET /incoming_shares/id/item by default');
@@ -299,9 +302,9 @@ describe('ShareService', () => {
         });
       })
       .stub(
-        ShareService.prototype,
+        ItemService.prototype,
         'getShareDEK',
-        sinon.stub().returns(SymmetricKey.fromRaw('some_key'))
+        sinon.stub().returns(SymmetricKey.fromSerialized(encodeSafe64('some_key')))
       )
       .do(() => new ShareService(environment).getSharedItem(testUserAuth, shareId))
       .it('retrieves the original if an item was already shared');

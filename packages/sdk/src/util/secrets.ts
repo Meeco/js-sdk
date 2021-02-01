@@ -1,6 +1,6 @@
 // tslint:disable-next-line: no-var-requires
-const baseX = require('base-x');
-import { Buffer as _buffer } from 'buffer';
+const b58 = require('base58-string');
+import { binaryStringToBytes, bytesToBinaryString } from '@meeco/cryppo';
 import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import { SymmetricKey } from '../models/symmetric-key';
 import cryppo from '../services/cryppo-service';
@@ -47,7 +47,7 @@ export default class Secrets {
    * Usernames can be requested via the {@link UserService}
    */
   public static generateSecret(username: string): string {
-    const key = cryppo.generateRandomKey(32);
+    const key = binaryStringToBytes(cryppo.generateRandomBytesString(32));
     const secretKey = Secrets.encodeBase58(key);
     const version = 1;
     const readable = secretKey.match(/(.{1,6})/g)!.join('-');
@@ -59,11 +59,8 @@ export default class Secrets {
    *
    * @ignore
    */
-  public static encodeBase58(val: string | Buffer) {
-    // https://tools.ietf.org/html/draft-msporny-base58-01
-    const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-    const input = val instanceof Buffer ? val : _buffer.from(val, 'binary');
-    return baseX(ALPHABET).encode(input);
+  public static encodeBase58(val: Uint8Array) {
+    return b58.encode(bytesToBinaryString(val));
   }
 
   /**
@@ -81,7 +78,7 @@ export default class Secrets {
     };
   }
 
-  private static async deriveSRPPasswordFromSecretKey(password: string, secretKey: string) {
+  private static async deriveSRPPasswordFromSecretKey(passphrase: string, secretKey: string) {
     if (secretKey.indexOf('.') >= 0) {
       throw new Error('Incorrect secret provided. Please destructure the secret_key.');
     }
@@ -93,24 +90,24 @@ export default class Secrets {
 
     const { key } = await cryppo.generateDerivedKey({
       ...this.derivationConstants,
-      key: password,
+      passphrase,
       useSalt: salt,
     });
 
-    return key;
+    return bytesToBinaryString(key.bytes);
   }
 
-  private static async derivePDK(password: string, secretKey: string): Promise<SymmetricKey> {
+  private static async derivePDK(passphrase: string, secretKey: string): Promise<SymmetricKey> {
     if (secretKey.indexOf('.') >= 0) {
       throw new Error('Incorrect secret provided. Please destructure the secret_key.');
     }
 
     const { key } = await cryppo.generateDerivedKey({
       ...this.derivationConstants,
-      key: password,
+      passphrase,
       useSalt: secretKey,
     });
 
-    return SymmetricKey.fromRaw(key);
+    return SymmetricKey.fromCryppoKey(key);
   }
 }
