@@ -257,7 +257,7 @@ export class ShareService extends Service<SharesApi> {
       }
 
       this.logger.log('Getting share key');
-      const dek = await new ItemService(this.environment).getShareDEK(
+      const dek = await new ItemService(this.environment, this.logger).getShareDEK(
         credentials,
         shareWithItemData.share
       );

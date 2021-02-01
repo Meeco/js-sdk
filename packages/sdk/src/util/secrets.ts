@@ -1,7 +1,6 @@
 // tslint:disable-next-line: no-var-requires
-const baseX = require('base-x');
-import { bytesToBinaryString } from '@meeco/cryppo';
-import { Buffer as _buffer } from 'buffer';
+const b58 = require('base58-string');
+import { binaryStringToBytes, bytesToBinaryString } from '@meeco/cryppo';
 import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import { SymmetricKey } from '../models/symmetric-key';
 import cryppo from '../services/cryppo-service';
@@ -48,7 +47,7 @@ export default class Secrets {
    * Usernames can be requested via the {@link UserService}
    */
   public static generateSecret(username: string): string {
-    const key = cryppo.generateRandomBytesString(32);
+    const key = binaryStringToBytes(cryppo.generateRandomBytesString(32));
     const secretKey = Secrets.encodeBase58(key);
     const version = 1;
     const readable = secretKey.match(/(.{1,6})/g)!.join('-');
@@ -60,11 +59,8 @@ export default class Secrets {
    *
    * @ignore
    */
-  public static encodeBase58(val: string | Buffer) {
-    // https://tools.ietf.org/html/draft-msporny-base58-01
-    const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-    const input = val instanceof Buffer ? val : _buffer.from(val, 'binary');
-    return baseX(ALPHABET).encode(input);
+  public static encodeBase58(val: Uint8Array) {
+    return b58.encode(bytesToBinaryString(val));
   }
 
   /**
