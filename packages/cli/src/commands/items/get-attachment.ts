@@ -59,7 +59,7 @@ export default class ItemsGetAttachment extends MeecoCommand {
           vault_access_token: authConfig.vault_access_token,
           subscription_key: environment.vault.subscription_key,
         },
-        attachmentSlotValueDek,
+        EncryptionKey.fromSerialized(attachmentSlotValueDek),
         this.updateStatus
       );
       await this.writeFile(outputPath + downloadedFile.fileName, downloadedFile.buffer);
@@ -70,7 +70,7 @@ export default class ItemsGetAttachment extends MeecoCommand {
 
   writeFile(destination: string, decryptedContents: Buffer) {
     this.updateStatus('Writing decrypted file to destination');
-    return writeFileContents(destination, decryptedContents, {
+    const result = writeFileContents(destination, decryptedContents, {
       flag: 'wx', // Write if not exists but fail if the file exists
     }).catch(err => {
       if (err.code === 'EEXIST') {
@@ -81,5 +81,6 @@ export default class ItemsGetAttachment extends MeecoCommand {
         throw new CLIError(`Failed to write to destination file: '${err.message}'`);
       }
     });
+    return result;
   }
 }

@@ -3,6 +3,7 @@ import { ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { lookup } from 'mime-types';
+import { EncryptionKey } from 'packages/sdk/node_modules/@meeco/cryppo/dist/src';
 import { basename } from 'path';
 import { AuthConfig } from '../../configs/auth-config';
 import { ThumbnailConfig } from '../../configs/thumbnail_config';
@@ -10,10 +11,10 @@ import { authFlags } from '../../flags/auth-flags';
 import { readFileAsBuffer } from '../../util/file';
 import MeecoCommand from '../../util/meeco-command';
 
-export default class ThumbnailsCreate extends MeecoCommand {
+export default class ItemsCreateThumbnail extends MeecoCommand {
   static description = 'Encrypt and attach a thumbnail to an attachment';
 
-  static example = `meeco items:thumbnail-create -c ./thumbnail-config.yaml`;
+  static example = `meeco items:create-thumbnail -c ./thumbnail-config.yaml`;
 
   static flags = {
     ...MeecoCommand.flags,
@@ -28,7 +29,7 @@ export default class ThumbnailsCreate extends MeecoCommand {
   static args = [];
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof ThumbnailsCreate);
+    const { flags } = this.parse(this.constructor as typeof ItemsCreateThumbnail);
     const environment = await this.readEnvironmentFile();
     const { auth, config } = flags;
 
@@ -70,7 +71,7 @@ export default class ThumbnailsCreate extends MeecoCommand {
       const thumbnail = await encryptAndUploadThumbnail({
         thumbnailFilePath: thumbnailConfig.file,
         binaryId: attachmentSlot.attachment_id,
-        attachmentDek: attachmentSlotValueDek,
+        attachmentDek: EncryptionKey.fromSerialized(attachmentSlotValueDek),
         sizeType: thumbnailSizeType,
         authConfig: {
           vault_access_token: authConfig.vault_access_token,

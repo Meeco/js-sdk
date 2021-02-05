@@ -187,12 +187,39 @@ spec:
 
 `meeco items:get-attachment my-attachment-item-id my-attachment-slot-id -o ./image.jpg`
 
-### 7. Review Client Task Queue - A ClientTask represents a task the client is supposed to perform
+### 7. Attach Thumbnail to Attachment
+
+1. create a thumbnail attachment config config yaml.
+
+```yaml
+kind: Thumbnail
+metadata:
+  itemId: 794989f6-9de3-48f6-a379-32373e3e4a73 # item id
+  slotId: 79277a11-ad81-4f86-afda-8ac1b9b72079 # slot id
+spec:
+  label: 'Thumbnail of My Secret File' # slot lable
+  file: 'p.png' # file to attach location
+  sizeType: 128x128/jpg
+```
+
+2. Now we can run attach file command with file-attachment-config:
+
+`meeco items:create-thumbnail -c ./.thumbnail-config.yaml`
+
+3. We can verify the thumbnail slot by fetching the item again
+
+`meeco items:get <item_id> > .my_item.yaml`
+
+4. We can also download uploaded thumbnail
+
+`meeco items:get-thumbnail <ItemId> <SlotId> <AttachmentId> -o ./`
+
+### 8. Review Client Task Queue - A ClientTask represents a task the client is supposed to perform
 
 1. You can retrive all TODO tasks with `meeco client-task-queue:list`.
 2. You can also retrive different taks are in different state. e.g. Todo, InProgress, Done, Failed by providing STATE input. e.g `meeco client-task-queue:list -s InProgress`
 
-## 7. Perform tasks in the Client Task Queue
+## 9. Perform tasks in the Client Task Queue
 
 1. You can run a batch of tasks in the client-task queue by running the command `meeco client-task-queue:run-batch`
    - if you add a number to the end of the command like `meeco client-task-queue:run-batch 20` it will run up to that many tasks in a batch otherwise it will default to the
