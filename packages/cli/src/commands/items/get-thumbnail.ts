@@ -11,7 +11,7 @@ import MeecoCommand from '../../util/meeco-command';
 export default class ItemsGetThumbnail extends MeecoCommand {
   static description = 'Download and decrypt an thumbnail by id';
 
-  static example = `meeco items:get-thumbnail my-thumbnail-id -o ./`;
+  static example = `meeco items:get-thumbnail itemId slotId thumbnailId -o ./`;
 
   static flags = {
     ...MeecoCommand.flags,
@@ -69,7 +69,7 @@ export default class ItemsGetThumbnail extends MeecoCommand {
 
       const file = await fileStorageNode.downloadThumbnail({
         id: thumbnailId,
-        dataEncryptionKey: attachmentSlotValueDek,
+        dataEncryptionKey: EncryptionKey.fromSerialized(attachmentSlotValueDek),
         vaultUrl: environment.vault.url,
         authConfig: {
           data_encryption_key: EncryptionKey.fromBytes(authConfig.data_encryption_key.key),
