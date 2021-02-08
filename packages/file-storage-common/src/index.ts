@@ -232,12 +232,9 @@ export async function downloadThumbnailCommon({
   const result = await thumbnailDownload(res.data.redirect_url);
   // Chrome `Blob` objects support the arrayBuffer() methods but Safari do not - only on `Response`
   // https://stackoverflow.com/questions/15341912/how-to-go-from-blob-to-arraybuffer
-  const buffer = await ((<any>result).arrayBuffer
-    ? (<any>result).arrayBuffer()
-    : new Response(result.data).arrayBuffer());
-  const encryptedContents = await bytesBufferToBinaryString(buffer);
+
   const decryptedContents = await decryptWithKey({
-    serialized: encryptedContents,
+    serialized: result.data,
     key: dataEncryptionKey,
   });
   if (!decryptedContents) {
