@@ -62,8 +62,8 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
 
     return {
       organization: result.organization,
-      privateKey: rsaKeyPair.privateKey,
-      publicKey: rsaKeyPair.publicKey,
+      privateKey: rsaKeyPair.privateKey.pem,
+      publicKey: rsaKeyPair.publicKey.key,
     };
   }
 
