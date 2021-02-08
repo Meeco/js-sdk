@@ -1,9 +1,9 @@
+import { EncryptionKey } from '@meeco/cryppo';
 import { encryptAndUploadThumbnail, ThumbnailType, ThumbnailTypes } from '@meeco/file-storage-node';
 import { ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { lookup } from 'mime-types';
-import { EncryptionKey } from 'packages/sdk/node_modules/@meeco/cryppo/dist/src';
 import { basename } from 'path';
 import { AuthConfig } from '../../configs/auth-config';
 import { ThumbnailConfig } from '../../configs/thumbnail_config';
