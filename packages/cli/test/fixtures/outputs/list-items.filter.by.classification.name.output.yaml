@@ -1,0 +1,30 @@
+kind: Items
+spec:
+  - id: 16e7534e-440e-4e71-abe5-1161d0a0af53
+    own: true
+    name: pet
+    label: dpog
+    description: null
+    created_at: "2021-02-09T06:57:18.896Z"
+    item_template_id: e30a36a5-6cd3-4d58-b838-b3a96384beab
+    ordinal: 1
+    visible: true
+    updated_at: "2021-02-09T06:57:20.035Z"
+    item_template_label: Pet
+    image: https://vault-stage.meeco.me/images/d178065a-5ab0-4658-b974-622dda574511
+    item_image: https://vault-stage.meeco.me/images/d178065a-5ab0-4658-b974-622dda574511
+    item_image_background_colour: null
+    classification_node_ids:
+      - e13545cb-6413-4968-8cad-da0fcb9cb2ae
+      - 63c4d73c-7539-4a05-aca5-d1121dbea625
+    association_ids: []
+    associations_to_ids: []
+    slot_ids:
+      - 4f90a04f-f322-48bb-9436-3cb59fb8cf6b
+      - b9cc1b04-4a33-4553-a0f7-5da50ee94bff
+      - 7f651b81-7e86-4585-b2ce-1c13524d45ac
+    me: false
+    background_color: null
+    original_id: null
+    owner_id: 1984193b-0ad8-4f35-8a19-f7e05354986a
+    share_id: null

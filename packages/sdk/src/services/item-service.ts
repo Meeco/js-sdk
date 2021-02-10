@@ -8,6 +8,14 @@ import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 
+export interface IItemListFilterOptions {
+  templateIds?: string;
+  classificationSchemeName?: string;
+  classificationNodeName?: string;
+  classificationNodeNames?: string;
+  sharedWith?: string;
+}
+
 /**
  * Used for fetching and sending `Items` to and from the Vault.
  */
@@ -80,15 +88,15 @@ export class ItemService extends Service<ItemApi> {
 
   public async list(
     credentials: IVaultToken,
-    templateIds?: string,
+    listFilterOptions?: IItemListFilterOptions,
     options?: IPageOptions
   ): Promise<ItemsResponse> {
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
-      templateIds,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
+      listFilterOptions?.templateIds,
+      listFilterOptions?.classificationSchemeName,
+      listFilterOptions?.classificationNodeName,
+      listFilterOptions?.classificationNodeNames,
+      listFilterOptions?.sharedWith,
       options?.nextPageAfter,
       options?.perPage
     );
@@ -100,11 +108,21 @@ export class ItemService extends Service<ItemApi> {
     return result;
   }
 
-  public async listAll(credentials: IVaultToken, templateIds?: string): Promise<ItemsResponse> {
+  public async listAll(
+    credentials: IVaultToken,
+    listFilterOptions?: IItemListFilterOptions
+  ): Promise<ItemsResponse> {
     const api = this.vaultAPIFactory(credentials).ItemApi;
 
     return getAllPaged(cursor =>
-      api.itemsGet(templateIds, undefined, undefined, undefined, undefined, cursor)
+      api.itemsGet(
+        listFilterOptions?.templateIds,
+        listFilterOptions?.classificationSchemeName,
+        listFilterOptions?.classificationNodeName,
+        listFilterOptions?.classificationNodeNames,
+        listFilterOptions?.sharedWith,
+        cursor
+      )
     ).then(reducePages);
   }
 
