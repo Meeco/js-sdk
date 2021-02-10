@@ -8,11 +8,17 @@ import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 
+/**
+ * Filter Item list with following params
+ * @param templateIds string array of item template ids
+ * @param scheme name of item scheme
+ * @param classification string array of item classification node names e.g. pets, vehicle
+ * @param sharedWith user Id. item shared with provided user id. Works for items owned by the current user as well as for items owned by someone else and on-shared by the current user.
+ */
 export interface IItemListFilterOptions {
-  templateIds?: string;
-  classificationSchemeName?: string;
-  classificationNodeName?: string;
-  classificationNodeNames?: string;
+  templateIds?: string[];
+  scheme?: string;
+  classification?: string[];
   sharedWith?: string;
 }
 
@@ -91,11 +97,15 @@ export class ItemService extends Service<ItemApi> {
     listFilterOptions?: IItemListFilterOptions,
     options?: IPageOptions
   ): Promise<ItemsResponse> {
+    const { classificationNodeName, classificationNodeNames } = this.getClassifications(
+      listFilterOptions
+    );
+
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
-      listFilterOptions?.templateIds,
-      listFilterOptions?.classificationSchemeName,
-      listFilterOptions?.classificationNodeName,
-      listFilterOptions?.classificationNodeNames,
+      listFilterOptions?.templateIds?.join(','),
+      listFilterOptions?.scheme,
+      classificationNodeName,
+      classificationNodeNames,
       listFilterOptions?.sharedWith,
       options?.nextPageAfter,
       options?.perPage
@@ -108,18 +118,34 @@ export class ItemService extends Service<ItemApi> {
     return result;
   }
 
+  private getClassifications(listFilterOptions: IItemListFilterOptions | undefined) {
+    const classificationNodeName =
+      listFilterOptions?.classification && listFilterOptions?.classification.length === 1
+        ? listFilterOptions?.classification.join(',')
+        : undefined;
+    const classificationNodeNames =
+      listFilterOptions?.classification && listFilterOptions?.classification.length > 1
+        ? listFilterOptions?.classification.join(',')
+        : undefined;
+    return { classificationNodeName, classificationNodeNames };
+  }
+
   public async listAll(
     credentials: IVaultToken,
     listFilterOptions?: IItemListFilterOptions
   ): Promise<ItemsResponse> {
     const api = this.vaultAPIFactory(credentials).ItemApi;
 
+    const { classificationNodeName, classificationNodeNames } = this.getClassifications(
+      listFilterOptions
+    );
+
     return getAllPaged(cursor =>
       api.itemsGet(
-        listFilterOptions?.templateIds,
-        listFilterOptions?.classificationSchemeName,
-        listFilterOptions?.classificationNodeName,
-        listFilterOptions?.classificationNodeNames,
+        listFilterOptions?.templateIds?.join(','),
+        listFilterOptions?.scheme,
+        classificationNodeName,
+        classificationNodeNames,
         listFilterOptions?.sharedWith,
         cursor
       )
