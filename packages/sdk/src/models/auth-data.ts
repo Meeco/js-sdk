@@ -13,6 +13,7 @@ export class AuthData {
   public secret: string;
   public vault_access_token: string;
   public delegation_id?: string;
+  public oidc2_access_token?: string;
 
   constructor(config: {
     data_encryption_key: SymmetricKey;
@@ -22,6 +23,7 @@ export class AuthData {
     secret: string;
     vault_access_token: string;
     delegation_id?: string;
+    oidc2_access_token?: string;
   }) {
     this.data_encryption_key = config.data_encryption_key;
     this.key_encryption_key = config.key_encryption_key;
@@ -30,6 +32,7 @@ export class AuthData {
     this.secret = config.secret;
     this.vault_access_token = config.vault_access_token;
     this.delegation_id = config.delegation_id;
+    this.oidc2_access_token = config.oidc2_access_token;
   }
 
   /**

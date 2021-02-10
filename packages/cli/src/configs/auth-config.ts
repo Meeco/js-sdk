@@ -21,6 +21,7 @@ export class AuthConfig {
   public readonly key_encryption_key: SymmetricKey;
   public readonly passphrase_derived_key: SymmetricKey;
   public delegation_id?: string;
+  public oidc2_access_token?: string;
 
   constructor(data: {
     secret: string;
@@ -30,6 +31,7 @@ export class AuthConfig {
     key_encryption_key: SymmetricKey;
     passphrase_derived_key: SymmetricKey;
     delegation_id?: string;
+    oidc2_access_token?: string;
   }) {
     this.secret = data.secret;
     this.keystore_access_token = data.keystore_access_token;
@@ -38,6 +40,7 @@ export class AuthConfig {
     this.key_encryption_key = data.key_encryption_key;
     this.passphrase_derived_key = data.passphrase_derived_key;
     this.delegation_id = data.delegation_id;
+    this.oidc2_access_token = data.oidc2_access_token;
   }
 
   static fromYamlConfig(yamlConfigObj: IYamlConfig<IAuthMetadata>): AuthConfig {
@@ -91,6 +94,7 @@ export class AuthConfig {
       secret: json.secret,
       vault_access_token: json.vault_access_token,
       delegation_id: json.delegation_id,
+      oidc2_access_token: json.oidc2_access_token,
     });
   }
 
@@ -106,6 +110,7 @@ export class AuthConfig {
       secret: this.secret,
       vault_access_token: this.vault_access_token,
       delegation_id: this.delegation_id,
+      oidc2_access_token: this.oidc2_access_token,
     };
   }
 }
