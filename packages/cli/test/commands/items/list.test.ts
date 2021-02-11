@@ -33,9 +33,9 @@ describe('items:list', () => {
     .stdout()
     .run([
       'items:list',
-      '--templateIds',
+      '--templateId',
       'e30a36a5-6cd3-4d58-b838-b3a96384beab',
-      '--templateIds',
+      '--templateId',
       'e25b48c9-4011-4020-a96d-7f5116680db4',
       ...testUserAuth,
       ...testEnvironmentFile,

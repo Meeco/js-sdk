@@ -10,13 +10,13 @@ import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from '
 
 /**
  * Filter Item list with following params
- * @param templateIds string array of item template ids
+ * @param templateId string array of item template ids
  * @param scheme name of item scheme
  * @param classification string array of item classification node names e.g. pets, vehicle
  * @param sharedWith user Id. item shared with provided user id. Works for items owned by the current user as well as for items owned by someone else and on-shared by the current user.
  */
 export interface IItemListFilterOptions {
-  templateIds?: string[];
+  templateId?: string[];
   scheme?: string;
   classification?: string[];
   sharedWith?: string;
@@ -102,7 +102,7 @@ export class ItemService extends Service<ItemApi> {
     );
 
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
-      listFilterOptions?.templateIds?.join(','),
+      listFilterOptions?.templateId?.join(','),
       listFilterOptions?.scheme,
       classificationNodeName,
       classificationNodeNames,
@@ -142,7 +142,7 @@ export class ItemService extends Service<ItemApi> {
 
     return getAllPaged(cursor =>
       api.itemsGet(
-        listFilterOptions?.templateIds?.join(','),
+        listFilterOptions?.templateId?.join(','),
         listFilterOptions?.scheme,
         classificationNodeName,
         classificationNodeNames,

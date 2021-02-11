@@ -9,7 +9,7 @@ export default class ItemsList extends MeecoCommand {
   static description = 'List the items that a user has in their vault';
   static examples = [
     `meeco items:list -a path/to/auth.yaml`,
-    `meeco items:list --templateIds e30a36a5-6cd3-4d58-b838-b3a96384beab --templateIds e30a36a5-6cd3-4d58-b838-b3a96384beab -a path/to/auth.yaml`,
+    `meeco items:list --templateId e30a36a5-6cd3-4d58-b838-b3a96384beab --templateId e30a36a5-6cd3-4d58-b838-b3a96384beab -a path/to/auth.yaml`,
     `meeco items:list --scheme esafe -a path/to/auth.yaml`,
     `meeco items:list --classification pets --classification vehicles -a path/to/auth.yaml`,
     `meeco items:list --sharedWith e30a36a5-6cd3-4d58-b838-b3a96384beab -a path/to/auth.yaml`,
@@ -19,7 +19,7 @@ export default class ItemsList extends MeecoCommand {
     ...MeecoCommand.flags,
     ...authFlags,
     ...pageFlags,
-    templateIds: _flags.string({
+    templateId: _flags.string({
       required: false,
       multiple: true,
       description: 'items with the given template ids are fetched',
@@ -42,7 +42,7 @@ export default class ItemsList extends MeecoCommand {
 
   async run() {
     const { flags } = this.parse(this.constructor as typeof ItemsList);
-    const { auth, all, templateIds, scheme, classification, sharedWith } = flags;
+    const { auth, all, templateId, scheme, classification, sharedWith } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = await this.readConfigFromFile(AuthConfig, auth);
     const service = new ItemService(environment, this.log);
@@ -52,7 +52,7 @@ export default class ItemsList extends MeecoCommand {
     }
 
     const filters: IItemListFilterOptions = {
-      templateIds,
+      templateId,
       scheme,
       classification,
       sharedWith,
