@@ -6,11 +6,11 @@ spec:
     label: null
     description: null
     created_at: 1970-01-01T00:00:00.001Z
-    item_template_id: null
+    item_template_id: e30a36a5-6cd3-4d58-b838-b3a96384beab
     ordinal: null
     visible: null
     updated_at: 1970-01-01T00:00:00.001Z
-    item_template_label: null
+    item_template_label: Vehicle
     image: null
     item_image: null
     item_image_background_colour: null
@@ -26,15 +26,15 @@ spec:
     share_id: null
   - id: b
     own: null
-    name: My House
+    name: My Dog
     label: null
     description: null
     created_at: 1970-01-01T00:00:00.001Z
-    item_template_id: null
+    item_template_id: e25b48c9-4011-4020-a96d-7f5116680db4
     ordinal: null
     visible: null
     updated_at: 1970-01-01T00:00:00.001Z
-    item_template_label: null
+    item_template_label: Pet
     image: null
     item_image: null
     item_image_background_colour: null
