@@ -43,6 +43,7 @@ const keystoreAPIKeys = (environment: Environment, userAuth: IKeystoreToken) => 
     // prettier-ignore
     'Authorization': userAuth.keystore_access_token,
     'Meeco-Delegation-Id': userAuth.delegation_id || '',
+    authorizationoidc2: userAuth.oidc_token || '',
   }[name]);
 
 /**
@@ -55,6 +56,7 @@ const vaultAPIKeys = (environment: Environment, userAuth: IVaultToken) => (name:
     // prettier-ignore
     'Authorization': userAuth.vault_access_token,
     'Meeco-Delegation-Id': userAuth.delegation_id || '',
+    authorizationoidc2: userAuth.oidc_token || '',
   }[name]);
 
 function fetchInterceptor(url, options) {
