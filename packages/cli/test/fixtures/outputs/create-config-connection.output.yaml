@@ -11,6 +11,7 @@ spec:
     secret: 1.from.secret
     vault_access_token: from_vault_access
     delegation_id: null
+    oidc_token: null
   to:
     data_encryption_key: dG9fZGVr
     key_encryption_key: dG9fa2Vr
@@ -19,3 +20,4 @@ spec:
     secret: 1.to.secret
     vault_access_token: to_vault_access
     delegation_id: null
+    oidc_token: null
