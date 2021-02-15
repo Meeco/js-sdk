@@ -19,6 +19,15 @@
         autocomplete="off"
         id="vaultUrl"
       />
+      <label for="keyEncryptionKey">Key Encryption Key (Base64)</label>
+      <input
+        placeholder="e.g. 2rz3mys8L687IfZ9DztgJDe4IyEyIKde7Ae6WsOXV0U="
+        class="full"
+        value=""
+        autocapitalize="off"
+        autocomplete="off"
+        id="keyEncryptionKey"
+      />
       <label for="dataEncryptionKey">Data Encryption Key (Base64)</label>
       <input
         placeholder="e.g. 2rz3mys8L687IfZ9DztgJDe4IyEyIKde7Ae6WsOXV0U="
@@ -87,6 +96,7 @@
       </datalist>
       <button type="button" id="attachFile">Attach</button>
       <progress id="fileUploadProgressBar" value="0" max="100"></progress>
+      <button type="button" id="cancelAttachFile">Cancel</button>
       <textarea disabled id="attached" rows="10"></textarea>
     </div>
 
@@ -111,6 +121,7 @@
       />
       <button type="button" id="downloadAttachment">Download</button>
       <progress id="fileDownloadProgressBar" value="0" max="100"></progress>
+      <button type="button" id="cancelDownloadAttachment">Cancel</button>
       <textarea disabled id="downloadAttachmentDetails" rows="3"></textarea>
       <video id="streamingVideoContainer" controls width="470">
         <source />

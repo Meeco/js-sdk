@@ -1,31 +1,33 @@
 import {
-  binaryBufferToString,
+  binaryStringToBytesBuffer,
+  bytesBufferToBinaryString,
   CipherStrategy,
-  decryptBinaryWithKey,
   decryptWithKey,
-  encryptBinaryWithKey,
-  stringAsBinaryBuffer,
+  EncryptionKey,
+  encryptWithKey,
 } from '@meeco/cryppo';
 import {
   AttachmentApi,
   AttachmentDirectUploadUrlResponse,
   Configuration,
   ConfigurationParameters,
-  CreateAttachmentResponse,
+  DirectAttachmentResponse,
   DirectAttachmentsApi,
   PostAttachmentDirectUploadUrlRequest,
   ThumbnailApi,
 } from '@meeco/vault-api-sdk';
+import axios from 'axios';
 import { AzureBlockUpload } from './azure-block-upload';
 export { AzureBlockDownload } from './azure-block-download';
 export { AzureBlockUpload } from './azure-block-upload';
 export { BlobStorage } from './services/Azure';
 
 export interface IFileStorageAuthConfiguration {
-  data_encryption_key?: string;
-  vault_access_token: string;
+  data_encryption_key?: EncryptionKey;
+  vault_access_token?: string;
   delegation_id?: string;
   subscription_key?: string;
+  oidc_token?: string;
 }
 
 export async function directAttachmentUpload(
@@ -33,7 +35,8 @@ export async function directAttachmentUpload(
   fileUtilsLib,
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
-    | null
+    | null,
+  onCancel?: any
 ): Promise<IDirectAttachmentUploadResponse> {
   let result;
   const client = new AzureBlockUpload(
@@ -55,7 +58,8 @@ export async function directAttachmentUpload(
   );
   await client.start(
     config.encrypt && config.attachmentDek ? config.attachmentDek : null,
-    progressUpdateFunc
+    progressUpdateFunc,
+    onCancel
   );
 
   return result;
@@ -90,7 +94,7 @@ export async function directAttachmentAttach(
   auth: IFileStorageAuthConfiguration,
   vaultUrl,
   fetchApi?: any
-): Promise<CreateAttachmentResponse> {
+): Promise<DirectAttachmentResponse> {
   const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
   const attachment = await api.directAttachmentsPost({
     blob: {
@@ -131,7 +135,7 @@ export async function downloadAttachment(
 
 export async function downloadAndDecryptFile<T extends Blob>(
   download: () => Promise<T>,
-  dataEncryptionKey: string
+  dataEncryptionKey: EncryptionKey
 ) {
   const result = await download();
   // Chrome `Blob` objects support the arrayBuffer() methods but Safari do not - only on `Response`
@@ -139,7 +143,7 @@ export async function downloadAndDecryptFile<T extends Blob>(
   const buffer = await ((<any>result).arrayBuffer
     ? (<any>result).arrayBuffer()
     : new Response(result).arrayBuffer());
-  const encryptedContents = await binaryBufferToString(buffer);
+  const encryptedContents = await bytesBufferToBinaryString(buffer);
   const decryptedContents = await decryptWithKey({
     serialized: encryptedContents,
     key: dataEncryptionKey,
@@ -152,10 +156,7 @@ export function buildApiConfig(
   vaultUrl: string,
   fetchApi?: any
 ): Configuration {
-  const headers = {};
-  headers['Meeco-Delegation-Id'] = auth.delegation_id || '';
-  headers['Meeco-Subscription-Key'] = auth.subscription_key || '';
-  headers['Authorization'] = auth.vault_access_token || '';
+  const headers = getHeaders(auth);
 
   const configParams: ConfigurationParameters = {
     basePath: vaultUrl,
@@ -167,8 +168,17 @@ export function buildApiConfig(
   return new Configuration(configParams);
 }
 
+function getHeaders(auth: IFileStorageAuthConfiguration) {
+  const headers = {};
+  headers['Meeco-Delegation-Id'] = auth.delegation_id || '';
+  headers['Meeco-Subscription-Key'] = auth.subscription_key || '';
+  headers['Authorization'] = auth.vault_access_token || '';
+  headers['authorizationoidc2'] = auth.oidc_token ? 'Bearer ' + auth.oidc_token : '';
+  return headers;
+}
+
 export async function encryptAndUploadThumbnailCommon({
-  thumbnailBufferString,
+  thumbnail,
   binaryId,
   attachmentDek,
   sizeType,
@@ -176,17 +186,17 @@ export async function encryptAndUploadThumbnailCommon({
   vaultUrl,
   fetchApi,
 }: {
-  thumbnailBufferString: string;
+  thumbnail: Uint8Array;
   binaryId: string;
-  attachmentDek: string;
+  attachmentDek: EncryptionKey;
   sizeType: ThumbnailType;
   authConfig: IFileStorageAuthConfiguration;
   vaultUrl: string;
   fetchApi?: any;
 }) {
-  const encryptedThumbnail = await encryptBinaryWithKey({
+  const encryptedThumbnail = await encryptWithKey({
     key: attachmentDek,
-    data: thumbnailBufferString,
+    data: thumbnail,
     strategy: CipherStrategy.AES_GCM,
   });
 
@@ -196,7 +206,7 @@ export async function encryptAndUploadThumbnailCommon({
   const blob =
     typeof Blob === 'function'
       ? new Blob([encryptedThumbnail.serialized])
-      : stringAsBinaryBuffer(encryptedThumbnail.serialized);
+      : binaryStringToBytesBuffer(encryptedThumbnail.serialized);
   const response = await new ThumbnailApi(
     buildApiConfig(authConfig, vaultUrl, fetchApi)
   ).thumbnailsPost(blob as any, binaryId, sizeType);
@@ -212,27 +222,25 @@ export async function downloadThumbnailCommon({
   fetchApi,
 }: {
   id: string;
-  dataEncryptionKey: string;
+  dataEncryptionKey: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
   fetchApi?: any;
-}) {
-  const thumbnailApi = await new ThumbnailApi(buildApiConfig(authConfig, vaultUrl, fetchApi));
-  const result = await thumbnailApi.thumbnailsIdGet(id);
+}): Promise<Uint8Array> {
+  // const thumbnailApi = await new ThumbnailApi(buildApiConfig(authConfig, vaultUrl, fetchApi));
+  const res = await thumbnailsIdGet(authConfig, vaultUrl, id);
+  const result = await thumbnailDownload(res.data.redirect_url);
   // Chrome `Blob` objects support the arrayBuffer() methods but Safari do not - only on `Response`
   // https://stackoverflow.com/questions/15341912/how-to-go-from-blob-to-arraybuffer
-  const buffer = await ((<any>result).arrayBuffer
-    ? (<any>result).arrayBuffer()
-    : new Response(result).arrayBuffer());
-  const encryptedContents = await binaryBufferToString(buffer);
-  const decryptedContents = await decryptBinaryWithKey({
-    serialized: encryptedContents,
+
+  const decryptedContents = await decryptWithKey({
+    serialized: result.data,
     key: dataEncryptionKey,
   });
   if (!decryptedContents) {
     throw new Error('Error decrypting thumbnail file');
   }
-  return stringAsBinaryBuffer(decryptedContents);
+  return decryptedContents;
 }
 
 export function thumbSizeTypeToMimeExt(
@@ -259,7 +267,7 @@ interface IDirectAttachmentUploadData {
   directUploadUrl: string;
   file: File | string;
   encrypt: boolean;
-  attachmentDek?: string;
+  attachmentDek?: EncryptionKey;
 }
 
 interface IDirectAttachmentUploadResponse {
@@ -301,3 +309,24 @@ export const ThumbnailTypes: ThumbnailType[] = [
   '256x256/png',
   '512x512/png',
 ];
+
+export const thumbnailsIdGet = async (
+  authConfig: IFileStorageAuthConfiguration,
+  vaultUrl: any,
+  id: string
+) => {
+  const url = vaultUrl + '/thumbnails/' + id;
+  const headers = getHeaders(authConfig);
+  return axios({
+    method: 'get',
+    url,
+    headers,
+  });
+};
+
+export const thumbnailDownload = async (url: string) => {
+  return axios({
+    method: 'get',
+    url,
+  });
+};

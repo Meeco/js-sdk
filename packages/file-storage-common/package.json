@@ -1,6 +1,6 @@
 {
   "name": "@meeco/file-storage-common",
-  "version": "2.1.1",
+  "version": "3.0.3-beta",
   "description": "Core module for uploading and downloading encrypted files",
   "source": "src/index.ts",
   "types": "./lib/index.d.ts",
@@ -17,7 +17,7 @@
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
   },
   "dependencies": {
-    "@meeco/cryppo": "^0.9.0",
+    "@meeco/cryppo": "^2.0.0",
     "axios": "^0.20.0"
   },
   "devDependencies": {

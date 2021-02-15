@@ -1,226 +1,186 @@
 // import * as MeecoAzure from '@meeco/azure-block-upload';
-import { Item, ItemsResponse, Slot } from '@meeco/vault-api-sdk';
-import { MeecoServiceError } from '..';
-import { AuthData } from '../models/auth-data';
-import { EncryptionKey } from '../models/encryption-key';
-import { Environment } from '../models/environment';
-import { ItemCreateData } from '../models/item-create-data';
-import { ItemUpdateData } from '../models/item-update-data';
-import { DecryptedSlot } from '../models/local-slot';
-import cryppo from '../services/cryppo-service';
-import {
-  KeystoreAPIFactory,
-  keystoreAPIFactory,
-  VaultAPIFactory,
-  vaultAPIFactory,
-} from '../util/api-factory';
-import { IFullLogger, Logger, noopLogger, SimpleLogger, toFullLogger } from '../util/logger';
+import { Item, ItemApi, ItemsResponse, Share } from '@meeco/vault-api-sdk';
+import { DecryptedItem } from '../models/decrypted-item';
+import DecryptedKeypair from '../models/decrypted-keypair';
+import { ItemUpdate } from '../models/item-update';
+import { NewItem } from '../models/new-item';
+import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
-import { verifyHashedValue } from '../util/value-verification';
+import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 
-export interface IDecryptedSlot extends Slot {
-  value_verification_key?: string;
-  value?: string;
+/**
+ * Filter Item list with following params
+ * @param templateId string array of item template ids
+ * @param scheme name of item scheme
+ * @param classification string array of item classification node names e.g. pets, vehicle
+ * @param sharedWith user Id. item shared with provided user id. Works for items owned by the current user as well as for items owned by someone else and on-shared by the current user.
+ */
+export interface IItemListFilterOptions {
+  templateId?: string[];
+  scheme?: string;
+  classification?: string[];
+  sharedWith?: string;
 }
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
  */
-export class ItemService {
-  private static cryppo = (<any>global).cryppo || cryppo;
-  private static verifyHashedValue = (<any>global).verifyHashedValue || verifyHashedValue;
-
-  private vaultAPIFactory: VaultAPIFactory;
-  private keystoreAPIFactory: KeystoreAPIFactory;
-  private logger: IFullLogger;
-  // for mocking during testing
-  private cryppo = (<any>global).cryppo || cryppo;
-
-  constructor(environment: Environment, log: SimpleLogger = noopLogger) {
-    this.vaultAPIFactory = vaultAPIFactory(environment);
-    this.keystoreAPIFactory = keystoreAPIFactory(environment);
-
-    this.logger = toFullLogger(log);
-  }
-
-  /**
-   * Updates 'value' to the decrypted 'encrypted_value' and sets 'encrypted' to false.
-   */
-  public static decryptAllSlots(
-    slots: Slot[],
-    dataEncryptionKey: EncryptionKey
-  ): Promise<IDecryptedSlot[]> {
-    return Promise.all(
-      slots.map(async slot => {
-        const value =
-          slot.encrypted && slot.encrypted_value !== null // need to check encrypted_value as binaries will also have `encrypted: true`
-            ? await this.cryppo.decryptWithKey({
-                key: dataEncryptionKey.key,
-                serialized: slot.encrypted_value,
-              })
-            : (slot as DecryptedSlot).value;
-
-        let decryptedValueVerificationKey: string | undefined;
-
-        if (value != null && !slot.own && slot.encrypted_value_verification_key != null) {
-          decryptedValueVerificationKey = await this.cryppo.decryptWithKey({
-            serialized: slot.encrypted_value_verification_key,
-            key: dataEncryptionKey.key,
-          });
-
-          if (
-            slot.value_verification_hash !== null &&
-            !ItemService.verifyHashedValue(
-              decryptedValueVerificationKey as string,
-              value,
-              slot.value_verification_hash
-            )
-          ) {
-            throw new MeecoServiceError(
-              `Decrypted slot ${slot.name} with value ${value} does not match original value.`
-            );
-          }
-        }
-
-        const decrypted = {
-          ...slot,
-          encrypted: false,
-          value,
-          value_verification_key: decryptedValueVerificationKey,
-        };
-        return decrypted;
-      })
-    );
-  }
-
+export class ItemService extends Service<ItemApi> {
   /**
    * True if the Item was received via a Share from another user.
    * In that case, it must be decrypted with the Share DEK, not the user's own DEK.
    * @param item
    */
   public static itemIsFromShare(item: Item): boolean {
-    // this also implies item.own == false
-    return item.share_id != null;
+    return item.own === false || !!item.share_id;
   }
 
-  public setLogger(logger: Logger) {
-    this.logger = toFullLogger(logger);
+  public getAPI(token: IVaultToken) {
+    return this.vaultAPIFactory(token).ItemApi;
   }
 
-  public async create(vaultAccessToken: string, dek: EncryptionKey, config: ItemCreateData) {
-    const slots_attributes = await Promise.all(
-      (config.slots || []).map(slot => this.encryptSlot(slot, dek))
+  public async create(credentials: IVaultToken & IDEK, item: NewItem): Promise<DecryptedItem> {
+    const { data_encryption_key } = credentials;
+    const request = await item.toRequest(data_encryption_key);
+    const response = await this.vaultAPIFactory(credentials).ItemApi.itemsPost(request);
+    return DecryptedItem.fromAPI(credentials, response);
+  }
+
+  public async update(
+    credentials: IVaultToken & IDEK,
+    newData: ItemUpdate
+  ): Promise<DecryptedItem> {
+    const response = await this.vaultAPIFactory(credentials).ItemApi.itemsIdPut(
+      newData.id,
+      await newData.toRequest(credentials)
     );
 
-    return await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsPost({
-      template_name: config.template_name,
-      item: {
-        label: config.item.label,
-        slots_attributes,
-      },
-    });
+    return DecryptedItem.fromAPI(credentials, response);
   }
 
-  public async update(vaultAccessToken: string, dek: EncryptionKey, config: ItemUpdateData) {
-    const slots_attributes = await Promise.all(
-      (config.slots || []).map(slot => this.encryptSlot(slot, dek))
-    );
-
-    return await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdPut(config.id, {
-      item: {
-        label: config.label,
-        slots_attributes,
-      },
-    });
-  }
-
-  public async removeSlot(slotId: string, vaultAccessToken: string) {
+  public async removeSlot(credentials: IVaultToken, slotId: string): Promise<void> {
     this.logger.log('Removing slot');
-    await this.vaultAPIFactory(vaultAccessToken).SlotApi.slotsIdDelete(slotId);
+    await this.vaultAPIFactory(credentials).SlotApi.slotsIdDelete(slotId);
     this.logger.log('Slot successfully removed');
   }
 
-  public async get(id: string, user: AuthData) {
-    const vaultAccessToken = user.vault_access_token;
-    let dataEncryptionKey = user.data_encryption_key;
+  /**
+   * Get an Item and decrypt all of its Slots.
+   * Works for both owned and shared Items.
+   * @param id ItemId
+   * @param user
+   */
+  public async get(
+    credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
+    id: string
+  ): Promise<DecryptedItem> {
+    let dataEncryptionKey = credentials.data_encryption_key;
 
-    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsIdGet(id);
-    const { item, slots } = result;
+    const result = await this.vaultAPIFactory(credentials).ItemApi.itemsIdGet(id);
+    const { item } = result;
 
     // If the Item is from a share, use the share DEK to decrypt instead.
+    // Second condition is for typecheck
     if (ItemService.itemIsFromShare(item) && item.share_id !== null) {
-      const share = await this.vaultAPIFactory(user)
-        .SharesApi.incomingSharesIdGet(item.share_id)
-        .then(response => response.share);
-
-      const keyPairExternal = await this.keystoreAPIFactory(user).KeypairApi.keypairsIdGet(
-        share.keypair_external_id!
+      const { share } = await this.vaultAPIFactory(credentials).SharesApi.incomingSharesIdGet(
+        item.share_id
       );
 
-      const decryptedPrivateKey = await this.cryppo.decryptWithKey({
-        serialized: keyPairExternal.keypair.encrypted_serialized_key,
-        key: user.key_encryption_key.key,
-      });
-
-      dataEncryptionKey = await this.cryppo
-        .decryptSerializedWithPrivateKey({
-          privateKeyPem: decryptedPrivateKey,
-          serialized: share.encrypted_dek,
-        })
-        .then(EncryptionKey.fromRaw);
+      dataEncryptionKey = await this.getShareDEK(credentials, share);
     }
 
-    const decryptedSlots = await ItemService.decryptAllSlots(slots, dataEncryptionKey);
-
-    return {
-      ...result,
-      slots: decryptedSlots,
-    };
-  }
-
-  private async encryptSlot(slot: DecryptedSlot, dek: EncryptionKey) {
-    const encrypted: any = {
-      ...slot,
-    };
-    encrypted.encrypted_value = await ItemService.cryppo
-      .encryptWithKey({
-        strategy: ItemService.cryppo.CipherStrategy.AES_GCM,
-        key: dek.key,
-        data: slot.value || '',
-      })
-      .then(result => result.serialized);
-    delete encrypted.value;
-    encrypted.encrypted = true;
-    return encrypted;
+    return DecryptedItem.fromAPI({ data_encryption_key: dataEncryptionKey }, result);
   }
 
   public async list(
-    vaultAccessToken: string,
-    templateIds?: string,
-    nextPageAfter?: string,
-    perPage?: number
-  ) {
-    const result = await this.vaultAPIFactory(vaultAccessToken).ItemApi.itemsGet(
-      templateIds,
-      undefined,
-      undefined,
-      nextPageAfter,
-      perPage
+    credentials: IVaultToken,
+    listFilterOptions?: IItemListFilterOptions,
+    options?: IPageOptions
+  ): Promise<ItemsResponse> {
+    const { classificationNodeName, classificationNodeNames } = this.getClassifications(
+      listFilterOptions
     );
 
-    if (resultHasNext(result) && perPage === undefined) {
-      // TODO - needs a warning logger
+    const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
+      listFilterOptions?.templateId?.join(','),
+      listFilterOptions?.scheme,
+      classificationNodeName,
+      classificationNodeNames,
+      listFilterOptions?.sharedWith,
+      options?.nextPageAfter,
+      options?.perPage
+    );
+
+    if (resultHasNext(result) && options?.perPage === undefined) {
       this.logger.warn('Some results omitted, but page limit was not explicitly set');
     }
 
     return result;
   }
 
-  public async listAll(vaultAccessToken: string, templateIds?: string): Promise<ItemsResponse> {
-    const api = this.vaultAPIFactory(vaultAccessToken).ItemApi;
+  private getClassifications(listFilterOptions: IItemListFilterOptions | undefined) {
+    const classificationNodeName =
+      listFilterOptions?.classification && listFilterOptions?.classification.length === 1
+        ? listFilterOptions?.classification.join(',')
+        : undefined;
+    const classificationNodeNames =
+      listFilterOptions?.classification && listFilterOptions?.classification.length > 1
+        ? listFilterOptions?.classification.join(',')
+        : undefined;
+    return { classificationNodeName, classificationNodeNames };
+  }
 
-    return getAllPaged(cursor => api.itemsGet(templateIds, undefined, undefined, cursor)).then(
-      reducePages
+  public async listAll(
+    credentials: IVaultToken,
+    listFilterOptions?: IItemListFilterOptions
+  ): Promise<ItemsResponse> {
+    const api = this.vaultAPIFactory(credentials).ItemApi;
+
+    const { classificationNodeName, classificationNodeNames } = this.getClassifications(
+      listFilterOptions
     );
+
+    return getAllPaged(cursor =>
+      api.itemsGet(
+        listFilterOptions?.templateId?.join(','),
+        listFilterOptions?.scheme,
+        classificationNodeName,
+        classificationNodeNames,
+        listFilterOptions?.sharedWith,
+        cursor
+      )
+    ).then(reducePages);
+  }
+
+  /**
+   * duplicating method from share-service to avoid circular dependencies
+   * A shared Item may be either encrypted with a shared data-encryption key (DEK) or with
+   * the user's personal DEK. This method inspects the share record and returns the appropriate
+   * key.
+   * @param user
+   * @param shareId
+   */
+  public async getShareDEK(
+    credentials: IKeystoreToken & IKEK & IDEK,
+    share: Share
+  ): Promise<SymmetricKey> {
+    let dataEncryptionKey: SymmetricKey;
+
+    if (share.encrypted_dek) {
+      const { keypair } = await this.keystoreAPIFactory(credentials).KeypairApi.keypairsIdGet(
+        share.keypair_external_id!
+      );
+
+      const decryptedPrivateKey = await DecryptedKeypair.fromAPI(
+        credentials.key_encryption_key,
+        keypair
+      ).then(k => k.privateKey);
+
+      dataEncryptionKey = await decryptedPrivateKey.decryptKey(share.encrypted_dek);
+    } else {
+      dataEncryptionKey = credentials.data_encryption_key;
+    }
+
+    return dataEncryptionKey;
   }
 }

@@ -5,7 +5,7 @@ export class TemplateConfig {
   static readonly kind = 'Template';
   static readonly pluralKind = 'Templates';
 
-  static encodeFromJSON(json: ITemplateData | ITemplateData[]) {
+  static encodeFromJSON(json: ITemplateData | ITemplateData[]): any {
     if (Array.isArray(json) && json.length > 1) {
       return {
         kind: TemplateConfig.pluralKind,

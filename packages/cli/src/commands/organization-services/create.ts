@@ -45,7 +45,7 @@ or rejected by meeco`;
       this.error('Valid organization service config file must be supplied');
     }
     try {
-      const service = new OrganizationServicesService(environment, authConfig!.vault_access_token);
+      const service = new OrganizationServicesService(environment, authConfig);
       this.updateStatus('Creating Service');
       const result = await service.create(organization_id, organizationServiceConfigFile.service);
       this.finish();

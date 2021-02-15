@@ -1,4 +1,4 @@
-import { binaryBufferToString, generateRandomKey } from '@meeco/cryppo';
+import { bytesBufferToBinaryString, EncryptionKey } from '@meeco/cryppo';
 import {
   AzureBlockDownload,
   buildApiConfig,
@@ -24,6 +24,7 @@ export async function fileUploadBrowser({
   authConfig,
   videoCodec,
   progressUpdateFunc = null,
+  onCancel = null,
 }: {
   file: File;
   vaultUrl: string;
@@ -32,11 +33,12 @@ export async function fileUploadBrowser({
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null;
-}): Promise<{ attachment: any; dek: string }> {
+  onCancel?: any;
+}): Promise<{ attachment: any; dek: EncryptionKey }> {
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
-  const dek = generateRandomKey();
+  const dek = EncryptionKey.generateRandom();
   const uploadUrl = await directAttachmentUploadUrl(
     {
       fileSize: file.size,
@@ -55,7 +57,8 @@ export async function fileUploadBrowser({
       attachmentDek: dek,
     },
     FileUtils,
-    progressUpdateFunc
+    progressUpdateFunc,
+    onCancel
   );
   const artifactsFileName = file.name + '.encryption_artifacts';
   if (videoCodec) {
@@ -83,7 +86,9 @@ export async function fileUploadBrowser({
       file: artifactsFile,
       encrypt: false,
     },
-    FileUtils
+    FileUtils,
+    null,
+    onCancel
   );
   const attachedDoc = await directAttachmentAttach(
     {
@@ -104,14 +109,16 @@ export async function fileDownloadBrowser({
   vaultUrl,
   authConfig,
   progressUpdateFunc = null,
+  onCancel = null,
 }: {
   attachmentId: string;
-  dek: string;
+  dek: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
     | null;
+  onCancel?: any;
 }): Promise<File> {
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
@@ -133,13 +140,14 @@ export async function fileDownloadBrowser({
       dek,
       authConfig,
       environment.vault.url,
-      progressUpdateFunc
+      progressUpdateFunc,
+      onCancel
     );
     buffer = downloaded.byteArray;
   } else {
     // was not uploaded in chunks
     const downloaded = await downloadAttachment(attachmentId, authConfig, vaultUrl);
-    buffer = Buffer.from(downloaded as string);
+    buffer = downloaded || new Uint8Array();
   }
   return new File([buffer], fileName, {
     type: attachmentInfo.attachment.content_type,
@@ -147,11 +155,12 @@ export async function fileDownloadBrowser({
 }
 
 async function largeFileDownloadBrowser(
-  attachmentID,
-  dek,
+  attachmentID: string,
+  dek: EncryptionKey | null,
   authConfig: IFileStorageAuthConfiguration,
-  vaultUrl,
-  progressUpdateFunc: ((chunkBuffer, percentageComplete, videoCodec?: string) => void) | null
+  vaultUrl: string,
+  progressUpdateFunc: ((chunkBuffer, percentageComplete, videoCodec?: string) => void) | null,
+  onCancel?: any
 ) {
   const direct_download_encrypted_artifact = await getDirectDownloadInfo(
     attachmentID,
@@ -166,8 +175,8 @@ async function largeFileDownloadBrowser(
     vaultUrl
   );
   let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
-  const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
-  const encrypted_artifact = JSON.parse(binaryBufferToString(encrypted_artifact_uint8array));
+  const encrypted_artifact_uint8array: any = await client.start(null, null, null, null, onCancel);
+  const encrypted_artifact = JSON.parse(bytesBufferToBinaryString(encrypted_artifact_uint8array));
   const videoCodec = encrypted_artifact.videoCodec;
   if (progressUpdateFunc && videoCodec) {
     progressUpdateFunc(null, 0, videoCodec);
@@ -180,11 +189,12 @@ async function largeFileDownloadBrowser(
       dek,
       encrypted_artifact.encryption_strategy,
       {
-        iv: binaryBufferToString(new Uint8Array(encrypted_artifact.iv[index].data)),
+        iv: bytesBufferToBinaryString(new Uint8Array(encrypted_artifact.iv[index].data)),
         ad: encrypted_artifact.ad,
-        at: binaryBufferToString(new Uint8Array(encrypted_artifact.at[index].data)),
+        at: bytesBufferToBinaryString(new Uint8Array(encrypted_artifact.at[index].data)),
       },
-      encrypted_artifact.range[index]
+      encrypted_artifact.range[index],
+      onCancel
     );
     blocks = new Uint8Array([...(blocks as any), ...block]);
     if (progressUpdateFunc) {
@@ -205,4 +215,64 @@ async function getDirectDownloadInfo(
   const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl));
   const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
   return result.attachment_direct_download_url;
+}
+
+export function fileDownloadBrowserWithCancel({
+  attachmentId,
+  dek,
+  vaultUrl,
+  authConfig,
+  progressUpdateFunc = null,
+}: {
+  attachmentId: string;
+  dek: EncryptionKey;
+  vaultUrl: string;
+  authConfig: IFileStorageAuthConfiguration;
+  progressUpdateFunc?:
+    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
+    | null;
+}) {
+  let cancel;
+  const promise = new Promise((resolve, reject) => (cancel = () => resolve('cancel')));
+  return {
+    cancel,
+    success: fileDownloadBrowser({
+      attachmentId,
+      dek,
+      vaultUrl,
+      authConfig,
+      progressUpdateFunc,
+      onCancel: promise,
+    }),
+  };
+}
+
+export function fileUploadBrowserWithCancel({
+  file,
+  vaultUrl,
+  authConfig,
+  videoCodec,
+  progressUpdateFunc = null,
+}: {
+  file: File;
+  vaultUrl: string;
+  authConfig: IFileStorageAuthConfiguration;
+  videoCodec?: string;
+  progressUpdateFunc?:
+    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
+    | null;
+}) {
+  let cancel;
+  const promise = new Promise((resolve, reject) => (cancel = () => resolve('cancel')));
+  return {
+    cancel,
+    success: fileUploadBrowser({
+      file,
+      vaultUrl,
+      authConfig,
+      videoCodec,
+      progressUpdateFunc,
+      onCancel: promise,
+    }),
+  };
 }

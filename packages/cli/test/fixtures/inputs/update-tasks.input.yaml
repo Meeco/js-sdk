@@ -1,0 +1,26 @@
+kind: ClientTaskQueue
+spec:
+  - id: 1
+    state: in_progress
+    work_type: update_item_shares
+    target_id: 46c8c28e-3bb1-4ad4-a4e2-32d471d7304d
+    additional_options: {}
+    last_state_transition_at: 2020-10-15T08:20:34.091Z
+    report: {}
+    created_at: 2020-10-14T09:22:30.912Z
+  - id: 2
+    state: in_progress
+    work_type: update_item_shares
+    target_id: 46c8c28e-3bb1-4ad4-a4e2-32d471d7304d
+    additional_options: {}
+    last_state_transition_at: 2020-10-15T08:20:34.091Z
+    report: {}
+    created_at: 2020-10-14T09:22:30.912Z
+  - id: 3
+    state: in_progress
+    work_type: update_item_shares
+    target_id: 46c8c28e-3bb1-4ad4-a4e2-32d471d7304d
+    additional_options: {}
+    last_state_transition_at: 2020-10-15T08:20:34.091Z
+    report: {}
+    created_at: 2020-10-14T09:22:30.912Z

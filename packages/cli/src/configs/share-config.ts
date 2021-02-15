@@ -1,4 +1,5 @@
-import { EncryptionKey } from '@meeco/sdk';
+import { binaryStringToBytes } from '@meeco/cryppo';
+import { SymmetricKey } from '@meeco/sdk';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from './auth-config';
 import { IYamlConfig } from './yaml-config';
@@ -48,7 +49,9 @@ export class ShareConfig {
       kind: ShareConfig.kind,
       metadata: {
         connection_id: payload.connectionId,
-        shared_data_encryption_key: EncryptionKey.fromRaw(payload.sharedDataEncryptionKey),
+        shared_data_encryption_key: SymmetricKey.fromBytes(
+          binaryStringToBytes(payload.sharedDataEncryptionKey)
+        ),
       },
       spec: {},
     };

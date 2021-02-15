@@ -9,3 +9,4 @@ spec:
     vault_access_token: from_user_vault_access_token
     data_encryption_key: ZnJvbV91c2VyX2RhdGFfZW5jcnlwdGlvbl9rZXk=
     key_encryption_key: ZnJvbV91c2VyX2tleV9lbmNyeXB0aW9uX2tleQ==
+    passphrase_derived_key: TxxkpnQ7T-oMNddcsXOJaw0rIqpINX-phllgDUZpqxs=

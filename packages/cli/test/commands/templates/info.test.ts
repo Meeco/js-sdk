@@ -1,4 +1,5 @@
 import * as sdk from '@meeco/sdk';
+import { SlotType } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
@@ -36,7 +37,7 @@ const result = {
       required: null,
       updated_at: new Date(1),
       created_at: new Date(1),
-      slot_type_name: null,
+      slot_type_name: SlotType.KeyValue,
       creator: null,
       encrypted_value: null,
       encrypted_value_verification_key: null,
@@ -61,7 +62,7 @@ const result = {
       required: null,
       updated_at: new Date(1),
       created_at: new Date(1),
-      slot_type_name: null,
+      slot_type_name: SlotType.KeyValue,
       creator: null,
       encrypted_value: null,
       encrypted_value_verification_key: null,
@@ -86,7 +87,7 @@ const result = {
       required: null,
       updated_at: new Date(1),
       created_at: new Date(1),
-      slot_type_name: null,
+      slot_type_name: SlotType.KeyValue,
       creator: null,
       encrypted_value: null,
       encrypted_value_verification_key: null,
@@ -111,7 +112,7 @@ const result = {
       required: null,
       updated_at: new Date(1),
       created_at: new Date(1),
-      slot_type_name: null,
+      slot_type_name: SlotType.KeyValue,
       creator: null,
       encrypted_value: null,
       encrypted_value_verification_key: null,
@@ -136,7 +137,7 @@ const result = {
       required: null,
       updated_at: new Date(1),
       created_at: new Date(1),
-      slot_type_name: null,
+      slot_type_name: SlotType.KeyValue,
       creator: null,
       encrypted_value: null,
       encrypted_value_verification_key: null,

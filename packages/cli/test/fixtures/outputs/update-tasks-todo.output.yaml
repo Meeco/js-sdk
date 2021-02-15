@@ -1,0 +1,26 @@
+kind: ClientTaskQueue
+spec:
+  - id: "1"
+    state: todo
+    work_type: update_item_shares
+    target_id: "1"
+    additional_options: {}
+    last_state_transition_at: 1970-01-01T00:00:00.001Z
+    report: {}
+    created_at: 1970-01-01T00:00:00.001Z
+  - id: "2"
+    state: todo
+    work_type: update_item_shares
+    target_id: "1"
+    additional_options: {}
+    last_state_transition_at: 1970-01-01T00:00:00.001Z
+    report: {}
+    created_at: 1970-01-01T00:00:00.001Z
+  - id: "3"
+    state: todo
+    work_type: update_item_shares
+    target_id: "1"
+    additional_options: {}
+    last_state_transition_at: 1970-01-01T00:00:00.001Z
+    report: {}
+    created_at: 1970-01-01T00:00:00.001Z

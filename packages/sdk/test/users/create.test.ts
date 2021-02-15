@@ -1,10 +1,9 @@
 import { ExternalAdmissionTokens, Session, SrpChallenge } from '@meeco/keystore-api-sdk';
 import { expect } from '@oclif/test';
 import open from 'cli-ux/lib/open';
-import nock from 'nock';
 import * as request from 'node-fetch';
-import { SecretService } from '../../src/services/secret-service';
 import { UserService } from '../../src/services/user-service';
+import Secrets from '../../src/util/secrets';
 import { customTest, environment, getOutputFixture } from '../test-helpers';
 
 describe('User creation', () => {
@@ -33,15 +32,15 @@ describe('User creation', () => {
     });
 
   customTest
+    .stub(Secrets, 'generateSecret', generateSecret as any)
     .nock('https://sandbox.meeco.me/keystore', stubKeystore(true))
     .nock('https://sandbox.meeco.me/vault', stubVault)
     .mockCryppo()
     .mockSRP()
     .it('generates a new user from parameters (generated username)', async () => {
       const userService = new UserService(environment);
-      const secretService = new SecretService();
       const username = await userService.generateUsername();
-      const secret = await secretService.generateSecret(username);
+      const secret = await Secrets.generateSecret(username);
       const user = await userService.create('123.asupersecretpassphrase', secret);
 
       const expected = getOutputFixture('create-user-generated-username.output.json');
@@ -49,8 +48,12 @@ describe('User creation', () => {
     });
 });
 
+function generateSecret() {
+  return Promise.resolve('1.mocked_generated_username.Y3ZXUY-tKdUxt-i35BfF-RGn4ZN-uWAxHe');
+}
+
 function stubKeystore(stubUsername: boolean) {
-  return (api: nock.Scope) => {
+  return api => {
     if (stubUsername) {
       api.post('/srp/username', {}).reply(200, {
         username: 'mocked_generated_username',
@@ -106,9 +109,10 @@ function stubKeystore(stubUsername: boolean) {
       })
       .matchHeader('Authorization', 'keystore_auth_token')
       .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-      .reply(200, {
+      .reply(201, {
         key_encryption_key: {
           id: 'key_encryption_key_id',
+          serialized_key_encryption_key: `[serialized][encrypted]randomly_generated_key[with derived_key_123.asupersecretpassphrase]`,
         },
       });
 
@@ -126,9 +130,9 @@ function stubKeystore(stubUsername: boolean) {
 
     api
       .post('/keypairs', {
-        public_key: '--PUBLIC_KEY--ABCD',
+        public_key: '-----BEGIN PUBLIC KEY-----ABCD',
         encrypted_serialized_key:
-          '[serialized][encrypted]--PRIVATE_KEY--12324[with randomly_generated_key]',
+          '[serialized][encrypted]-----BEGIN RSA PRIVATE KEY-----ABCD[with randomly_generated_key]',
         external_identifiers: [UserService.VAULT_PAIR_EXTERNAL_IDENTIFIER],
       })
       .matchHeader('Authorization', 'keystore_auth_token')
@@ -137,10 +141,10 @@ function stubKeystore(stubUsername: boolean) {
   };
 }
 
-function stubVault(api: nock.Scope) {
+function stubVault(api) {
   api
     .post('/me', {
-      public_key: '--PUBLIC_KEY--ABCD',
+      public_key: '-----BEGIN PUBLIC KEY-----ABCD',
       admission_token: 'vault_token',
     })
     .reply(200, {
@@ -157,7 +161,10 @@ function stubVault(api: nock.Scope) {
         private_dek_external_id: 'data_encryption_key_id',
       },
     })
-    .matchHeader('Authorization', '[decrypted]encrypted_vault_session_string--PRIVATE_KEY--12324')
+    .matchHeader(
+      'Authorization',
+      '[decrypted]encrypted_vault_session_string-----BEGIN RSA PRIVATE KEY-----ABCD'
+    )
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       user: {},

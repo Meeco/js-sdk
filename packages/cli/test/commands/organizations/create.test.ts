@@ -1,4 +1,4 @@
-import { OrganizationsService } from '@meeco/sdk';
+import { OrganizationService } from '@meeco/sdk';
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
 import {
@@ -11,7 +11,7 @@ import {
 
 describe('organizations:create', () => {
   customTest
-    .stub(OrganizationsService.prototype, 'create', create as any)
+    .stub(OrganizationService.prototype, 'create', create as any)
     .stdout()
     .stderr()
     .run([

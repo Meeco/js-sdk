@@ -1,9 +1,11 @@
 import {
-  binaryBufferToString,
+  binaryStringToBytes,
+  bytesToBinaryString,
   CipherStrategy,
   decryptWithKeyUsingArtefacts,
-  stringAsBinaryBuffer,
+  EncryptionKey,
 } from '@meeco/cryppo';
+import axios from 'axios';
 import { BlobStorage } from './services/Azure';
 
 export class AzureBlockDownload {
@@ -24,24 +26,39 @@ export class AzureBlockDownload {
    * Start downloading
    */
   async start(
-    dataEncryptionKey: string | null,
+    dataEncryptionKey: EncryptionKey | null,
     strategy: CipherStrategy | null,
     encryptionArtifact: any,
-    range: string | null
+    range: string | null,
+    onCancel?: any
   ) {
     if (range) {
-      const block = await BlobStorage.getBlock(this.url, range);
+      let block: any;
+      if (onCancel) {
+        const source = axios.CancelToken.source();
+        const cancelToken = source.token;
+        block = await Promise.race([BlobStorage.getBlock(this.url, range, cancelToken), onCancel]);
+        if (block === 'cancel') {
+          source.cancel('cancel');
+          return new Promise((_resolve, reject) => {
+            reject('cancel');
+          });
+        }
+      } else {
+        block = await BlobStorage.getBlock(this.url, range);
+      }
+
       const data = new Uint8Array(block.data);
       let byteNumbers: Uint8Array;
       if (dataEncryptionKey && strategy && encryptionArtifact) {
         const str = decryptWithKeyUsingArtefacts(
           dataEncryptionKey,
-          binaryBufferToString(data),
+          bytesToBinaryString(data),
           strategy,
           encryptionArtifact
         );
 
-        byteNumbers = new Uint8Array(stringAsBinaryBuffer(str || ''));
+        byteNumbers = new Uint8Array(str || binaryStringToBytes(''));
       }
       return new Promise(resolve => {
         resolve(byteNumbers || data);

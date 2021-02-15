@@ -29,7 +29,7 @@ export default class ItemsRemoveSlot extends MeecoCommand {
       }
 
       const service = new ItemService(environment, this.updateStatus);
-      await service.removeSlot(slotId, authConfig.vault_access_token);
+      await service.removeSlot(authConfig, slotId);
       this.log('Slot successfully deleted');
     } catch (err) {
       await this.handleException(err);

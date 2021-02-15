@@ -1,4 +1,4 @@
-import { ConnectionService } from '@meeco/sdk';
+import { InvitationService } from '@meeco/sdk';
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
 import {
@@ -11,7 +11,7 @@ import {
 
 describe('organization-members:accept-invitation', () => {
   customTest
-    .stub(ConnectionService.prototype, 'acceptInvitation', acceptInvitation as any)
+    .stub(InvitationService.prototype, 'accept', acceptInvitation as any)
     .stdout()
     .stderr()
     .mockCryppo()

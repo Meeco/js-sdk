@@ -1,3 +1,4 @@
+import { bytesToUtf8, EncryptionKey } from '@meeco/cryppo';
 import { _cryppoService } from '@meeco/sdk';
 import { createSandbox } from 'sinon';
 
@@ -44,7 +45,9 @@ export function _mockCryppo() {
       });
 
       sandbox.stub(<any>_cryppoService, 'decryptWithKey').callsFake(args => {
-        return Promise.resolve(`${args.serialized}[decrypted with ${args.key}]`);
+        return Promise.resolve(
+          `${args.serialized}[decrypted with ${bytesToUtf8((args.key as EncryptionKey).bytes)}]`
+        );
       });
 
       sandbox.stub(<any>_cryppoService, 'signWithPrivateKey').callsFake((pem, data) => {
@@ -60,7 +63,7 @@ export function _mockCryppo() {
         return `${args.token}.${args.encrypted}`;
       });
 
-      sandbox.stub(<any>_cryppoService, 'generateRandomKey').callsFake((args: any) => {
+      sandbox.stub(<any>_cryppoService, 'generateRandomBytesString').callsFake((args: any) => {
         return `randomly_generated_key`;
       });
 

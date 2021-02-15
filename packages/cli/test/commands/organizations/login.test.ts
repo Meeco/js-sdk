@@ -1,4 +1,4 @@
-import { OrganizationsService } from '@meeco/sdk';
+import { OrganizationService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import {
@@ -11,7 +11,7 @@ import {
 
 describe('organizations:login', () => {
   customTest
-    .stub(OrganizationsService.prototype, 'getLogin', getLogin as any)
+    .stub(OrganizationService.prototype, 'getOrganizationToken', getLogin as any)
     .stdout()
     .stderr()
     .run([
@@ -29,11 +29,6 @@ describe('organizations:login', () => {
 
 function getLogin(organizationId, privateKey) {
   return Promise.resolve({
-    data_encryption_key: '',
-    key_encryption_key: '',
-    keystore_access_token: '',
-    passphrase_derived_key: '',
-    secret: '',
     vault_access_token: '[decrypted]DP2HJmMPgGgExZCAsHDf--PRIVATE_KEY--12324',
   });
 }
