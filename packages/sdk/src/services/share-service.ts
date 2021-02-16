@@ -44,7 +44,7 @@ function hasAccepted(status: string) {
   return status === AcceptanceStatus.Accepted || status === AcceptanceStatus.NotRequired;
 }
 
-interface IShareOptions {
+export interface IShareOptions {
   slot_id?: string;
   expires_at?: Date;
   terms?: string;
@@ -120,7 +120,14 @@ export class ShareService extends Service<SharesApi> {
       if (!shareSlot) {
         throw new Error(`could not find slot with id ${shareOptions.slot_id}`);
       }
-      encryptions = [await SlotHelpers.toEncryptedSlotValue(credentials, shareSlot)];
+      encryptions = [
+        await SlotHelpers.toEncryptedSlotValue(
+          {
+            data_encryption_key: dek,
+          },
+          shareSlot
+        ),
+      ];
     } else {
       encryptions = await item.toEncryptedSlotValues({
         data_encryption_key: dek,

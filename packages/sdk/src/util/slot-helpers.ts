@@ -38,7 +38,7 @@ export default class SlotHelpers {
       return decrypted;
     }
 
-    if (!slot.encrypted) {
+    if (!slot.encrypted && slot.encrypted_value == null) {
       return cleanResult({
         encrypted: false,
         value: null,
