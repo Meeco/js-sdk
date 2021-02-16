@@ -44,7 +44,7 @@ function hasAccepted(status: string) {
   return status === AcceptanceStatus.Accepted || status === AcceptanceStatus.NotRequired;
 }
 
-interface IShareOptions {
+export interface IShareOptions {
   slot_id?: string;
   expires_at?: Date;
   terms?: string;
