@@ -9,7 +9,7 @@ export { default as RSAPublicKey } from './models/rsa-public-key';
 export * from './models/environment';
 export * from './models/file-attachment-data';
 export * from './models/item-change';
-export { default as ItemMap } from './models/item-map';
+export * from './models/item-map';
 export * from './models/new-item';
 export * from './models/item-update';
 export * from './models/decrypted-item';

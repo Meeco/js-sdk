@@ -59,6 +59,13 @@ export class NewItem extends ItemChange {
       this.slots.map(slot => SlotHelpers.encryptSlot({ data_encryption_key: dek }, slot))
     );
 
+    // filter out any ids as this causes errors in POST /items endpoint
+    slots_attributes.forEach(slot => {
+      if ('id' in slot) {
+        delete slot['id'];
+      }
+    });
+
     return {
       template_name: this.template_name,
       item: {

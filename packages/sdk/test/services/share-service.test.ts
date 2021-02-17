@@ -105,6 +105,23 @@ describe('ShareService', () => {
       .it('shares a single slot');
 
     connectionStub
+      .nock('https://sandbox.meeco.me/vault', api => {
+        api.get(`/items/${itemId}`).reply(200, itemResponse);
+        api
+          .post(
+            `/items/${itemId}/shares`,
+            body =>
+              body.shares[0].slot_id === 'pizza' &&
+              body.shares[0].slot_values[0].slot_id === 'pizza' &&
+              body.shares[0].slot_values[0].encrypted_value ===
+                '[serialized][encrypted]Hawaiian[decrypted with my_generated_dek][with randomly_generated_key]'
+          )
+          .reply(201, { shares: [] });
+      })
+      .do(() => service.shareItem(testUserAuth, connectionId, itemId, { slot_id: 'pizza' }))
+      .it('single slot is encrypted with the share DEK');
+
+    connectionStub
       .stub(
         SlotHelpers,
         'decryptSlot',
