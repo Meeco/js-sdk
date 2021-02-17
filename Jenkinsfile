@@ -37,6 +37,7 @@ pipeline {
               npm run bootstrap;
               git submodule init;
               git submodule update;
+              apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com;
               apt-get update;
               apt-get install -y jq;
               pip3 install yq;
