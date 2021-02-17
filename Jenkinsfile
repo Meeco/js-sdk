@@ -42,7 +42,7 @@ pipeline {
               apt-get install -y jq;
               pip3 install yq;
               cd packages/cli/;
-              yq -y '(.vault.url) = "${env.VAULT_URL}" | (.keystore.url) = "${env.KEYSTORE_URL}" | (.vault,.keystore).subscription_key = "${env.SUBSCRIPTION_KEY}"' example.environment.yaml > .environment.yaml;
+              yq -y '(.vault.url) = "${env.VAULT_URL}" | (.keystore.url) = "${env.KEYSTORE_URL}" | (.vault,.keystore).subscription_key = "${env.SANDBOX_VAULT_SUBSCRIPTION_KEY}"' example.environment.yaml > .environment.yaml;
               cat .environment.yaml;
               ./test.sh;
             """
