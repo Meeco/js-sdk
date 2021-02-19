@@ -1,4 +1,4 @@
-import { ItemService, NewItem } from '@meeco/sdk';
+import { ItemService, NewItem, NewSlot } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { NewItemConfig } from '../../configs/new-item-config';
@@ -34,7 +34,11 @@ export default class ItemsCreate extends MeecoCommand {
 
     const { itemConfig } = itemConfigFile;
 
-    const newItem = new NewItem(itemConfig!.label, itemConfigFile.templateName, itemConfig!.slots);
+    const newItem = new NewItem(
+      itemConfig!.label,
+      itemConfigFile.templateName,
+      (itemConfig!.slots as any) as NewSlot[]
+    );
 
     try {
       const createdItem = await service.create(authConfig, newItem);
