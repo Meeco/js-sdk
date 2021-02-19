@@ -26,6 +26,7 @@ export function toNestedSlot(
 ): NestedSlotAttributes {
   const result = {
     ...slot,
+    attachments_folder_id: fix(slot.attachments_folder_id),
     image_id: slot.image ? slot.image : undefined,
     classification_node_attributes: classificationNodes,
   };
