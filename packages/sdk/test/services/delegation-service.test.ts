@@ -18,19 +18,26 @@ describe('DelegationService', () => {
   }
 
   describe('#createChildUser', () => {
+    const fakeToken = '123';
+
     function postVaultChildUserAPI() {
       return api =>
         api
           .post('/child_users')
           .matchHeader('Authorization', testUserAuth.vault_access_token)
           .matchHeader('Meeco-Subscription-Key', environment.vault.subscription_key)
-          .reply(200, { user: { id: '31bc2137-4d59-4c5e-a352-0525ee2ac858' } });
+          .reply(200, {
+            user: { id: '31bc2137-4d59-4c5e-a352-0525ee2ac858' },
+            connection_from_parent_to_child: {
+              the_other_user: { integration_data: { delegation_token: fakeToken } },
+            },
+          });
     }
 
     function postKeystoreChildUserAPI() {
       return api =>
         api
-          .post('/child_users')
+          .post('/child_users', body => body.delegation_token === fakeToken)
           .matchHeader('Authorization', testUserAuth.keystore_access_token)
           .matchHeader('Meeco-Subscription-Key', environment.keystore.subscription_key)
           .reply(200, { delegation: { vault_account_owner_id: 'vault owner id' } });
