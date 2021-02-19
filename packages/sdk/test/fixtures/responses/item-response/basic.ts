@@ -36,7 +36,6 @@ const response: ItemResponse = {
       name: 'pizza',
       slot_type_name: SlotType.KeyValue,
       encrypted_value: 'Hawaiian',
-      encrypted: true,
       created_at: new Date(1),
       updated_at: new Date(1),
       own: true,
@@ -62,7 +61,6 @@ const response: ItemResponse = {
       name: 'steak',
       slot_type_name: SlotType.KeyValue,
       encrypted_value: 'Rump',
-      encrypted: true,
       created_at: new Date(1),
       updated_at: new Date(1),
 
@@ -89,7 +87,6 @@ const response: ItemResponse = {
       name: 'beer',
       slot_type_name: SlotType.KeyValue,
       encrypted_value: 'Session Ale',
-      encrypted: true,
       created_at: new Date(1),
       updated_at: new Date(1),
 
