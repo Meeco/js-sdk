@@ -1,5 +1,5 @@
 // import * as MeecoAzure from '@meeco/azure-block-upload';
-import { Item, ItemApi, ItemsResponse, Share } from '@meeco/vault-api-sdk';
+import { Item, ItemApi, Share } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
 import DecryptedKeypair from '../models/decrypted-keypair';
 import { ItemUpdate } from '../models/item-update';
@@ -10,16 +10,21 @@ import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from '
 
 /**
  * Filter Item list with following params
- * @param templateId string array of item template ids
+ * @param templateIds array of item template ids
  * @param scheme name of item scheme
- * @param classification string array of item classification node names e.g. pets, vehicle
- * @param sharedWith user Id. item shared with provided user id. Works for items owned by the current user as well as for items owned by someone else and on-shared by the current user.
+ * @param classifications array of item classification names e.g. pets, vehicle
+ * @param sharedWith user Id. item shared with provided user id.
+ * Works for items owned by the current user as well as for items owned by someone else and on-shared by the current user.
+ * @param ownerId only return Items created by the given user id.
+ * @param own only return Items you created.
  */
 export interface IItemListFilterOptions {
-  templateId?: string[];
+  templateIds?: string[];
   scheme?: string;
-  classification?: string[];
+  classifications?: string[];
   sharedWith?: string;
+  ownerId?: string;
+  own?: boolean;
 }
 
 /**
@@ -96,17 +101,21 @@ export class ItemService extends Service<ItemApi> {
     credentials: IVaultToken,
     listFilterOptions?: IItemListFilterOptions,
     options?: IPageOptions
-  ): Promise<ItemsResponse> {
+  ) {
     const { classificationNodeName, classificationNodeNames } = this.getClassifications(
       listFilterOptions
     );
 
+    const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
+
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
-      listFilterOptions?.templateId?.join(','),
-      listFilterOptions?.scheme,
+      templateIds?.join(','),
+      scheme,
       classificationNodeName,
       classificationNodeNames,
-      listFilterOptions?.sharedWith,
+      sharedWith,
+      ownerId,
+      own !== undefined ? own.toString() : undefined,
       options?.nextPageAfter,
       options?.perPage
     );
@@ -118,35 +127,42 @@ export class ItemService extends Service<ItemApi> {
     return result;
   }
 
-  private getClassifications(listFilterOptions: IItemListFilterOptions | undefined) {
-    const classificationNodeName =
-      listFilterOptions?.classification && listFilterOptions?.classification.length === 1
-        ? listFilterOptions?.classification.join(',')
-        : undefined;
-    const classificationNodeNames =
-      listFilterOptions?.classification && listFilterOptions?.classification.length > 1
-        ? listFilterOptions?.classification.join(',')
-        : undefined;
-    return { classificationNodeName, classificationNodeNames };
+  // smooth over classificationNodeName/classificationNodeNames...
+  private getClassifications(opts?: IItemListFilterOptions) {
+    if (!opts || !opts.classifications) {
+      return {};
+    }
+
+    const { classifications } = opts;
+    if (classifications.length === 1) {
+      return {
+        classificationNodeName: classifications[0],
+      };
+    } else {
+      return {
+        classificationNodeNames: classifications.join(','),
+      };
+    }
   }
 
-  public async listAll(
-    credentials: IVaultToken,
-    listFilterOptions?: IItemListFilterOptions
-  ): Promise<ItemsResponse> {
+  public async listAll(credentials: IVaultToken, listFilterOptions?: IItemListFilterOptions) {
     const api = this.vaultAPIFactory(credentials).ItemApi;
 
     const { classificationNodeName, classificationNodeNames } = this.getClassifications(
       listFilterOptions
     );
 
+    const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
+
     return getAllPaged(cursor =>
       api.itemsGet(
-        listFilterOptions?.templateId?.join(','),
-        listFilterOptions?.scheme,
+        templateIds?.join(','),
+        scheme,
         classificationNodeName,
         classificationNodeNames,
-        listFilterOptions?.sharedWith,
+        sharedWith,
+        ownerId,
+        own !== undefined ? own.toString() : undefined,
         cursor
       )
     ).then(reducePages);

@@ -52,9 +52,9 @@ export default class ItemsList extends MeecoCommand {
     }
 
     const filters: IItemListFilterOptions = {
-      templateId,
+      templateIds: templateId,
       scheme,
-      classification,
+      classifications: classification,
       sharedWith,
     };
 

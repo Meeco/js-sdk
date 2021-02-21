@@ -4,7 +4,6 @@ import { Attachment, Slot } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { default as BasicItem } from '../fixtures/responses/item-response/basic';
-import { default as NoEncryptedPropItem } from '../fixtures/responses/item-response/no_encrypted_prop';
 import { default as OwnedItem } from '../fixtures/responses/item-response/owned';
 import { default as ReceivedItem } from '../fixtures/responses/item-response/received';
 import { customTest, mockClassificationNode, testUserAuth } from '../test-helpers';
@@ -232,19 +231,6 @@ describe('DecryptedItem', () => {
         classification_node_ids: [nodeId],
       };
       expect(item.getSlotClassifications(slotWithClassification)[0]?.id).to.equal(nodeId);
-    });
-  });
-
-  describe('regression', () => {
-    customTest.mockCryppo().it('decrypts a slot which has no encrypted prop', async () => {
-      // sanity check
-      expect(NoEncryptedPropItem.slots.every(x => x.encrypted_value != null));
-
-      const item = await DecryptedItem.fromAPI(testUserAuth, NoEncryptedPropItem);
-      for (const slot of item.slots) {
-        // tslint:disable-next-line:no-unused-expression
-        expect(slot.value, `slot ${slot.name}`).to.not.be.null;
-      }
     });
   });
 });
