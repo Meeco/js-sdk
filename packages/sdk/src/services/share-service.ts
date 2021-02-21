@@ -1,4 +1,5 @@
 import {
+  Connection,
   EncryptedSlotValue,
   GetShareResponse,
   ItemsIdSharesShareDeks,
@@ -135,6 +136,9 @@ export class ShareService extends Service<SharesApi> {
         data_encryption_key: dek,
       });
     }
+
+    // remove null valued slots
+    encryptions = encryptions.filter(s => !!s.encrypted_value);
 
     const encryptedDek = await publicKey.encryptKey(dek);
 
