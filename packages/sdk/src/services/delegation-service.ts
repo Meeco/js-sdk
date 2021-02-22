@@ -41,20 +41,26 @@ export class DelegationService extends Service<DelegationApi> {
     });
 
     this.logger.log('Creating child user');
-    const childUser = await this.vaultAPIFactory(credentials)
-      .DelegationApi.childUsersPost({
-        parent_public_key_for_connection: {
-          pem: parentToChildKey.publicKey.key,
-          external_id: parentToChildKeyId,
-        },
-        child_public_key_for_connection: {
-          pem: childToParentKey.publicKey.key,
-          external_id: childToParentKeyId,
-        },
-      })
-      .then(result => {
-        return result.user;
-      });
+    const childUserResponse = await this.vaultAPIFactory(credentials).DelegationApi.childUsersPost({
+      parent_public_key_for_connection: {
+        pem: parentToChildKey.publicKey.key,
+        external_id: parentToChildKeyId,
+      },
+      child_public_key_for_connection: {
+        pem: childToParentKey.publicKey.key,
+        external_id: childToParentKeyId,
+      },
+    });
+
+    const childUser = childUserResponse.user;
+
+    // check existence of delegation_token in untyped field integration_data
+    const integrationData =
+      childUserResponse.connection_from_parent_to_child.the_other_user.integration_data;
+    if (integrationData == null) {
+      throw new Error('Missing delegation token after creating child user in Vault');
+    }
+    const delegation_token: string = integrationData['delegation_token'];
 
     this.logger.log('Saving child user keys to keystore');
     return await this.keystoreAPIFactory(credentials)
@@ -67,6 +73,7 @@ export class DelegationService extends Service<DelegationApi> {
           public_key: childToParentKey.publicKey.key,
           external_id: childToParentKeyId,
         },
+        delegation_token,
       })
       .then(result => {
         return result.delegation;

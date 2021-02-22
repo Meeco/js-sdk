@@ -9,11 +9,15 @@ import {
   SlotHelpers,
   SymmetricKey,
 } from '@meeco/sdk';
-import { Share, SharesIncomingResponse, SharesOutgoingResponse } from '@meeco/vault-api-sdk';
+import {
+  Connection,
+  Share,
+  SharesIncomingResponse,
+  SharesOutgoingResponse,
+} from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { default as itemResponse } from '../fixtures/responses/item-response/basic';
-import { default as receivedItem } from '../fixtures/responses/item-response/received';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('ShareService', () => {
@@ -46,6 +50,27 @@ describe('ShareService', () => {
       .do(() => service.shareItem(testUserAuth, connectionId, itemId))
       .it('shares an item');
 
+    customTest
+      .mockCryppo()
+      .nock('https://sandbox.meeco.me/vault', api => {
+        api.post(`/items/${itemId}/shares`).reply(201, { shares: [] });
+      })
+      .do(async () =>
+        service.shareItem(
+          testUserAuth,
+          {
+            own: {},
+            the_other_user: {
+              user_public_key: fakePublicKey,
+              user_keypair_external_id: '123',
+              user_id: '123',
+            },
+          } as Connection,
+          await DecryptedItem.fromAPI(testUserAuth, itemResponse)
+        )
+      )
+      .it('accepts Item and Connection object params');
+
     connectionStub
       .nock('https://sandbox.meeco.me/vault', api => {
         api.get(`/items/${itemId}`).reply(200, itemResponse);
@@ -74,19 +99,16 @@ describe('ShareService', () => {
 
     connectionStub
       .nock('https://sandbox.meeco.me/vault', api => {
-        api.get(`/items/${itemId}`).reply(200, itemWithNull);
-        // Test: if nullSlotId is in the POST body, it's value must be undefined
         api
+          .get(`/items/${itemId}`)
+          .reply(200, itemWithNull)
           .post(`/items/${itemId}/shares`, body =>
-            body.shares[0].slot_values.every(
-              ({ slot_id, encrypted_value }) =>
-                slot_id !== nullSlotId || encrypted_value === undefined
-            )
+            body.shares[0].slot_values.every(({ slot_id }) => slot_id !== nullSlotId)
           )
           .reply(201, { shares: [] });
       })
       .do(() => service.shareItem(testUserAuth, connectionId, itemId))
-      .it('does not post slots with null values');
+      .it('slots with null values are not included in POST body');
 
     connectionStub
       .nock('https://sandbox.meeco.me/vault', api => {
@@ -124,7 +146,7 @@ describe('ShareService', () => {
     connectionStub
       .stub(
         SlotHelpers,
-        'decryptSlot',
+        'toEncryptedSlotValue',
         sinon.fake((cred, slot) => ({
           ...slot,
           value: 'abc',
@@ -132,12 +154,8 @@ describe('ShareService', () => {
           value_verification_hash: '123',
         }))
       )
-      .stub(
-        ItemService.prototype,
-        'get',
-        sinon.fake(() => DecryptedItem.fromAPI(testUserAuth, receivedItem))
-      )
       .nock('https://sandbox.meeco.me/vault', api => {
+        api.get(`/items/${itemId}`).reply(200, itemResponse);
         api
           .post(`/items/${itemId}/shares`, body =>
             body.shares[0].slot_values.every(

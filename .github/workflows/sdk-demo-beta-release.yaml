@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'releases/sdk/**-beta'
+      - 'releases/sdk/**-beta*'
 
 jobs:
   push_sdk_demo_beta:

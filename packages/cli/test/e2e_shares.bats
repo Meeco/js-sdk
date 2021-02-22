@@ -21,9 +21,9 @@ alias meeco="node --require tsconfig-paths/register ./bin/run"
 @test "Create a 'Esafe Vehicle' item template for Alice" {
     meeco items:create-config vehicle -a .Alice.yaml > .template_vehicle.yaml
 
+    # slot 0 left empty on purpose
     cat .template_vehicle.yaml |
     yq -y '(.spec.label) = "My Vehicle"'|
-    yq -y '(.spec.slots[0].value) = "20000101"' |
     yq -y '(.spec.slots[1].value) = "ABC123"' |
     yq -y '(.spec.slots[2].value) = "Mazda"' |
     yq -y '(.spec.slots[3].value) = "Familia"' |
@@ -57,8 +57,8 @@ alias meeco="node --require tsconfig-paths/register ./bin/run"
     assert_success
 }
 
-@test "Share Alice Vehicle Item with Bob " {
-
+@test "Share Alice Vehicle Item with Bob" {
+    # note: shared item must include an empty slot!
     dateAFter30Days=$(date +'%Y-%m-%d' -d "30 day")
 
     echo "Share alice to bob"

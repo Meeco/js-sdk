@@ -45,7 +45,7 @@ echo "Read share as bob"
 run shares:get-incoming $bobsShareId -a .Bob.yaml
 
 echo "Update Item as alice"
-cat template_vehicle_update.yaml |
+cat .my_vehicle.yaml |
 yq -y --arg a ${itemId} '(.spec.id) = $a' |
 yq -y '(.spec.slots[0].value) = "30000101"' |
 yq -y '(.spec.slots[1].value) = "XYZ123"' |

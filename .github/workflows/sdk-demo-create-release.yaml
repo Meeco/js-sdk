@@ -5,8 +5,8 @@ on:
   push:
     tags:
       - 'releases/sdk/**'
-      - '!releases/sdk/**-beta'
-      - '!releases/sdk/**-alpha'
+      - '!releases/sdk/**-beta*'
+      - '!releases/sdk/**-alpha*'
 
 jobs:
   push_sdk_demo:

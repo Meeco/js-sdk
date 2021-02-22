@@ -55,7 +55,7 @@ export class NewItem extends ItemChange {
     }
     // TODO should enforce map integrity?
 
-    const slots_attributes: NestedSlotAttributes[] = await Promise.all(
+    let slots_attributes: NestedSlotAttributes[] = await Promise.all(
       this.slots.map(slot => SlotHelpers.encryptSlot({ data_encryption_key: dek }, slot))
     );
 
@@ -65,6 +65,11 @@ export class NewItem extends ItemChange {
         delete slot['id'];
       }
     });
+
+    // filter out slots with encrypted_value: null
+    slots_attributes = slots_attributes.filter(
+      slot => slot.encrypted_value !== null && slot.encrypted_value !== undefined
+    );
 
     return {
       template_name: this.template_name,

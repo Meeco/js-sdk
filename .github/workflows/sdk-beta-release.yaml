@@ -3,7 +3,7 @@ name: Release SDK Beta
 on:
   push:
     tags:
-      - 'releases/sdk/**-beta'
+      - 'releases/sdk/**-beta*'
 
 jobs:
   create_sdk_beta_release:

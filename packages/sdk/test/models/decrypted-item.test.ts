@@ -4,7 +4,6 @@ import { Attachment, Slot } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { default as BasicItem } from '../fixtures/responses/item-response/basic';
-import { default as NoEncryptedPropItem } from '../fixtures/responses/item-response/no_encrypted_prop';
 import { default as OwnedItem } from '../fixtures/responses/item-response/owned';
 import { default as ReceivedItem } from '../fixtures/responses/item-response/received';
 import { customTest, mockClassificationNode, testUserAuth } from '../test-helpers';
@@ -103,6 +102,7 @@ describe('DecryptedItem', () => {
       .catch(/^cannot share non-owned.*/)
       .it('throws if not owned');
 
+    // in the following tests, this artificially adds slot values
     const fakeDecryptedOwnSlotFn = (key, slot) => ({
       id: slot.id,
       own: true,
@@ -156,6 +156,27 @@ describe('DecryptedItem', () => {
       .it('generates a new value-verification hash, overwriting the old', ({ result }) => {
         expect(result[0].value_verification_hash).to.not.match(/.*STALE_HASH.*/);
       });
+
+    customTest
+      .mockCryppo()
+      .stub(
+        SlotHelpers,
+        'decryptSlot',
+        sinon.fake((key, slot) => ({
+          id: slot.id,
+          own: false,
+          value: null,
+          value_verification_key: null,
+          value_verification_hash: null,
+        }))
+      )
+      .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
+      .do(({ item }) =>
+        item.toEncryptedSlotValues({
+          data_encryption_key: SymmetricKey.fromSerialized(encodeSafe64('fake')),
+        })
+      )
+      .it('ignores null values with null verification hashes');
   });
 
   // describe('#toEncryptedSlotValues');
@@ -232,19 +253,6 @@ describe('DecryptedItem', () => {
         classification_node_ids: [nodeId],
       };
       expect(item.getSlotClassifications(slotWithClassification)[0]?.id).to.equal(nodeId);
-    });
-  });
-
-  describe('regression', () => {
-    customTest.mockCryppo().it('decrypts a slot which has no encrypted prop', async () => {
-      // sanity check
-      expect(NoEncryptedPropItem.slots.every(x => x.encrypted_value != null));
-
-      const item = await DecryptedItem.fromAPI(testUserAuth, NoEncryptedPropItem);
-      for (const slot of item.slots) {
-        // tslint:disable-next-line:no-unused-expression
-        expect(slot.value, `slot ${slot.name}`).to.not.be.null;
-      }
     });
   });
 });

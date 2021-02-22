@@ -1,4 +1,5 @@
 import {
+  Connection,
   EncryptedSlotValue,
   GetShareResponse,
   ItemsIdSharesShareDeks,
@@ -85,30 +86,32 @@ export class ShareService extends Service<SharesApi> {
   /**
    * Share the Item with another user (identified by the Connection).
    * You can only share Items you own or are permitted to re-share.
-   * @param credentials
-   * @param connectionId
-   * @param itemId
-   * @param shareOptions
+   * @param connection Connection id string or Connection owned by the user initiating the share.
+   * @param item Item id or Item to be shared.
    */
   public async shareItem(
     credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
-    connectionId: string,
-    itemId: string,
+    connection: string | Connection,
+    item: string | DecryptedItem,
     shareOptions: IShareOptions = {}
   ): Promise<SharesCreateResponse> {
-    const fromUserConnection = await new ConnectionService(this.environment, this.logger).get(
-      credentials,
-      connectionId
-    );
+    const fromUserConnection: Connection =
+      typeof connection === 'string'
+        ? await new ConnectionService(this.environment, this.logger).get(credentials, connection)
+        : connection;
+
     const {
       user_public_key,
       user_keypair_external_id,
       user_id: recipientId,
     } = fromUserConnection.the_other_user;
+
     const publicKey = new RSAPublicKey(user_public_key);
 
     this.logger.log('Preparing item to share');
-    const item = await new ItemService(this.environment).get(credentials, itemId);
+    if (typeof item === 'string') {
+      item = await new ItemService(this.environment).get(credentials, item);
+    }
     const { slots } = item;
 
     this.logger.log('Encrypting slots with generated DEK');
@@ -134,11 +137,14 @@ export class ShareService extends Service<SharesApi> {
       });
     }
 
+    // remove null valued slots
+    encryptions = encryptions.filter(s => !!s.encrypted_value);
+
     const encryptedDek = await publicKey.encryptKey(dek);
 
     this.logger.log('Sending shared data');
     const shareResult = await this.vaultAPIFactory(credentials).SharesApi.itemsIdSharesPost(
-      itemId,
+      item.id,
       {
         shares: [
           {
