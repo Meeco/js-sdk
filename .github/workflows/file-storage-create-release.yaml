@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - 'releases/file-storage/**'
-      - '!releases/file-storage/**-beta'
+      - '!releases/file-storage/**-beta*'
 
 jobs:
   create_file_storage_release:

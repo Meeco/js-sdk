@@ -3,7 +3,7 @@ name: Release SDK Alpha
 on:
   push:
     tags:
-      - 'releases/sdk/**-alpha'
+      - 'releases/sdk/**-alpha*'
 
 jobs:
   create_sdk_alpha_release:
