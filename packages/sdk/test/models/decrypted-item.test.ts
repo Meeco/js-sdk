@@ -102,6 +102,7 @@ describe('DecryptedItem', () => {
       .catch(/^cannot share non-owned.*/)
       .it('throws if not owned');
 
+    // in the following tests, this artificially adds slot values
     const fakeDecryptedOwnSlotFn = (key, slot) => ({
       id: slot.id,
       own: true,
@@ -155,6 +156,27 @@ describe('DecryptedItem', () => {
       .it('generates a new value-verification hash, overwriting the old', ({ result }) => {
         expect(result[0].value_verification_hash).to.not.match(/.*STALE_HASH.*/);
       });
+
+    customTest
+      .mockCryppo()
+      .stub(
+        SlotHelpers,
+        'decryptSlot',
+        sinon.fake((key, slot) => ({
+          id: slot.id,
+          own: false,
+          value: null,
+          value_verification_key: null,
+          value_verification_hash: null,
+        }))
+      )
+      .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
+      .do(({ item }) =>
+        item.toEncryptedSlotValues({
+          data_encryption_key: SymmetricKey.fromSerialized(encodeSafe64('fake')),
+        })
+      )
+      .it('ignores null values with null verification hashes');
   });
 
   // describe('#toEncryptedSlotValues');
