@@ -11,13 +11,28 @@ import {
   getDirectAttachmentInfo,
   IFileStorageAuthConfiguration,
 } from '@meeco/file-storage-common';
-import { DirectAttachmentsApi, AttachmentDirectDownloadUrl } from '@meeco/vault-api-sdk';
+import {
+  DirectAttachmentsApi,
+  AttachmentDirectDownloadUrl,
+  DirectAttachment,
+} from '@meeco/vault-api-sdk';
 import * as FileUtils from './FileUtils.web';
 
 export { ThumbnailType, ThumbnailTypes, thumbSizeTypeToMimeExt } from '@meeco/file-storage-common';
 export { downloadThumbnailCommon as downloadThumbnail };
 export { encryptAndUploadThumbnailCommon as encryptAndUploadThumbnail };
 
+/**
+ * Upload a new attachment. It is encrypted with a random DEK that is returned with the attachment
+ * metadata.
+ * @param {object} __namedParameters Options
+ * @param file
+ * @param vaultUrl Base URL of the Meeco Vault. Usually should be https://sandbox.meeco.me/vault.
+ * @param authConfig Contains the DEK and the appropriate auth tokens.
+ * @param videoCodec Optionally record the video codec in attachment metadata.
+ * @param progressUpdateFunc reporter callback
+ * @param onCancel Promise that, if resolved, cancels the upload.
+ */
 export async function fileUploadBrowser({
   file,
   vaultUrl,
@@ -34,11 +49,13 @@ export async function fileUploadBrowser({
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null;
   onCancel?: any;
-}): Promise<{ attachment: any; dek: EncryptionKey }> {
+}): Promise<{ attachment: DirectAttachment; dek: EncryptionKey }> {
   if (progressUpdateFunc) {
     progressUpdateFunc(null, 0);
   }
+
   const dek = EncryptionKey.generateRandom();
+
   const uploadUrl = await directAttachmentUploadUrl(
     {
       fileSize: file.size,
@@ -49,6 +66,7 @@ export async function fileUploadBrowser({
     vaultUrl,
     undefined
   );
+
   const uploadResult = await directAttachmentUpload(
     {
       directUploadUrl: uploadUrl.attachment_direct_upload_url.url,
@@ -60,10 +78,12 @@ export async function fileUploadBrowser({
     progressUpdateFunc,
     onCancel
   );
+
   const artifactsFileName = file.name + '.encryption_artifacts';
   if (videoCodec) {
     uploadResult.artifacts['videoCodec'] = videoCodec;
   }
+
   const artifactsFile = new File(
     [JSON.stringify(uploadResult.artifacts)],
     file.name + '.encryption_artifacts',
@@ -71,6 +91,7 @@ export async function fileUploadBrowser({
       type: 'application/json',
     }
   );
+
   const artifactsUploadUrl = await directAttachmentUploadUrl(
     {
       fileName: artifactsFileName,
@@ -103,6 +124,14 @@ export async function fileUploadBrowser({
   return { attachment: attachedDoc.attachment, dek };
 }
 
+/**
+ * @param {object} __namedParameters Options
+ * @param dek TODO used for chunked upload but not for regular?
+ * @param vaultUrl Base URL of the Meeco Vault. Usually should be https://sandbox.meeco.me/vault.
+ * @param authConfig Contains the DEK and the appropriate auth tokens.
+ * @param progressUpdateFunc TODO not used in regular case!
+ * @param onCancel Promise that, if resolved, cancels the download.
+ */
 export async function fileDownloadBrowser({
   attachmentId,
   dek,
@@ -124,13 +153,8 @@ export async function fileDownloadBrowser({
     progressUpdateFunc(null, 0);
   }
 
-  const environment = {
-    vault: {
-      url: vaultUrl,
-    },
-  };
-
   const attachmentInfo = await getDirectAttachmentInfo({ attachmentId }, authConfig, vaultUrl);
+
   let buffer: Uint8Array;
   const fileName: string = attachmentInfo.attachment.filename;
   if (attachmentInfo.attachment.is_direct_upload) {
@@ -139,7 +163,7 @@ export async function fileDownloadBrowser({
       attachmentId,
       dek,
       authConfig,
-      environment.vault.url,
+      vaultUrl,
       progressUpdateFunc,
       onCancel
     );
@@ -149,61 +173,75 @@ export async function fileDownloadBrowser({
     const downloaded = await downloadAttachment(attachmentId, authConfig, vaultUrl);
     buffer = downloaded || new Uint8Array();
   }
+
   return new File([buffer], fileName, {
     type: attachmentInfo.attachment.content_type,
   });
 }
 
+/**
+ * Download a file in chunks from Azure block storage. See [[AzureBlockDownload]]
+ * @param dek A separate DEK from the `authConfig` one for some reason
+ */
 async function largeFileDownloadBrowser(
   attachmentID: string,
   dek: EncryptionKey | null,
   authConfig: IFileStorageAuthConfiguration,
   vaultUrl: string,
-  progressUpdateFunc: ((chunkBuffer, percentageComplete, videoCodec?: string) => void) | null,
+  progressUpdateFunc:
+    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
+    | null,
   onCancel?: any
 ) {
-  const direct_download_encrypted_artifact = await getDirectDownloadInfo(
+  const encryptionArtifactInfo = await getDirectDownloadInfo(
     attachmentID,
     'encryption_artifact_file',
     authConfig,
     vaultUrl
   );
-  const direct_download = await getDirectDownloadInfo(
+  const attachmentInfo = await getDirectDownloadInfo(
     attachmentID,
     'binary_file',
     authConfig,
     vaultUrl
   );
-  let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
-  const encrypted_artifact_uint8array: any = await client.start(null, null, null, null, onCancel);
-  const encrypted_artifact = JSON.parse(bytesBufferToBinaryString(encrypted_artifact_uint8array));
-  const videoCodec = encrypted_artifact.videoCodec;
+
+  // download encryption artifacts
+  let client = new AzureBlockDownload(encryptionArtifactInfo.url);
+  const encryptionArtifacts = await client
+    .start(null, null, null, null, onCancel)
+    .then((resultBuffer: any) => JSON.parse(bytesBufferToBinaryString(resultBuffer)));
+  const videoCodec = encryptionArtifacts.videoCodec;
+
   if (progressUpdateFunc && videoCodec) {
     progressUpdateFunc(null, 0, videoCodec);
   }
-  client = new AzureBlockDownload(direct_download.url);
-  let blocks = new Uint8Array();
 
-  for (let index = 0; index < encrypted_artifact.range.length; index++) {
+  // use encryption artifacts to initiate file download
+  client = new AzureBlockDownload(attachmentInfo.url);
+  let blocks = new Uint8Array();
+  for (let index = 0; index < encryptionArtifacts.range.length; index++) {
     const block: any = await client.start(
       dek,
-      encrypted_artifact.encryption_strategy,
+      encryptionArtifacts.encryption_strategy,
       {
-        iv: bytesBufferToBinaryString(new Uint8Array(encrypted_artifact.iv[index].data)),
-        ad: encrypted_artifact.ad,
-        at: bytesBufferToBinaryString(new Uint8Array(encrypted_artifact.at[index].data)),
+        iv: bytesBufferToBinaryString(new Uint8Array(encryptionArtifacts.iv[index].data)),
+        ad: encryptionArtifacts.ad,
+        at: bytesBufferToBinaryString(new Uint8Array(encryptionArtifacts.at[index].data)),
       },
-      encrypted_artifact.range[index],
+      encryptionArtifacts.range[index],
       onCancel
     );
+    // TODO: instead of copying the buffer every loop, should use size info to create the correct sized buffer initially!
     blocks = new Uint8Array([...(blocks as any), ...block]);
     if (progressUpdateFunc) {
       const buffer = block.buffer;
-      const percentageComplete = ((index + 1) / encrypted_artifact.range.length) * 100;
+      const percentageComplete = ((index + 1) / encryptionArtifacts.range.length) * 100;
       progressUpdateFunc(buffer, percentageComplete, videoCodec);
     }
   }
-  return { byteArray: blocks, direct_download };
+
+  return { byteArray: blocks, attachmentInfo };
 }
 
 async function getDirectDownloadInfo(
@@ -217,62 +255,64 @@ async function getDirectDownloadInfo(
   return result.attachment_direct_download_url;
 }
 
-export function fileDownloadBrowserWithCancel({
-  attachmentId,
-  dek,
-  vaultUrl,
-  authConfig,
-  progressUpdateFunc = null,
-}: {
-  attachmentId: string;
-  dek: EncryptionKey;
-  vaultUrl: string;
-  authConfig: IFileStorageAuthConfiguration;
-  progressUpdateFunc?:
-    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
-    | null;
-}) {
-  let cancel;
-  const promise = new Promise((resolve, reject) => (cancel = () => resolve('cancel')));
-  return {
-    cancel,
-    success: fileDownloadBrowser({
-      attachmentId,
-      dek,
-      vaultUrl,
-      authConfig,
-      progressUpdateFunc,
-      onCancel: promise,
-    }),
+/**
+ * Injects a function that can be used to cancel a long running download/upload.
+ * Argument function "f" must have named param "onCancel".
+ */
+function withCancel<S, T>(
+  f: (_: S & { onCancel?: any }) => T
+): (_: S) => { cancel: () => void; success: T } {
+  return (x: S) => {
+    let cancel;
+    const promise = new Promise((resolve, reject) => (cancel = () => resolve('cancel')));
+    return {
+      cancel,
+      success: f({
+        ...x,
+        onCancel: promise,
+      }),
+    };
   };
 }
 
-export function fileUploadBrowserWithCancel({
-  file,
-  vaultUrl,
-  authConfig,
-  videoCodec,
-  progressUpdateFunc = null,
-}: {
-  file: File;
-  vaultUrl: string;
-  authConfig: IFileStorageAuthConfiguration;
-  videoCodec?: string;
-  progressUpdateFunc?:
-    | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
-    | null;
-}) {
-  let cancel;
-  const promise = new Promise((resolve, reject) => (cancel = () => resolve('cancel')));
-  return {
-    cancel,
-    success: fileUploadBrowser({
-      file,
-      vaultUrl,
-      authConfig,
-      videoCodec,
-      progressUpdateFunc,
-      onCancel: promise,
-    }),
-  };
-}
+/**
+ * Wraps [[fileDownloadBrowser]] injecting a callable function that will cancel the action.
+ * For example
+ * ```typescript
+ * const { cancel, success } = fileDownloadBrowserWithCancel(...);
+ * cancel(); // kills download
+ * file = await success // original result
+ * ```
+ * @returns An object with attributes `cancel`: the function to cancel the download, `success` contains
+ * the original result promise.
+ */
+export const fileDownloadBrowserWithCancel = withCancel<
+  {
+    attachmentId: string;
+    dek: EncryptionKey;
+    vaultUrl: string;
+    authConfig: IFileStorageAuthConfiguration;
+    progressUpdateFunc?:
+      | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
+      | null;
+  },
+  Promise<File>
+>(fileDownloadBrowser);
+
+/**
+ * Wraps [[fileUploadBrowser]] injecting a callable function that will cancel the action.
+ * @returns An object with attributes `cancel`: the function to cancel the upload, `success` contains
+ * the original result promise.
+ */
+export const fileUploadBrowserWithCancel = withCancel<
+  {
+    file: File;
+    vaultUrl: string;
+    authConfig: IFileStorageAuthConfiguration;
+    videoCodec?: string;
+    progressUpdateFunc?:
+      | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
+      | null;
+  },
+  Promise<{ attachment: any; dek: EncryptionKey }>
+>(fileUploadBrowser);
