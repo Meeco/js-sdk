@@ -11,7 +11,7 @@ import {
   getDirectAttachmentInfo,
   IFileStorageAuthConfiguration,
 } from '@meeco/file-storage-common';
-import { DirectAttachmentsApi } from '@meeco/vault-api-sdk';
+import { DirectAttachmentsApi, AttachmentDirectDownloadUrl } from '@meeco/vault-api-sdk';
 import * as FileUtils from './FileUtils.web';
 
 export { ThumbnailType, ThumbnailTypes, thumbSizeTypeToMimeExt } from '@meeco/file-storage-common';
@@ -208,10 +208,10 @@ async function largeFileDownloadBrowser(
 
 async function getDirectDownloadInfo(
   id: string,
-  type: string,
+  type: 'binary_file' | 'encryption_artifact_file',
   authConfig: IFileStorageAuthConfiguration,
   vaultUrl: string
-) {
+): Promise<AttachmentDirectDownloadUrl> {
   const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl));
   const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
   return result.attachment_direct_download_url;
