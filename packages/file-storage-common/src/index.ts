@@ -8,12 +8,11 @@ import {
 } from '@meeco/cryppo';
 import {
   AttachmentApi,
-  AttachmentDirectUploadUrlResponse,
+  AttachmentDirectUploadUrl,
   Configuration,
   ConfigurationParameters,
   DirectAttachmentResponse,
   DirectAttachmentsApi,
-  PostAttachmentDirectUploadUrlRequest,
   ThumbnailApi,
 } from '@meeco/vault-api-sdk';
 import axios from 'axios';
@@ -32,6 +31,35 @@ export interface IFileStorageAuthConfiguration {
   delegation_id?: string;
   subscription_key?: string;
   oidc_token?: string;
+}
+
+export function buildApiConfig(
+  auth: IFileStorageAuthConfiguration,
+  vaultUrl: string,
+  fetchApi?: any
+): Configuration {
+  const headers = getHeaders(auth);
+
+  const configParams: ConfigurationParameters = {
+    basePath: vaultUrl,
+    headers,
+  };
+  if (fetchApi) {
+    configParams['fetchApi'] = fetchApi;
+  }
+  return new Configuration(configParams);
+}
+
+/**
+ * Extract HTTP headers from an `IFileStorageAuthConfiguration` object.
+ */
+function getHeaders(auth: IFileStorageAuthConfiguration): { [header: string]: string } {
+  const headers = {};
+  headers['Meeco-Delegation-Id'] = auth.delegation_id || '';
+  headers['Meeco-Subscription-Key'] = auth.subscription_key || '';
+  headers['Authorization'] = auth.vault_access_token || '';
+  headers['authorizationoidc2'] = auth.oidc_token ? 'Bearer ' + auth.oidc_token : '';
+  return headers;
 }
 
 export async function directAttachmentUpload(
@@ -69,28 +97,28 @@ export async function directAttachmentUpload(
   return result;
 }
 
-export async function directAttachmentUploadUrl(
-  config: IDirectAttachmentUploadUrlData,
+/**
+ * Create a new upload URL for the file specified by [[config]].
+ */
+export async function createAttachmentUploadUrl(
+  config: {
+    fileName: string;
+    fileType: string;
+    fileSize: number;
+  },
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
   fetchApi?: any
-): Promise<AttachmentDirectUploadUrlResponse> {
-  let uploadUrl;
-  try {
-    const params: PostAttachmentDirectUploadUrlRequest = {
-      blob: {
-        filename: config.fileName,
-        content_type: config.fileType,
-        byte_size: config.fileSize,
-      },
-    };
-    const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
-
-    uploadUrl = await api.directAttachmentsUploadUrlPost(params);
-  } catch (err) {
-    throw err;
-  }
-  return uploadUrl;
+): Promise<AttachmentDirectUploadUrl> {
+  const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
+  const uploadUrl = await api.directAttachmentsUploadUrlPost({
+    blob: {
+      filename: config.fileName,
+      content_type: config.fileType,
+      byte_size: config.fileSize,
+    },
+  });
+  return uploadUrl.attachment_direct_upload_url;
 }
 
 export async function directAttachmentAttach(
@@ -152,31 +180,7 @@ export async function downloadAndDecryptFile<T extends Blob>(
   return decryptedContents;
 }
 
-export function buildApiConfig(
-  auth: IFileStorageAuthConfiguration,
-  vaultUrl: string,
-  fetchApi?: any
-): Configuration {
-  const headers = getHeaders(auth);
-
-  const configParams: ConfigurationParameters = {
-    basePath: vaultUrl,
-    headers,
-  };
-  if (fetchApi) {
-    configParams['fetchApi'] = fetchApi;
-  }
-  return new Configuration(configParams);
-}
-
-function getHeaders(auth: IFileStorageAuthConfiguration) {
-  const headers = {};
-  headers['Meeco-Delegation-Id'] = auth.delegation_id || '';
-  headers['Meeco-Subscription-Key'] = auth.subscription_key || '';
-  headers['Authorization'] = auth.vault_access_token || '';
-  headers['authorizationoidc2'] = auth.oidc_token ? 'Bearer ' + auth.oidc_token : '';
-  return headers;
-}
+/* ---------- Thumbnails ---------- */
 
 export async function encryptAndUploadThumbnailCommon({
   thumbnail,

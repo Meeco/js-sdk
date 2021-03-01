@@ -2,9 +2,9 @@ import { bytesBufferToBinaryString, EncryptionKey } from '@meeco/cryppo';
 import {
   AzureBlockDownload,
   buildApiConfig,
+  createAttachmentUploadUrl,
   directAttachmentAttach,
   directAttachmentUpload,
-  directAttachmentUploadUrl,
   downloadAttachment,
   downloadThumbnailCommon,
   encryptAndUploadThumbnailCommon,
@@ -12,9 +12,9 @@ import {
   IFileStorageAuthConfiguration,
 } from '@meeco/file-storage-common';
 import {
-  DirectAttachmentsApi,
   AttachmentDirectDownloadUrl,
   DirectAttachment,
+  DirectAttachmentsApi,
 } from '@meeco/vault-api-sdk';
 import * as FileUtils from './FileUtils.web';
 
@@ -56,7 +56,7 @@ export async function fileUploadBrowser({
 
   const dek = EncryptionKey.generateRandom();
 
-  const uploadUrl = await directAttachmentUploadUrl(
+  const uploadUrl = await createAttachmentUploadUrl(
     {
       fileSize: file.size,
       fileType: file.type,
@@ -69,7 +69,7 @@ export async function fileUploadBrowser({
 
   const uploadResult = await directAttachmentUpload(
     {
-      directUploadUrl: uploadUrl.attachment_direct_upload_url.url,
+      directUploadUrl: uploadUrl.url,
       file,
       encrypt: true,
       attachmentDek: dek,
@@ -92,7 +92,7 @@ export async function fileUploadBrowser({
     }
   );
 
-  const artifactsUploadUrl = await directAttachmentUploadUrl(
+  const artifactsUploadUrl = await createAttachmentUploadUrl(
     {
       fileName: artifactsFileName,
       fileType: 'application/json',
@@ -103,7 +103,7 @@ export async function fileUploadBrowser({
   );
   await directAttachmentUpload(
     {
-      directUploadUrl: artifactsUploadUrl.attachment_direct_upload_url.url,
+      directUploadUrl: artifactsUploadUrl.url,
       file: artifactsFile,
       encrypt: false,
     },
@@ -113,10 +113,10 @@ export async function fileUploadBrowser({
   );
   const attachedDoc = await directAttachmentAttach(
     {
-      blobId: uploadUrl.attachment_direct_upload_url.blob_id,
-      blobKey: uploadUrl.attachment_direct_upload_url.blob_key,
-      artifactsBlobId: artifactsUploadUrl.attachment_direct_upload_url.blob_id,
-      artifactsBlobKey: artifactsUploadUrl.attachment_direct_upload_url.blob_key,
+      blobId: uploadUrl.blob_id,
+      blobKey: uploadUrl.blob_key,
+      artifactsBlobId: artifactsUploadUrl.blob_id,
+      artifactsBlobKey: artifactsUploadUrl.blob_key,
     },
     authConfig,
     vaultUrl
