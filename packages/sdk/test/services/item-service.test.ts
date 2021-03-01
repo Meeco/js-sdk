@@ -305,7 +305,7 @@ describe('ItemService', () => {
   });
 
   describe('#listDecrypted', () => {
-    const response = {
+    const mockResponse = {
       items: [
         {
           id: 'a',
@@ -354,14 +354,16 @@ describe('ItemService', () => {
           .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
           .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
           .reply(200, {
-            ...response,
+            ...mockResponse,
             items: [],
             slots: [],
           })
       )
       .add('response', async () => await new ItemService(environment).listDecrypted(testUserAuth))
       .it('works for no items', ({ response }) => {
+        // tslint:disable-next-line:no-unused-expression
         expect(response.items).to.be.empty;
+        // tslint:disable-next-line:no-unused-expression
         expect(response.meta).to.be.empty;
       });
 
@@ -372,7 +374,7 @@ describe('ItemService', () => {
           .get('/items')
           .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
           .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-          .reply(200, response)
+          .reply(200, mockResponse)
       )
       .add('response', async () => await new ItemService(environment).listDecrypted(testUserAuth))
       .it('list items and decrypts their slots', ({ response }) => {
