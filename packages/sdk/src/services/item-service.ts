@@ -5,6 +5,7 @@ import { ItemUpdate } from '../models/item-update';
 import { NewItem } from '../models/new-item';
 import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
+import SlotHelpers from '../util/slot-helpers';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 
 /**
@@ -28,6 +29,11 @@ export interface IItemListFilterOptions {
 
 /** Quick fix for overloaded swagger type. */
 export type SDKItemsResponse = ItemsResponse1;
+
+/** DecryptedItems together with response metadata if needed for paging etc. */
+export type DecryptedItems = Pick<SDKItemsResponse, 'meta' | 'next_page_after'> & {
+  items: DecryptedItem[];
+};
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -128,12 +134,11 @@ export class ItemService extends Service<ItemApi> {
   }
 
   // smooth over classificationNodeName/classificationNodeNames...
-  private getClassifications(opts?: IItemListFilterOptions) {
-    if (!opts || !opts.classifications) {
+  private getClassifications({ classifications }: IItemListFilterOptions = {}) {
+    if (!classifications) {
       return {};
     }
 
-    const { classifications } = opts;
     if (classifications.length === 1) {
       return {
         classificationNodeName: classifications[0],
@@ -169,6 +174,49 @@ export class ItemService extends Service<ItemApi> {
         cursor
       )
     ).then(reducePages);
+  }
+
+  /**
+   * Behaves like [[list]] but chains [[DecryptedItem]] constructor and preserves response metadata.
+   * Item attachments, thumbnails and associations are added to the appropriate Item and so are not present in
+   * the result.
+   *
+   * If you want to pull all pages, use the following snippet
+   * ```typescript
+   * const allItems: DecryptedItems =
+   *   await getAllPaged(cursor => listDecrypted(credentials, filterOpts, { nextPageAfter: cursor })).then(reducePages);
+   * ```
+   */
+  public async listDecrypted(
+    credentials: IVaultToken & IDEK,
+    listFilterOptions?: IItemListFilterOptions,
+    options?: IPageOptions
+  ): Promise<DecryptedItems> {
+    const { classificationNodeName, classificationNodeNames } = this.getClassifications(
+      listFilterOptions
+    );
+
+    const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
+
+    const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
+      templateIds?.join(','),
+      scheme,
+      classificationNodeName,
+      classificationNodeNames,
+      sharedWith,
+      ownerId,
+      own !== undefined ? own.toString() : undefined,
+      options?.nextPageAfter,
+      options?.perPage
+    );
+
+    const slots = await Promise.all(result.slots.map(s => SlotHelpers.decryptSlot(credentials, s)));
+
+    return {
+      next_page_after: result.next_page_after,
+      meta: result.meta,
+      items: result.items.map(i => new DecryptedItem(i, slots, result)),
+    };
   }
 
   /**

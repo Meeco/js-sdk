@@ -88,9 +88,9 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
     this.classification_nodes =
       this.allClassificationNodes.filter(x => item.classification_node_ids.some(y => y === x.id)) ||
       [];
-    this.attachments = extra.attachments || [];
 
     // TODO do these need to be filtered by id?
+    this.attachments = extra.attachments || [];
     this.thumbnails = extra.thumbnails || [];
     this.associations = extra.associations || [];
     this.associations_to = extra.associations_to || [];

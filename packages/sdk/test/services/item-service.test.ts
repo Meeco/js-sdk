@@ -304,6 +304,87 @@ describe('ItemService', () => {
       });
   });
 
+  describe('#listDecrypted', () => {
+    const response = {
+      items: [
+        {
+          id: 'a',
+          name: 'My Car',
+          slot_ids: ['make_model'],
+          created_at: new Date(1),
+          updated_at: new Date(1),
+        },
+        {
+          id: 'b',
+          name: 'My House',
+          slot_ids: ['add'],
+          created_at: new Date(1),
+          updated_at: new Date(1),
+        },
+      ],
+      slots: [
+        {
+          id: 'make_model',
+          name: 'Make and Model',
+          encrypted_value: 'value',
+          created_at: new Date(1),
+          updated_at: new Date(1),
+        },
+        {
+          id: 'add',
+          name: 'address',
+          encrypted_value: 'value',
+          created_at: new Date(1),
+          updated_at: new Date(1),
+        },
+      ],
+      associations_to: [],
+      associations: [],
+      attachments: [],
+      classification_nodes: [],
+      shares: [],
+      thumbnails: [],
+      meta: [],
+    };
+
+    customTest
+      .nock('https://sandbox.meeco.me/vault', api =>
+        api
+          .get('/items')
+          .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+          .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+          .reply(200, {
+            ...response,
+            items: [],
+            slots: [],
+          })
+      )
+      .add('response', async () => await new ItemService(environment).listDecrypted(testUserAuth))
+      .it('works for no items', ({ response }) => {
+        expect(response.items).to.be.empty;
+        expect(response.meta).to.be.empty;
+      });
+
+    customTest
+      .mockCryppo()
+      .nock('https://sandbox.meeco.me/vault', api =>
+        api
+          .get('/items')
+          .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+          .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+          .reply(200, response)
+      )
+      .add('response', async () => await new ItemService(environment).listDecrypted(testUserAuth))
+      .it('list items and decrypts their slots', ({ response }) => {
+        expect(response.items.length).to.equal(2);
+        for (const i of response.items) {
+          for (const s of i.slots) {
+            expect(s.value).to.match(/^.+\[decrypted with .+\]$/);
+          }
+        }
+      });
+  });
+
   describe('ItemService.removeSlot', () => {
     customTest
       .nock('https://sandbox.meeco.me/vault', api =>
