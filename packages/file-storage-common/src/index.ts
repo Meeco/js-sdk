@@ -11,7 +11,7 @@ import {
   AttachmentDirectUploadUrl,
   Configuration,
   ConfigurationParameters,
-  DirectAttachmentResponse,
+  DirectAttachment,
   DirectAttachmentsApi,
   ThumbnailApi,
 } from '@meeco/vault-api-sdk';
@@ -62,18 +62,26 @@ function getHeaders(auth: IFileStorageAuthConfiguration): { [header: string]: st
   return headers;
 }
 
+/**
+ *
+ * @param encrypt If true and an `attachmentDek` is given, the file will be encrypted with the given key.
+ * @param fileUtilsLib Module that has getSize, getType, readBlock functions. Defined in file-storage-browser or node packages.
+ * @param progressUpdateFunc
+ * @param onCancel Optional Promise that, if resolved, cancels the action. For example, used to implement a cancel button.
+ */
 export async function directAttachmentUpload(
-  config: IDirectAttachmentUploadData,
+  { directUploadUrl, file, encrypt, attachmentDek }: IDirectAttachmentUploadData,
   fileUtilsLib,
   progressUpdateFunc?:
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null,
   onCancel?: any
 ): Promise<IDirectAttachmentUploadResponse> {
-  let result;
+  let result: Promise<IDirectAttachmentUploadResponse>;
+
   const client = new AzureBlockUpload(
-    config.directUploadUrl,
-    config.file,
+    directUploadUrl,
+    file,
     {
       simultaneousUploads: 1,
       callbacks: {
@@ -88,13 +96,10 @@ export async function directAttachmentUpload(
     },
     fileUtilsLib
   );
-  await client.start(
-    config.encrypt && config.attachmentDek ? config.attachmentDek : null,
-    progressUpdateFunc,
-    onCancel
-  );
 
-  return result;
+  await client.start(encrypt && attachmentDek ? attachmentDek : null, progressUpdateFunc, onCancel);
+
+  return result!;
 }
 
 /**
@@ -121,12 +126,24 @@ export async function createAttachmentUploadUrl(
   return uploadUrl.attachment_direct_upload_url;
 }
 
+/**
+ *
+ * @param blobId
+ * @param blobKey
+ * @param artifactsBlobId
+ * @param artifactsBlobKey
+ */
 export async function directAttachmentAttach(
-  config: IDirectAttachmentAttachData,
+  config: {
+    blobId: number;
+    blobKey: string;
+    artifactsBlobId: number;
+    artifactsBlobKey: string;
+  },
   auth: IFileStorageAuthConfiguration,
-  vaultUrl,
+  vaultUrl: string,
   fetchApi?: any
-): Promise<DirectAttachmentResponse> {
+): Promise<DirectAttachment> {
   const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
   const attachment = await api.directAttachmentsPost({
     blob: {
@@ -136,17 +153,21 @@ export async function directAttachmentAttach(
       encrypted_artifact_blob_key: config.artifactsBlobKey,
     },
   });
-  return attachment;
+  return attachment.attachment;
 }
 
-export async function getDirectAttachmentInfo(
-  config: { attachmentId: string },
+/**
+ * Get meta-data about the attachment with [[id]]. Includes file name, type and user id of the
+ * attachment's creator.
+ */
+export async function getAttachmentInfo(
+  id: string,
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
   fetchApi?: any
-): Promise<any> {
+): Promise<DirectAttachment> {
   const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
-  return await api.directAttachmentsIdGet(config.attachmentId);
+  return api.directAttachmentsIdGet(id).then(response => response.attachment);
 }
 
 export async function downloadAttachment(
@@ -182,7 +203,18 @@ export async function downloadAndDecryptFile<T extends Blob>(
 
 /* ---------- Thumbnails ---------- */
 
-export async function encryptAndUploadThumbnailCommon({
+/**
+ *
+ * @param {object} __namedParameters Options
+ * @param thumbnail
+ * @param binaryId TODO:
+ * @param attachmentDek
+ * @param sizeType
+ * @param authConfig
+ * @param vaultUrl
+ * @param fetchApi
+ */
+export async function uploadThumbnail({
   thumbnail,
   binaryId,
   attachmentDek,
@@ -219,7 +251,7 @@ export async function encryptAndUploadThumbnailCommon({
   return response;
 }
 
-export async function downloadThumbnailCommon({
+export async function downloadThumbnail({
   id,
   dataEncryptionKey,
   vaultUrl,
@@ -232,7 +264,6 @@ export async function downloadThumbnailCommon({
   authConfig: IFileStorageAuthConfiguration;
   fetchApi?: any;
 }): Promise<Uint8Array> {
-  // const thumbnailApi = await new ThumbnailApi(buildApiConfig(authConfig, vaultUrl, fetchApi));
   const res = await thumbnailsIdGet(authConfig, vaultUrl, id);
   const result = await thumbnailDownload(res.data.redirect_url);
   // Chrome `Blob` objects support the arrayBuffer() methods but Safari do not - only on `Response`
@@ -248,8 +279,11 @@ export async function downloadThumbnailCommon({
   return decryptedContents;
 }
 
+/**
+ * Convert a string like "128x128/jpg" to mimeType + file extension, e.g. "image/jpg" and "jpg".
+ */
 export function thumbSizeTypeToMimeExt(
-  sizeTypeString
+  sizeTypeString: ThumbnailType | string
 ): { mimeType: string; fileExtension: string } {
   let mimeType;
   let fileExtension;
@@ -283,19 +317,6 @@ interface IDirectAttachmentUploadResponse {
     encryption_strategy: string;
     range: string[];
   };
-}
-
-export interface IDirectAttachmentUploadUrlData {
-  fileName: string;
-  fileType: string;
-  fileSize: number;
-}
-
-export interface IDirectAttachmentAttachData {
-  blobId: number;
-  blobKey: string;
-  artifactsBlobId: number;
-  artifactsBlobKey: string;
 }
 
 export type ThumbnailType =

@@ -6,9 +6,7 @@ import {
   directAttachmentAttach,
   directAttachmentUpload,
   downloadAttachment,
-  downloadThumbnailCommon,
-  encryptAndUploadThumbnailCommon,
-  getDirectAttachmentInfo,
+  getAttachmentInfo,
   IFileStorageAuthConfiguration,
 } from '@meeco/file-storage-common';
 import {
@@ -18,9 +16,13 @@ import {
 } from '@meeco/vault-api-sdk';
 import * as FileUtils from './FileUtils.web';
 
-export { ThumbnailType, ThumbnailTypes, thumbSizeTypeToMimeExt } from '@meeco/file-storage-common';
-export { downloadThumbnailCommon as downloadThumbnail };
-export { encryptAndUploadThumbnailCommon as encryptAndUploadThumbnail };
+export {
+  downloadThumbnail,
+  ThumbnailType,
+  ThumbnailTypes,
+  thumbSizeTypeToMimeExt,
+  uploadThumbnail as encryptAndUploadThumbnail,
+} from '@meeco/file-storage-common';
 
 /**
  * Upload a new attachment. It is encrypted with a random DEK that is returned with the attachment
@@ -33,7 +35,7 @@ export { encryptAndUploadThumbnailCommon as encryptAndUploadThumbnail };
  * @param progressUpdateFunc reporter callback
  * @param onCancel Promise that, if resolved, cancels the upload.
  */
-export async function fileUploadBrowser({
+export async function uploadAttachment({
   file,
   vaultUrl,
   authConfig,
@@ -121,7 +123,7 @@ export async function fileUploadBrowser({
     authConfig,
     vaultUrl
   );
-  return { attachment: attachedDoc.attachment, dek };
+  return { attachment: attachedDoc, dek };
 }
 
 /**
@@ -132,7 +134,7 @@ export async function fileUploadBrowser({
  * @param progressUpdateFunc TODO not used in regular case!
  * @param onCancel Promise that, if resolved, cancels the download.
  */
-export async function fileDownloadBrowser({
+export async function downloadAttachment({
   attachmentId,
   dek,
   vaultUrl,
@@ -153,11 +155,11 @@ export async function fileDownloadBrowser({
     progressUpdateFunc(null, 0);
   }
 
-  const attachmentInfo = await getDirectAttachmentInfo({ attachmentId }, authConfig, vaultUrl);
+  const attachmentInfo = await getAttachmentInfo(attachmentId, authConfig, vaultUrl);
 
   let buffer: Uint8Array;
-  const fileName: string = attachmentInfo.attachment.filename;
-  if (attachmentInfo.attachment.is_direct_upload) {
+  const fileName: string = attachmentInfo.filename;
+  if (attachmentInfo.is_direct_upload) {
     // was uploaded in chunks
     const downloaded = await largeFileDownloadBrowser(
       attachmentId,
@@ -175,7 +177,7 @@ export async function fileDownloadBrowser({
   }
 
   return new File([buffer], fileName, {
-    type: attachmentInfo.attachment.content_type,
+    type: attachmentInfo.content_type,
   });
 }
 

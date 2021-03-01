@@ -6,13 +6,17 @@ import {
   directAttachmentAttach,
   directAttachmentUpload,
   downloadAttachment,
-  downloadThumbnailCommon,
-  encryptAndUploadThumbnailCommon,
-  getDirectAttachmentInfo,
+  downloadThumbnail as downloadThumbnailCommon,
+  getAttachmentInfo,
   IFileStorageAuthConfiguration,
   ThumbnailType,
+  uploadThumbnail as encryptAndUploadThumbnailCommon,
 } from '@meeco/file-storage-common';
-import { DirectAttachmentsApi } from '@meeco/vault-api-sdk';
+import {
+  DirectAttachmentsApi,
+  AttachmentDirectDownloadUrl,
+  ThumbnailResponse,
+} from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
 import * as mfe from 'mime-file-extension';
 import nodeFetch from 'node-fetch';
@@ -22,7 +26,7 @@ import * as FileUtils from './FileUtils.node';
 export { ThumbnailType, ThumbnailTypes, thumbSizeTypeToMimeExt } from '@meeco/file-storage-common';
 
 export async function largeFileUploadNode(
-  filePath,
+  filePath: string,
   environment: {
     vault: {
       url: string;
@@ -99,7 +103,7 @@ export async function largeFileUploadNode(
     nodeFetch
   );
 
-  return { attachment: attachedDoc.attachment, dek };
+  return { attachment: attachedDoc, dek };
 }
 
 export async function fileDownloadNode(
@@ -113,15 +117,15 @@ export async function fileDownloadNode(
   attachmentDek: EncryptionKey,
   logFunction?: any
 ): Promise<{ fileName: string; buffer: Buffer }> {
-  const attachmentInfo = await getDirectAttachmentInfo(
-    { attachmentId },
+  const attachmentInfo = await getAttachmentInfo(
+    attachmentId,
     authConfig,
     environment.vault.url,
     nodeFetch
   );
   let buffer: Buffer;
-  const fileName: string = attachmentInfo.attachment.filename;
-  if (attachmentInfo.attachment.is_direct_upload) {
+  const fileName: string = attachmentInfo.filename;
+  if (attachmentInfo.is_direct_upload) {
     // was uploaded in chunks
     const downloaded = await largeFileDownloadNode(
       attachmentId,
@@ -143,11 +147,11 @@ export async function fileDownloadNode(
 }
 
 export async function largeFileDownloadNode(
-  attachmentID,
-  dek,
+  attachmentID: string,
+  dek: EncryptionKey,
   authConfig: IFileStorageAuthConfiguration,
-  vaultUrl
-) {
+  vaultUrl: string
+): Promise<{ byteArray: Buffer; direct_download: AttachmentDirectDownloadUrl }> {
   const direct_download_encrypted_artifact = await getDirectDownloadInfo(
     attachmentID,
     'encryption_artifact_file',
@@ -208,7 +212,7 @@ export async function encryptAndUploadThumbnail({
   sizeType: ThumbnailType;
   authConfig: IFileStorageAuthConfiguration;
   vaultUrl: string;
-}) {
+}): Promise<ThumbnailResponse> {
   const thumbnail = fs.readFileSync(thumbnailFilePath);
 
   return encryptAndUploadThumbnailCommon({
@@ -232,7 +236,7 @@ export async function downloadThumbnail({
   dataEncryptionKey: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
-}) {
+}): Promise<Uint8Array> {
   return downloadThumbnailCommon({
     id,
     dataEncryptionKey,
