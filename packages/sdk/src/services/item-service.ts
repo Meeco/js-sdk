@@ -1,5 +1,4 @@
-// import * as MeecoAzure from '@meeco/azure-block-upload';
-import { Item, ItemApi, Share } from '@meeco/vault-api-sdk';
+import { Item, ItemApi, ItemsResponse1, Share } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
 import DecryptedKeypair from '../models/decrypted-keypair';
 import { ItemUpdate } from '../models/item-update';
@@ -27,6 +26,9 @@ export interface IItemListFilterOptions {
   own?: boolean;
 }
 
+/** Quick fix for overloaded swagger type. */
+export type SDKItemsResponse = ItemsResponse1;
+
 /**
  * Used for fetching and sending `Items` to and from the Vault.
  */
@@ -34,7 +36,6 @@ export class ItemService extends Service<ItemApi> {
   /**
    * True if the Item was received via a Share from another user.
    * In that case, it must be decrypted with the Share DEK, not the user's own DEK.
-   * @param item
    */
   public static itemIsFromShare(item: Item): boolean {
     return item.own === false || !!item.share_id;
@@ -73,7 +74,6 @@ export class ItemService extends Service<ItemApi> {
    * Get an Item and decrypt all of its Slots.
    * Works for both owned and shared Items.
    * @param id ItemId
-   * @param user
    */
   public async get(
     credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
@@ -101,7 +101,7 @@ export class ItemService extends Service<ItemApi> {
     credentials: IVaultToken,
     listFilterOptions?: IItemListFilterOptions,
     options?: IPageOptions
-  ) {
+  ): Promise<SDKItemsResponse> {
     const { classificationNodeName, classificationNodeNames } = this.getClassifications(
       listFilterOptions
     );
@@ -145,7 +145,10 @@ export class ItemService extends Service<ItemApi> {
     }
   }
 
-  public async listAll(credentials: IVaultToken, listFilterOptions?: IItemListFilterOptions) {
+  public async listAll(
+    credentials: IVaultToken,
+    listFilterOptions?: IItemListFilterOptions
+  ): Promise<SDKItemsResponse> {
     const api = this.vaultAPIFactory(credentials).ItemApi;
 
     const { classificationNodeName, classificationNodeNames } = this.getClassifications(
@@ -173,8 +176,6 @@ export class ItemService extends Service<ItemApi> {
    * A shared Item may be either encrypted with a shared data-encryption key (DEK) or with
    * the user's personal DEK. This method inspects the share record and returns the appropriate
    * key.
-   * @param user
-   * @param shareId
    */
   public async getShareDEK(
     credentials: IKeystoreToken & IKEK & IDEK,
