@@ -125,7 +125,6 @@ async function attachFile() {
       file,
       vaultUrl,
       authConfig: {
-        data_encryption_key: EncryptionKey.fromBytes(privateDek.key),
         vault_access_token: vaultAccessToken,
         subscription_key: subscriptionKey,
       },
@@ -283,7 +282,6 @@ async function downloadAttachment() {
       dek: EncryptionKey.fromSerialized(attachmentSlot?.value),
       vaultUrl,
       authConfig: {
-        data_encryption_key: EncryptionKey.fromBytes(dek.key),
         vault_access_token: vaultAccessToken,
         subscription_key: subscriptionKey,
       },
