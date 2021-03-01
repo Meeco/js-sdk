@@ -22,8 +22,12 @@ export { AzureBlockDownload } from './azure-block-download';
 export { AzureBlockUpload } from './azure-block-upload';
 export { BlobStorage } from './services/Azure';
 
+/**
+ * @param vault_access_token Meeco Vault Bearer Token.
+ * @param delegation_id Original User id of User acting as a delegate.
+ * @param subscription_key Meeco API Subscription key.
+ */
 export interface IFileStorageAuthConfiguration {
-  data_encryption_key?: EncryptionKey;
   vault_access_token?: string;
   delegation_id?: string;
   subscription_key?: string;
@@ -119,17 +123,14 @@ export async function getDirectAttachmentInfo(
 
 export async function downloadAttachment(
   id: string,
+  dek: EncryptionKey,
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
   fetchApi?: any
 ) {
-  if (!auth.data_encryption_key) {
-    // this file must have been uploaded with the old form of file upload which needs the user's private DEK
-    throw new Error('auth.data_encryption_key is needed to download this particular file');
-  }
   return downloadAndDecryptFile(
     () => new AttachmentApi(buildApiConfig(auth, vaultUrl, fetchApi)).attachmentsIdDownloadGet(id),
-    auth.data_encryption_key
+    dek
   );
 }
 

@@ -170,7 +170,7 @@ export async function fileDownloadBrowser({
     buffer = downloaded.byteArray;
   } else {
     // was not uploaded in chunks
-    const downloaded = await downloadAttachment(attachmentId, authConfig, vaultUrl);
+    const downloaded = await downloadAttachment(attachmentId, dek, authConfig, vaultUrl);
     buffer = downloaded || new Uint8Array();
   }
 

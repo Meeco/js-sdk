@@ -110,7 +110,7 @@ export async function fileDownloadNode(
     };
   },
   authConfig: IFileStorageAuthConfiguration,
-  attachmentDek?: EncryptionKey,
+  attachmentDek: EncryptionKey,
   logFunction?: any
 ): Promise<{ fileName: string; buffer: Buffer }> {
   const attachmentInfo = await getDirectAttachmentInfo(
@@ -131,7 +131,12 @@ export async function fileDownloadNode(
     );
     buffer = downloaded.byteArray;
   } else {
-    const downloaded = await downloadAttachment(attachmentId, authConfig, environment.vault.url);
+    const downloaded = await downloadAttachment(
+      attachmentId,
+      attachmentDek,
+      authConfig,
+      environment.vault.url
+    );
     buffer = Buffer.from(downloaded || '');
   }
   return { fileName, buffer };
