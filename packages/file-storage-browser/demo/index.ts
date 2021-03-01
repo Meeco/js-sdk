@@ -27,6 +27,7 @@ function loadEnvironmentFromStorage() {
   loadKey('dataEncryptionKey');
   loadKey('keyEncryptionKey');
   loadKey('subscriptionKey');
+  loadKey('vaultAccessToken');
 
   updateEnvironment();
 }
@@ -61,6 +62,7 @@ $('cancelAttachFile').hidden = true;
 $('attachFile').addEventListener('click', attachFile, false);
 $('cancelDownloadAttachment').hidden = true;
 $('downloadAttachment').addEventListener('click', downloadAttachment);
+// The "Save" button
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 $('attachThumbnail').addEventListener('click', attachThumbnail);
 $('thumbnailDownload').addEventListener('click', thumbnailDownload);
@@ -118,18 +120,6 @@ async function attachFile() {
       },
       itemId
     );
-
-    // const { attachment: attachment, dek: attachmentDek } = await fileUploadBrowser({
-    //   file,
-    //   vaultUrl,
-    //   authConfig: {
-    //     data_encryption_key: privateDek,
-    //     vault_access_token: vaultAccessToken,
-    //     subscription_key: subscriptionKey,
-    //   },
-    //   videoCodec,
-    //   progressUpdateFunc,
-    // });
 
     const { cancel, success } = fileUploadBrowserWithCancel({
       file,
@@ -285,8 +275,9 @@ async function downloadAttachment() {
       },
       itemId
     );
-    const attachmentSlot = itemFetchResult.slots.find(slot => slot.id === slotId); // return type from the vault-api-sdk is wrong thus the type to any
+    const attachmentSlot = itemFetchResult.slots.find(slot => slot.id === slotId);
 
+    log('Downloading attachment');
     const { cancel, success } = fileDownloadBrowserWithCancel({
       attachmentId: attachmentSlot?.attachment_id,
       dek: EncryptionKey.fromSerialized(attachmentSlot?.value),
@@ -503,6 +494,7 @@ async function thumbnailDownload() {
 }
 
 async function handleException(error) {
+  console.log(error);
   let errorMessage: string;
   if (error && error.json && typeof error.json === 'function') {
     error = await error.json();
