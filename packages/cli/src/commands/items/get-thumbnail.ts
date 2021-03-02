@@ -72,7 +72,6 @@ export default class ItemsGetThumbnail extends MeecoCommand {
         dataEncryptionKey: EncryptionKey.fromSerialized(attachmentSlotValueDek),
         vaultUrl: environment.vault.url,
         authConfig: {
-          data_encryption_key: EncryptionKey.fromBytes(authConfig.data_encryption_key.key),
           vault_access_token: authConfig.vault_access_token,
           subscription_key: environment.vault.subscription_key,
         },
