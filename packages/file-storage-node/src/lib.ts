@@ -1,19 +1,18 @@
 import { bytesToBinaryString, EncryptionKey } from '@meeco/cryppo';
+import * as Common from '@meeco/file-storage-common';
 import {
   AzureBlockDownload,
   buildApiConfig,
   createAttachmentUploadUrl,
   directAttachmentAttach,
   directAttachmentUpload,
-  downloadAttachment,
   getAttachmentInfo,
   IFileStorageAuthConfiguration,
   ThumbnailType,
 } from '@meeco/file-storage-common';
-import * as Common from '@meeco/file-storage-common';
 import {
-  DirectAttachmentsApi,
   AttachmentDirectDownloadUrl,
+  DirectAttachmentsApi,
   ThumbnailResponse,
 } from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
@@ -134,7 +133,7 @@ export async function downloadAttachment(
     );
     buffer = downloaded.byteArray;
   } else {
-    const downloaded = await downloadAttachment(
+    const downloaded = await Common.downloadAttachment(
       attachmentId,
       attachmentDek,
       authConfig,

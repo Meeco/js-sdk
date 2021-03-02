@@ -14,8 +14,8 @@ import {
   ThumbnailApi,
 } from '@meeco/vault-api-sdk';
 import axios from 'axios';
+import { buildApiConfig, getHeaders, IFileStorageAuthConfiguration } from './auth';
 import { AzureBlockUpload } from './azure-block-upload';
-import { IFileStorageAuthConfiguration, buildApiConfig, getHeaders } from './auth';
 
 export { AzureBlockDownload } from './azure-block-download';
 export { AzureBlockUpload } from './azure-block-upload';

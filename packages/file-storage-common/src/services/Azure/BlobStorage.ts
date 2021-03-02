@@ -65,7 +65,7 @@ async function getBlock(
   cancelToken?: CancelToken
 ) {
   const url = `${sasUrl}`;
-  let headers = {};
+  const headers = {};
   if (range) {
     headers['x-ms-range'] = range;
     headers['Range'] = range;

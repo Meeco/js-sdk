@@ -6,8 +6,8 @@ import {
   EncryptionKey,
 } from '@meeco/cryppo';
 import axios from 'axios';
+import { getHeaders, IFileStorageAuthConfiguration } from './auth';
 import { BlobStorage } from './services/Azure';
-import { IFileStorageAuthConfiguration, getHeaders } from './auth';
 
 // note that in sandbox APIM (https://sandbox.meeco.me/vault/blobs/ endpoint) needs subscription key header
 // but then redirects to MS Azure which needs OIDC token

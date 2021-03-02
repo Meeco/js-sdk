@@ -1,8 +1,8 @@
 import { EncryptionKey } from '@meeco/cryppo';
+import * as Common from '@meeco/file-storage-common';
 import { IFileStorageAuthConfiguration, ThumbnailType } from '@meeco/file-storage-common';
 import { AttachmentDirectDownloadUrl, ThumbnailResponse } from '@meeco/vault-api-sdk';
 import * as Latest from './lib';
-import * as Common from '@meeco/file-storage-common';
 
 /**
  * Record v 3.1.1 interface
