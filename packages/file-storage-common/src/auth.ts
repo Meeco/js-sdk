@@ -34,9 +34,21 @@ export function buildApiConfig(
  */
 export function getHeaders(auth: IFileStorageAuthConfiguration): { [header: string]: string } {
   const headers = {};
-  headers['Meeco-Delegation-Id'] = auth.delegation_id || '';
-  headers['Meeco-Subscription-Key'] = auth.subscription_key || '';
-  headers['Authorization'] = auth.vault_access_token || '';
-  headers['authorizationoidc2'] = auth.oidc_token ? 'Bearer ' + auth.oidc_token : '';
+  if (auth.delegation_id) {
+    headers['Meeco-Delegation-Id'] = auth.delegation_id;
+  }
+
+  if (auth.subscription_key) {
+    headers['Meeco-Subscription-Key'] = auth.subscription_key;
+  }
+
+  if (auth.vault_access_token) {
+    headers['Authorization'] = auth.vault_access_token;
+  }
+
+  if (auth.oidc_token) {
+    headers['authorizationoidc2'] = auth.oidc_token;
+  }
+
   return headers;
 }
