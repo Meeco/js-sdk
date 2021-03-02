@@ -17,12 +17,13 @@ import { NewSlot, SDKDecryptedSlot } from './slot-types';
 
 /**
  * Wraps Items returned from the API that have been decrypted, usually by {@link ItemService}.
- * If `associations`, `classification_nodes` and `attachements`are provided at construction, they are stored.
- *
- * Note that {@link classification_nodes} is not the same as `ItemResponse.classification_nodes`, it is just the
- * classifications that apply to the Item!
+ * If `associations`, `classification_nodes`, `thumbnails` and `attachments`are provided at construction, they are stored.
  *
  * `DecryptedItem` is immutable, you should use {@link toItemUpdate} to stage modifications.
+ *
+ * Note that when using [[fromAPI]] to construct a [[DecryptedItem]] {@link classification_nodes}, [[associations_to]] and
+ * [[associations]] are filtered to just those that concern the Item.
+ * [[thumbnails]] and [[attachments]] are NOT filtered; they may contain extra attachments not used by the Item.
  */
 export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
   public static readonly cryppo = (<any>global).cryppo || cryppo;
@@ -88,12 +89,13 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
     this.classification_nodes =
       this.allClassificationNodes.filter(x => item.classification_node_ids.some(y => y === x.id)) ||
       [];
-    this.attachments = extra.attachments || [];
 
-    // TODO do these need to be filtered by id?
+    // TODO do these need to be filtered
+    this.attachments = extra.attachments || [];
     this.thumbnails = extra.thumbnails || [];
-    this.associations = extra.associations || [];
-    this.associations_to = extra.associations_to || [];
+
+    this.associations = extra.associations?.filter(x => x.associated_from_id === this.id) || [];
+    this.associations_to = extra.associations_to?.filter(x => x.associated_to_id === this.id) || [];
   }
 
   /** True if you are the original creator of this Item */
