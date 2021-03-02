@@ -138,8 +138,9 @@ export async function uploadAttachment({
 }
 
 /**
+ * Download a file either from Azure block storage (direct upload) or the legacy storage.
  * @param {object} __namedParameters Options
- * @param dek TODO used for chunked upload but not for regular?
+ * @param dek Usually this is stored in the `encrypted_value` attribute of the "attachment" slot.
  * @param vaultUrl Base URL of the Meeco Vault. Usually should be https://sandbox.meeco.me/vault.
  * @param authConfig Contains the DEK and the appropriate auth tokens.
  * @param progressUpdateFunc TODO not used in regular case!

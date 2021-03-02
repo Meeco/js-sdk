@@ -5,12 +5,14 @@ import { DirectAttachment, ThumbnailResponse } from '@meeco/vault-api-sdk';
 import * as Common from '@meeco/file-storage-common';
 import * as Latest from './lib';
 
-// Fix v 3.1.2 interface:
-// Note that removal of data_encryption_key from IFilestorageauthconfiguration is a breaking change anyway.
-// So we will move to 4.0.0
-// deprecations will be removed in v.5.0.0 release
+/**
+ * Record v 3.1.2 interface
+ * Note that removal of data_encryption_key from IFilestorageauthconfiguration is a breaking change anyway.
+ * Deprecations will be removed in v.5.0.0 release
+ */
 
-export { ThumbnailType, ThumbnailTypes } from '@meeco/file-storage-common';
+export { ThumbnailType, ThumbnailTypes, uploadThumbnail } from '@meeco/file-storage-common';
+export { downloadAttachment, uploadAttachment } from './lib';
 
 export const thumbSizeTypeToMimeExt: (
   sizeTypeString: Common.ThumbnailType | string
@@ -24,15 +26,14 @@ export const downloadThumbnail: ({
   dataEncryptionKey,
   vaultUrl,
   authConfig,
-  fetchApi,
 }: {
   id: string;
   dataEncryptionKey: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
-  fetchApi?: any;
 }) => Promise<Uint8Array> = Common.downloadThumbnail;
 
+/** @deprecated Use [[uploadThumbnail]] */
 export const encryptAndUploadThumbnail: ({
   thumbnail,
   binaryId,
@@ -51,6 +52,7 @@ export const encryptAndUploadThumbnail: ({
   fetchApi?: any;
 }) => Promise<ThumbnailResponse> = Common.uploadThumbnail;
 
+/** @deprecated Use [[uploadAttachment]] */
 export const fileUploadBrowser: (_: {
   file: File;
   vaultUrl: string;
@@ -62,6 +64,7 @@ export const fileUploadBrowser: (_: {
   onCancel?: any;
 }) => Promise<{ attachment: DirectAttachment; dek: EncryptionKey }> = Latest.uploadAttachment;
 
+// TODO: deprecate uploadWithCancel functions and merge that capability to upload
 export const fileUploadBrowserWithCancel: (_: {
   file: File;
   vaultUrl: string;
@@ -75,6 +78,7 @@ export const fileUploadBrowserWithCancel: (_: {
   success: Promise<{ attachment: DirectAttachment; dek: EncryptionKey }>;
 } = Latest.fileUploadBrowserWithCancel;
 
+/** @deprecated Use [[downloadAttachment]] */
 export const fileDownloadBrowser: (_: {
   attachmentId: string;
   dek: EncryptionKey;
