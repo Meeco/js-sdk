@@ -6,7 +6,7 @@ import {
   EncryptionKey,
 } from '@meeco/cryppo';
 import axios from 'axios';
-import { getHeaders, IFileStorageAuthConfiguration } from './auth';
+import { getBlobHeaders, IFileStorageAuthConfiguration } from './auth';
 import { BlobStorage } from './services/Azure';
 
 // note that in sandbox APIM (https://sandbox.meeco.me/vault/blobs/ endpoint) needs subscription key header
@@ -61,8 +61,7 @@ export class AzureBlockDownload {
     }
 
     // Azure requires NO Authorization header
-    const headers = getHeaders(authConfig);
-    delete headers['Authorization'];
+    const headers = getBlobHeaders(authConfig);
 
     let block: any;
 

@@ -52,3 +52,24 @@ export function getHeaders(auth: IFileStorageAuthConfiguration): { [header: stri
 
   return headers;
 }
+
+/**
+ * When redirecting to Azure storage "Authorization" header must not be present.
+ */
+export function getBlobHeaders(auth: IFileStorageAuthConfiguration): { [header: string]: string } {
+  // TODO: unclear if any other headers should be present either
+  const headers = {};
+  if (auth.delegation_id) {
+    headers['Meeco-Delegation-Id'] = auth.delegation_id;
+  }
+
+  if (auth.subscription_key) {
+    headers['Meeco-Subscription-Key'] = auth.subscription_key;
+  }
+
+  if (auth.oidc_token) {
+    headers['authorizationoidc2'] = auth.oidc_token;
+  }
+
+  return headers;
+}

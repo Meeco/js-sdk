@@ -14,7 +14,7 @@ import {
   ThumbnailApi,
 } from '@meeco/vault-api-sdk';
 import axios from 'axios';
-import { buildApiConfig, getHeaders, IFileStorageAuthConfiguration } from './auth';
+import { buildApiConfig, getBlobHeaders, getHeaders, IFileStorageAuthConfiguration } from './auth';
 import { AzureBlockUpload } from './azure-block-upload';
 
 export { AzureBlockDownload } from './azure-block-download';
@@ -223,7 +223,7 @@ export async function downloadThumbnail({
   authConfig: IFileStorageAuthConfiguration;
 }): Promise<Uint8Array> {
   const res = await thumbnailsIdGet(authConfig, vaultUrl, id);
-  const result = await thumbnailDownload(res.data.redirect_url);
+  const result = await thumbnailDownload(authConfig, res.data.redirect_url);
   // Chrome `Blob` objects support the arrayBuffer() methods but Safari do not - only on `Response`
   // https://stackoverflow.com/questions/15341912/how-to-go-from-blob-to-arraybuffer
 
@@ -294,11 +294,11 @@ export const ThumbnailTypes: ThumbnailType[] = [
   '512x512/png',
 ];
 
-export const thumbnailsIdGet = async (
+async function thumbnailsIdGet(
   authConfig: IFileStorageAuthConfiguration,
   vaultUrl: any,
   id: string
-) => {
+) {
   const url = vaultUrl + '/thumbnails/' + id;
   const headers = getHeaders(authConfig);
   return axios({
@@ -306,11 +306,12 @@ export const thumbnailsIdGet = async (
     url,
     headers,
   });
-};
+}
 
-export const thumbnailDownload = async (url: string) => {
+async function thumbnailDownload(authConfig: IFileStorageAuthConfiguration, url: string) {
   return axios({
     method: 'get',
     url,
+    headers: getBlobHeaders(authConfig),
   });
-};
+}
