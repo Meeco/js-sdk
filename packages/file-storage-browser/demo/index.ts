@@ -28,6 +28,7 @@ function loadEnvironmentFromStorage() {
   loadKey('keyEncryptionKey');
   loadKey('subscriptionKey');
   loadKey('vaultAccessToken');
+  loadKey('oidcAccessToken');
 
   updateEnvironment();
 }
@@ -38,18 +39,14 @@ function updateEnvironment() {
   const subscriptionKey = $get('subscriptionKey');
   const vaultAccessToken = $get('vaultAccessToken');
   const keyEncryptionKey = $get('keyEncryptionKey') || '';
-  const keystoreAccessToken = $get('keystoreAccessToken') || '';
-  const passphraseDerivedKey = $get('passphraseDerivedKey') || '';
-  const secret = $get('secret') || '';
+  const oidcAccessToken = $get('oidcAccessToken');
 
   localStorage.setItem('vaultUrl', vaultUrl);
   localStorage.setItem('dataEncryptionKey', dataEncryptionKey);
   localStorage.setItem('subscriptionKey', subscriptionKey);
   localStorage.setItem('vaultAccessToken', vaultAccessToken);
   localStorage.setItem('keyEncryptionKey', keyEncryptionKey);
-  localStorage.setItem('keystoreAccessToken', keystoreAccessToken);
-  localStorage.setItem('passphraseDerivedKey', passphraseDerivedKey);
-  localStorage.setItem('secret', secret);
+  localStorage.setItem('oidcAccessToken', oidcAccessToken);
 
   if (!vaultUrl || !dataEncryptionKey) {
     return $set('environmentStatus', 'Error: Please configure all environment fields');
@@ -197,6 +194,7 @@ async function downloadAttachment() {
     const dek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const oidcAccessToken = localStorage.getItem('oidcAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
 
     const keyEncryptionKey = SymmetricKey.fromSerialized(
@@ -283,6 +281,7 @@ async function downloadAttachment() {
       vaultUrl,
       authConfig: {
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
       progressUpdateFunc,
