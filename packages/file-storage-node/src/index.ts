@@ -9,8 +9,8 @@ import {
   getAttachmentInfo,
   IFileStorageAuthConfiguration,
   ThumbnailType,
-  uploadThumbnail as encryptAndUploadThumbnailCommon,
 } from '@meeco/file-storage-common';
+import * as Common from '@meeco/file-storage-common';
 import {
   DirectAttachmentsApi,
   AttachmentDirectDownloadUrl,
@@ -151,50 +151,40 @@ export async function largeFileDownloadNode(
   authConfig: IFileStorageAuthConfiguration,
   vaultUrl: string
 ): Promise<{ byteArray: Buffer; direct_download: AttachmentDirectDownloadUrl }> {
-  const direct_download_encrypted_artifact = await getDirectDownloadInfo(
-    attachmentID,
-    'encryption_artifact_file',
-    authConfig,
-    vaultUrl
-  );
-  const direct_download = await getDirectDownloadInfo(
-    attachmentID,
-    'binary_file',
-    authConfig,
-    vaultUrl
-  );
-  let client = new AzureBlockDownload(direct_download_encrypted_artifact.url);
-  const encrypted_artifact_uint8array: any = await client.start(null, null, null, null);
-  const encrypted_artifact = JSON.parse(encrypted_artifact_uint8array.toString('utf-8'));
-  client = new AzureBlockDownload(direct_download.url);
+  const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl, nodeFetch));
+
+  const {
+    attachment_direct_download_url: { url: artifactsUrl },
+  } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'encryption_artifact_file');
+
+  const {
+    attachment_direct_download_url: attachmentInfo,
+  } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'binary_file');
+
+  const encryptionArtifacts: any = await AzureBlockDownload.download(
+    artifactsUrl,
+    authConfig
+  ).then((result: any) => JSON.parse(result.toString('utf-8')));
+
   const blocks: Buffer[] = [];
 
-  for (let index = 0; index < encrypted_artifact.range.length; index++) {
-    const block: any = await client.start(
+  for (let index = 0; index < encryptionArtifacts.range.length; index++) {
+    const block: any = await AzureBlockDownload.downloadAndDecrypt(
+      attachmentInfo.url,
+      authConfig,
       dek,
-      encrypted_artifact.encryption_strategy,
+      encryptionArtifacts.encryption_strategy,
       {
-        iv: bytesToBinaryString(new Uint8Array(encrypted_artifact.iv[index].data)),
-        ad: encrypted_artifact.ad,
-        at: bytesToBinaryString(new Uint8Array(encrypted_artifact.at[index].data)),
+        iv: bytesToBinaryString(new Uint8Array(encryptionArtifacts.iv[index].data)),
+        ad: encryptionArtifacts.ad,
+        at: bytesToBinaryString(new Uint8Array(encryptionArtifacts.at[index].data)),
       },
-      encrypted_artifact.range[index]
+      encryptionArtifacts.range[index]
     );
     blocks.push(block);
   }
   const byteArray = Buffer.concat(blocks);
-  return { byteArray, direct_download };
-}
-
-async function getDirectDownloadInfo(
-  id: string,
-  type: string,
-  authConfig: IFileStorageAuthConfiguration,
-  vaultUrl: string
-) {
-  const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl, nodeFetch));
-  const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
-  return result.attachment_direct_download_url;
+  return { byteArray, direct_download: attachmentInfo };
 }
 
 export async function encryptAndUploadThumbnail({
@@ -214,7 +204,7 @@ export async function encryptAndUploadThumbnail({
 }): Promise<ThumbnailResponse> {
   const thumbnail = fs.readFileSync(thumbnailFilePath);
 
-  return encryptAndUploadThumbnailCommon({
+  return Common.uploadThumbnail({
     thumbnail,
     binaryId,
     attachmentDek,
