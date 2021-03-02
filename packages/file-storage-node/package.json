@@ -19,12 +19,13 @@
     "bili": "^4.10.0",
     "file-saver": "^2.0.2",
     "file-type": "^15.0.0",
-    "node-fetch": "^2.6.0",
-    "mime-file-extension": "^1.0.1"
+    "mime-file-extension": "^1.0.1",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
-    "typescript": "^3.9.6",
-    "@types/node": "^10.14.18"
+    "@types/node": "^10.14.18",
+    "@types/node-fetch": "^2.5.8",
+    "typescript": "^3.9.6"
   },
   "keywords": [],
   "author": "",
