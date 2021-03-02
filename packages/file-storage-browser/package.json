@@ -16,21 +16,23 @@
     "demo": "webpack-dev-server demo",
     "build:demo": "webpack",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
-    "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
+    "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
+    "docs": "typedoc --mode library --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate src/index.ts"
   },
   "dependencies": {
-    "@meeco/vault-api-sdk": "^19.3.0",
-    "@meeco/file-storage-common": "^3.1.1",
     "@meeco/cryppo": "^2.0.0",
+    "@meeco/file-storage-common": "^4.0.0",
+    "@meeco/vault-api-sdk": "^22.0.0",
     "axios": "^0.21.1"
   },
   "devDependencies": {
+    "@meeco/sdk": "^2.1.0",
     "bili": "^4.10.0",
+    "typedoc": "0.17.0-3",
     "typescript": "^3.9.6",
     "webpack": "^4.44.1",
     "webpack-bundle-analyzer": "^3.8.0",
-    "webpack-dev-server": "^3.11.0",
-    "@meeco/sdk": "2.0.0"
+    "webpack-dev-server": "^3.11.0"
   },
   "keywords": [],
   "author": "",

@@ -2,10 +2,12 @@ import axios, { CancelToken } from 'axios';
 
 const BLOCK_MAX_SIZE = 1 * 1024 * 1024; // 1MB;
 
-const buildAzureHeaders = () => ({
-  'x-ms-version': '2011-08-18',
-  'x-ms-date': new Date().toUTCString(),
-});
+function buildAzureHeaders() {
+  return {
+    'x-ms-version': '2011-08-18',
+    'x-ms-date': new Date().toUTCString(),
+  };
+}
 
 /**
  * Creates a new block to be committed as part of a blob
@@ -13,7 +15,7 @@ const buildAzureHeaders = () => ({
  * @param {Uint8Array} data bytes to upload
  * @param {String} blockID block id
  */
-const putBlock = async (sasUrl, data, blockID) => {
+async function putBlock(sasUrl: string, data: Uint8Array, blockID: string) {
   const url = `${sasUrl}&comp=block&blockid=${blockID}`;
   return axios({
     method: 'put',
@@ -24,7 +26,7 @@ const putBlock = async (sasUrl, data, blockID) => {
     },
     data,
   });
-};
+}
 
 /**
  * The Put Block List operation writes a blob by specifying the list of
@@ -34,7 +36,7 @@ const putBlock = async (sasUrl, data, blockID) => {
  * @param {Array<String>} blockIDList array with all blocks ids to commit
  * @param {String} fileType
  */
-const putBlockList = async (sasUrl, blockIDList, fileType) => {
+async function putBlockList(sasUrl: string, blockIDList: string[], fileType: string) {
   const url = `${sasUrl}&comp=blocklist`;
   const idString = blockIDList.map(id => `<Latest>${id}</Latest>`).join('');
   const data = `<?xml version="1.0" encoding="utf-8"?><BlockList>${idString}</BlockList>`;
@@ -49,38 +51,50 @@ const putBlockList = async (sasUrl, blockIDList, fileType) => {
     },
     data,
   });
-};
+}
 
 /**
  * Get existing Blob Block Chunk
  * @param {String} sasUrl azure blob storage endpoint with sas auth
  * @param {String} range range in bytes e.g 0-255
  */
-const getBlock = async (sasUrl: any, range: any, cancelToken?: CancelToken) => {
+async function getBlock(
+  sasUrl: any,
+  range?: string,
+  authHeaders?: { [index: string]: string },
+  cancelToken?: CancelToken
+) {
   const url = `${sasUrl}`;
-  const headers = range ? { 'x-ms-range': range, Range: range } : {};
+  const headers = {};
+  if (range) {
+    headers['x-ms-range'] = range;
+    headers['Range'] = range;
+  }
+
+  if (authHeaders) {
+    Object.assign(headers, authHeaders);
+  }
+
   return axios({
     method: 'get',
     url,
     headers,
     responseType: 'arraybuffer',
     cancelToken,
-  }).then(result => {
-    return result;
   });
-};
+}
 
 /**
  * Get existing Blob Properties
  * @param {String} sasUrl azure blob storage endpoint with sas auth
  */
-const getBlobProperties = async sasUrl => {
+async function getBlobProperties(sasUrl: string) {
   const url = `${sasUrl}`;
   return axios({
     method: 'head',
     url,
   });
-};
+}
 
 export default {
   BLOCK_MAX_SIZE,

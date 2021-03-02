@@ -1,4 +1,3 @@
-import { EncryptionKey } from '@meeco/cryppo';
 import { largeFileUploadNode } from '@meeco/file-storage-node';
 import { ItemService, ItemUpdate, SlotType } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
@@ -56,10 +55,8 @@ export default class ItemsAttachFile extends MeecoCommand {
           `Failed to read file '${filePath}' - please check that the file exists and is readable`
         );
       }
-      const data_encryption_key = EncryptionKey.fromBytes(authConfig.data_encryption_key.key);
       const vault_access_token = authConfig.vault_access_token;
       const uploadedFile = await largeFileUploadNode(fileConfig.file, environment, {
-        data_encryption_key,
         vault_access_token,
         subscription_key: environment.vault.subscription_key,
       });

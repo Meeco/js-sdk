@@ -10,21 +10,24 @@
     "test": "echo \"Error: no test specified\"",
     "build": "tsc -p tsconfig.build.json",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
-    "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
+    "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
+    "docs": "typedoc --mode library --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate src/index.ts"
   },
   "dependencies": {
     "@meeco/cryppo": "^2.0.0",
-    "@meeco/file-storage-common": "^3.1.1",
-    "@meeco/vault-api-sdk": "^19.3.0",
+    "@meeco/file-storage-common": "^4.0.0",
+    "@meeco/vault-api-sdk": "^22.0.0",
     "bili": "^4.10.0",
     "file-saver": "^2.0.2",
     "file-type": "^15.0.0",
-    "node-fetch": "^2.6.0",
-    "mime-file-extension": "^1.0.1"
+    "mime-file-extension": "^1.0.1",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
+    "@types/node": "^10.14.18",
+    "@types/node-fetch": "^2.5.8",
     "typescript": "^3.9.6",
-    "@types/node": "^10.14.18"
+    "typedoc": "0.17.0-3"
   },
   "keywords": [],
   "author": "",

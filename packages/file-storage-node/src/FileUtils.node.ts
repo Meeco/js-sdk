@@ -71,3 +71,8 @@ export const readBlock = (filePath, from, to) =>
       reject(error);
     }
   });
+
+/**
+ * Base 64 encode the string
+ */
+export const base64 = (str: string) => Buffer.from(str).toString('base64');
