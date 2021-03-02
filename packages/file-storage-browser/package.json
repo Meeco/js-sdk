@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@meeco/cryppo": "^2.0.0",
-    "@meeco/file-storage-common": "^3.1.1",
+    "@meeco/file-storage-common": "^4.0.0",
     "@meeco/vault-api-sdk": "^22.0.0",
     "axios": "^0.21.1"
   },
