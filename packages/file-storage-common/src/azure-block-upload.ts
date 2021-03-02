@@ -6,12 +6,8 @@ import {
   encryptWithKeyUsingArtefacts,
   generateRandomBytesString,
 } from '@meeco/cryppo';
-import { isRunningOnWeb } from './app';
 import { BlobStorage } from './services/Azure';
 import ThreadPool from './ThreadPool';
-
-const base64 = (str: string) =>
-  isRunningOnWeb ? window.btoa(str) : Buffer.from(str).toString('base64');
 
 export class AzureBlockUpload {
   /**
@@ -162,7 +158,9 @@ export class AzureBlockUpload {
               ? (nBlock + 1) * this.blockSize
               : this.fileSize;
 
-          const blockID: any = base64(`${this.blockIDPrefix}${nBlock.toString().padStart(5)}`);
+          const blockID: any = this.fileUtilsLib.base64(
+            `${this.blockIDPrefix}${nBlock.toString().padStart(5)}`
+          );
           blockIDList.push(blockID);
 
           let blockBuffer: any;
