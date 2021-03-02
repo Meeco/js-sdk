@@ -59,4 +59,4 @@ export const downloadThumbnail: (_: {
   dataEncryptionKey: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
-}) => Promise<Uint8Array> = Latest.downloadThumbnail;
+}) => Promise<Uint8Array> = Common.downloadThumbnail;

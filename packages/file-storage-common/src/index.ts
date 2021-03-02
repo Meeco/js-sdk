@@ -216,13 +216,11 @@ export async function downloadThumbnail({
   dataEncryptionKey,
   vaultUrl,
   authConfig,
-  fetchApi,
 }: {
   id: string;
   dataEncryptionKey: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
-  fetchApi?: any;
 }): Promise<Uint8Array> {
   const res = await thumbnailsIdGet(authConfig, vaultUrl, id);
   const result = await thumbnailDownload(res.data.redirect_url);

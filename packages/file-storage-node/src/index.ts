@@ -6,7 +6,6 @@ import {
   directAttachmentAttach,
   directAttachmentUpload,
   downloadAttachment,
-  downloadThumbnail as downloadThumbnailCommon,
   getAttachmentInfo,
   IFileStorageAuthConfiguration,
   ThumbnailType,
@@ -222,26 +221,6 @@ export async function encryptAndUploadThumbnail({
     sizeType,
     authConfig,
     vaultUrl,
-    fetchApi: nodeFetch,
-  });
-}
-
-export async function downloadThumbnail({
-  id,
-  dataEncryptionKey,
-  vaultUrl,
-  authConfig,
-}: {
-  id: string;
-  dataEncryptionKey: EncryptionKey;
-  vaultUrl: string;
-  authConfig: IFileStorageAuthConfiguration;
-}): Promise<Uint8Array> {
-  return downloadThumbnailCommon({
-    id,
-    dataEncryptionKey,
-    vaultUrl,
-    authConfig,
     fetchApi: nodeFetch,
   });
 }
