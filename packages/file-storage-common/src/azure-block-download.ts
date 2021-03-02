@@ -60,7 +60,9 @@ export class AzureBlockDownload {
       throw new Error('url must be a string');
     }
 
+    // Azure requires NO Authorization header
     const headers = getHeaders(authConfig);
+    delete headers['Authorization'];
 
     let block: any;
 
@@ -74,9 +76,7 @@ export class AzureBlockDownload {
       ]);
       if (userCanceled) {
         source.cancel('cancel');
-        return new Promise((_resolve, reject) => {
-          reject('cancel');
-        });
+        return Promise.reject('cancel');
       }
     } else {
       block = await BlobStorage.getBlock(url, range, headers);
