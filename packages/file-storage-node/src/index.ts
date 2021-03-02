@@ -1,30 +1,26 @@
-import { bytesToBinaryString, EncryptionKey } from '@meeco/cryppo';
-import {
-  AzureBlockDownload,
-  buildApiConfig,
-  createAttachmentUploadUrl,
-  directAttachmentAttach,
-  directAttachmentUpload,
-  downloadAttachment,
-  getAttachmentInfo,
-  IFileStorageAuthConfiguration,
-  ThumbnailType,
-} from '@meeco/file-storage-common';
+import { EncryptionKey } from '@meeco/cryppo';
+import { IFileStorageAuthConfiguration, ThumbnailType } from '@meeco/file-storage-common';
+import { AttachmentDirectDownloadUrl, ThumbnailResponse } from '@meeco/vault-api-sdk';
+import * as Latest from './lib';
 import * as Common from '@meeco/file-storage-common';
-import {
-  DirectAttachmentsApi,
-  AttachmentDirectDownloadUrl,
-  ThumbnailResponse,
-} from '@meeco/vault-api-sdk';
-import * as fs from 'fs';
-import * as mfe from 'mime-file-extension';
-import nodeFetch from 'node-fetch';
-import * as path from 'path';
-import * as FileUtils from './FileUtils.node';
 
-export { ThumbnailType, ThumbnailTypes, thumbSizeTypeToMimeExt } from '@meeco/file-storage-common';
+/**
+ * Record v 3.1.1 interface
+ * Note that removal of data_encryption_key from IFilestorageauthconfiguration is a breaking change anyway.
+ * Deprecations will be removed in v.5.0.0 release
+ */
 
-export async function largeFileUploadNode(
+export { ThumbnailType, ThumbnailTypes } from '@meeco/file-storage-common';
+
+export const thumbSizeTypeToMimeExt: (
+  sizeTypeString: Common.ThumbnailType | string
+) => {
+  mimeType: string;
+  fileExtension: string;
+} = Common.thumbSizeTypeToMimeExt;
+
+/** @deprecated Use [[uploadAttachment]] */
+export const largeFileUploadNode: (
   filePath: string,
   environment: {
     vault: {
@@ -32,80 +28,10 @@ export async function largeFileUploadNode(
     };
   },
   authConfig: IFileStorageAuthConfiguration
-): Promise<{ attachment: any; dek: EncryptionKey }> {
-  const fileStats = fs.statSync(filePath);
-  let fileType: string;
-  const fileName = path.basename(filePath);
+) => Promise<{ attachment: any; dek: EncryptionKey }> = Latest.uploadAttachment;
 
-  try {
-    fileType = mfe.getMimeType(path.extname(filePath));
-  } catch {
-    // when file type is unknown, default it to 'text/plain'
-    fileType = 'text/plain';
-  }
-
-  const uploadUrl = await createAttachmentUploadUrl(
-    {
-      fileSize: fileStats.size,
-      fileType: fileType ? fileType : '',
-      fileName,
-    },
-    authConfig,
-    environment.vault.url,
-    nodeFetch
-  );
-  const dek = EncryptionKey.generateRandom();
-  const uploadResult = await directAttachmentUpload(
-    {
-      directUploadUrl: uploadUrl.url,
-      file: filePath,
-      encrypt: true,
-      attachmentDek: dek,
-    },
-    FileUtils
-  );
-
-  const artifactsFileName = fileName + '.encryption_artifacts';
-  const artifactsFileDir = `./${artifactsFileName}`;
-  fs.writeFileSync(artifactsFileDir, JSON.stringify(uploadResult.artifacts));
-  const artifactsFileStats = fs.statSync(artifactsFileDir);
-
-  const artifactsUploadUrl = await createAttachmentUploadUrl(
-    {
-      fileName: artifactsFileName,
-      fileType: 'application/json',
-      fileSize: artifactsFileStats.size,
-    },
-    authConfig,
-    environment.vault.url,
-    nodeFetch
-  );
-
-  await directAttachmentUpload(
-    {
-      directUploadUrl: artifactsUploadUrl.url,
-      file: artifactsFileDir,
-      encrypt: false,
-    },
-    FileUtils
-  );
-
-  const attachedDoc = await directAttachmentAttach(
-    {
-      blobId: uploadUrl.blob_id,
-      blobKey: uploadUrl.blob_key,
-      artifactsBlobId: artifactsUploadUrl.blob_id,
-      artifactsBlobKey: artifactsUploadUrl.blob_key,
-    },
-    authConfig,
-    environment.vault.url,
-    nodeFetch
-  );
-
-  return { attachment: attachedDoc, dek };
-}
-
-export async function fileDownloadNode(
+/** @deprecated Use [[downloadAttachment]] */
+export const fileDownloadNode: (
   attachmentId: string,
   environment: {
     vault: {
@@ -115,102 +41,30 @@ export async function fileDownloadNode(
   authConfig: IFileStorageAuthConfiguration,
   attachmentDek: EncryptionKey,
   logFunction?: any
-): Promise<{ fileName: string; buffer: Buffer }> {
-  const attachmentInfo = await getAttachmentInfo(
-    attachmentId,
-    authConfig,
-    environment.vault.url,
-    nodeFetch
-  );
-  let buffer: Buffer;
-  const fileName: string = attachmentInfo.filename;
-  if (attachmentInfo.is_direct_upload) {
-    // was uploaded in chunks
-    const downloaded = await largeFileDownloadNode(
-      attachmentId,
-      attachmentDek,
-      authConfig,
-      environment.vault.url
-    );
-    buffer = downloaded.byteArray;
-  } else {
-    const downloaded = await downloadAttachment(
-      attachmentId,
-      attachmentDek,
-      authConfig,
-      environment.vault.url
-    );
-    buffer = Buffer.from(downloaded || '');
-  }
-  return { fileName, buffer };
-}
+) => Promise<{ fileName: string; buffer: Buffer }> = Latest.downloadAttachment;
 
-export async function largeFileDownloadNode(
+/** @deprecated Use [[downloadAttachment]] */
+export const largeFileDownloadNode: (
   attachmentID: string,
   dek: EncryptionKey,
   authConfig: IFileStorageAuthConfiguration,
   vaultUrl: string
-): Promise<{ byteArray: Buffer; direct_download: AttachmentDirectDownloadUrl }> {
-  const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl, nodeFetch));
+) => Promise<{ byteArray: Buffer; direct_download: AttachmentDirectDownloadUrl }> =
+  Latest.largeFileDownloadNode;
 
-  const {
-    attachment_direct_download_url: { url: artifactsUrl },
-  } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'encryption_artifact_file');
-
-  const {
-    attachment_direct_download_url: attachmentInfo,
-  } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'binary_file');
-
-  const encryptionArtifacts: any = await AzureBlockDownload.download(
-    artifactsUrl,
-    authConfig
-  ).then((result: any) => JSON.parse(result.toString('utf-8')));
-
-  const blocks: Buffer[] = [];
-
-  for (let index = 0; index < encryptionArtifacts.range.length; index++) {
-    const block: any = await AzureBlockDownload.downloadAndDecrypt(
-      attachmentInfo.url,
-      authConfig,
-      dek,
-      encryptionArtifacts.encryption_strategy,
-      {
-        iv: bytesToBinaryString(new Uint8Array(encryptionArtifacts.iv[index].data)),
-        ad: encryptionArtifacts.ad,
-        at: bytesToBinaryString(new Uint8Array(encryptionArtifacts.at[index].data)),
-      },
-      encryptionArtifacts.range[index]
-    );
-    blocks.push(block);
-  }
-  const byteArray = Buffer.concat(blocks);
-  return { byteArray, direct_download: attachmentInfo };
-}
-
-export async function encryptAndUploadThumbnail({
-  thumbnailFilePath,
-  binaryId,
-  attachmentDek,
-  sizeType,
-  authConfig,
-  vaultUrl,
-}: {
+/** @deprecated Use [[Latest.uploadThumbnail]] */
+export const encryptAndUploadThumbnail: (_: {
   thumbnailFilePath: string;
   binaryId: string;
   attachmentDek: EncryptionKey;
   sizeType: ThumbnailType;
   authConfig: IFileStorageAuthConfiguration;
   vaultUrl: string;
-}): Promise<ThumbnailResponse> {
-  const thumbnail = fs.readFileSync(thumbnailFilePath);
+}) => Promise<ThumbnailResponse> = Latest.uploadThumbnail;
 
-  return Common.uploadThumbnail({
-    thumbnail,
-    binaryId,
-    attachmentDek,
-    sizeType,
-    authConfig,
-    vaultUrl,
-    fetchApi: nodeFetch,
-  });
-}
+export const downloadThumbnail: (_: {
+  id: string;
+  dataEncryptionKey: EncryptionKey;
+  vaultUrl: string;
+  authConfig: IFileStorageAuthConfiguration;
+}) => Promise<Uint8Array> = Common.downloadThumbnail;
