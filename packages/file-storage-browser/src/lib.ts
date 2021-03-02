@@ -1,4 +1,5 @@
 import { bytesBufferToBinaryString, EncryptionKey } from '@meeco/cryppo';
+import * as Common from '@meeco/file-storage-common';
 import {
   AzureBlockDownload,
   buildApiConfig,
@@ -8,12 +9,7 @@ import {
   getAttachmentInfo,
   IFileStorageAuthConfiguration,
 } from '@meeco/file-storage-common';
-import * as Common from '@meeco/file-storage-common';
-import {
-  AttachmentDirectDownloadUrl,
-  DirectAttachment,
-  DirectAttachmentsApi,
-} from '@meeco/vault-api-sdk';
+import { DirectAttachment, DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as FileUtils from './FileUtils.web';
 
 export {
@@ -209,26 +205,24 @@ async function largeFileDownloadBrowser(
     | null,
   onCancel?: any
 ) {
-  const encryptionArtifactInfo = await getDirectDownloadInfo(
-    attachmentID,
-    'encryption_artifact_file',
-    authConfig,
-    vaultUrl
-  );
-  const attachmentInfo = await getDirectDownloadInfo(
-    attachmentID,
-    'binary_file',
-    authConfig,
-    vaultUrl
-  );
+  const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl));
+
+  const {
+    attachment_direct_download_url: { url: artifactsUrl },
+  } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'encryption_artifact_file');
+
+  const {
+    attachment_direct_download_url: attachmentInfo,
+  } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'binary_file');
 
   // download encryption artifacts
   const encryptionArtifacts = await AzureBlockDownload.download(
-    encryptionArtifactInfo.url,
-    authConfig.oidc_token!,
-    _,
+    artifactsUrl,
+    authConfig,
+    undefined,
     onCancel
   ).then((resultBuffer: any) => JSON.parse(bytesBufferToBinaryString(resultBuffer)));
+
   const videoCodec = encryptionArtifacts.videoCodec;
 
   if (progressUpdateFunc && videoCodec) {
@@ -236,10 +230,11 @@ async function largeFileDownloadBrowser(
   }
 
   // use encryption artifacts to initiate file download
-  client = new AzureBlockDownload(attachmentInfo.url);
   let blocks = new Uint8Array();
   for (let index = 0; index < encryptionArtifacts.range.length; index++) {
-    const block: any = await client.start(
+    const block = await AzureBlockDownload.downloadAndDecrypt(
+      attachmentInfo.url,
+      authConfig,
       dek,
       encryptionArtifacts.encryption_strategy,
       {
@@ -260,17 +255,6 @@ async function largeFileDownloadBrowser(
   }
 
   return { byteArray: blocks, attachmentInfo };
-}
-
-async function getDirectDownloadInfo(
-  id: string,
-  type: 'binary_file' | 'encryption_artifact_file',
-  authConfig: IFileStorageAuthConfiguration,
-  vaultUrl: string
-): Promise<AttachmentDirectDownloadUrl> {
-  const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl));
-  const result = await api.directAttachmentsIdDownloadUrlGet(id, type);
-  return result.attachment_direct_download_url;
 }
 
 /**

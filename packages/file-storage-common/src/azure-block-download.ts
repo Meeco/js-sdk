@@ -7,6 +7,10 @@ import {
 } from '@meeco/cryppo';
 import axios from 'axios';
 import { BlobStorage } from './services/Azure';
+import { IFileStorageAuthConfiguration, getHeaders } from './auth';
+
+// note that in sandbox APIM (https://sandbox.meeco.me/vault/blobs/ endpoint) needs subscription key header
+// but then redirects to MS Azure which needs OIDC token
 
 export class AzureBlockDownload {
   /**
@@ -18,7 +22,7 @@ export class AzureBlockDownload {
    */
   static async downloadAndDecrypt(
     url: string,
-    oidcToken: string,
+    authConfig: IFileStorageAuthConfiguration,
     dataEncryptionKey: EncryptionKey,
     strategy: CipherStrategy,
     encryptionArtifact: {
@@ -29,7 +33,7 @@ export class AzureBlockDownload {
     range?: string,
     userCancelable?: Promise<any>
   ): Promise<Uint8Array> {
-    const data = await this.download(url, oidcToken, range, userCancelable);
+    const data = await this.download(url, authConfig, range, userCancelable);
 
     const str = decryptWithKeyUsingArtefacts(
       dataEncryptionKey,
@@ -48,7 +52,7 @@ export class AzureBlockDownload {
    */
   static async download(
     url: string,
-    oidcToken: string,
+    authConfig: IFileStorageAuthConfiguration,
     range?: string,
     userCancelable?: Promise<any>
   ): Promise<Uint8Array> {
@@ -56,9 +60,7 @@ export class AzureBlockDownload {
       throw new Error('url must be a string');
     }
 
-    const header = {
-      ['authorizationoidc2']: `Bearer ${oidcToken}`,
-    };
+    const headers = getHeaders(authConfig);
 
     let block: any;
 
@@ -67,7 +69,7 @@ export class AzureBlockDownload {
       const cancelToken = source.token;
       let userCanceled = false;
       block = await Promise.race([
-        BlobStorage.getBlock(url, range, header, cancelToken),
+        BlobStorage.getBlock(url, range, headers, cancelToken),
         userCancelable.then(() => (userCanceled = true)),
       ]);
       if (userCanceled) {
@@ -77,7 +79,7 @@ export class AzureBlockDownload {
         });
       }
     } else {
-      block = await BlobStorage.getBlock(url, range, header);
+      block = await BlobStorage.getBlock(url, range, headers);
     }
 
     return new Uint8Array(block.data);
