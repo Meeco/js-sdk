@@ -43,6 +43,7 @@
     "@types/jsrp": "~0.2.1",
     "@types/mocha": "~5.2.7",
     "@types/node": "^10.14.18",
+    "@types/node-fetch": "^2.5.8",
     "@types/sinon": "~7.5.1",
     "@types/yaml": "~1.2.0",
     "chai": "~4.2.0",
