@@ -35,4 +35,6 @@ export const readBlock = (file, from, to) =>
 /**
  * Base 64 encode the string
  */
-export const base64: (str: string) => string = window.btoa;
+export function base64(str: string): string {
+  return window.btoa(str);
+}

@@ -1,4 +1,4 @@
-import { bytesToBinaryString, EncryptionKey } from '@meeco/cryppo';
+import { bytesToBinaryString, bytesToUtf8, EncryptionKey } from '@meeco/cryppo';
 import * as Common from '@meeco/file-storage-common';
 import {
   AzureBlockDownload,
@@ -66,7 +66,7 @@ export async function uploadAttachment(
 
   const artifactsFileName = fileName + '.encryption_artifacts';
   const artifactsFileDir = `./${artifactsFileName}`;
-  fs.writeFileSync(artifactsFileDir, JSON.stringify(uploadResult.artifacts));
+  fs.writeFileSync(artifactsFileDir, JSON.stringify(uploadResult.artifacts), 'utf8');
   const artifactsFileStats = fs.statSync(artifactsFileDir);
 
   const artifactsUploadUrl = await createAttachmentUploadUrl(
@@ -163,7 +163,7 @@ export async function largeFileDownloadNode(
   const encryptionArtifacts: any = await AzureBlockDownload.download(
     artifactsUrl,
     authConfig
-  ).then((result: any) => JSON.parse(result.toString('utf-8')));
+  ).then((result: any) => JSON.parse(bytesToUtf8(result)));
 
   const blocks: Buffer[] = [];
 
