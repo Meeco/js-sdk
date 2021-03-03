@@ -80,6 +80,7 @@ async function attachFile() {
     const privateDek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const oidcAccessToken = localStorage.getItem('oidcAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
 
     const keyEncryptionKey = SymmetricKey.fromSerialized(
@@ -112,6 +113,7 @@ async function attachFile() {
       {
         data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
@@ -123,6 +125,7 @@ async function attachFile() {
       vaultUrl,
       authConfig: {
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
       videoCodec,
@@ -169,6 +172,7 @@ async function attachFile() {
     const updated = await itemService.update(
       {
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         data_encryption_key: privateDek,
       },
       itemUpdateData
@@ -267,6 +271,7 @@ async function downloadAttachment() {
       {
         data_encryption_key: dek,
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
@@ -347,6 +352,7 @@ async function attachThumbnail() {
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
     const privateDek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const oidcAccessToken = localStorage.getItem('oidcAccessToken') || '';
     const keyEncryptionKey = SymmetricKey.fromSerialized(
       localStorage.getItem('keyEncryptionKey') || ''
     );
@@ -369,6 +375,7 @@ async function attachThumbnail() {
       {
         data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
@@ -391,6 +398,7 @@ async function attachThumbnail() {
       sizeType,
       authConfig: {
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
       vaultUrl,
@@ -421,6 +429,7 @@ async function thumbnailDownload() {
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
     const privateDek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const oidcAccessToken = localStorage.getItem('oidcAccessToken') || '';
     const keyEncryptionKey = SymmetricKey.fromSerialized(
       localStorage.getItem('keyEncryptionKey') || ''
     );
@@ -443,6 +452,7 @@ async function thumbnailDownload() {
       {
         data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
@@ -468,6 +478,7 @@ async function thumbnailDownload() {
       vaultUrl: environment.vault.url,
       authConfig: {
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
     });
