@@ -23,6 +23,8 @@ jobs:
       - run: npx lerna run test --scope '@meeco/{sdk,sdk-demo}'
         env:
           CI: true
+      # Tag all versions with `-beta` and update all inter-dependant packages to use "beta" as the version
+      - run: npm run beta
       - run: npx lerna run build --scope @meeco/sdk
       - name: Publish NPM
         run: |
