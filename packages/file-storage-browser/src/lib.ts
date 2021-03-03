@@ -2,22 +2,11 @@ import { bytesBufferToBinaryString, EncryptionKey } from '@meeco/cryppo';
 import {
   AzureBlockDownload,
   buildApiConfig,
-  createAttachmentUploadUrl,
-  directAttachmentAttach,
-  directAttachmentUpload,
-  getAttachmentInfo,
   IFileStorageAuthConfiguration,
+  AttachmentService,
 } from '@meeco/file-storage-common';
 import { DirectAttachment, DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as FileUtils from './FileUtils.web';
-
-export {
-  downloadThumbnail,
-  ThumbnailType,
-  ThumbnailTypes,
-  thumbSizeTypeToMimeExt,
-  uploadThumbnail as encryptAndUploadThumbnail,
-} from '@meeco/file-storage-common';
 
 /**
  * Upload a new attachment. It is encrypted with a random DEK that is returned with the attachment

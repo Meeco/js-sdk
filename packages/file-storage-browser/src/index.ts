@@ -21,7 +21,7 @@ export const thumbSizeTypeToMimeExt: (
   fileExtension: string;
 } = Common.thumbSizeTypeToMimeExt;
 
-export const downloadThumbnail: ({
+export function downloadThumbnail({
   id,
   dataEncryptionKey,
   vaultUrl,
@@ -31,7 +31,10 @@ export const downloadThumbnail: ({
   dataEncryptionKey: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
-}) => Promise<Uint8Array> = Common.downloadThumbnail;
+}): Promise<Uint8Array> {
+  const service = new Common.ThumbnailService(vaultUrl, fetch);
+  return service.download({ id, key: dataEncryptionKey, authConfig });
+}
 
 /** @deprecated Use [[uploadThumbnail]] */
 export const encryptAndUploadThumbnail: ({
