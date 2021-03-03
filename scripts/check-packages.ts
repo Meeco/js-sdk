@@ -58,7 +58,7 @@ function checkPackageVersions(packageList: string[], packageDetails: PackageMap)
     const { version: coerced } = semver.coerce(version);
     if (version !== coerced) {
       console.error(
-        `Package ${packageDetails[name].name} version is listed as "${version}" which coerced to ${coerced} which is invalid`
+        `Package ${packageDetails[name].name} version is listed as "${version}" (coerced to "${coerced}") which is invalid`
       );
       console.error(
         `Packages should use valid semver versions without any pre-release tags (try just using "${coerced}")`
@@ -81,6 +81,7 @@ function checkPackageNames(packageList: string[], packageDetails: PackageMap) {
       console.error(
         `Package folder ${name} package.json expected name "@meeco/${name}" but got "${packageFileName}"`
       );
+      console.error(`Package names must be in the format @meeco/{folder name in packages/}`);
       process.exit(1);
     }
   });
@@ -113,7 +114,7 @@ function checkApiSdkDependencies(packageList: string[], packageDetails: PackageM
     const max = semver.maxSatisfying(requiredVersions, '>=0.0.0');
     if (!semver.satisfies(min, max)) {
       console.error(
-        `One or more packages requires "${api}" version "^${min}" which would conflict with "^${max}"`
+        `One or more packages requires "${api}" version "^${min}" which would conflict with higher version found of "^${max}"`
       );
       console.error(`Dependencies on API SDK's should be kept in sync to avoid duplicate installs`);
       process.exit(1);
