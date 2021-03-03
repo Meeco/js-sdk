@@ -36,7 +36,10 @@ interface IHeaders {
 /**
  * Pluck environment and user auth values to create `apiKey` [Keystore.Configuration] parameter
  */
-const keystoreAPIKeys = (environment: Environment, userAuth: IKeystoreToken) => (name: string) =>
+const keystoreAPIKeys = (
+  environment: Environment,
+  userAuth: IKeystoreToken
+): ((name: string) => string) => (name: string) =>
   ({
     'Meeco-Subscription-Key': environment.keystore.subscription_key,
     // Must be uppercase
@@ -44,7 +47,7 @@ const keystoreAPIKeys = (environment: Environment, userAuth: IKeystoreToken) => 
     'Authorization': userAuth.keystore_access_token,
     'Meeco-Delegation-Id': userAuth.delegation_id || '',
     authorizationoidc2: userAuth.oidc_token || '',
-  }[name]);
+  }[name] as string);
 
 /**
  * Pluck environment and user auth values to create `apiKey` [Vault.Configuration] parameter
@@ -57,7 +60,7 @@ const vaultAPIKeys = (environment: Environment, userAuth: IVaultToken) => (name:
     'Authorization': userAuth.vault_access_token,
     'Meeco-Delegation-Id': userAuth.delegation_id || '',
     authorizationoidc2: userAuth.oidc_token || '',
-  }[name]);
+  }[name] as string);
 
 function fetchInterceptor(url, options) {
   debugCurl(blue(`Sending Request:`));
@@ -133,7 +136,7 @@ const keystoreAPI = (
             Keystore,
             api,
             apiMethodName,
-            keystoreAPIKeys(environment, userAuth),
+            keystoreAPIKeys(environment, userAuth) as (name: string) => string,
             environment.keystore.url,
             {
               ...additionalHeaders,
@@ -165,7 +168,7 @@ const vaultAPI = (
             Vault,
             api,
             apiMethodName,
-            vaultAPIKeys(environment, userAuth),
+            vaultAPIKeys(environment, userAuth) as (name: string) => string,
             environment.vault.url,
             {
               ...additionalHeaders,
