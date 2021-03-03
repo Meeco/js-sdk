@@ -67,6 +67,10 @@ export function getBlobHeaders(auth: IFileStorageAuthConfiguration): { [header: 
     headers['Meeco-Subscription-Key'] = auth.subscription_key;
   }
 
+  if (auth.vault_access_token) {
+    headers['Authorization'] = auth.vault_access_token;
+  }
+
   if (auth.oidc_token) {
     headers['authorizationoidc2'] = auth.oidc_token;
   }
