@@ -1,7 +1,7 @@
 import { EncryptionKey } from '@meeco/cryppo';
 import * as Common from '@meeco/file-storage-common';
 import { IFileStorageAuthConfiguration, ThumbnailType } from '@meeco/file-storage-common';
-import { AttachmentDirectDownloadUrl, ThumbnailResponse } from '@meeco/vault-api-sdk';
+import { AttachmentDirectDownloadUrl, Thumbnail } from '@meeco/vault-api-sdk';
 import * as Latest from './lib';
 
 /**
@@ -60,11 +60,21 @@ export const encryptAndUploadThumbnail: (_: {
   sizeType: ThumbnailType;
   authConfig: IFileStorageAuthConfiguration;
   vaultUrl: string;
-}) => Promise<ThumbnailResponse> = Latest.uploadThumbnail;
+}) => Promise<Thumbnail> = Latest.uploadThumbnail;
 
-export const downloadThumbnail: (_: {
+export async function downloadThumbnail({
+  id,
+  dataEncryptionKey,
+  vaultUrl,
+  authConfig,
+}: {
   id: string;
   dataEncryptionKey: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
-}) => Promise<Uint8Array> = Common.downloadThumbnail;
+}): Promise<Uint8Array> {
+  const service = new Common.ThumbnailService(vaultUrl, (url, args) =>
+    (<any>global).fetch(url, args)
+  );
+  return service.download({ id, key: dataEncryptionKey, authConfig });
+}

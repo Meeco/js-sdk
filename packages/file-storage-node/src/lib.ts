@@ -14,6 +14,7 @@ import {
   AttachmentDirectDownloadUrl,
   DirectAttachmentsApi,
   ThumbnailResponse,
+  Thumbnail,
 } from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
 import * as mfe from 'mime-file-extension';
@@ -194,16 +195,14 @@ export async function uploadThumbnail({
   sizeType: ThumbnailType;
   authConfig: IFileStorageAuthConfiguration;
   vaultUrl: string;
-}): Promise<ThumbnailResponse> {
+}): Promise<Thumbnail> {
   const thumbnail = fs.readFileSync(thumbnailFilePath);
 
-  return Common.uploadThumbnail({
-    thumbnail,
-    binaryId,
-    attachmentDek,
-    sizeType,
+  const service = new Common.ThumbnailService(vaultUrl, nodeFetch);
+  return service.upload({
+    thumbnail: { data: thumbnail, sizeType },
+    attachmentId: binaryId,
+    key: attachmentDek,
     authConfig,
-    vaultUrl,
-    fetchApi: nodeFetch,
   });
 }

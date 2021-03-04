@@ -1,8 +1,7 @@
 import { EncryptionKey } from '@meeco/cryppo';
-import { IFileStorageAuthConfiguration } from '@meeco/file-storage-common';
-import { DirectAttachment, ThumbnailResponse } from '@meeco/vault-api-sdk';
-
 import * as Common from '@meeco/file-storage-common';
+import { IFileStorageAuthConfiguration } from '@meeco/file-storage-common';
+import { DirectAttachment, Thumbnail } from '@meeco/vault-api-sdk';
 import * as Latest from './lib';
 
 /**
@@ -11,8 +10,8 @@ import * as Latest from './lib';
  * Deprecations will be removed in v.5.0.0 release
  */
 
-export { ThumbnailType, ThumbnailTypes, uploadThumbnail } from '@meeco/file-storage-common';
-export { downloadAttachment, uploadAttachment } from './lib';
+export { ThumbnailService, ThumbnailType, ThumbnailTypes } from '@meeco/file-storage-common';
+export { AttachmentService } from './lib';
 
 export const thumbSizeTypeToMimeExt: (
   sizeTypeString: Common.ThumbnailType | string
@@ -32,19 +31,18 @@ export function downloadThumbnail({
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
 }): Promise<Uint8Array> {
-  const service = new Common.ThumbnailService(vaultUrl, fetch);
+  const service = new Common.ThumbnailService(vaultUrl, (url, args) => window.fetch(url, args));
   return service.download({ id, key: dataEncryptionKey, authConfig });
 }
 
 /** @deprecated Use [[uploadThumbnail]] */
-export const encryptAndUploadThumbnail: ({
+export function encryptAndUploadThumbnail({
   thumbnail,
   binaryId,
   attachmentDek,
   sizeType,
   authConfig,
   vaultUrl,
-  fetchApi,
 }: {
   thumbnail: Uint8Array;
   binaryId: string;
@@ -52,11 +50,25 @@ export const encryptAndUploadThumbnail: ({
   sizeType: Common.ThumbnailType;
   authConfig: IFileStorageAuthConfiguration;
   vaultUrl: string;
-  fetchApi?: any;
-}) => Promise<ThumbnailResponse> = Common.uploadThumbnail;
+}): Promise<Thumbnail> {
+  const service = new Common.ThumbnailService(vaultUrl, (url, args) => window.fetch(url, args));
+  return service.upload({
+    thumbnail: { data: thumbnail, sizeType },
+    attachmentId: binaryId,
+    key: attachmentDek,
+    authConfig,
+  });
+}
 
 /** @deprecated Use [[uploadAttachment]] */
-export const fileUploadBrowser: (_: {
+export function fileUploadBrowser({
+  file,
+  vaultUrl,
+  authConfig,
+  videoCodec,
+  progressUpdateFunc,
+  onCancel,
+}: {
   file: File;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
@@ -65,7 +77,10 @@ export const fileUploadBrowser: (_: {
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null;
   onCancel?: any;
-}) => Promise<{ attachment: DirectAttachment; dek: EncryptionKey }> = Latest.uploadAttachment;
+}): Promise<{ attachment: DirectAttachment; dek: EncryptionKey }> {
+  const service = new Latest.AttachmentService(vaultUrl);
+  return service.upload({ file, authConfig, videoCodec, progressUpdateFunc, onCancel });
+}
 
 // TODO: deprecate uploadWithCancel functions and merge that capability to upload
 export const fileUploadBrowserWithCancel: (_: {
@@ -79,10 +94,17 @@ export const fileUploadBrowserWithCancel: (_: {
 }) => {
   cancel: () => void;
   success: Promise<{ attachment: DirectAttachment; dek: EncryptionKey }>;
-} = Latest.fileUploadBrowserWithCancel;
+} = Latest.withCancel(fileUploadBrowser);
 
 /** @deprecated Use [[downloadAttachment]] */
-export const fileDownloadBrowser: (_: {
+export function fileDownloadBrowser({
+  attachmentId,
+  dek,
+  vaultUrl,
+  authConfig,
+  progressUpdateFunc,
+  onCancel,
+}: {
   attachmentId: string;
   dek: EncryptionKey;
   vaultUrl: string;
@@ -91,7 +113,10 @@ export const fileDownloadBrowser: (_: {
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
     | null;
   onCancel?: any;
-}) => Promise<File> = Latest.downloadAttachment;
+}): Promise<File> {
+  const service = new Latest.AttachmentService(vaultUrl);
+  return service.download({ attachmentId, dek, authConfig, progressUpdateFunc, onCancel });
+}
 
 export const fileDownloadBrowserWithCancel: (_: {
   attachmentId: string;
@@ -102,4 +127,4 @@ export const fileDownloadBrowserWithCancel: (_: {
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
     | null;
   onCancel?: any;
-}) => { cancel: () => void; success: Promise<File> } = Latest.fileDownloadBrowserWithCancel;
+}) => { cancel: () => void; success: Promise<File> } = Latest.withCancel(fileDownloadBrowser);

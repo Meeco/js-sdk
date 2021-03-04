@@ -5,8 +5,7 @@ import {
   EncryptionKey,
   encryptWithKey,
 } from '@meeco/cryppo';
-import { ThumbnailApi } from '@meeco/vault-api-sdk';
-import axios from 'axios';
+import { Thumbnail, ThumbnailApi } from '@meeco/vault-api-sdk';
 import { buildApiConfig, getBlobHeaders, IFileStorageAuthConfiguration } from '../auth';
 
 export type ThumbnailType =
@@ -72,7 +71,7 @@ export class ThumbnailService {
     attachmentId: string;
     key: EncryptionKey;
     authConfig: IFileStorageAuthConfiguration;
-  }) {
+  }): Promise<Thumbnail> {
     const encryptedThumbnail = await encryptWithKey({
       key,
       data: thumbnail.data,
@@ -93,7 +92,12 @@ export class ThumbnailService {
 
     const api = new ThumbnailApi(buildApiConfig(authConfig, this.vaultUrl, this.fetchApi));
 
-    return api.thumbnailsPost(blob as any, attachmentId, thumbnail.sizeType);
+    const { thumbnail: result } = await api.thumbnailsPost(
+      blob as any,
+      attachmentId,
+      thumbnail.sizeType
+    );
+    return result;
   }
 
   /**
@@ -112,10 +116,19 @@ export class ThumbnailService {
   }): Promise<Uint8Array> {
     const api = new ThumbnailApi(buildApiConfig(authConfig, this.vaultUrl, this.fetchApi));
     const { redirect_url } = await api.thumbnailsIdGet(id);
-    const result = await this.thumbnailDownload(authConfig, redirect_url);
+
+    const result = await this.fetchApi(redirect_url, {
+      method: 'GET',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      headers: getBlobHeaders(authConfig),
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
+    });
 
     const decryptedContents = await decryptWithKey({
-      serialized: result.data,
+      serialized: await result.text(),
       key,
     });
 
@@ -124,13 +137,5 @@ export class ThumbnailService {
     }
 
     return decryptedContents;
-  }
-
-  private async thumbnailDownload(authConfig: IFileStorageAuthConfiguration, url: string) {
-    return axios({
-      method: 'get',
-      url,
-      headers: getBlobHeaders(authConfig),
-    });
   }
 }
