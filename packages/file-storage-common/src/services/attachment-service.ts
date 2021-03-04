@@ -26,7 +26,7 @@ interface IDirectAttachmentUploadResponse {
 }
 
 export class AttachmentService {
-  constructor(private vaultUrl: string, private fetchApi?: any) {}
+  constructor(protected vaultUrl: string, protected fetchApi?: any) {}
 
   /**
    *
