@@ -1,13 +1,11 @@
 import {
   binaryStringToBytesBuffer,
-  bytesBufferToBinaryString,
   CipherStrategy,
   decryptWithKey,
   EncryptionKey,
   encryptWithKey,
 } from '@meeco/cryppo';
 import {
-  AttachmentApi,
   AttachmentDirectUploadUrl,
   DirectAttachment,
   DirectAttachmentsApi,
@@ -128,37 +126,6 @@ export async function getAttachmentInfo(
 ): Promise<DirectAttachment> {
   const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
   return api.directAttachmentsIdGet(id).then(response => response.attachment);
-}
-
-export async function downloadAttachment(
-  id: string,
-  dek: EncryptionKey,
-  auth: IFileStorageAuthConfiguration,
-  vaultUrl: string,
-  fetchApi?: any
-) {
-  return downloadAndDecryptFile(
-    () => new AttachmentApi(buildApiConfig(auth, vaultUrl, fetchApi)).attachmentsIdDownloadGet(id),
-    dek
-  );
-}
-
-export async function downloadAndDecryptFile<T extends Blob>(
-  download: () => Promise<T>,
-  dataEncryptionKey: EncryptionKey
-) {
-  const result = await download();
-  // Chrome `Blob` objects support the arrayBuffer() methods but Safari do not - only on `Response`
-  // https://stackoverflow.com/questions/15341912/how-to-go-from-blob-to-arraybuffer
-  const buffer = await ((<any>result).arrayBuffer
-    ? (<any>result).arrayBuffer()
-    : new Response(result).arrayBuffer());
-  const encryptedContents = await bytesBufferToBinaryString(buffer);
-  const decryptedContents = await decryptWithKey({
-    serialized: encryptedContents,
-    key: dataEncryptionKey,
-  });
-  return decryptedContents;
 }
 
 /* ---------- Thumbnails ---------- */

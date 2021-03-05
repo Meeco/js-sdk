@@ -1,5 +1,4 @@
 import { bytesBufferToBinaryString, EncryptionKey } from '@meeco/cryppo';
-import * as Common from '@meeco/file-storage-common';
 import {
   AzureBlockDownload,
   buildApiConfig,
@@ -183,9 +182,8 @@ export async function downloadAttachment({
     );
     buffer = downloaded.byteArray;
   } else {
-    // was not uploaded in chunks
-    const downloaded = await Common.downloadAttachment(attachmentId, dek, authConfig, vaultUrl);
-    buffer = downloaded || new Uint8Array();
+    // legacy file upload no longer supported
+    throw new Error('Unsupported attachment download');
   }
 
   return new File([buffer], fileName, {
