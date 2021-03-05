@@ -24,8 +24,13 @@
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.15",
+    "@types/mocha": "^8.2.1",
     "@types/node": "^10.14.18",
     "@types/node-fetch": "^2.5.8",
+    "@types/sinon": "^9.0.10",
+    "mocha": "^8.3.0",
+    "sinon": "^9.2.4",
     "typedoc": "^0.20.30",
     "typescript": "^3.9.6"
   },

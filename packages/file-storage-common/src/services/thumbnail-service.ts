@@ -1,10 +1,4 @@
-import {
-  binaryStringToBytesBuffer,
-  CipherStrategy,
-  decryptWithKey,
-  EncryptionKey,
-  encryptWithKey,
-} from '@meeco/cryppo';
+import { binaryStringToBytesBuffer, CipherStrategy, EncryptionKey } from '@meeco/cryppo';
 import { Thumbnail, ThumbnailApi } from '@meeco/vault-api-sdk';
 import { buildApiConfig, getBlobHeaders, IFileStorageAuthConfiguration } from '../auth';
 
@@ -49,7 +43,7 @@ export function thumbSizeTypeToMimeExt(
 }
 
 export class ThumbnailService {
-  constructor(private vaultUrl: string, private fetchApi?: any) {}
+  constructor(private vaultUrl: string, private cryppoService: any, private fetchApi?: any) {}
 
   /**
    * @param {object} __namedParameters Options
@@ -58,7 +52,7 @@ export class ThumbnailService {
    * @param key Symmetric key used to encrypt the thumbnail. Usually should be the user's DEK.
    * @param authConfig
    */
-  async upload({
+  protected async _upload({
     thumbnail,
     attachmentId,
     key,
@@ -72,7 +66,7 @@ export class ThumbnailService {
     key: EncryptionKey;
     authConfig: IFileStorageAuthConfiguration;
   }): Promise<Thumbnail> {
-    const encryptedThumbnail = await encryptWithKey({
+    const encryptedThumbnail = await this.cryppoService.encryptWithKey({
       key,
       data: thumbnail.data,
       strategy: CipherStrategy.AES_GCM,
@@ -105,7 +99,7 @@ export class ThumbnailService {
    * @param id Id of the thumbnail to download.
    * @param key Symmetric key used to encrypt the thumbnail.
    */
-  async download({
+  protected async _download({
     id,
     key,
     authConfig,
@@ -127,7 +121,7 @@ export class ThumbnailService {
       referrerPolicy: 'no-referrer',
     });
 
-    const decryptedContents = await decryptWithKey({
+    const decryptedContents = await this.cryppoService.decryptWithKey({
       serialized: await result.text(),
       key,
     });
