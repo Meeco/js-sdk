@@ -17,7 +17,7 @@
     "build:demo": "webpack",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
-    "docs": "typedoc --mode library --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate src/index.ts"
+    "docs": "typedoc --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate src/index.ts"
   },
   "dependencies": {
     "@meeco/cryppo": "^2.0.0",
@@ -28,7 +28,7 @@
   "devDependencies": {
     "@meeco/sdk": "^2.1.0",
     "bili": "^4.10.0",
-    "typedoc": "0.17.0-3",
+    "typedoc": "^0.20.30",
     "typescript": "^3.9.6",
     "webpack": "^4.44.1",
     "webpack-bundle-analyzer": "^3.8.0",
