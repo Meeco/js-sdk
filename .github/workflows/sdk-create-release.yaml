@@ -26,7 +26,7 @@ jobs:
         env:
           CI: true
       - run: npx lerna run build --scope @meeco/sdk
-      - run: npm run docs
+      - run: npx lerna run docs --scope @meeco/sdk
       # We use the style kit in the docs entry page
       - run: npx lerna run build --scope @meeco/style-kit
       - run: cp packages/style-kit/build/main.css docs/style-kit.css
