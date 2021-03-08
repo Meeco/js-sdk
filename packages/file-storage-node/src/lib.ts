@@ -133,13 +133,7 @@ export async function downloadAttachment(
     );
     buffer = downloaded.byteArray;
   } else {
-    const downloaded = await Common.downloadAttachment(
-      attachmentId,
-      attachmentDek,
-      authConfig,
-      environment.vault.url
-    );
-    buffer = Buffer.from(downloaded || '');
+    throw new Error('Unsupported attachment download');
   }
   return { fileName, buffer };
 }
