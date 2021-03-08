@@ -28,7 +28,7 @@ jobs:
       # It is currently a dependency
       - run: npx lerna run build --scope '@meeco/sdk'
       # Build common first as the others depend on it
-      - run: npx lerna run build --scope '@meeco/{file-storage-common}'
+      - run: npx lerna run build --scope '@meeco/file-storage-common'
       - run: npx lerna run build --scope '@meeco/{file-storage-browser,file-storage-node}'
       - name: Publish NPM
         run: |
