@@ -26,17 +26,6 @@ jobs:
         env:
           CI: true
       - run: npx lerna run build --scope @meeco/sdk
-      - name: Publish NPM
-        run: |
-          npx lerna exec --scope @meeco/sdk -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
-          npx lerna exec --scope @meeco/sdk -- npm config set scope "@meeco"
-          npx lerna exec --scope @meeco/sdk -- npm publish --access public
-        env:
-          CI: true
-          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
-      # This step is required as long as we are using typedoc beta which we are to support
-      # library mode
-      - run: cd packages/sdk && cd ../../
       - run: npm run docs
       # We use the style kit in the docs entry page
       - run: npx lerna run build --scope @meeco/style-kit
@@ -52,3 +41,11 @@ jobs:
           user_email: 'github-actions[bot]@users.noreply.github.com'
           external_repository: Meeco/sdk-docs
           publish_branch: master
+      - name: Publish NPM
+        run: |
+          npx lerna exec --scope @meeco/sdk -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
+          npx lerna exec --scope @meeco/sdk -- npm config set scope "@meeco"
+          npx lerna exec --scope @meeco/sdk -- npm publish --access public
+        env:
+          CI: true
+          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
