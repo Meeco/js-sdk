@@ -28,7 +28,7 @@ jobs:
       - run: npx lerna run build --scope '@meeco/sdk'
       # Build common first as the others depend on it
       - run: npx lerna run build --scope '@meeco/{file-storage-common}'
-      - run: npx lerna run build --scope '@meeco/{file-storage-browser,file-storage-node,file-storage-node}'
+      - run: npx lerna run build --scope '@meeco/{file-storage-browser,file-storage-node}'
       - name: Publish NPM
         run: |
           npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser,file-storage-node}' -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
