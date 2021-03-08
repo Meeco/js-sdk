@@ -23,6 +23,8 @@ jobs:
       - run: npx lerna run test --scope @meeco/sdk
         env:
           CI: true
+      # Tag all versions with `-alpha` and update all inter-dependant packages to use "alpha" as the version
+      - run: npm run alpha
       - run: npx lerna run build --scope @meeco/sdk
       - name: Publish NPM
         run: |

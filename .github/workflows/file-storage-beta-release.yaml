@@ -20,11 +20,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npx lerna run test
+      - run: npm test
         env:
           CI: true
       # It is currently a dependency
       - run: npx lerna run build --scope '@meeco/sdk'
+      # Tag all versions with `-beta` and update all inter-dependant packages to use "beta" as the version
+      - run: npm run beta
       - run: npx lerna run build --scope '@meeco/{file-storage-common,file-storage-browser,file-storage-node}'
       - name: Publish NPM
         run: |
