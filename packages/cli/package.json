@@ -78,11 +78,20 @@
     "bin": "meeco",
     "repositoryPrefix": "https://github.com/Meeco/cli/blob/master/<%- commandPath %>",
     "topics": {
+      "client-task-queue": {
+        "description": "Commands related client-side jobs for the user"
+      },
       "connections": {
         "description": "Commands related to connections between Meeco users"
       },
       "items": {
         "description": "Commands related to a Meeco vault items"
+      },
+      "organization-members": {
+        "description": "Commands related to managing members of an organizations within Meeco"
+      },
+      "organization-services": {
+        "description": "Commands related to managing services for an organizations within Meeco"
       },
       "organizations": {
         "description": "Commands related to managing Organizations within Meeco"
