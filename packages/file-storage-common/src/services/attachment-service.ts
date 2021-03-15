@@ -1,6 +1,6 @@
-import { bytesBufferToBinaryString, decryptWithKey, EncryptionKey } from '@meeco/cryppo';
+import { EncryptionKey } from '@meeco/cryppo';
 import {
-  AttachmentApi,
+  AttachmentDirectDownloadUrl,
   AttachmentDirectUploadUrl,
   DirectAttachment,
   DirectAttachmentsApi,
@@ -134,31 +134,25 @@ export class AttachmentService {
     return api.directAttachmentsIdGet(id).then(response => response.attachment);
   }
 
-  async downloadAttachment(id: string, dek: EncryptionKey, auth: IFileStorageAuthConfiguration) {
-    return this.downloadAndDecryptFile(
-      () =>
-        new AttachmentApi(
-          buildApiConfig(auth, this.vaultUrl, this.fetchApi)
-        ).attachmentsIdDownloadGet(id),
-      dek
-    );
-  }
+  /**
+   * @param id Attachment Id.
+   * @returns Azure block storage URL for encryption metadata file `artifactsUrl` and
+   * Azure Url data for binary attachment `fileInfo`.
+   */
+  protected async getDownloadMetaData(
+    id: string,
+    auth: IFileStorageAuthConfiguration
+  ): Promise<{ artifactsUrl: string; fileInfo: AttachmentDirectDownloadUrl }> {
+    const api = new DirectAttachmentsApi(buildApiConfig(auth, this.vaultUrl, this.fetchApi));
 
-  async downloadAndDecryptFile<T extends Blob>(
-    download: () => Promise<T>,
-    dataEncryptionKey: EncryptionKey
-  ) {
-    const result = await download();
-    // Chrome `Blob` objects support the arrayBuffer() methods but Safari do not - only on `Response`
-    // https://stackoverflow.com/questions/15341912/how-to-go-from-blob-to-arraybuffer
-    const buffer = await ((<any>result).arrayBuffer
-      ? (<any>result).arrayBuffer()
-      : new Response(result).arrayBuffer());
-    const encryptedContents = bytesBufferToBinaryString(buffer);
-    const decryptedContents = await decryptWithKey({
-      serialized: encryptedContents,
-      key: dataEncryptionKey,
-    });
-    return decryptedContents;
+    const {
+      attachment_direct_download_url: { url: artifactsUrl },
+    } = await api.directAttachmentsIdDownloadUrlGet(id, 'encryption_artifact_file');
+
+    const {
+      attachment_direct_download_url: attachmentInfo,
+    } = await api.directAttachmentsIdDownloadUrlGet(id, 'binary_file');
+
+    return { artifactsUrl, fileInfo: attachmentInfo };
   }
 }

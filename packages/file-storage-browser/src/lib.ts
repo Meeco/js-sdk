@@ -4,6 +4,7 @@ import {
   buildApiConfig,
   IFileStorageAuthConfiguration,
 } from '@meeco/file-storage-common';
+import * as Common from '@meeco/file-storage-common';
 import { DirectAttachment, DirectAttachmentsApi } from '@meeco/vault-api-sdk';
 import * as FileUtils from './FileUtils.web';
 
@@ -165,9 +166,8 @@ export class AttachmentService extends Common.AttachmentService {
       );
       buffer = downloaded.byteArray;
     } else {
-      // was not uploaded in chunks
-      const downloaded = await this.downloadAttachment(attachmentId, dek, authConfig);
-      buffer = downloaded || new Uint8Array();
+      // legacy file upload no longer supported
+      throw new Error('Unsupported attachment download');
     }
 
     return new File([buffer], fileName, {
@@ -187,15 +187,10 @@ export class AttachmentService extends Common.AttachmentService {
       | null,
     onCancel?: any
   ) {
-    const api = new DirectAttachmentsApi(buildApiConfig(authConfig, this.vaultUrl, fetch));
-
-    const {
-      attachment_direct_download_url: { url: artifactsUrl },
-    } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'encryption_artifact_file');
-
-    const {
-      attachment_direct_download_url: attachmentInfo,
-    } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'binary_file');
+    const { artifactsUrl, fileInfo: attachmentInfo } = await this.getDownloadMetaData(
+      attachmentID,
+      authConfig
+    );
 
     // download encryption artifacts
     const encryptionArtifacts = await AzureBlockDownload.download(
