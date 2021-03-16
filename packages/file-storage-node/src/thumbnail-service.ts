@@ -9,6 +9,10 @@ export class ThumbnailService extends Common.ThumbnailService {
     super(vaultUrl, _cryppo, (url, args) => (<any>global).fetch(url, args));
   }
 
+  /**
+   * Reads a file from a system path [[thumbnailFilePath]] and uploads.
+   * @returns Metadata about the created Thumbnail including its id and url.
+   */
   async upload({
     thumbnailFilePath,
     binaryId,
@@ -41,6 +45,7 @@ export class ThumbnailService extends Common.ThumbnailService {
     dataEncryptionKey: EncryptionKey;
     authConfig: Common.IFileStorageAuthConfiguration;
   }): Promise<Uint8Array> {
+    // TODO should this be Buffer?
     return this._download({ id, key: dataEncryptionKey, authConfig });
   }
 }

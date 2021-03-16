@@ -145,14 +145,18 @@ export class AttachmentService {
   ): Promise<{ artifactsUrl: string; fileInfo: AttachmentDirectDownloadUrl }> {
     const api = new DirectAttachmentsApi(buildApiConfig(auth, this.vaultUrl, this.fetchApi));
 
-    const {
-      attachment_direct_download_url: { url: artifactsUrl },
-    } = await api.directAttachmentsIdDownloadUrlGet(id, 'encryption_artifact_file');
+    try {
+      const {
+        attachment_direct_download_url: { url: artifactsUrl },
+      } = await api.directAttachmentsIdDownloadUrlGet(id, 'encryption_artifact_file');
 
-    const {
-      attachment_direct_download_url: attachmentInfo,
-    } = await api.directAttachmentsIdDownloadUrlGet(id, 'binary_file');
+      const {
+        attachment_direct_download_url: attachmentInfo,
+      } = await api.directAttachmentsIdDownloadUrlGet(id, 'binary_file');
 
-    return { artifactsUrl, fileInfo: attachmentInfo };
+      return { artifactsUrl, fileInfo: attachmentInfo };
+    } catch (e) {
+      throw new Error('Could not retrieve ' + id);
+    }
   }
 }

@@ -6,12 +6,18 @@ import * as fs from 'fs';
 import * as mfe from 'mime-file-extension';
 import * as path from 'path';
 import * as FileUtils from './FileUtils.node';
+import fetch from 'node-fetch';
 
 export class AttachmentService extends Common.AttachmentService {
   constructor(vaultUrl: string, _cryppo = cryppo) {
-    super(vaultUrl, (url, args) => (<any>global).fetch(url, args));
+    super(vaultUrl, (url, args) => fetch(url, args));
   }
 
+  /**
+   * Side effect is that encryption meta data is written to [filePath].encryption_artifacts
+   * @param filePath
+   * @param authConfig
+   */
   async upload(
     filePath: string,
     authConfig: Common.IFileStorageAuthConfiguration
@@ -113,6 +119,7 @@ export class AttachmentService extends Common.AttachmentService {
         key,
         encryptionArtifacts.encryption_strategy,
         {
+          // TODO is there a native way to do this?
           iv: cryppo.bytesToBinaryString(new Uint8Array(encryptionArtifacts.iv[index].data)),
           ad: encryptionArtifacts.ad,
           at: cryppo.bytesToBinaryString(new Uint8Array(encryptionArtifacts.at[index].data)),
