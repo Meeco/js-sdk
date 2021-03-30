@@ -46,6 +46,7 @@ describe('SymmetricKey', () => {
       const cipher = await key.encryptKey(key);
       const result = await key.decryptKey(cipher);
       expect(cryppo.bytesToBinaryString(result!.key)).to.eql(rawKey);
+      expect(result).to.eql(key);
     });
   });
 });
