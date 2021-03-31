@@ -13,7 +13,6 @@ import { Share, SharesIncomingResponse, SharesOutgoingResponse } from '@meeco/va
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { default as itemResponse } from '../fixtures/responses/item-response/basic';
-import { default as receivedItem } from '../fixtures/responses/item-response/received';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('ShareService', () => {
@@ -74,19 +73,16 @@ describe('ShareService', () => {
 
     connectionStub
       .nock('https://sandbox.meeco.me/vault', api => {
-        api.get(`/items/${itemId}`).reply(200, itemWithNull);
-        // Test: if nullSlotId is in the POST body, it's value must be undefined
         api
+          .get(`/items/${itemId}`)
+          .reply(200, itemWithNull)
           .post(`/items/${itemId}/shares`, body =>
-            body.shares[0].slot_values.every(
-              ({ slot_id, encrypted_value }) =>
-                slot_id !== nullSlotId || encrypted_value === undefined
-            )
+            body.shares[0].slot_values.every(({ slot_id }) => slot_id !== nullSlotId)
           )
           .reply(201, { shares: [] });
       })
       .do(() => service.shareItem(testUserAuth, connectionId, itemId))
-      .it('does not post slots with null values');
+      .it('slots with null values are not included in POST body');
 
     connectionStub
       .nock('https://sandbox.meeco.me/vault', api => {
@@ -127,17 +123,14 @@ describe('ShareService', () => {
         'decryptSlot',
         sinon.fake((cred, slot) => ({
           ...slot,
+          own: false,
           value: 'abc',
           value_verification_key: SymmetricKey.fromSerialized(encodeSafe64('123')),
           value_verification_hash: '123',
         }))
       )
-      .stub(
-        ItemService.prototype,
-        'get',
-        sinon.fake(() => DecryptedItem.fromAPI(testUserAuth, receivedItem))
-      )
       .nock('https://sandbox.meeco.me/vault', api => {
+        api.get(`/items/${itemId}`).reply(200, itemResponse);
         api
           .post(`/items/${itemId}/shares`, body =>
             body.shares[0].slot_values.every(

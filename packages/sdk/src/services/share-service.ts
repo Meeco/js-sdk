@@ -134,6 +134,9 @@ export class ShareService extends Service<SharesApi> {
       });
     }
 
+    // remove null valued slots
+    encryptions = encryptions.filter(s => !!s.encrypted_value);
+
     const encryptedDek = await publicKey.encryptKey(dek);
 
     this.logger.log('Sending shared data');
