@@ -191,7 +191,7 @@ export default class SlotHelpers {
       withHash = await SlotHelpers.addHashAndKey(slot);
     } else {
       // re-encrypt key, keep hash
-      if (!slot.value_verification_hash || !slot.value_verification_key) {
+      if (slot.value && (!slot.value_verification_hash || !slot.value_verification_key)) {
         throw Error('value verification key or hash missing in on-shared slot');
       }
 
