@@ -13,7 +13,6 @@ import { Share, SharesIncomingResponse, SharesOutgoingResponse } from '@meeco/va
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { default as itemResponse } from '../fixtures/responses/item-response/basic';
-import { default as receivedItem } from '../fixtures/responses/item-response/received';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('ShareService', () => {
@@ -124,6 +123,7 @@ describe('ShareService', () => {
         'decryptSlot',
         sinon.fake((cred, slot) => ({
           ...slot,
+          own: false,
           value: 'abc',
           value_verification_key: SymmetricKey.fromSerialized(encodeSafe64('123')),
           value_verification_hash: '123',
