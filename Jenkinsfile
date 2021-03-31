@@ -21,6 +21,9 @@ pipeline {
           } else if (env.CHANGE_TARGET == 'stage') {
             env.VAULT_URL = env.STAGE_VAULT_URL
             env.KEYSTORE_URL = env.STAGE_KEYSTORE_URL
+          } else if (env.CHANGE_TARGET == 'lts/sdk-2.0') {
+            env.VAULT_URL = env.LTS_VAULT_URL
+            env.KEYSTORE_URL = env.LTS_KEYSTORE_URL
           } else {
             // assumes target is develop by default
             env.VAULT_URL = env.DEV_VAULT_URL
