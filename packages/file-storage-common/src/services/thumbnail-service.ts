@@ -1,5 +1,5 @@
 import { binaryStringToBytesBuffer, CipherStrategy, EncryptionKey } from '@meeco/cryppo';
-import { Thumbnail, ThumbnailApi } from '@meeco/vault-api-sdk';
+import { Thumbnail, ThumbnailApi, RedirectResponse } from '@meeco/vault-api-sdk';
 import { buildApiConfig, getBlobHeaders, IFileStorageAuthConfiguration } from '../auth';
 
 export type ThumbnailType =
@@ -109,9 +109,16 @@ export class ThumbnailService {
     authConfig: IFileStorageAuthConfiguration;
   }): Promise<Uint8Array> {
     const api = new ThumbnailApi(buildApiConfig(authConfig, this.vaultUrl, this.fetchApi));
-    const { redirect_url } = await api.thumbnailsIdGet(id);
 
-    const result = await this.fetchApi(redirect_url, {
+    let urlResponse: RedirectResponse;
+    try {
+      urlResponse = await api.thumbnailsIdGet(id);
+    } catch (e) {
+      throw new Error('Could not get Thumbnail URL. Http code: ' + e.status);
+    }
+
+    const url = urlResponse.redirect_url;
+    const result = await this.fetchApi(url, {
       method: 'GET',
       mode: 'cors',
       cache: 'no-cache',
@@ -121,15 +128,23 @@ export class ThumbnailService {
       referrerPolicy: 'no-referrer',
     });
 
-    const decryptedContents = await this.cryppoService.decryptWithKey({
-      serialized: await result.text(),
-      key,
-    });
-
-    if (!decryptedContents) {
-      throw new Error('Error decrypting thumbnail file');
+    if (result.status == 404) {
+      throw new Error('Thumbnail not found');
     }
 
-    return decryptedContents;
+    try {
+      const decryptedContents = await this.cryppoService.decryptWithKey({
+        serialized: await result.text(),
+        key,
+      });
+
+      if (!decryptedContents) {
+        throw new Error('No data after decryption');
+      }
+
+      return decryptedContents;
+    } catch (e) {
+      throw new Error('Failed to decrypt downloaded file: ' + e.message);
+    }
   }
 }

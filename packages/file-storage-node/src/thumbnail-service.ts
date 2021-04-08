@@ -51,8 +51,7 @@ export class ThumbnailService extends Common.ThumbnailService {
     id: string;
     dataEncryptionKey: EncryptionKey;
     authConfig: Common.IFileStorageAuthConfiguration;
-  }): Promise<Uint8Array> {
-    // TODO should this be Buffer?
-    return this._download({ id, key: dataEncryptionKey, authConfig });
+  }): Promise<Buffer> {
+    return this._download({ id, key: dataEncryptionKey, authConfig }).then(Buffer.from);
   }
 }
