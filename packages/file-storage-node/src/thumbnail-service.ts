@@ -3,10 +3,12 @@ import { EncryptionKey } from '@meeco/cryppo';
 import { Thumbnail } from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
 import * as cryppo from '@meeco/cryppo';
+import fetch from 'node-fetch';
+import FormData from 'form-data';
 
 export class ThumbnailService extends Common.ThumbnailService {
   constructor(vaultUrl: string, _cryppo = cryppo) {
-    super(vaultUrl, _cryppo, (url, args) => (<any>global).fetch(url, args));
+    super(vaultUrl, _cryppo, (url, args) => fetch(url, args));
   }
 
   /**
@@ -26,6 +28,11 @@ export class ThumbnailService extends Common.ThumbnailService {
     sizeType: Common.ThumbnailType;
     authConfig: Common.IFileStorageAuthConfiguration;
   }): Promise<Thumbnail> {
+    // polyfill missing FormData in OpenAPI when used in nodejs
+    if (!(<any>global).FormData) {
+      (<any>global).FormData = FormData;
+    }
+
     const thumbnail = fs.readFileSync(thumbnailFilePath);
 
     return this._upload({
