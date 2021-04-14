@@ -1,12 +1,12 @@
 import { EncryptionKey } from '@meeco/cryppo';
 import * as Common from '@meeco/file-storage-common';
 import { IFileStorageAuthConfiguration, ThumbnailType } from '@meeco/file-storage-common';
-import { AttachmentDirectDownloadUrl, Thumbnail } from '@meeco/vault-api-sdk';
-import * as Latest from './lib';
+import { AttachmentDirectDownloadUrl, ThumbnailResponse } from '@meeco/vault-api-sdk';
+import { ThumbnailService } from './thumbnail-service';
+import { AttachmentService } from './attachment-service';
 
 /**
- * Record v 3.1.1 interface
- * Note that removal of data_encryption_key from IFilestorageauthconfiguration is a breaking change anyway.
+ * API v4.0.0
  * Deprecations will be removed in v.5.0.0 release
  */
 
@@ -19,8 +19,11 @@ export const thumbSizeTypeToMimeExt: (
   fileExtension: string;
 } = Common.thumbSizeTypeToMimeExt;
 
-/** @deprecated Use [[uploadAttachment]] */
-export const largeFileUploadNode: (
+export * from './thumbnail-service';
+export * from './attachment-service';
+
+/** @deprecated Use [[AttachmentService.upload]] */
+export function largeFileUploadNode(
   filePath: string,
   environment: {
     vault: {
@@ -28,10 +31,13 @@ export const largeFileUploadNode: (
     };
   },
   authConfig: IFileStorageAuthConfiguration
-) => Promise<{ attachment: any; dek: EncryptionKey }> = Latest.uploadAttachment;
+): Promise<{ attachment: any; dek: EncryptionKey }> {
+  const service = new AttachmentService(environment.vault.url);
+  return service.upload(filePath, authConfig).then(res => ({ attachment: res.info, dek: res.dek }));
+}
 
-/** @deprecated Use [[downloadAttachment]] */
-export const fileDownloadNode: (
+/** @deprecated Use [[AttachmentService.download]] */
+export function fileDownloadNode(
   attachmentId: string,
   environment: {
     vault: {
@@ -41,40 +47,48 @@ export const fileDownloadNode: (
   authConfig: IFileStorageAuthConfiguration,
   attachmentDek: EncryptionKey,
   logFunction?: any
-) => Promise<{ fileName: string; buffer: Buffer }> = Latest.downloadAttachment;
+): Promise<{ fileName: string; buffer: Buffer }> {
+  const service = new AttachmentService(environment.vault.url);
+  return service
+    .download(attachmentId, attachmentDek, authConfig)
+    .then(res => ({ fileName: res.info.filename, buffer: res.data }));
+}
 
-/** @deprecated Use [[downloadAttachment]] */
-export const largeFileDownloadNode: (
+/** @deprecated Use [[AttachmentService.download]] */
+export function largeFileDownloadNode(
   attachmentID: string,
   dek: EncryptionKey,
   authConfig: IFileStorageAuthConfiguration,
   vaultUrl: string
-) => Promise<{ byteArray: Buffer; direct_download: AttachmentDirectDownloadUrl }> =
-  Latest.largeFileDownloadNode;
+): Promise<{ byteArray: Buffer; direct_download: AttachmentDirectDownloadUrl }> {
+  const service = new AttachmentService(vaultUrl);
+  return service
+    .download(attachmentID, dek, authConfig)
+    .then(res => ({ direct_download: res.info, byteArray: res.data }));
+}
 
-/** @deprecated Use [[Latest.uploadThumbnail]] */
-export const encryptAndUploadThumbnail: (_: {
+/** @deprecated Use [[ThumbnailService.upload]] */
+export function encryptAndUploadThumbnail(args: {
   thumbnailFilePath: string;
   binaryId: string;
   attachmentDek: EncryptionKey;
   sizeType: ThumbnailType;
   authConfig: IFileStorageAuthConfiguration;
   vaultUrl: string;
-}) => Promise<Thumbnail> = Latest.uploadThumbnail;
+}): Promise<ThumbnailResponse> {
+  const service = new ThumbnailService(args.vaultUrl);
+  return service.upload(args).then(res => ({
+    thumbnail: res,
+  }));
+}
 
-export async function downloadThumbnail({
-  id,
-  dataEncryptionKey,
-  vaultUrl,
-  authConfig,
-}: {
+/** @deprecated Use [[ThumbnailService.download]] */
+export function downloadThumbnail(args: {
   id: string;
   dataEncryptionKey: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
 }): Promise<Uint8Array> {
-  const service = new Common.ThumbnailService(vaultUrl, (url, args) =>
-    (<any>global).fetch(url, args)
-  );
-  return service.download({ id, key: dataEncryptionKey, authConfig });
+  const service = new ThumbnailService(args.vaultUrl);
+  return service.download(args).then(res => Uint8Array.from(res));
 }

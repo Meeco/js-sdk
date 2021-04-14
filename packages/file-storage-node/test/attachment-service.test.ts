@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { fancy } from 'fancy-test';
 import { AttachmentService } from '../src/attachment-service';
 import { EncryptionKey } from '@meeco/cryppo';
+import * as cryppo from '@meeco/cryppo';
 
 const mock = require('mock-fs');
 const fs = require('fs');
@@ -25,15 +26,33 @@ describe('AttachmentService', () => {
         is_direct_upload: true,
       }))
       .nock(fakeVault, api => {
-        api
-          .get(new RegExp('/direct/attachments/badId/download_url.*'))
-          .twice()
-          .reply(404);
+        api.get(new RegExp('/direct/attachments/badId/download_url.*')).reply(404);
       })
       .add('service', () => new AttachmentService(fakeVault))
       .do(async ({ service }) => await service.download('badId', {} as EncryptionKey, fakeAuth))
       .catch('Could not retrieve badId')
       .it('reports a missing id');
+
+    // TODO check args of stubs
+    fancy
+      .stub(Common.AttachmentService.prototype, 'getAttachmentInfo', () => ({
+        is_direct_upload: true,
+      }))
+      .stub(Common.AttachmentService.prototype, 'getDownloadMetaData', () => ({
+        artifactsUrl: '',
+        fileInfo: {},
+      }))
+      .stub(Common.AzureBlockDownload, 'download', async () =>
+        cryppo.utf8ToBytes(
+          JSON.stringify({
+            // TODO: return sth to test block reconstruction
+            range: { length: 0 },
+          })
+        )
+      )
+      .add('service', () => new AttachmentService(fakeVault))
+      .do(async ({ service }) => await service.download('badId', {} as EncryptionKey, fakeAuth))
+      .it('downloads a file');
   });
 
   // TODO probably redundant
@@ -108,5 +127,12 @@ describe('AttachmentService', () => {
         // dek is correct
         expect(result.dek).to.eql({ key: 'fake_key' });
       });
+
+    fancy
+      .do(async () => {
+        await new AttachmentService(fakeVault).upload('none-file', fakeAuth);
+      })
+      .catch(/^ENOENT:.*/)
+      .it('reports a missing file');
   });
 });

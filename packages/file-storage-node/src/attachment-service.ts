@@ -108,7 +108,7 @@ export class AttachmentService extends Common.AttachmentService {
       authConfig
     )
       .then(cryppo.bytesToUtf8)
-      .then(JSON.parse);
+      .then(JSON.parse); // TODO merge this into AzureBlock API -- just return a JSON
 
     const blocks: Buffer[] = [];
 
