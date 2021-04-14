@@ -14,13 +14,17 @@ export class AttachmentService extends Common.AttachmentService {
   }
 
   /**
+   * Upload a file attachment from local disk.
    * Side effect is that encryption meta data is written to [filePath].encryption_artifacts
-   * @param filePath
-   * @param authConfig
+   * @param key If not provided uses a randomly generated key (returned in result).
+   * @param cancel a Promise that cancels upload if resolved.
    */
   async upload(
     filePath: string,
-    authConfig: Common.IFileStorageAuthConfiguration
+    authConfig: Common.IFileStorageAuthConfiguration,
+    key?: EncryptionKey,
+    progressUpdateFunc?: (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void,
+    cancel?: Promise<void>
   ): Promise<{ info: DirectAttachment; dek: EncryptionKey }> {
     const fileStats = fs.statSync(filePath);
     const fileName = path.basename(filePath);
@@ -42,7 +46,7 @@ export class AttachmentService extends Common.AttachmentService {
       authConfig
     );
 
-    const dek = EncryptionKey.generateRandom();
+    const dek = key ? key : EncryptionKey.generateRandom();
     const uploadResult = await this.directAttachmentUpload(
       {
         directUploadUrl: uploadUrl.url,
@@ -73,7 +77,9 @@ export class AttachmentService extends Common.AttachmentService {
         file: artifactsFilePath,
         encrypt: false,
       },
-      FileUtils
+      FileUtils,
+      progressUpdateFunc,
+      cancel
     );
 
     const attachedDoc = await this.directAttachmentAttach(
@@ -89,10 +95,15 @@ export class AttachmentService extends Common.AttachmentService {
     return { info: attachedDoc, dek };
   }
 
+  /**
+   * @param cancel a Promise that cancels upload if resolved.
+   */
   async download(
     id: string,
     key: EncryptionKey,
-    authConfig: Common.IFileStorageAuthConfiguration
+    authConfig: Common.IFileStorageAuthConfiguration,
+    progressUpdateFunc?: (percentageComplete: number) => void,
+    cancel?: Promise<any>
   ): Promise<{ data: Buffer; info: AttachmentDirectDownloadUrl }> {
     const { is_direct_upload } = await this.getAttachmentInfo(id, authConfig);
 
@@ -111,8 +122,9 @@ export class AttachmentService extends Common.AttachmentService {
       .then(JSON.parse); // TODO merge this into AzureBlock API -- just return a JSON
 
     const blocks: Buffer[] = [];
+    const totalBlocks = encryptionArtifacts.range.length;
 
-    for (let index = 0; index < encryptionArtifacts.range.length; index++) {
+    for (let index = 0; index < totalBlocks; index++) {
       const block: any = await Common.AzureBlockDownload.downloadAndDecrypt(
         fileInfo.url,
         authConfig,
@@ -124,9 +136,15 @@ export class AttachmentService extends Common.AttachmentService {
           ad: encryptionArtifacts.ad,
           at: cryppo.bytesToBinaryString(new Uint8Array(encryptionArtifacts.at[index].data)),
         },
-        encryptionArtifacts.range[index]
+        encryptionArtifacts.range[index],
+        cancel
       );
       blocks.push(block);
+
+      const progress = (index + 1) / totalBlocks;
+      if (progressUpdateFunc) {
+        progressUpdateFunc(progress * 100);
+      }
     }
     const byteArray = Buffer.concat(blocks);
     return { data: byteArray, info: fileInfo };
