@@ -3,15 +3,16 @@ import * as Common from '@meeco/file-storage-common';
 import { IFileStorageAuthConfiguration } from '@meeco/file-storage-common';
 import { DirectAttachment, Thumbnail } from '@meeco/vault-api-sdk';
 import * as Latest from './lib';
+import { ThumbnailService } from './thumbnail-service';
 
 /**
- * Record v 3.1.2 interface
- * Note that removal of data_encryption_key from IFilestorageauthconfiguration is a breaking change anyway.
+ * API v4.0.0
  * Deprecations will be removed in v.5.0.0 release
  */
 
-export { ThumbnailService, ThumbnailType, ThumbnailTypes } from '@meeco/file-storage-common';
+export { ThumbnailType, ThumbnailTypes } from '@meeco/file-storage-common';
 export { AttachmentService } from './lib';
+export * from './thumbnail-service';
 
 export const thumbSizeTypeToMimeExt: (
   sizeTypeString: Common.ThumbnailType | string
@@ -20,6 +21,7 @@ export const thumbSizeTypeToMimeExt: (
   fileExtension: string;
 } = Common.thumbSizeTypeToMimeExt;
 
+/** @deprecated Use [[ThumbnailService.download]] */
 export function downloadThumbnail({
   id,
   dataEncryptionKey,
@@ -31,11 +33,11 @@ export function downloadThumbnail({
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
 }): Promise<Uint8Array> {
-  const service = new Common.ThumbnailService(vaultUrl, (url, args) => window.fetch(url, args));
-  return service.download({ id, key: dataEncryptionKey, authConfig });
+  const service = new ThumbnailService(vaultUrl);
+  return service.download({ id, dataEncryptionKey, authConfig });
 }
 
-/** @deprecated Use [[uploadThumbnail]] */
+/** @deprecated Use [[ThumbnailService.upload]] */
 export function encryptAndUploadThumbnail({
   thumbnail,
   binaryId,
@@ -51,7 +53,7 @@ export function encryptAndUploadThumbnail({
   authConfig: IFileStorageAuthConfiguration;
   vaultUrl: string;
 }): Promise<Thumbnail> {
-  const service = new Common.ThumbnailService(vaultUrl, (url, args) => window.fetch(url, args));
+  const service = new ThumbnailService(vaultUrl);
   return service.upload({
     thumbnail: { data: thumbnail, sizeType },
     attachmentId: binaryId,
