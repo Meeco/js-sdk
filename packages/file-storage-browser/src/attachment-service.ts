@@ -1,11 +1,7 @@
 import { bytesBufferToBinaryString, EncryptionKey } from '@meeco/cryppo';
-import {
-  AzureBlockDownload,
-  buildApiConfig,
-  IFileStorageAuthConfiguration,
-} from '@meeco/file-storage-common';
 import * as Common from '@meeco/file-storage-common';
-import { DirectAttachment, DirectAttachmentsApi } from '@meeco/vault-api-sdk';
+import { AzureBlockDownload, IFileStorageAuthConfiguration } from '@meeco/file-storage-common';
+import { DirectAttachment } from '@meeco/vault-api-sdk';
 import * as FileUtils from './FileUtils.web';
 
 export class AttachmentService extends Common.AttachmentService {
@@ -233,68 +229,4 @@ export class AttachmentService extends Common.AttachmentService {
 
     return { byteArray: blocks, attachmentInfo };
   }
-
-  /**
-   * Wraps [[fileDownloadBrowser]] injecting a callable function that will cancel the action.
-   * For example
-   * ```typescript
-   * const { cancel, success } = fileDownloadBrowserWithCancel(...);
-   * cancel(); // kills download
-   * file = await success // original result
-   * ```
-   * @returns An object with attributes `cancel`: the function to cancel the download, `success` contains
-   * the original result promise.
-   */
-  public fileDownloadBrowserWithCancel = withCancel<
-    {
-      attachmentId: string;
-      dek: EncryptionKey;
-      authConfig: IFileStorageAuthConfiguration;
-      progressUpdateFunc?:
-        | ((
-            chunkBuffer: ArrayBuffer | null,
-            percentageComplete: number,
-            videoCodec?: string
-          ) => void)
-        | null;
-    },
-    Promise<File>
-  >(args => this.download(args));
-
-  /**
-   * Wraps [[fileUploadBrowser]] injecting a callable function that will cancel the action.
-   * @returns An object with attributes `cancel`: the function to cancel the upload, `success` contains
-   * the original result promise.
-   */
-  public fileUploadBrowserWithCancel = withCancel<
-    {
-      file: File;
-      authConfig: IFileStorageAuthConfiguration;
-      videoCodec?: string;
-      progressUpdateFunc?:
-        | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
-        | null;
-    },
-    Promise<{ attachment: any; dek: EncryptionKey }>
-  >(args => this.upload(args));
-}
-
-/**
- * Injects a function that can be used to cancel a long running download/upload.
- * Argument function "f" must have named param "onCancel".
- */
-export function withCancel<S, T>(
-  f: (_: S & { onCancel?: any }) => T
-): (_: S) => { cancel: () => void; success: T } {
-  return (x: S) => {
-    let cancel;
-    const promise = new Promise((resolve, reject) => (cancel = () => resolve('cancel')));
-    return {
-      cancel,
-      success: f({
-        ...x,
-        onCancel: promise,
-      }),
-    };
-  };
 }

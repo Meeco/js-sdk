@@ -9,3 +9,4 @@ export {
   thumbSizeTypeToMimeExt,
 } from './services/thumbnail-service';
 export { IFileStorageAuthConfiguration, buildApiConfig } from './auth';
+export { withCancel } from './app';
