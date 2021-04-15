@@ -9,6 +9,9 @@ export class ThumbnailService extends Common.ThumbnailService {
     super(vaultUrl, _cryppo, (url, args) => window.fetch(url, args));
   }
 
+  /**
+   * @returns Metadata about the created Thumbnail including its id and url.
+   */
   upload(args: {
     thumbnail: {
       data: Uint8Array;

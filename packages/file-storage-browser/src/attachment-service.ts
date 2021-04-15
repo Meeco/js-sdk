@@ -40,16 +40,14 @@ export class AttachmentService extends Common.AttachmentService {
     authConfig,
     key,
     videoCodec,
-    progressUpdateFunc = null,
+    progressUpdateFunc,
     cancel,
   }: {
     file: File;
     authConfig: IFileStorageAuthConfiguration;
     key: EncryptionKey;
     videoCodec?: string;
-    progressUpdateFunc?:
-      | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
-      | null;
+    progressUpdateFunc?: (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void;
     cancel?: Promise<any>;
   }): Promise<DirectAttachment> {
     if (progressUpdateFunc) {
@@ -124,22 +122,20 @@ export class AttachmentService extends Common.AttachmentService {
   }
 
   /**
-   * Download a file either from Azure block storage (direct upload) or the legacy storage.
-   * @param {object} __namedParameters Options
-   * @param dek Usually this is stored in the `encrypted_value` attribute of the "attachment" slot.
+   * @param id UUID of the attachment to download.
+   * @param key Used to decrypt the file. Usually this is stored in the `encrypted_value` attribute of the "attachment" slot.
    * @param authConfig Contains the auth headers/tokens.
-   * @param progressUpdateFunc TODO not used in regular case!
-   * @param onCancel Promise that, if resolved, cancels the download.
+   * @param cancel Promise that, if resolved, cancels the download.
    */
   async download({
-    attachmentId,
-    dek,
+    id,
+    key,
     authConfig,
     progressUpdateFunc = null,
     cancel,
   }: {
-    attachmentId: string;
-    dek: EncryptionKey;
+    id: string;
+    key: EncryptionKey;
     authConfig: IFileStorageAuthConfiguration;
     progressUpdateFunc?:
       | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
@@ -150,15 +146,15 @@ export class AttachmentService extends Common.AttachmentService {
       progressUpdateFunc(null, 0);
     }
 
-    const attachmentInfo = await this.getAttachmentInfo(attachmentId, authConfig);
+    const attachmentInfo = await this.getAttachmentInfo(id, authConfig);
 
     let buffer: Uint8Array;
     const fileName: string = attachmentInfo.filename;
     if (attachmentInfo.is_direct_upload) {
       // was uploaded in chunks
       const downloaded = await this.largeFileDownloadBrowser(
-        attachmentId,
-        dek,
+        id,
+        key,
         authConfig,
         progressUpdateFunc,
         cancel

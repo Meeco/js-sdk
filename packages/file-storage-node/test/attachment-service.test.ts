@@ -29,7 +29,10 @@ describe('AttachmentService', () => {
         api.get(new RegExp('/direct/attachments/badId/download_url.*')).reply(404);
       })
       .add('service', () => new AttachmentService(fakeVault))
-      .do(async ({ service }) => await service.download('badId', {} as EncryptionKey, fakeAuth))
+      .do(
+        async ({ service }) =>
+          await service.download({ id: 'badId', key: {} as EncryptionKey, authConfig: fakeAuth })
+      )
       .catch('Could not retrieve badId')
       .it('reports a missing id');
 
@@ -51,7 +54,10 @@ describe('AttachmentService', () => {
         )
       )
       .add('service', () => new AttachmentService(fakeVault))
-      .do(async ({ service }) => await service.download('badId', {} as EncryptionKey, fakeAuth))
+      .do(
+        async ({ service }) =>
+          await service.download({ id: 'badId', key: {} as EncryptionKey, authConfig: fakeAuth })
+      )
       .it('downloads a file');
   });
 
@@ -119,9 +125,13 @@ describe('AttachmentService', () => {
       })
       .add('service', () => new AttachmentService(fakeVault))
       .it('uploads a file', async ({ service }) => {
-        const result = await service.upload('some/file.txt', fakeAuth, ({
-          key: 'fake_key',
-        } as any) as EncryptionKey);
+        await service.upload({
+          filePath: 'some/file.txt',
+          authConfig: fakeAuth,
+          key: ({
+            key: 'fake_key',
+          } as any) as EncryptionKey,
+        });
 
         // artifacts exist
         expect(fs.readFileSync('file.txt.encryption_artifacts')).to.be.ok;
@@ -129,9 +139,13 @@ describe('AttachmentService', () => {
 
     fancy
       .do(async () => {
-        await new AttachmentService(fakeVault).upload('none-file', fakeAuth, ({
-          key: 'fake_key',
-        } as any) as EncryptionKey);
+        await new AttachmentService(fakeVault).upload({
+          filePath: 'none-file',
+          authConfig: fakeAuth,
+          key: ({
+            key: 'fake_key',
+          } as any) as EncryptionKey,
+        });
       })
       .catch(/^ENOENT:.*/)
       .it('reports a missing file');

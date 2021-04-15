@@ -88,7 +88,7 @@ export function fileUploadBrowser({
       authConfig,
       videoCodec,
       key: dek,
-      progressUpdateFunc,
+      progressUpdateFunc: progressUpdateFunc || undefined,
       cancel: onCancel,
     })
     .then(res => ({ attachment: res, dek }));
@@ -137,7 +137,13 @@ export function fileDownloadBrowser({
   onCancel?: any;
 }): Promise<File> {
   const service = new AttachmentService(vaultUrl);
-  return service.download({ attachmentId, dek, authConfig, progressUpdateFunc, cancel: onCancel });
+  return service.download({
+    id: attachmentId,
+    key: dek,
+    authConfig,
+    progressUpdateFunc,
+    cancel: onCancel,
+  });
 }
 
 /**

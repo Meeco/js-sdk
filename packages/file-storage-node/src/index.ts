@@ -34,7 +34,7 @@ export function largeFileUploadNode(
 ): Promise<{ attachment: any; dek: EncryptionKey }> {
   const service = new AttachmentService(environment.vault.url);
   const dek = EncryptionKey.generateRandom();
-  return service.upload(filePath, authConfig, dek).then(res => ({ attachment: res, dek }));
+  return service.upload({ filePath, authConfig, key: dek }).then(res => ({ attachment: res, dek }));
 }
 
 /** @deprecated Use [[AttachmentService.download]] */
@@ -51,7 +51,7 @@ export function fileDownloadNode(
 ): Promise<{ fileName: string; buffer: Buffer }> {
   const service = new AttachmentService(environment.vault.url);
   return service
-    .download(attachmentId, attachmentDek, authConfig)
+    .download({ id: attachmentId, key: attachmentDek, authConfig })
     .then(res => ({ fileName: res.info.filename, buffer: res.data }));
 }
 
@@ -64,7 +64,7 @@ export function largeFileDownloadNode(
 ): Promise<{ byteArray: Buffer; direct_download: AttachmentDirectDownloadUrl }> {
   const service = new AttachmentService(vaultUrl);
   return service
-    .download(attachmentID, dek, authConfig)
+    .download({ id: attachmentID, key: dek, authConfig })
     .then(res => ({ direct_download: res.info, byteArray: res.data }));
 }
 
@@ -78,9 +78,17 @@ export function encryptAndUploadThumbnail(args: {
   vaultUrl: string;
 }): Promise<ThumbnailResponse> {
   const service = new ThumbnailService(args.vaultUrl);
-  return service.upload(args).then(res => ({
-    thumbnail: res,
-  }));
+  return service
+    .upload({
+      thumbnailFilePath: args.thumbnailFilePath,
+      attachmentId: args.binaryId,
+      key: args.attachmentDek,
+      sizeType: args.sizeType,
+      authConfig: args.authConfig,
+    })
+    .then(res => ({
+      thumbnail: res,
+    }));
 }
 
 /** @deprecated Use [[ThumbnailService.download]] */
@@ -91,5 +99,11 @@ export function downloadThumbnail(args: {
   authConfig: IFileStorageAuthConfiguration;
 }): Promise<Uint8Array> {
   const service = new ThumbnailService(args.vaultUrl);
-  return service.download(args).then(res => Uint8Array.from(res));
+  return service
+    .download({
+      id: args.id,
+      key: args.dataEncryptionKey,
+      authConfig: args.authConfig,
+    })
+    .then(res => Uint8Array.from(res));
 }

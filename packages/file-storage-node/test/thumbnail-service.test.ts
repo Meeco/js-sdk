@@ -37,7 +37,7 @@ describe('ThumbnailService', () => {
         async ({ service }) =>
           await service.download({
             id: 'id',
-            dataEncryptionKey: {} as cryppo.EncryptionKey,
+            key: {} as cryppo.EncryptionKey,
             authConfig: fakeAuth,
           })
       )
@@ -52,7 +52,7 @@ describe('ThumbnailService', () => {
         async ({ service }) =>
           await service.download({
             id: 'id',
-            dataEncryptionKey: {} as cryppo.EncryptionKey,
+            key: {} as cryppo.EncryptionKey,
             authConfig: fakeAuth,
           })
       )
@@ -72,7 +72,7 @@ describe('ThumbnailService', () => {
         async ({ service }) =>
           await service.download({
             id: 'id',
-            dataEncryptionKey: {} as cryppo.EncryptionKey,
+            key: {} as cryppo.EncryptionKey,
             authConfig: fakeAuth,
           })
       )
@@ -100,7 +100,7 @@ describe('ThumbnailService', () => {
         async ({ service }) =>
           await service.download({
             id: 'id',
-            dataEncryptionKey: {} as cryppo.EncryptionKey,
+            key: {} as cryppo.EncryptionKey,
             authConfig: fakeAuth,
           })
       )
@@ -131,8 +131,8 @@ describe('ThumbnailService', () => {
       .do(async ({ service }) => {
         await service.upload({
           thumbnailFilePath: 'some/file.txt',
-          binaryId: '123',
-          attachmentDek: cryppo.EncryptionKey.generateRandom(),
+          attachmentId: '123',
+          key: cryppo.EncryptionKey.generateRandom(),
           sizeType: ThumbnailTypes[4],
           authConfig: {},
         });
@@ -144,8 +144,8 @@ describe('ThumbnailService', () => {
       .do(async ({ service }) => {
         await service.upload({
           thumbnailFilePath: 'non-existing-file',
-          binaryId: '123',
-          attachmentDek: {} as cryppo.EncryptionKey,
+          attachmentId: '123',
+          key: {} as cryppo.EncryptionKey,
           sizeType: ThumbnailTypes[4],
           authConfig: {},
         });

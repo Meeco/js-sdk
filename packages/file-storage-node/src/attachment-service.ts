@@ -19,13 +19,19 @@ export class AttachmentService extends Common.AttachmentService {
    * @param key If not provided uses a randomly generated key (returned in result).
    * @param cancel a Promise that cancels upload if resolved.
    */
-  async upload(
-    filePath: string,
-    authConfig: Common.IFileStorageAuthConfiguration,
-    key: EncryptionKey,
-    progressUpdateFunc?: (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void,
-    cancel?: Promise<void>
-  ): Promise<DirectAttachment> {
+  async upload({
+    filePath,
+    authConfig,
+    key,
+    progressUpdateFunc,
+    cancel,
+  }: {
+    filePath: string;
+    authConfig: Common.IFileStorageAuthConfiguration;
+    key: EncryptionKey;
+    progressUpdateFunc?: (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void;
+    cancel?: Promise<void>;
+  }): Promise<DirectAttachment> {
     const fileStats = fs.statSync(filePath);
     const fileName = path.basename(filePath);
 
@@ -97,15 +103,23 @@ export class AttachmentService extends Common.AttachmentService {
   }
 
   /**
+   * @param id UUID of the attachment to download.
+   * @param key Used to decrypt the file. Usually this is stored in the `encrypted_value` attribute of the "attachment" slot.
    * @param cancel a Promise that cancels upload if resolved.
    */
-  async download(
-    id: string,
-    key: EncryptionKey,
-    authConfig: Common.IFileStorageAuthConfiguration,
-    progressUpdateFunc?: (percentageComplete: number) => void,
-    cancel?: Promise<any>
-  ): Promise<{ data: Buffer; info: AttachmentDirectDownloadUrl }> {
+  async download({
+    id,
+    key,
+    authConfig,
+    progressUpdateFunc,
+    cancel,
+  }: {
+    id: string;
+    key: EncryptionKey;
+    authConfig: Common.IFileStorageAuthConfiguration;
+    progressUpdateFunc?: (percentageComplete: number) => void;
+    cancel?: Promise<any>;
+  }): Promise<{ data: Buffer; info: AttachmentDirectDownloadUrl }> {
     const { is_direct_upload } = await this.getAttachmentInfo(id, authConfig);
 
     if (is_direct_upload === false) {

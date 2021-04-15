@@ -11,7 +11,7 @@
     "build": "tsc -p tsconfig.build.json",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
-    "docs": "typedoc --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate --excludeProtected src/*.ts"
+    "docs": "typedoc --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate --excludeProtected src/index.ts"
   },
   "dependencies": {
     "@meeco/cryppo": "^2.0.0",

@@ -15,16 +15,16 @@ export class ThumbnailService extends Common.ThumbnailService {
    * Reads a file from a system path [[thumbnailFilePath]] and uploads.
    * @returns Metadata about the created Thumbnail including its id and url.
    */
-  async upload({
+  upload({
     thumbnailFilePath,
-    binaryId,
-    attachmentDek,
+    attachmentId,
+    key,
     sizeType,
     authConfig,
   }: {
     thumbnailFilePath: string;
-    binaryId: string;
-    attachmentDek: EncryptionKey;
+    attachmentId: string;
+    key: EncryptionKey;
     sizeType: Common.ThumbnailType;
     authConfig: Common.IFileStorageAuthConfiguration;
   }): Promise<Thumbnail> {
@@ -37,21 +37,17 @@ export class ThumbnailService extends Common.ThumbnailService {
 
     return this._upload({
       thumbnail: { data: thumbnail, sizeType },
-      attachmentId: binaryId,
-      key: attachmentDek,
+      attachmentId,
+      key,
       authConfig,
     });
   }
 
-  async download({
-    id,
-    dataEncryptionKey,
-    authConfig,
-  }: {
+  download(args: {
     id: string;
-    dataEncryptionKey: EncryptionKey;
+    key: EncryptionKey;
     authConfig: Common.IFileStorageAuthConfiguration;
   }): Promise<Buffer> {
-    return this._download({ id, key: dataEncryptionKey, authConfig }).then(Buffer.from);
+    return this._download(args).then(Buffer.from);
   }
 }
