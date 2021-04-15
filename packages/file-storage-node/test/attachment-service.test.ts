@@ -56,7 +56,7 @@ describe('AttachmentService', () => {
   });
 
   // TODO probably redundant
-  describe('#createAttachmentUploadUrl', () => {
+  describe('#createUploadUrl', () => {
     fancy
       .nock(fakeVault, api => {
         api
@@ -69,7 +69,7 @@ describe('AttachmentService', () => {
       })
       .add('service', () => new AttachmentService(fakeVault))
       .do(({ service }) =>
-        service.createAttachmentUploadUrl(
+        service.createUploadUrl(
           {
             fileSize: 123,
             fileType: 'plain/text',
@@ -89,7 +89,6 @@ describe('AttachmentService', () => {
     });
 
     fancy
-      .stub(EncryptionKey, 'generateRandom', () => ({ key: 'fake_key' }))
       // Note: callback structure of AzureBlockUpload means we can't stub it
       .stub(Common.AttachmentService.prototype, 'uploadBlocks', async () => ({
         artifacts: { a: 1 },
@@ -120,17 +119,19 @@ describe('AttachmentService', () => {
       })
       .add('service', () => new AttachmentService(fakeVault))
       .it('uploads a file', async ({ service }) => {
-        const result = await service.upload('some/file.txt', fakeAuth);
+        const result = await service.upload('some/file.txt', fakeAuth, ({
+          key: 'fake_key',
+        } as any) as EncryptionKey);
 
         // artifacts exist
         expect(fs.readFileSync('file.txt.encryption_artifacts')).to.be.ok;
-        // dek is correct
-        expect(result.dek).to.eql({ key: 'fake_key' });
       });
 
     fancy
       .do(async () => {
-        await new AttachmentService(fakeVault).upload('none-file', fakeAuth);
+        await new AttachmentService(fakeVault).upload('none-file', fakeAuth, ({
+          key: 'fake_key',
+        } as any) as EncryptionKey);
       })
       .catch(/^ENOENT:.*/)
       .it('reports a missing file');

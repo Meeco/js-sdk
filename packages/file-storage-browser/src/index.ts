@@ -81,7 +81,17 @@ export function fileUploadBrowser({
   onCancel?: any;
 }): Promise<{ attachment: DirectAttachment; dek: EncryptionKey }> {
   const service = new AttachmentService(vaultUrl);
-  return service.upload({ file, authConfig, videoCodec, progressUpdateFunc, cancel: onCancel });
+  const dek = EncryptionKey.generateRandom();
+  return service
+    .upload({
+      file,
+      authConfig,
+      videoCodec,
+      key: dek,
+      progressUpdateFunc,
+      cancel: onCancel,
+    })
+    .then(res => ({ attachment: res, dek }));
 }
 
 /**

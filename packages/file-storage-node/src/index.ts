@@ -33,7 +33,8 @@ export function largeFileUploadNode(
   authConfig: IFileStorageAuthConfiguration
 ): Promise<{ attachment: any; dek: EncryptionKey }> {
   const service = new AttachmentService(environment.vault.url);
-  return service.upload(filePath, authConfig).then(res => ({ attachment: res.info, dek: res.dek }));
+  const dek = EncryptionKey.generateRandom();
+  return service.upload(filePath, authConfig, dek).then(res => ({ attachment: res, dek }));
 }
 
 /** @deprecated Use [[AttachmentService.download]] */

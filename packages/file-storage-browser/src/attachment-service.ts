@@ -29,31 +29,32 @@ export class AttachmentService extends Common.AttachmentService {
    * @param {object} __namedParameters Options
    * @param file
    * @param authConfig Contains the auth tokens.
+   * @param key Data Encryption Key used to encrypt the attachment.
    * @param videoCodec Optionally record the video codec in attachment metadata.
-   * @param progressUpdateFunc reporter callback
+   * @param progressUpdateFunc reporter callback.
    * @param onCancel Promise that, if resolved, cancels the upload.
-   * @returns Attachment metadata and the encryption key used to encrypt the attachment data.
+   * @returns Attachment metadata
    */
   async upload({
     file,
     authConfig,
+    key,
     videoCodec,
     progressUpdateFunc = null,
     cancel,
   }: {
     file: File;
     authConfig: IFileStorageAuthConfiguration;
+    key: EncryptionKey;
     videoCodec?: string;
     progressUpdateFunc?:
       | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
       | null;
     cancel?: Promise<any>;
-  }): Promise<{ attachment: DirectAttachment; dek: EncryptionKey }> {
+  }): Promise<DirectAttachment> {
     if (progressUpdateFunc) {
       progressUpdateFunc(null, 0);
     }
-
-    const dek = EncryptionKey.generateRandom();
 
     // upload the attachment
     const uploadUrl = await this.createUploadUrl(
@@ -69,7 +70,7 @@ export class AttachmentService extends Common.AttachmentService {
         directUploadUrl: uploadUrl.url,
         file,
         encrypt: true,
-        attachmentDek: dek,
+        attachmentDek: key,
       },
       FileUtils,
       progressUpdateFunc,
@@ -119,7 +120,7 @@ export class AttachmentService extends Common.AttachmentService {
       },
       authConfig
     );
-    return { attachment: attachedDoc, dek };
+    return attachedDoc;
   }
 
   /**

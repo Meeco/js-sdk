@@ -22,10 +22,10 @@ export class AttachmentService extends Common.AttachmentService {
   async upload(
     filePath: string,
     authConfig: Common.IFileStorageAuthConfiguration,
-    key?: EncryptionKey,
+    key: EncryptionKey,
     progressUpdateFunc?: (chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void,
     cancel?: Promise<void>
-  ): Promise<{ info: DirectAttachment; dek: EncryptionKey }> {
+  ): Promise<DirectAttachment> {
     const fileStats = fs.statSync(filePath);
     const fileName = path.basename(filePath);
 
@@ -46,13 +46,12 @@ export class AttachmentService extends Common.AttachmentService {
       authConfig
     );
 
-    const dek = key ? key : EncryptionKey.generateRandom();
     const uploadResult = await this.uploadBlocks(
       {
         directUploadUrl: uploadUrl.url,
         file: filePath,
         encrypt: true,
-        attachmentDek: dek,
+        attachmentDek: key,
       },
       FileUtils
     );
@@ -94,7 +93,7 @@ export class AttachmentService extends Common.AttachmentService {
       authConfig
     );
 
-    return { info: attachedDoc, dek };
+    return attachedDoc;
   }
 
   /**
