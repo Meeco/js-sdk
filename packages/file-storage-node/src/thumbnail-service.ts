@@ -1,10 +1,10 @@
-import * as Common from '@meeco/file-storage-common';
-import { EncryptionKey } from '@meeco/cryppo';
-import { Thumbnail } from '@meeco/vault-api-sdk';
-import * as fs from 'fs';
 import * as cryppo from '@meeco/cryppo';
-import fetch from 'node-fetch';
+import { EncryptionKey } from '@meeco/cryppo';
+import * as Common from '@meeco/file-storage-common';
+import { Thumbnail } from '@meeco/vault-api-sdk';
 import FormData from 'form-data';
+import * as fs from 'fs';
+import fetch from 'node-fetch';
 
 export class ThumbnailService extends Common.ThumbnailService {
   constructor(vaultUrl: string, _cryppo = cryppo) {

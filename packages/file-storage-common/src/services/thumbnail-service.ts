@@ -1,5 +1,5 @@
 import { binaryStringToBytesBuffer, CipherStrategy, EncryptionKey } from '@meeco/cryppo';
-import { Thumbnail, ThumbnailApi, RedirectResponse } from '@meeco/vault-api-sdk';
+import { RedirectResponse, Thumbnail, ThumbnailApi } from '@meeco/vault-api-sdk';
 import { buildApiConfig, getBlobHeaders, IFileStorageAuthConfiguration } from '../auth';
 
 export type ThumbnailType =
@@ -128,7 +128,7 @@ export class ThumbnailService {
       referrerPolicy: 'no-referrer',
     });
 
-    if (result.status == 404) {
+    if (result.status === 404) {
       throw new Error('Thumbnail not found');
     }
 

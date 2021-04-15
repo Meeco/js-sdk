@@ -2,8 +2,8 @@ import { EncryptionKey } from '@meeco/cryppo';
 import * as Common from '@meeco/file-storage-common';
 import { IFileStorageAuthConfiguration, ThumbnailType } from '@meeco/file-storage-common';
 import { AttachmentDirectDownloadUrl, ThumbnailResponse } from '@meeco/vault-api-sdk';
-import { ThumbnailService } from './thumbnail-service';
 import { AttachmentService } from './attachment-service';
+import { ThumbnailService } from './thumbnail-service';
 
 /**
  * API v4.0.0
@@ -11,6 +11,8 @@ import { AttachmentService } from './attachment-service';
  */
 
 export { ThumbnailType, ThumbnailTypes } from '@meeco/file-storage-common';
+export * from './attachment-service';
+export * from './thumbnail-service';
 
 export const thumbSizeTypeToMimeExt: (
   sizeTypeString: Common.ThumbnailType | string
@@ -18,9 +20,6 @@ export const thumbSizeTypeToMimeExt: (
   mimeType: string;
   fileExtension: string;
 } = Common.thumbSizeTypeToMimeExt;
-
-export * from './thumbnail-service';
-export * from './attachment-service';
 
 /** @deprecated Use [[AttachmentService.upload]] */
 export function largeFileUploadNode(

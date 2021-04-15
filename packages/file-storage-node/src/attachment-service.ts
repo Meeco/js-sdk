@@ -4,9 +4,9 @@ import * as Common from '@meeco/file-storage-common';
 import { AttachmentDirectDownloadUrl, DirectAttachment } from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
 import * as mfe from 'mime-file-extension';
+import fetch from 'node-fetch';
 import * as path from 'path';
 import * as FileUtils from './FileUtils.node';
-import fetch from 'node-fetch';
 
 export class AttachmentService extends Common.AttachmentService {
   constructor(vaultUrl: string, _cryppo = cryppo) {
