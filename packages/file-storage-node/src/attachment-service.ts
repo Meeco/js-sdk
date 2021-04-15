@@ -37,7 +37,7 @@ export class AttachmentService extends Common.AttachmentService {
       fileType = 'text/plain';
     }
 
-    const uploadUrl = await this.createAttachmentUploadUrl(
+    const uploadUrl = await this.createUploadUrl(
       {
         fileSize: fileStats.size,
         fileType,
@@ -47,7 +47,7 @@ export class AttachmentService extends Common.AttachmentService {
     );
 
     const dek = key ? key : EncryptionKey.generateRandom();
-    const uploadResult = await this.directAttachmentUpload(
+    const uploadResult = await this.uploadBlocks(
       {
         directUploadUrl: uploadUrl.url,
         file: filePath,
@@ -62,7 +62,7 @@ export class AttachmentService extends Common.AttachmentService {
     fs.writeFileSync(artifactsFilePath, JSON.stringify(uploadResult.artifacts), 'utf8');
     const artifactsFileStats = fs.statSync(artifactsFilePath);
 
-    const artifactsUploadUrl = await this.createAttachmentUploadUrl(
+    const artifactsUploadUrl = await this.createUploadUrl(
       {
         fileName: artifactsFileName,
         fileType: 'application/json',
@@ -71,7 +71,7 @@ export class AttachmentService extends Common.AttachmentService {
       authConfig
     );
 
-    await this.directAttachmentUpload(
+    await this.uploadBlocks(
       {
         directUploadUrl: artifactsUploadUrl.url,
         file: artifactsFilePath,
@@ -82,12 +82,14 @@ export class AttachmentService extends Common.AttachmentService {
       cancel
     );
 
-    const attachedDoc = await this.directAttachmentAttach(
+    const attachedDoc = await this.linkArtifacts(
       {
         blobId: uploadUrl.blob_id,
         blobKey: uploadUrl.blob_key,
-        artifactsBlobId: artifactsUploadUrl.blob_id,
-        artifactsBlobKey: artifactsUploadUrl.blob_key,
+      },
+      {
+        blobId: artifactsUploadUrl.blob_id,
+        blobKey: artifactsUploadUrl.blob_key,
       },
       authConfig
     );

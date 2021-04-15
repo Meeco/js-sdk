@@ -91,7 +91,7 @@ describe('AttachmentService', () => {
     fancy
       .stub(EncryptionKey, 'generateRandom', () => ({ key: 'fake_key' }))
       // Note: callback structure of AzureBlockUpload means we can't stub it
-      .stub(Common.AttachmentService.prototype, 'directAttachmentUpload', async () => ({
+      .stub(Common.AttachmentService.prototype, 'uploadBlocks', async () => ({
         artifacts: { a: 1 },
       })) // azure
       .nock(fakeVault, api => {

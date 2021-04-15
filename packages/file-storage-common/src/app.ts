@@ -10,7 +10,7 @@ export function withCancel<S, T>(
 ): (_: S) => { cancel: () => void; success: T } {
   return (x: S) => {
     let cancelFn;
-    const promise = new Promise((resolve, reject) => (cancelFn = () => resolve()));
+    const promise = new Promise((resolve, reject) => (cancelFn = () => resolve('cancel')));
     return {
       cancel: cancelFn,
       success: f({

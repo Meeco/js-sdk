@@ -28,7 +28,7 @@ export class AttachmentService extends Common.AttachmentService {
    *
    * @param {object} __namedParameters Options
    * @param file
-   * @param authConfig Contains the DEK and the appropriate auth tokens.
+   * @param authConfig Contains the auth tokens.
    * @param videoCodec Optionally record the video codec in attachment metadata.
    * @param progressUpdateFunc reporter callback
    * @param onCancel Promise that, if resolved, cancels the upload.
@@ -39,7 +39,7 @@ export class AttachmentService extends Common.AttachmentService {
     authConfig,
     videoCodec,
     progressUpdateFunc = null,
-    onCancel,
+    cancel,
   }: {
     file: File;
     authConfig: IFileStorageAuthConfiguration;
@@ -47,7 +47,7 @@ export class AttachmentService extends Common.AttachmentService {
     progressUpdateFunc?:
       | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
       | null;
-    onCancel?: Promise<any>;
+    cancel?: Promise<any>;
   }): Promise<{ attachment: DirectAttachment; dek: EncryptionKey }> {
     if (progressUpdateFunc) {
       progressUpdateFunc(null, 0);
@@ -56,7 +56,7 @@ export class AttachmentService extends Common.AttachmentService {
     const dek = EncryptionKey.generateRandom();
 
     // upload the attachment
-    const uploadUrl = await this.createAttachmentUploadUrl(
+    const uploadUrl = await this.createUploadUrl(
       {
         fileSize: file.size,
         fileType: file.type,
@@ -64,7 +64,7 @@ export class AttachmentService extends Common.AttachmentService {
       },
       authConfig
     );
-    const uploadResult = await this.directAttachmentUpload(
+    const uploadResult = await this.uploadBlocks(
       {
         directUploadUrl: uploadUrl.url,
         file,
@@ -73,7 +73,7 @@ export class AttachmentService extends Common.AttachmentService {
       },
       FileUtils,
       progressUpdateFunc,
-      onCancel
+      cancel
     );
 
     // upload encryption artefacts
@@ -90,7 +90,7 @@ export class AttachmentService extends Common.AttachmentService {
       }
     );
 
-    const artifactsUploadUrl = await this.createAttachmentUploadUrl(
+    const artifactsUploadUrl = await this.createUploadUrl(
       {
         fileName: artifactsFileName,
         fileType: 'application/json',
@@ -98,7 +98,7 @@ export class AttachmentService extends Common.AttachmentService {
       },
       authConfig
     );
-    await this.directAttachmentUpload(
+    await this.uploadBlocks(
       {
         directUploadUrl: artifactsUploadUrl.url,
         file: artifactsFile,
@@ -106,14 +106,16 @@ export class AttachmentService extends Common.AttachmentService {
       },
       FileUtils,
       null,
-      onCancel
+      cancel
     );
-    const attachedDoc = await this.directAttachmentAttach(
+    const attachedDoc = await this.linkArtifacts(
       {
         blobId: uploadUrl.blob_id,
         blobKey: uploadUrl.blob_key,
-        artifactsBlobId: artifactsUploadUrl.blob_id,
-        artifactsBlobKey: artifactsUploadUrl.blob_key,
+      },
+      {
+        blobId: artifactsUploadUrl.blob_id,
+        blobKey: artifactsUploadUrl.blob_key,
       },
       authConfig
     );
@@ -124,7 +126,7 @@ export class AttachmentService extends Common.AttachmentService {
    * Download a file either from Azure block storage (direct upload) or the legacy storage.
    * @param {object} __namedParameters Options
    * @param dek Usually this is stored in the `encrypted_value` attribute of the "attachment" slot.
-   * @param authConfig Contains the DEK and the appropriate auth tokens.
+   * @param authConfig Contains the auth headers/tokens.
    * @param progressUpdateFunc TODO not used in regular case!
    * @param onCancel Promise that, if resolved, cancels the download.
    */
@@ -133,7 +135,7 @@ export class AttachmentService extends Common.AttachmentService {
     dek,
     authConfig,
     progressUpdateFunc = null,
-    onCancel,
+    cancel,
   }: {
     attachmentId: string;
     dek: EncryptionKey;
@@ -141,7 +143,7 @@ export class AttachmentService extends Common.AttachmentService {
     progressUpdateFunc?:
       | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
       | null;
-    onCancel?: Promise<any>;
+    cancel?: Promise<any>;
   }): Promise<File> {
     if (progressUpdateFunc) {
       progressUpdateFunc(null, 0);
@@ -158,7 +160,7 @@ export class AttachmentService extends Common.AttachmentService {
         dek,
         authConfig,
         progressUpdateFunc,
-        onCancel
+        cancel
       );
       buffer = downloaded.byteArray;
     } else {

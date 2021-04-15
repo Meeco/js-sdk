@@ -29,13 +29,12 @@ export class AttachmentService {
   constructor(protected vaultUrl: string, protected fetchApi?: any) {}
 
   /**
-   *
    * @param encrypt If true and an `attachmentDek` is given, the file will be encrypted with the given key.
    * @param fileUtilsLib Module that has getSize, getType, readBlock functions. Defined in file-storage-browser or node packages.
    * @param progressUpdateFunc
    * @param onCancel Optional Promise that, if resolved, cancels the action. For example, used to implement a cancel button.
    */
-  async directAttachmentUpload(
+  protected async uploadBlocks(
     { directUploadUrl, file, encrypt, attachmentDek }: IDirectAttachmentUploadData,
     fileUtilsLib,
     progressUpdateFunc?:
@@ -75,7 +74,7 @@ export class AttachmentService {
   /**
    * Create a new upload URL for the file specified by [[config]].
    */
-  async createAttachmentUploadUrl(
+  async createUploadUrl(
     config: {
       fileName: string;
       fileType: string;
@@ -95,28 +94,26 @@ export class AttachmentService {
   }
 
   /**
-   *
-   * @param blobId
-   * @param blobKey
-   * @param artifactsBlobId
-   * @param artifactsBlobKey
+   * Store a link between id and keys of an attachment and its encryption artifacts.
    */
-  async directAttachmentAttach(
-    config: {
+  protected async linkArtifacts(
+    file: {
       blobId: number;
       blobKey: string;
-      artifactsBlobId: number;
-      artifactsBlobKey: string;
+    },
+    artifacts: {
+      blobId: number;
+      blobKey: string;
     },
     auth: IFileStorageAuthConfiguration
   ): Promise<DirectAttachment> {
     const api = new DirectAttachmentsApi(buildApiConfig(auth, this.vaultUrl, this.fetchApi));
     const attachment = await api.directAttachmentsPost({
       blob: {
-        blob_id: config.blobId,
-        blob_key: config.blobKey,
-        encrypted_artifact_blob_id: config.artifactsBlobId,
-        encrypted_artifact_blob_key: config.artifactsBlobKey,
+        blob_id: file.blobId,
+        blob_key: file.blobKey,
+        encrypted_artifact_blob_id: artifacts.blobId,
+        encrypted_artifact_blob_key: artifacts.blobKey,
       },
     });
     return attachment.attachment;

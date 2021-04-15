@@ -34,7 +34,7 @@ export function downloadThumbnail({
   authConfig: IFileStorageAuthConfiguration;
 }): Promise<Uint8Array> {
   const service = new ThumbnailService(vaultUrl);
-  return service.download({ id, dataEncryptionKey, authConfig });
+  return service.download({ id, key: dataEncryptionKey, authConfig });
 }
 
 /** @deprecated Use [[ThumbnailService.upload]] */
@@ -81,7 +81,7 @@ export function fileUploadBrowser({
   onCancel?: any;
 }): Promise<{ attachment: DirectAttachment; dek: EncryptionKey }> {
   const service = new AttachmentService(vaultUrl);
-  return service.upload({ file, authConfig, videoCodec, progressUpdateFunc, onCancel });
+  return service.upload({ file, authConfig, videoCodec, progressUpdateFunc, cancel: onCancel });
 }
 
 /**
@@ -127,7 +127,7 @@ export function fileDownloadBrowser({
   onCancel?: any;
 }): Promise<File> {
   const service = new AttachmentService(vaultUrl);
-  return service.download({ attachmentId, dek, authConfig, progressUpdateFunc, onCancel });
+  return service.download({ attachmentId, dek, authConfig, progressUpdateFunc, cancel: onCancel });
 }
 
 /**
