@@ -20,13 +20,13 @@
     "docs": "typedoc --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate src/index.ts"
   },
   "dependencies": {
-    "@meeco/cryppo": "^2.0.0",
-    "@meeco/file-storage-common": "^4.0.0",
-    "@meeco/vault-api-sdk": "^22.0.4",
+    "@meeco/cryppo": "2.0.2",
+    "@meeco/file-storage-common": "4.0.1",
+    "@meeco/vault-api-sdk": "29.0.0-develop.20210429161313.58bab58",
     "axios": "^0.21.1"
   },
   "devDependencies": {
-    "@meeco/sdk": "^2.1.0",
+    "@meeco/sdk": "2.2.3",
     "bili": "^4.10.0",
     "typedoc": "^0.20.30",
     "typescript": "^3.9.6",
