@@ -27,8 +27,8 @@ export function toNestedSlot(
   const result = {
     ...slot,
     attachments_folder_id: fix(slot.attachments_folder_id),
-    image_id: slot.image ? slot.image : undefined,
     classification_node_attributes: classificationNodes,
+    attachment_id: slot.attachment_id || undefined,
   };
 
   for (const k in result) {
@@ -48,7 +48,6 @@ export function slotToNewSlot(slot: Slot): NewSlot {
   const result = {
     ...slot,
     slot_type_name: SlotType[slot.slot_type_name],
-    image_id: slot.image ? slot.image : undefined,
   };
 
   for (const k in result) {

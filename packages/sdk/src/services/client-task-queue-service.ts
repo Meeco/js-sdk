@@ -3,6 +3,7 @@ import {
   ClientTaskQueueApi,
   ClientTaskQueueGetStateEnum as ClientTaskState,
   ClientTaskQueueResponse,
+  ClientTaskStateEnum,
 } from '@meeco/vault-api-sdk';
 import { MeecoServiceError } from '../models/service-error';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
@@ -87,9 +88,10 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
 
     const initialCount = { todo: 0, in_progress: 0 };
     const result = allTasks.reduce((acc, task) => {
-      if (task.state === ClientTaskState.Todo) {
+      task.state;
+      if (task.state === ClientTaskStateEnum.Todo) {
         acc.todo += 1;
-      } else if (task.state === ClientTaskState.InProgress) {
+      } else if (task.state === ClientTaskStateEnum.InProgress) {
         acc.in_progress += 1;
       }
       return acc;
@@ -123,7 +125,10 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
         );
       }
 
-      if (task.state === ClientTaskState.InProgress || task.state === ClientTaskState.Done) {
+      if (
+        task.state === ClientTaskStateEnum.InProgress ||
+        task.state === ClientTaskStateEnum.Done
+      ) {
         throw new MeecoServiceError(
           `Cannot execute ${task.work_type} task ${task.id} because it is already ${task.state}`
         );
@@ -158,11 +163,11 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
     const runTask = async (task: ClientTask) => {
       try {
         await shareService.updateSharedItem(credentials, task.target_id);
-        task.state = ClientTaskState.Done;
+        task.state = ClientTaskStateEnum.Done;
         taskReport.completed.push(task);
       } catch (error) {
         this.logger.warn(`Task with id=${task.id} failed!`);
-        task.state = ClientTaskState.Failed;
+        task.state = ClientTaskStateEnum.Failed;
         taskReport.failed.push({ ...task, failureReason: error?.body });
       }
     };

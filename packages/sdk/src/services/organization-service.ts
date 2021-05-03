@@ -1,5 +1,6 @@
 import {
   Organization,
+  OrganizationsGetModeEnum,
   OrganizationsManagingOrganizationsApi,
   Service as APIService,
 } from '@meeco/vault-api-sdk';
@@ -72,7 +73,7 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
    */
   public async listAll(
     credentials: IVaultToken,
-    mode?: 'requested' | 'member'
+    mode?: OrganizationsGetModeEnum
   ): Promise<{ organizations: Organization[]; services: APIService[] }> {
     const api = this.vaultAPIFactory(credentials).OrganizationsForVaultUsersApi;
 
