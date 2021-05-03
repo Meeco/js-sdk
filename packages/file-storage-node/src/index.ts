@@ -1,7 +1,7 @@
 import { EncryptionKey } from '@meeco/cryppo';
 import * as Common from '@meeco/file-storage-common';
 import { IFileStorageAuthConfiguration, ThumbnailType } from '@meeco/file-storage-common';
-import { AttachmentDirectDownloadUrl, ThumbnailResponse } from '@meeco/vault-api-sdk';
+import { ThumbnailResponse } from '@meeco/vault-api-sdk';
 import * as Latest from './lib';
 
 /**
@@ -49,8 +49,7 @@ export const largeFileDownloadNode: (
   dek: EncryptionKey,
   authConfig: IFileStorageAuthConfiguration,
   vaultUrl: string
-) => Promise<{ byteArray: Buffer; direct_download: AttachmentDirectDownloadUrl }> =
-  Latest.largeFileDownloadNode;
+) => Promise<{ byteArray: Buffer; direct_download }> = Latest.largeFileDownloadNode;
 
 /** @deprecated Use [[Latest.uploadThumbnail]] */
 export const encryptAndUploadThumbnail: (_: {

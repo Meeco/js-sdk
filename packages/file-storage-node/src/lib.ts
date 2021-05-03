@@ -10,11 +10,7 @@ import {
   IFileStorageAuthConfiguration,
   ThumbnailType,
 } from '@meeco/file-storage-common';
-import {
-  AttachmentDirectDownloadUrl,
-  DirectAttachmentsApi,
-  ThumbnailResponse,
-} from '@meeco/vault-api-sdk';
+import { DirectAttachmentsApi, ThumbnailResponse } from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
 import * as mfe from 'mime-file-extension';
 import nodeFetch from 'node-fetch';
@@ -123,18 +119,14 @@ export async function downloadAttachment(
   );
   let buffer: Buffer;
   const fileName: string = attachmentInfo.filename;
-  if (attachmentInfo.is_direct_upload) {
-    // was uploaded in chunks
-    const downloaded = await largeFileDownloadNode(
-      attachmentId,
-      attachmentDek,
-      authConfig,
-      environment.vault.url
-    );
-    buffer = downloaded.byteArray;
-  } else {
-    throw new Error('Unsupported attachment download');
-  }
+  // was uploaded in chunks
+  const downloaded = await largeFileDownloadNode(
+    attachmentId,
+    attachmentDek,
+    authConfig,
+    environment.vault.url
+  );
+  buffer = downloaded.byteArray;
   return { fileName, buffer };
 }
 
@@ -143,16 +135,18 @@ export async function largeFileDownloadNode(
   dek: EncryptionKey,
   authConfig: IFileStorageAuthConfiguration,
   vaultUrl: string
-): Promise<{ byteArray: Buffer; direct_download: AttachmentDirectDownloadUrl }> {
+): Promise<{ byteArray: Buffer; direct_download }> {
   const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl, nodeFetch));
 
-  const {
-    attachment_direct_download_url: { url: artifactsUrl },
-  } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'encryption_artifact_file');
-
-  const {
-    attachment_direct_download_url: attachmentInfo,
-  } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'binary_file');
+  const attachment = await api.directAttachmentsIdGet(attachmentID);
+  const artifactsUrl = attachment.attachment.encryption_artifact.url;
+  const attachmentInfo = attachment.attachment.main;
+  // const {
+  //   attachment_direct_download_url: { url: artifactsUrl },
+  // } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'encryption_artifact_file')
+  // const {
+  //   attachment_direct_download_url: attachmentInfo,
+  // } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'binary_file');
 
   const encryptionArtifacts: any = await AzureBlockDownload.download(
     artifactsUrl,

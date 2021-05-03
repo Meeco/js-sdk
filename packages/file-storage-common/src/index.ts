@@ -9,6 +9,7 @@ import {
   AttachmentDirectUploadUrl,
   DirectAttachment,
   DirectAttachmentsApi,
+  RemoteFile,
   ThumbnailApi,
 } from '@meeco/vault-api-sdk';
 import axios from 'axios';
@@ -123,9 +124,9 @@ export async function getAttachmentInfo(
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
   fetchApi?: any
-): Promise<DirectAttachment> {
+): Promise<RemoteFile> {
   const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
-  return api.directAttachmentsIdGet(id).then(response => response.attachment);
+  return api.directAttachmentsIdGet(id).then(response => response.attachment.main);
 }
 
 /* ---------- Thumbnails ---------- */
