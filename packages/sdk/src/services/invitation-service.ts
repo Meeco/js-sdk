@@ -19,7 +19,8 @@ export class InvitationService extends Service<InvitationApi> {
   public async create(
     credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
     connectionName: string,
-    keypairId?: string
+    keypairId?: string,
+    delegationIntent?: { delegationToken: string; delegateRole: string }
   ): Promise<Invitation> {
     const { key_encryption_key, data_encryption_key } = credentials;
 
@@ -46,6 +47,8 @@ export class InvitationService extends Service<InvitationApi> {
         },
         invitation: {
           encrypted_recipient_name: encryptedName,
+          delegation_token: delegationIntent?.delegationToken,
+          delegate_role: delegationIntent?.delegateRole,
         },
       })
       .then(result => result.invitation);

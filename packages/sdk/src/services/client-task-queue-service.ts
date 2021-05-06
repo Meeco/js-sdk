@@ -6,6 +6,7 @@ import {
 } from '@meeco/vault-api-sdk';
 import { MeecoServiceError } from '../models/service-error';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
+import { DelegationService } from './delegation-service';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 import { ShareService } from './share-service';
 
@@ -116,8 +117,10 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
   ): Promise<IClientTaskExecResult> {
     this.logger.log(`Executing ${tasks.length} tasks`);
 
+    const knownTasks = ['update_item_shares', 'setup_key_delegation'];
+
     for (const task of tasks) {
-      if (task.work_type !== 'update_item_shares') {
+      if (!knownTasks.includes(task.work_type)) {
         throw new MeecoServiceError(
           `Do not know how to execute ClientTask of type ${task.work_type}`
         );
@@ -130,12 +133,12 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
       }
     }
 
-    const updateSharesTasksResult: IClientTaskExecResult = await this.updateSharesClientTasks(
+    const runClientTasksResult: IClientTaskExecResult = await this.runClientTasks(
       credentials,
       tasks
     );
 
-    return updateSharesTasksResult;
+    return runClientTasksResult;
   }
 
   /**
@@ -144,11 +147,12 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
    * @param listOfClientTasks A list of update_item_shares tasks to run.
    * @param authData
    */
-  private async updateSharesClientTasks(
+  private async runClientTasks(
     credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
     tasks: ClientTask[]
   ): Promise<IClientTaskExecResult> {
     const shareService = new ShareService(this.environment, this.logger.log);
+    const delegationService = new DelegationService(this.environment, this.logger.log);
 
     const taskReport: IClientTaskExecResult = {
       completed: [],
@@ -157,7 +161,14 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
 
     const runTask = async (task: ClientTask) => {
       try {
-        await shareService.updateSharedItem(credentials, task.target_id);
+        switch (task.work_type) {
+          case 'update_item_shares':
+            await shareService.updateSharedItem(credentials, task.target_id);
+            break;
+          case 'setup_key_delegation':
+            await delegationService.shareKekWithDelegate(credentials, task.target_id);
+            break;
+        }
         task.state = ClientTaskState.Done;
         taskReport.completed.push(task);
       } catch (error) {
