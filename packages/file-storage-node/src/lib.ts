@@ -119,14 +119,18 @@ export async function downloadAttachment(
   );
   let buffer: Buffer;
   const fileName: string = attachmentInfo.filename;
-  // was uploaded in chunks
-  const downloaded = await largeFileDownloadNode(
-    attachmentId,
-    attachmentDek,
-    authConfig,
-    environment.vault.url
-  );
-  buffer = downloaded.byteArray;
+  if (attachmentInfo.is_direct_upload) {
+    // was uploaded in chunks
+    const downloaded = await largeFileDownloadNode(
+      attachmentId,
+      attachmentDek,
+      authConfig,
+      environment.vault.url
+    );
+    buffer = downloaded.byteArray;
+  } else {
+    throw new Error('Unsupported attachment download');
+  }
   return { fileName, buffer };
 }
 
@@ -138,15 +142,12 @@ export async function largeFileDownloadNode(
 ): Promise<{ byteArray: Buffer; direct_download }> {
   const api = new DirectAttachmentsApi(buildApiConfig(authConfig, vaultUrl, nodeFetch));
 
-  const attachment = await api.directAttachmentsIdGet(attachmentID);
-  const artifactsUrl = attachment.attachment.encryption_artifact.url;
-  const attachmentInfo = attachment.attachment.main;
-  // const {
-  //   attachment_direct_download_url: { url: artifactsUrl },
-  // } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'encryption_artifact_file')
-  // const {
-  //   attachment_direct_download_url: attachmentInfo,
-  // } = await api.directAttachmentsIdDownloadUrlGet(attachmentID, 'binary_file');
+  const {
+    attachment: {
+      main: attachmentInfo,
+      encryption_artifact: { url: artifactsUrl },
+    },
+  } = await api.directAttachmentsIdGet(attachmentID);
 
   const encryptionArtifacts: any = await AzureBlockDownload.download(
     artifactsUrl,

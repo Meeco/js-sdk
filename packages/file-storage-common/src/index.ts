@@ -6,10 +6,11 @@ import {
   encryptWithKey,
 } from '@meeco/cryppo';
 import {
+  Attachment,
+  AttachmentApi,
   AttachmentDirectUploadUrl,
   DirectAttachment,
   DirectAttachmentsApi,
-  RemoteFile,
   ThumbnailApi,
 } from '@meeco/vault-api-sdk';
 import axios from 'axios';
@@ -124,9 +125,9 @@ export async function getAttachmentInfo(
   auth: IFileStorageAuthConfiguration,
   vaultUrl: string,
   fetchApi?: any
-): Promise<RemoteFile> {
-  const api = new DirectAttachmentsApi(buildApiConfig(auth, vaultUrl, fetchApi));
-  return api.directAttachmentsIdGet(id).then(response => response.attachment.main);
+): Promise<Attachment> {
+  const api = new AttachmentApi(buildApiConfig(auth, vaultUrl, fetchApi));
+  return api.attachmentsIdGet(id).then(response => response.attachment);
 }
 
 /* ---------- Thumbnails ---------- */
