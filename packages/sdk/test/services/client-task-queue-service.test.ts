@@ -1,5 +1,10 @@
 import { ShareService } from '@meeco/sdk';
-import { ClientTask, Slot } from '@meeco/vault-api-sdk';
+import {
+  ClientTask,
+  ClientTaskStateEnum,
+  ClientTaskWorkTypeEnum,
+  Slot,
+} from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
 import sinon from 'sinon';
 import {
@@ -13,11 +18,11 @@ import { customTest, environment, getOutputFixture, testUserAuth } from '../test
 describe('ClientTaskQueueService', () => {
   const itemId = itemResponse.item.id;
 
-  function mockTask(id: string, state: ClientTaskState): ClientTask {
+  function mockTask(id: string, state: ClientTaskStateEnum): ClientTask {
     return {
       id,
       state,
-      work_type: 'update_item_shares',
+      work_type: ClientTaskWorkTypeEnum.UpdateItemShares,
       target_id: itemId,
       additional_options: {},
       last_state_transition_at: new Date(1),
@@ -33,8 +38,8 @@ describe('ClientTaskQueueService', () => {
       slots: ((itemResponse.slots as any) as Slot[]).map(x => ({ ...x, value: '1234' })),
     });
 
-    const doneTasksResult = [mockTask('a', ClientTaskState.Done)];
-    const inProgressTasksResult = [mockTask('a', ClientTaskState.InProgress)];
+    const doneTasksResult = [mockTask('a', ClientTaskStateEnum.Done)];
+    const inProgressTasksResult = [mockTask('a', ClientTaskStateEnum.InProgress)];
 
     customTest
       .stub(ShareService.prototype, 'updateSharedItem', updateStub)
@@ -55,7 +60,7 @@ describe('ClientTaskQueueService', () => {
       .mockCryppo()
       .add('result', () =>
         new ClientTaskQueueService(environment).execute(testUserAuth, [
-          mockTask('a', ClientTaskState.Todo),
+          mockTask('a', ClientTaskStateEnum.Todo),
         ])
       )
       .it('executes and updates ClientTasks', ({ result }) => {
@@ -65,14 +70,14 @@ describe('ClientTaskQueueService', () => {
     customTest
       .add('service', () => new ClientTaskQueueService(environment))
       .do(({ service }) =>
-        service.execute(testUserAuth, [mockTask('a', ClientTaskState.InProgress)])
+        service.execute(testUserAuth, [mockTask('a', ClientTaskStateEnum.InProgress)])
       )
       .catch(e => expect(e).to.be.ok)
       .it('does not execute in_progress tasks');
 
     customTest
       .add('service', () => new ClientTaskQueueService(environment))
-      .do(({ service }) => service.execute(testUserAuth, [mockTask('a', ClientTaskState.Done)]))
+      .do(({ service }) => service.execute(testUserAuth, [mockTask('a', ClientTaskStateEnum.Done)]))
       .catch(e => expect(e).to.be.ok)
       .it('does not execute done tasks');
 
@@ -97,7 +102,7 @@ describe('ClientTaskQueueService', () => {
       .mockCryppo()
       .add('result', () =>
         new ClientTaskQueueService(environment).execute(testUserAuth, [
-          mockTask('a', ClientTaskState.Failed),
+          mockTask('a', ClientTaskStateEnum.Failed),
         ])
       )
       .it('executes failed tasks', ({ result }) => {
@@ -108,7 +113,7 @@ describe('ClientTaskQueueService', () => {
 
   describe('#list', () => {
     const listResponse = {
-      client_tasks: ['a', 'b'].map(id => mockTask(id, ClientTaskState.Todo)),
+      client_tasks: ['a', 'b'].map(id => mockTask(id, ClientTaskStateEnum.Todo)),
       meta: [],
     };
 
@@ -132,7 +137,7 @@ describe('ClientTaskQueueService', () => {
 
   describe('#listAll', () => {
     const listResponse = {
-      client_tasks: ['a', 'b'].map(id => mockTask(id, ClientTaskState.Todo)),
+      client_tasks: ['a', 'b'].map(id => mockTask(id, ClientTaskStateEnum.Todo)),
       meta: [],
     };
 

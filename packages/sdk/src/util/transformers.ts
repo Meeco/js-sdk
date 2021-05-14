@@ -1,6 +1,6 @@
 import {
   ClassificationNode,
-  NestedClassificationNodeAttributes,
+  ClassificationNodeAttributes,
   NestedSlotAttributes,
   Slot,
 } from '@meeco/vault-api-sdk';
@@ -11,9 +11,7 @@ function fix<T>(x: T | null): T | undefined {
   return x === null ? undefined : x;
 }
 
-export function toNestedClassificationNode(
-  node: ClassificationNode
-): NestedClassificationNodeAttributes {
+export function toNestedClassificationNode(node: ClassificationNode): ClassificationNodeAttributes {
   return Object.keys(node).reduce((acc, k) => {
     acc[k] = fix(node[k]);
     return acc;
@@ -22,7 +20,7 @@ export function toNestedClassificationNode(
 
 export function toNestedSlot(
   slot: Slot,
-  classificationNodes?: NestedClassificationNodeAttributes[]
+  classificationNodes?: ClassificationNodeAttributes[]
 ): NestedSlotAttributes {
   const result = {
     ...slot,

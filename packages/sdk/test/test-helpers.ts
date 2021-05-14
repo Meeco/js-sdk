@@ -101,5 +101,6 @@ export function mockClassificationNode(id: string = 'id'): ClassificationNode {
     name: 'a_classification',
     ordinal: 1,
     scheme: 'tag',
+    classifications_count: 1,
   };
 }

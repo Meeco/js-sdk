@@ -1,6 +1,6 @@
 import {
   ClassificationNode,
-  NestedClassificationNodeAttributes,
+  ClassificationNodeAttributes,
   NestedSlotAttributes,
   PutItemsRequest,
 } from '@meeco/vault-api-sdk';
@@ -65,7 +65,7 @@ export class ItemUpdate extends ItemChange {
       );
     }
 
-    let classification_nodes_attributes: NestedClassificationNodeAttributes[] | undefined;
+    let classification_nodes_attributes: ClassificationNodeAttributes[] | undefined;
     if (this.classification_nodes.length > 0) {
       classification_nodes_attributes = this.classification_nodes.map(toNestedClassificationNode);
     }

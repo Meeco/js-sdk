@@ -11,7 +11,7 @@
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
     "@meeco/keystore-api-sdk": "5.4.0-develop.20210428105209.42d11c3",
-    "@meeco/vault-api-sdk": "29.0.0-develop.20210429161313.58bab58",
+    "@meeco/vault-api-sdk": "file:../../../meeco-vault/sdk/typescript-sdk/meeco-vault-sdk",
     "@types/node-forge": "~0.9.0",
     "@types/parameterize": "^1.0.1",
     "base58-string": "0.0.3",
