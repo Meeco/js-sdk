@@ -182,9 +182,11 @@ describe('ConnectionService', () => {
           .reply(200, { connections: [{ own: { encrypted_recipient_name: null } }], meta: [] });
       })
       .add('connections', () => new ConnectionService(environment).list(testUserAuth))
-      .it('handles connections with null encrypted_recipient_name', ({ connections }) => {
-        expect(connections[0].connection.own.encrypted_recipient_name).to.be.null;
-      });
+      .it(
+        'handles connections with null encrypted_recipient_name',
+        ({ connections }) =>
+          expect(connections[0].connection.own.encrypted_recipient_name).to.be.null
+      );
   });
 
   describe('#listAll', () => {

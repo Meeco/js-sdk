@@ -88,7 +88,6 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
 
     const initialCount = { todo: 0, in_progress: 0 };
     const result = allTasks.reduce((acc, task) => {
-      task.state;
       if (task.state === ClientTaskStateEnum.Todo) {
         acc.todo += 1;
       } else if (task.state === ClientTaskStateEnum.InProgress) {

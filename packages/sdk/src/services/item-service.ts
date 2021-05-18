@@ -168,6 +168,7 @@ export class ItemService extends Service<ItemApi> {
         sharedWith,
         ownerId,
         own !== undefined ? own.toString() : undefined,
+        undefined,
         cursor
       )
     ).then(reducePages);
