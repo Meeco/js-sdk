@@ -183,7 +183,7 @@ describe('ConnectionService', () => {
       })
       .add('connections', () => new ConnectionService(environment).list(testUserAuth))
       .it('handles connections with null encrypted_recipient_name', ({ connections }) => {
-        expect(connections[0].recipient_name).to.match(/^\[decrypted with .*\]$/);
+        expect(connections[0].connection.own.encrypted_recipient_name).to.be.null;
       });
   });
 

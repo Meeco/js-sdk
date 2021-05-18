@@ -74,8 +74,6 @@ function create(
   const slot_ids = slots.map(slot => slot.id);
 
   return Promise.resolve({
-    associations_to: [],
-    associations: [],
     classification_nodes: [],
     item: {
       id: 'item-foo',

@@ -98,8 +98,6 @@ describe('NewItem', () => {
       for (const slot of result.item!.slots_attributes!) {
         // tslint:disable-next-line:no-unused-expression
         expect(slot.encrypted_value).to.exist;
-        // tslint:disable-next-line:no-unused-expression
-        expect(slot.value).to.be.undefined;
       }
     });
 

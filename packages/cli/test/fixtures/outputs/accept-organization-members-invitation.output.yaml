@@ -23,7 +23,6 @@ spec:
         organization_member_id: cfbf3f4e-735b-46a1-97ee-8cc13c0bb2dd
       connection_type: member
       user_id: 8da5ebf9-39bf-45ae-b131-fa85e2d88101
-      user_image: null
       user_type: organization_agent
       user_public_key: --PUBLIC_KEY--ABCD
       user_keypair_external_id: org-agent-keypair

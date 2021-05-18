@@ -15,8 +15,6 @@ spec:
   item_image: null
   item_image_background_colour: null
   classification_node_ids: null
-  association_ids: null
-  associations_to_ids: null
   slot_ids:
     - pizza
   me: null
@@ -44,10 +42,8 @@ spec:
       encrypted_value: Supreme
       encrypted_value_verification_key: null
       value_verification_hash: null
-      image: null
       label: Pizza
       original_id: null
       owner_id: null
   classification_nodes: []
-
 # Item updated. There are 5 outstanding client tasks. Todo: 2 & InProgress: 3

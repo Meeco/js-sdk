@@ -46,8 +46,6 @@ describe('API Factories', () => {
         .matchHeader('X_MEECO_API_COMPONENT', 'keystore')
         .matchHeader('X_MY_CUSTOM_HEADER', 'foo')
         .reply(200, {
-          associations_to: [],
-          associations: [],
           attachments: [],
           classification_nodes: [],
           shares: [],
@@ -113,8 +111,6 @@ describe('API Factories', () => {
         .matchHeader('X_MEECO_API_VERSION', '2.0.0')
         .matchHeader('X_MEECO_API_COMPONENT', 'vault')
         .reply(200, {
-          associations_to: [],
-          associations: [],
           attachments: [],
           classification_nodes: [],
           shares: [],
@@ -144,8 +140,6 @@ describe('API Factories', () => {
         .matchHeader('X_MEECO_API_COMPONENT', 'vault')
         .matchHeader('X_MY_CUSTOM_HEADER', 'foo')
         .reply(200, {
-          associations_to: [],
-          associations: [],
           attachments: [],
           classification_nodes: [],
           shares: [],
@@ -169,8 +163,6 @@ describe('API Factories', () => {
       const result = await forUser.ItemApi.itemsIdGet('my-id');
       expect(result).to.eql({
         item: undefined,
-        associations_to: [],
-        associations: [],
         attachments: [],
         classification_nodes: [],
         slots: [],

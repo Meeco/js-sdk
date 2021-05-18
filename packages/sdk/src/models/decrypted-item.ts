@@ -1,5 +1,4 @@
 import {
-  Association,
   Attachment,
   ClassificationNode,
   EncryptedSlotValue,
@@ -17,12 +16,10 @@ import { NewSlot, SDKDecryptedSlot } from './slot-types';
 
 /**
  * Wraps Items returned from the API that have been decrypted, usually by {@link ItemService}.
- * If `associations`, `classification_nodes`, `thumbnails` and `attachments`are provided at construction, they are stored.
+ * If `classification_nodes`, `thumbnails` and `attachments`are provided at construction, they are stored.
  *
  * `DecryptedItem` is immutable, you should use {@link toItemUpdate} to stage modifications.
  *
- * Note that when using [[fromAPI]] to construct a [[DecryptedItem]] {@link classification_nodes}, [[associations_to]] and
- * [[associations]] are filtered to just those that concern the Item.
  * [[thumbnails]] and [[attachments]] are NOT filtered; they may contain extra attachments not used by the Item.
  */
 export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
@@ -39,8 +36,6 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
   public readonly share_id: string | undefined;
 
   public readonly thumbnails: Thumbnail[];
-  public readonly associations: Association[];
-  public readonly associations_to: Association[];
   public readonly attachments: Attachment[];
 
   /** The `Item` as it exists within the API */
@@ -65,8 +60,6 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
     slots: SDKDecryptedSlot[] = [],
     extra: Partial<{
       classification_nodes: ClassificationNode[];
-      associations: Association[];
-      associations_to: Association[];
       attachments: Attachment[];
       thumbnails: Thumbnail[];
     }> = {}
@@ -93,9 +86,6 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
     // TODO do these need to be filtered
     this.attachments = extra.attachments || [];
     this.thumbnails = extra.thumbnails || [];
-
-    this.associations = extra.associations?.filter(x => x.associated_from_id === this.id) || [];
-    this.associations_to = extra.associations_to?.filter(x => x.associated_to_id === this.id) || [];
   }
 
   /** True if you are the original creator of this Item */
