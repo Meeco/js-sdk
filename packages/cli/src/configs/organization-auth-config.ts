@@ -23,7 +23,7 @@ export class OrganizationAuthConfig {
       );
     }
     let clonedConfig = { ...yamlConfigObj.metadata };
-    delete clonedConfig.vault_access_token;
+    delete clonedConfig['vault_access_token'];
     if (Object.keys(clonedConfig).length > 0) {
       throw new CLIError(
         `Config file contains additional properties and may not be an OrganizationAuthConfig (could be a user's Auth config). The only property that should be present in an OrganizationAuthConfig is vault_access_token`

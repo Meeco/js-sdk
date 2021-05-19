@@ -1,6 +1,6 @@
 import { getAllPaged, reducePages, reportIfTruncated, vaultAPIFactory } from '@meeco/sdk';
+import { OrganizationsGetModeEnum } from '@meeco/vault-api-sdk';
 import { flags as _flags } from '@oclif/command';
-import { OrganizationsGetModeEnum } from 'packages/file-storage-common/node_modules/@meeco/vault-api-sdk/lib/types';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationsListConfig } from '../../configs/organizations-list-config';
 import authFlags from '../../flags/auth-flags';
