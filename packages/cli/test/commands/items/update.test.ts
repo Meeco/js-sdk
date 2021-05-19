@@ -52,7 +52,6 @@ function update(vaultAccessToken, dataEncryptionKey, updateData) {
       visible: null,
       updated_at: new Date(1),
       item_template_label: null,
-      image: null,
       item_image: null,
       item_image_background_colour: null,
       classification_node_ids: null,
