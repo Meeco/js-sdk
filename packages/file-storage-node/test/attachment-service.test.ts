@@ -1,10 +1,10 @@
+import * as cryppo from '@meeco/cryppo';
+import { EncryptionKey } from '@meeco/cryppo';
 import * as Common from '@meeco/file-storage-common';
 import { IFileStorageAuthConfiguration } from '@meeco/file-storage-common';
 import { expect } from 'chai';
 import { fancy } from 'fancy-test';
 import { AttachmentService } from '../src/attachment-service';
-import { EncryptionKey } from '@meeco/cryppo';
-import * as cryppo from '@meeco/cryppo';
 
 const mock = require('mock-fs');
 const fs = require('fs');
@@ -26,7 +26,7 @@ describe('AttachmentService', () => {
         is_direct_upload: true,
       }))
       .nock(fakeVault, api => {
-        api.get(new RegExp('/direct/attachments/badId/download_url.*')).reply(404);
+        api.get(new RegExp('/attachments/badId')).reply(404);
       })
       .add('service', () => new AttachmentService(fakeVault))
       .do(
