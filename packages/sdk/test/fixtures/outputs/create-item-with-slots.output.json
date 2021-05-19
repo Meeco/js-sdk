@@ -2,11 +2,8 @@
   "id": "item-foo",
   "template_name": "password",
   "label": "My Account",
-  "slot_ids": [
-    "a",
-    "b",
-    "c"
-  ],
+  "slot_ids": ["a", "b", "c"],
+  "classification_node_ids": [],
   "slots": [
     {
       "name": "url",

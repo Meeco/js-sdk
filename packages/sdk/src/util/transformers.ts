@@ -12,7 +12,7 @@ function fix<T>(x: T | null): T | undefined {
 }
 
 export function toNestedClassificationNode(
-  node: ClassificationNode
+  node: Partial<ClassificationNode>
 ): NestedClassificationNodeAttributes {
   return Object.keys(node).reduce((acc, k) => {
     acc[k] = fix(node[k]);

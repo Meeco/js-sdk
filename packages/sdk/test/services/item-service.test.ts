@@ -17,6 +17,7 @@ describe('ItemService', () => {
   describe('#create', () => {
     function createItem({ template_name, item }) {
       const slot_ids = ['a', 'b', 'c', 'd', 'e'];
+      const classification_node_ids = ['i', 'j', 'k', 'l', 'm'];
       const update = { ...item };
       if (template_name === 'vehicle') {
         update.slots_attributes = [
@@ -34,15 +35,24 @@ describe('ItemService', () => {
         ...slot,
         id: slot_ids[index],
       }));
+      const classification_nodes = (update.classification_nodes_attributes || []).map(
+        (node, index) => ({
+          ...node,
+          id: classification_node_ids[index],
+        })
+      );
       delete update.slots_attributes;
+      delete update.classification_nodes_attributes;
       return Promise.resolve({
         item: {
           id: 'item-foo',
           template_name,
           ...update,
+          classification_node_ids: classification_nodes.map(node => node.id),
           slot_ids: slots.map(slot => slot.id),
         },
         slots,
+        classification_nodes,
       });
     }
 
@@ -76,6 +86,33 @@ describe('ItemService', () => {
         expect(result.item).to.eql(expectedItem);
         expect(result.slots).to.deep.members(slots);
       });
+
+    customTest
+      .stub(ItemApi.prototype, 'itemsPost', createItem as any)
+      .mockCryppo()
+      .add('input', () => getInputFixture('create-item-with-classification-nodes.input.json'))
+      .add('expected', () => getOutputFixture('create-item-with-classification-nodes.output.json'))
+      .it(
+        'creates an item with classification nodes provided in a config file',
+        async ({ input, expected }) => {
+          const itemCreateData = new NewItem(
+            input.label,
+            input.template_name,
+            input.slots as NewSlot[],
+            [
+              {
+                name: 'tag',
+                label: 'MyTag',
+              },
+            ]
+          );
+          const result = await new ItemService(environment).create(testUserAuth, itemCreateData);
+
+          const { classification_nodes_attributes, ...expectedItem } = expected;
+          expect(result.item).to.eql(expectedItem);
+          expect(result.classification_nodes).to.deep.members(classification_nodes_attributes);
+        }
+      );
   });
 
   describe('#get', () => {

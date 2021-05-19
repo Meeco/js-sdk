@@ -9,7 +9,7 @@ import { NewSlot } from './slot-types';
 export default class ItemChange extends ItemMap<NewSlot> {
   constructor(
     public slots: NewSlot[] = [],
-    public classification_nodes: ClassificationNode[] = []
+    public classification_nodes: Array<Partial<ClassificationNode>> = []
   ) {
     super(slots);
   }
