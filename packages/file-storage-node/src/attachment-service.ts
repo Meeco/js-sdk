@@ -1,7 +1,7 @@
 import * as cryppo from '@meeco/cryppo';
 import { EncryptionKey } from '@meeco/cryppo';
 import * as Common from '@meeco/file-storage-common';
-import { AttachmentDirectDownloadUrl, DirectAttachment } from '@meeco/vault-api-sdk';
+import { DirectAttachment, RemoteFile } from '@meeco/vault-api-sdk';
 import * as fs from 'fs';
 import * as mfe from 'mime-file-extension';
 import fetch from 'node-fetch';
@@ -119,7 +119,7 @@ export class AttachmentService extends Common.AttachmentService {
     authConfig: Common.IFileStorageAuthConfiguration;
     progressUpdateFunc?: (percentageComplete: number) => void;
     cancel?: Promise<any>;
-  }): Promise<{ data: Buffer; info: AttachmentDirectDownloadUrl }> {
+  }): Promise<{ data: Buffer; info: RemoteFile }> {
     const { is_direct_upload } = await this.getAttachmentInfo(id, authConfig);
 
     if (is_direct_upload === false) {

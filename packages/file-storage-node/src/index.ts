@@ -1,7 +1,7 @@
 import { EncryptionKey } from '@meeco/cryppo';
 import * as Common from '@meeco/file-storage-common';
 import { IFileStorageAuthConfiguration, ThumbnailType } from '@meeco/file-storage-common';
-import { AttachmentDirectDownloadUrl, ThumbnailResponse } from '@meeco/vault-api-sdk';
+import { RemoteFile, ThumbnailResponse } from '@meeco/vault-api-sdk';
 import { AttachmentService } from './attachment-service';
 import { ThumbnailService } from './thumbnail-service';
 
@@ -60,7 +60,7 @@ export function largeFileDownloadNode(
   dek: EncryptionKey,
   authConfig: IFileStorageAuthConfiguration,
   vaultUrl: string
-): Promise<{ byteArray: Buffer; direct_download: AttachmentDirectDownloadUrl }> {
+): Promise<{ byteArray: Buffer; direct_download: RemoteFile }> {
   const service = new AttachmentService(vaultUrl);
   return service
     .download({ id: attachmentID, key: dek, authConfig })

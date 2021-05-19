@@ -1,9 +1,11 @@
 import { EncryptionKey } from '@meeco/cryppo';
 import {
-  AttachmentDirectDownloadUrl,
+  Attachment,
+  AttachmentApi,
   AttachmentDirectUploadUrl,
   DirectAttachment,
   DirectAttachmentsApi,
+  RemoteFile,
 } from '@meeco/vault-api-sdk';
 import { buildApiConfig, IFileStorageAuthConfiguration } from '../auth';
 import { AzureBlockUpload } from '../azure-block-upload';
@@ -50,11 +52,11 @@ export class AttachmentService {
       {
         simultaneousUploads: 1,
         callbacks: {
-          onProgress: progress => {},
-          onSuccess: success => {
+          onProgress: (progress) => {},
+          onSuccess: (success) => {
             result = success;
           },
-          onError: error => {
+          onError: (error) => {
             throw error;
           },
         },
@@ -123,12 +125,9 @@ export class AttachmentService {
    * Get meta-data about the attachment with [[id]]. Includes file name, type and user id of the
    * attachment's creator.
    */
-  async getAttachmentInfo(
-    id: string,
-    auth: IFileStorageAuthConfiguration
-  ): Promise<DirectAttachment> {
-    const api = new DirectAttachmentsApi(buildApiConfig(auth, this.vaultUrl, this.fetchApi));
-    return api.directAttachmentsIdGet(id).then(response => response.attachment);
+  async getAttachmentInfo(id: string, auth: IFileStorageAuthConfiguration): Promise<Attachment> {
+    const api = new AttachmentApi(buildApiConfig(auth, this.vaultUrl, this.fetchApi));
+    return api.attachmentsIdGet(id).then((response) => response.attachment);
   }
 
   /**
@@ -139,17 +138,19 @@ export class AttachmentService {
   protected async getDownloadMetaData(
     id: string,
     auth: IFileStorageAuthConfiguration
-  ): Promise<{ artifactsUrl: string; fileInfo: AttachmentDirectDownloadUrl }> {
+  ): Promise<{ artifactsUrl: string; fileInfo: RemoteFile }> {
     const api = new DirectAttachmentsApi(buildApiConfig(auth, this.vaultUrl, this.fetchApi));
 
     try {
-      const {
-        attachment_direct_download_url: { url: artifactsUrl },
-      } = await api.directAttachmentsIdDownloadUrlGet(id, 'encryption_artifact_file');
+      const something = await api.directAttachmentsIdGet(id);
+      console.log(something.attachment.encryption_artifact.url);
 
       const {
-        attachment_direct_download_url: attachmentInfo,
-      } = await api.directAttachmentsIdDownloadUrlGet(id, 'binary_file');
+        attachment: {
+          encryption_artifact: { url: artifactsUrl },
+          main: attachmentInfo,
+        },
+      } = await api.directAttachmentsIdGet(id);
 
       return { artifactsUrl, fileInfo: attachmentInfo };
     } catch (e) {
