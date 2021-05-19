@@ -103,6 +103,25 @@ describe('NewItem', () => {
       }
     });
 
+    it('maps classification_nodes to classification_nodes_attributes correctly', async () => {
+      const withNodes = new NewItem(
+        'label',
+        'template',
+        [],
+        [
+          {
+            label: 'test',
+          },
+        ]
+      );
+      const req = await withNodes.toRequest(dek);
+      expect(req.item!.classification_nodes_attributes).to.eql([
+        {
+          label: 'test',
+        },
+      ]);
+    });
+
     it('does not encrypt slots without values', async () => {
       newItem.slots = [{ name: 'empty_slot' }, { label: 'Another Empty Slot' }];
       const result = await newItem.toRequest(dek);
