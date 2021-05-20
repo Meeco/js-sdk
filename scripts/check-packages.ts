@@ -19,10 +19,10 @@ const semver = require('semver');
  */
 function checkDependencies(packageList: string[], packageDetails: PackageMap) {
   console.log(`Check package dependencies`);
-  packageList.forEach((name) => {
+  packageList.forEach(name => {
     const packageName = `@meeco/${name}`;
     const version = packageDetails[name].package.version;
-    packageList.forEach((testPackage) => {
+    packageList.forEach(testPackage => {
       const pkg = packageDetails[testPackage].package;
       const requiredVersion =
         (pkg.dependencies || {})[packageName] || (pkg.devDependencies || {})[packageName];
@@ -53,7 +53,7 @@ function checkDependencies(packageList: string[], packageDetails: PackageMap) {
  */
 function checkPackageVersions(packageList: string[], packageDetails: PackageMap) {
   console.log(`Check package versions`);
-  packageList.forEach((name) => {
+  packageList.forEach(name => {
     const version = packageDetails[name].package.version;
     const { version: coerced } = semver.coerce(version);
     if (version !== coerced) {
@@ -75,7 +75,7 @@ function checkPackageVersions(packageList: string[], packageDetails: PackageMap)
  */
 function checkPackageNames(packageList: string[], packageDetails: PackageMap) {
   console.log(`Check package names`);
-  packageList.forEach((name) => {
+  packageList.forEach(name => {
     const packageFileName = packageDetails[name].package.name;
     if (packageFileName !== `@meeco/${name}`) {
       console.error(
@@ -93,15 +93,26 @@ function checkPackageNames(packageList: string[], packageDetails: PackageMap) {
  */
 function checkApiSdkDependencies(packageList: string[], packageDetails: PackageMap) {
   const apiPackages = [`@meeco/vault-api-sdk`, `@meeco/keystore-api-sdk`];
-
-  apiPackages.forEach((api) => {
+  apiPackages.forEach(api => {
+    let developOrStageVersion: string | null = null;
     const requiredVersions: string[] = [];
-    packageList.forEach((pkg) => {
-      const requiredVersion = (packageDetails[pkg].package.dependencies || {})[api];
+    packageList.forEach(pkg => {
+      const requiredVersion: string = (packageDetails[pkg].package.dependencies || {})[api];
       if (!requiredVersion) {
         return;
       }
-      if (!requiredVersion.startsWith('^')) {
+      if (/develop|stage/.test(requiredVersion)) {
+        developOrStageVersion = developOrStageVersion || requiredVersion;
+        if (developOrStageVersion && developOrStageVersion !== requiredVersion) {
+          console.error(
+            `Package ${pkg} depends on ${api}@${requiredVersion} whereas other packages use version ${developOrStageVersion}`
+          );
+          console.error(
+            `If using a develop or stage version of ${api}, all packages in this repo must use the same version`
+          );
+        }
+      }
+      if (!requiredVersion.startsWith('^') && !developOrStageVersion) {
         console.error(`Package ${pkg} depends on ${api}@${requiredVersion} which is too specific`);
         console.error(
           `To avoid duplicate installs - packages should depend on ^ versions of API SDK's`
@@ -110,14 +121,18 @@ function checkApiSdkDependencies(packageList: string[], packageDetails: PackageM
       }
       requiredVersions.push(requiredVersion.replace('^', ''));
     });
-    const min = semver.minSatisfying(requiredVersions, '>=0.0.0');
-    const max = semver.maxSatisfying(requiredVersions, '>=0.0.0');
-    if (!semver.satisfies(min, max)) {
-      console.error(
-        `One or more packages requires "${api}" version "^${min}" which would conflict with higher version found of "^${max}"`
-      );
-      console.error(`Dependencies on API SDK's should be kept in sync to avoid duplicate installs`);
-      process.exit(1);
+    if (!developOrStageVersion) {
+      const min = semver.minSatisfying(requiredVersions, '>=0.0.0');
+      const max = semver.maxSatisfying(requiredVersions, '>=0.0.0');
+      if (!semver.satisfies(min, max)) {
+        console.error(
+          `One or more packages requires "${api}" version "^${min}" which would conflict with higher version found of "^${max}"`
+        );
+        console.error(
+          `Dependencies on API SDK's should be kept in sync to avoid duplicate installs`
+        );
+        process.exit(1);
+      }
     }
   });
 }
