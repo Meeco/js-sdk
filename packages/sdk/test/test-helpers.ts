@@ -1,3 +1,4 @@
+import { OrganizationAuthData } from '@meeco/sdk';
 import { ClassificationNode } from '@meeco/vault-api-sdk';
 import test from '@oclif/test';
 import { join } from 'path';
@@ -75,11 +76,16 @@ export const buildTestAuthData = (config: {
     vault_access_token: config.vault_access_token,
   });
 
+export const buildTestOrganizationAuthData = (config: { vault_access_token: string }) =>
+  new OrganizationAuthData({
+    vault_access_token: config.vault_access_token,
+  });
+
 export const testUserAuth = buildTestAuthData({
   ...testUserAuthFixture,
 });
 
-export const testOrganizationUserAuth = buildTestAuthData({
+export const testOrganizationUserAuth = buildTestOrganizationAuthData({
   ...testOrganizationUserAuthFixture,
 });
 
