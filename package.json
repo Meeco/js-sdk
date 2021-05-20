@@ -6,7 +6,7 @@
     "bootstrap": "lerna bootstrap --hoist --nohoist=mithril --nohoist=@types/mithril",
     "build": "lerna run build",
     "docs": "lerna run docs",
-    "postinstall": "npm run bootstrap",
+    "postinstall": "ts-node scripts/check-node-and-npm-versions.ts && npm run bootstrap",
     "alpha": "ts-node scripts/tag-packages.ts alpha",
     "beta": "ts-node scripts/tag-packages.ts beta",
     "test": "lerna run test",
@@ -20,5 +20,8 @@
     "ts-node": "^9.1.1",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.2.2"
+  },
+  "engines": {
+    "node": "^12.22.1"
   }
 }
