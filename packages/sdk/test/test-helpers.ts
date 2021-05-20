@@ -31,6 +31,7 @@ export const getInputFixture = (fileName: string) => {
 };
 
 export const testUserAuthFixture = getInputFixture('user-auth.input.json');
+export const testOrganizationUserAuthFixture = getInputFixture('organization-user-auth.input.json');
 
 export const customTest = test.register('mockCryppo', _mockCryppo).register('mockSRP', mockSRP);
 
@@ -76,6 +77,10 @@ export const buildTestAuthData = (config: {
 
 export const testUserAuth = buildTestAuthData({
   ...testUserAuthFixture,
+});
+
+export const testOrganizationUserAuth = buildTestAuthData({
+  ...testOrganizationUserAuthFixture,
 });
 
 const { vault, keystore } = getInputFixture('test-environment.input.json');

@@ -6,8 +6,9 @@ import {
   environment,
   getInputFixture,
   getOutputFixture,
+  testOrganizationUserAuth,
+  testOrganizationUserAuthFixture,
   testUserAuth,
-  testUserAuthFixture,
 } from '../test-helpers';
 
 describe('OrganizationMembersService', () => {
@@ -46,14 +47,14 @@ describe('OrganizationMembersService', () => {
               organization_member_role: 'admin',
             },
           })
-          .matchHeader('Authorization', testUserAuth.vault_access_token)
+          .matchHeader('Authorization', testOrganizationUserAuth.vault_access_token)
           .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
           .reply(200, response)
       )
       .add('input', () => getInputFixture('create-organization-members-invitation.input.json'))
       .do(({ input }) =>
         new OrganizationMembersService(environment).createInvite(
-          testUserAuthFixture,
+          testOrganizationUserAuthFixture,
           input.publicKey
         )
       )

@@ -22,7 +22,7 @@ export class OrganizationAuthConfig {
         `Config file of incorrect kind: ${yamlConfigObj.kind} (expected '${OrganizationAuthConfig.kind}')`
       );
     }
-    let clonedConfig = { ...yamlConfigObj.metadata };
+    const clonedConfig = { ...yamlConfigObj.metadata };
     delete clonedConfig['vault_access_token'];
     if (Object.keys(clonedConfig).length > 0) {
       throw new CLIError(

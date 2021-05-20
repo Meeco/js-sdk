@@ -47,7 +47,11 @@ function create(organizationId, service) {
       validated_at: null,
       created_at: new Date('2020-07-02T05:47:44.983Z'),
     },
-    privateKey: '--PRIVATE_KEY--12324',
-    publicKey: '--PUBLIC_KEY--ABCD',
+    privateKey: {
+      pem: '--PRIVATE_KEY--12324',
+    },
+    publicKey: {
+      key: '--PUBLIC_KEY--ABCD',
+    },
   });
 }

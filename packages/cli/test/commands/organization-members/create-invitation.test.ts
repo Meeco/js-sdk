@@ -6,7 +6,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth,
+  testOrganizationUserAuth,
 } from '../../test-helpers';
 
 describe('organization-members:create-invitation', () => {
@@ -16,7 +16,7 @@ describe('organization-members:create-invitation', () => {
     .stderr()
     .run([
       'organization-members:create-invitation',
-      ...testUserAuth,
+      ...testOrganizationUserAuth,
       ...testEnvironmentFile,
       '-o',
       inputFixture('create-organization-members-invitation.input.yaml'),
