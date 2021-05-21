@@ -138,7 +138,7 @@ export class InvitationService extends Service<InvitationApi> {
     const { keypair: resultKeypair } = await this.keystoreAPIFactory(
       credentials
     ).KeypairApi.keypairsPost({
-      public_key: keyPair.publicKey.key,
+      public_key: keyPair.publicKey.pem,
       encrypted_serialized_key: toPrivateKeyEncrypted,
       // API will 500 without
       metadata: {},

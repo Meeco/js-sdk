@@ -37,7 +37,7 @@ export class DelegationService extends Service<DelegationApi> {
     const encryptedParentToChildKey = await parentKek.encryptKey(parentToChildKey.privateKey);
 
     await this.keystoreAPIFactory(credentials).KeypairApi.keypairsPost({
-      public_key: parentToChildKey.publicKey.key,
+      public_key: parentToChildKey.publicKey.pem,
       encrypted_serialized_key: encryptedParentToChildKey,
       metadata: {},
       external_identifiers: [parentToChildKeyId],
@@ -46,11 +46,11 @@ export class DelegationService extends Service<DelegationApi> {
     this.logger.log('Creating child user');
     const childUserResponse = await this.vaultAPIFactory(credentials).DelegationApi.childUsersPost({
       parent_public_key_for_connection: {
-        pem: parentToChildKey.publicKey.key,
+        pem: parentToChildKey.publicKey.pem,
         external_id: parentToChildKeyId,
       },
       child_public_key_for_connection: {
-        pem: childToParentKey.publicKey.key,
+        pem: childToParentKey.publicKey.pem,
         external_id: childToParentKeyId,
       },
     });
@@ -73,7 +73,7 @@ export class DelegationService extends Service<DelegationApi> {
         child_dek: encryptedChildDek,
         child_keypair_for_connection: {
           encrypted_private_key: encryptedChildToParentKey,
-          public_key: childToParentKey.publicKey.key,
+          public_key: childToParentKey.publicKey.pem,
           external_id: childToParentKeyId,
         },
         delegation_token,

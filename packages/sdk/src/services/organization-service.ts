@@ -57,14 +57,14 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
       credentials
     ).OrganizationsManagingOrganizationsApi.organizationsPost({
       name,
-      public_key: public_key.key,
+      public_key: public_key.pem,
       ...info,
     });
 
     return {
       organization: result.organization,
       privateKey: rsaKeyPair.privateKey.pem,
-      publicKey: rsaKeyPair.publicKey.key,
+      publicKey: rsaKeyPair.publicKey.pem,
     };
   }
 
