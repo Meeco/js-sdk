@@ -118,7 +118,7 @@ export class ConnectionService extends Service<ConnectionApi> {
     return async (connection: Connection) => {
       const encryptedName = connection.own.encrypted_recipient_name;
       return {
-        recipient_name: await dek.decryptString(encryptedName || ''),
+        recipient_name: encryptedName ? await dek.decryptString(encryptedName) : encryptedName,
         connection,
       };
     };

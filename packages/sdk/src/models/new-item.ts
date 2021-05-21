@@ -1,4 +1,10 @@
-import { ItemTemplate, NestedSlotAttributes, PostItemsRequest, Slot } from '@meeco/vault-api-sdk';
+import {
+  ClassificationNode,
+  ItemTemplate,
+  NestedSlotAttributes,
+  PostItemsRequest,
+  Slot,
+} from '@meeco/vault-api-sdk';
 import SlotHelpers from '../util/slot-helpers';
 import { slotToNewSlot } from '../util/transformers';
 import ItemChange from './item-change';
@@ -25,7 +31,7 @@ export class NewItem extends ItemChange {
     public readonly label: string,
     public template_name: string,
     public slots: NewSlot[] = [],
-    public classification_nodes = []
+    public classification_nodes: ClassificationNode[] = []
   ) {
     super(slots, classification_nodes);
     if (this.label === '') {

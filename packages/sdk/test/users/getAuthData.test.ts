@@ -88,7 +88,6 @@ function stubVault(api) {
         id: 'vault_user',
         private_dek_external_id: 'data_encryption_key_id',
       },
-      associations: [],
     });
   api
     .post('/session', {

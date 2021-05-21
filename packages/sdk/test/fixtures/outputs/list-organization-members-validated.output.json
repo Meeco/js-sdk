@@ -17,16 +17,12 @@
       "id": "e6b42a76-eacf-4e1b-985d-a36f04177e16",
       "full_name": null,
       "email": "owner@meeco.com",
-      "is_app_logging_enabled": null,
-      "image": null,
       "role": "owner"
     },
     {
       "id": "abc123",
       "full_name": "Jim Bob Jenkins",
       "email": "jim@email.com",
-      "is_app_logging_enabled": null,
-      "image": null,
       "role": "admin"
     }
   ]

@@ -82,7 +82,6 @@ const response = {
       full_name: null,
       email: 'owner@meeco.com',
       is_app_logging_enabled: null,
-      image: null,
       role: 'owner',
     },
     {
@@ -90,7 +89,6 @@ const response = {
       full_name: 'Jim Bob Jenkins',
       email: 'jim@email.com',
       is_app_logging_enabled: null,
-      image: null,
       role: 'admin',
     },
   ],

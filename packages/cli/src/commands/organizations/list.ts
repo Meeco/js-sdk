@@ -1,4 +1,5 @@
 import { getAllPaged, reducePages, reportIfTruncated, vaultAPIFactory } from '@meeco/sdk';
+import { OrganizationsGetModeEnum } from '@meeco/vault-api-sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationsListConfig } from '../../configs/organizations-list-config';
@@ -33,7 +34,8 @@ export default class OrganizationsList extends MeecoCommand {
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
       this.updateStatus('Fetching ' + mode + ' organizations');
       const api = vaultAPIFactory(environment)(authConfig);
-      const modeParam = mode === 'validated' ? undefined : mode;
+      const modeParam = (mode === 'validated' ? undefined : mode) as OrganizationsGetModeEnum;
+
       const result = all
         ? await getAllPaged(cursor =>
             api.OrganizationsForVaultUsersApi.organizationsGet(modeParam, cursor)

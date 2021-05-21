@@ -15,8 +15,6 @@
   "item_image": null,
   "item_image_background_colour": null,
   "classification_node_ids": null,
-  "association_ids": null,
-  "associations_to_ids": null,
   "slot_ids": ["sl_1", "sl_2"],
   "me": null,
   "background_color": null,
@@ -41,7 +39,6 @@
       "slot_type_name": "key_value",
       "creator": null,
       "encrypted_value": null,
-      "image": null,
       "label": "name",
       "value": null
     },
@@ -63,7 +60,6 @@
       "slot_type_name": "key_value",
       "creator": null,
       "encrypted_value": null,
-      "image": null,
       "label": "age",
       "value": null
     }

@@ -34,15 +34,15 @@ describe('Buttons', () => {
         height: 44,
       },
     },
-    {
-      label: 'Secondary Small',
-      background: meecoPink,
-      foreground: meecoRed,
-      size: {
-        width: 145,
-        height: 30,
-      },
-    },
+    // {
+    //   label: 'Secondary Small',
+    //   background: meecoPink,
+    //   foreground: meecoRed,
+    //   size: {
+    //     width: 145,
+    //     height: 30,
+    //   },
+    // },
     {
       label: 'Text Large',
       background: meecoTransparent,

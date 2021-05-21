@@ -98,8 +98,6 @@ describe('NewItem', () => {
       for (const slot of result.item!.slots_attributes!) {
         // tslint:disable-next-line:no-unused-expression
         expect(slot.encrypted_value).to.exist;
-        // tslint:disable-next-line:no-unused-expression
-        expect(slot.value).to.be.undefined;
       }
     });
 
@@ -134,7 +132,7 @@ describe('NewItem', () => {
       // tslint:disable-next-line:no-unused-expression
       expect(result.item!.slots_attributes![0]).to.exist;
       // tslint:disable-next-line:no-unused-expression
-      expect(result.item!.slots_attributes![0].id).to.be.undefined;
+      expect(result.item!.slots_attributes![0]['id']).to.be.undefined;
     });
 
     // it('throws an error if there are duplicate slots', () => {

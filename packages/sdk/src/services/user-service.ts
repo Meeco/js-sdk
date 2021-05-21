@@ -111,7 +111,7 @@ export class UserService extends Service<UserApi> {
     );
 
     await keystoreKeypairApi.keypairsPost({
-      public_key: keyPair.publicKey.key,
+      public_key: keyPair.publicKey.pem,
       encrypted_serialized_key: privateKeyEncryptedWithKEK,
       external_identifiers: [this.vaultKeypairExternalId],
     });
@@ -128,7 +128,7 @@ export class UserService extends Service<UserApi> {
     const vaultUserApi = this.vaultAPIFactory({ vault_access_token: '' }).UserApi;
 
     const vaultUser = await vaultUserApi.mePost({
-      public_key: keyPair.publicKey.key,
+      public_key: keyPair.publicKey.pem,
       admission_token: vaultAdmissionToken,
     });
     const decryptedVaultSessionToken = await keyPair.privateKey.decryptToken(
@@ -146,7 +146,7 @@ export class UserService extends Service<UserApi> {
     const sessionApi = this.vaultAPIFactory({ vault_access_token: '' }).SessionApi;
 
     const { session } = await sessionApi.sessionPost({
-      public_key: keyPair.publicKey.key,
+      public_key: keyPair.publicKey.pem,
     });
 
     const decryptedVaultSessionToken = await keyPair.privateKey.decryptToken(

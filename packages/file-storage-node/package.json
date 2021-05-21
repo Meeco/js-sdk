@@ -7,25 +7,35 @@
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\"",
+    "test": "mocha test/*.ts",
     "build": "tsc -p tsconfig.build.json",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
-    "docs": "typedoc --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate src/index.ts"
+    "docs": "typedoc --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate --excludeProtected src/index.ts"
   },
   "dependencies": {
-    "@meeco/cryppo": "^2.0.0",
-    "@meeco/file-storage-common": "^4.0.0",
-    "@meeco/vault-api-sdk": "^22.0.4",
+    "@meeco/cryppo": "2.0.2",
+    "@meeco/file-storage-common": "4.0.1",
+    "@meeco/vault-api-sdk": "31.0.0-develop.20210520004057.f7aee4e",
     "bili": "^4.10.0",
     "file-saver": "^2.0.2",
     "file-type": "^15.0.0",
+    "form-data": "^3.0.0",
     "mime-file-extension": "^1.0.1",
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.15",
+    "@types/mocha": "^8.2.1",
+    "@types/mock-fs": "^4.13.0",
     "@types/node": "^10.14.18",
     "@types/node-fetch": "^2.5.8",
+    "@types/sinon": "^9.0.10",
+    "fancy-test": "^1.4.10",
+    "mocha": "^8.3.0",
+    "mock-fs": "^4.13.0",
+    "nock": "^13.0.11",
+    "sinon": "^9.2.4",
     "typedoc": "^0.20.30",
     "typescript": "^3.9.6"
   },

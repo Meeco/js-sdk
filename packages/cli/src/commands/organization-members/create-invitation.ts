@@ -1,7 +1,7 @@
 import { OrganizationMemberRoles, OrganizationMembersService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
-import { AuthConfig } from '../../configs/auth-config';
 import { InvitationConfig } from '../../configs/invitation-config';
+import { OrganizationAuthConfig } from '../../configs/organization-auth-config';
 import { OrganizationConfig } from '../../configs/organization-config';
 import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
@@ -36,7 +36,7 @@ export default class OrganizationMembersCreateInvitation extends MeecoCommand {
     const { org, auth } = flags;
     const { member_role } = args;
     const environment = await this.readEnvironmentFile();
-    const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+    const authConfig = await this.readConfigFromFile(OrganizationAuthConfig, auth);
     const organizationConfigFile = await this.readConfigFromFile(OrganizationConfig, org);
 
     if (!authConfig) {

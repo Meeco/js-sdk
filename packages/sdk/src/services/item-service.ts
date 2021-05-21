@@ -120,7 +120,7 @@ export class ItemService extends Service<ItemApi> {
       ownerId,
       own !== undefined ? own.toString() : undefined,
       options?.nextPageAfter,
-      options?.perPage
+      options?.perPage?.toString()
     );
 
     if (resultHasNext(result) && options?.perPage === undefined) {
@@ -168,6 +168,7 @@ export class ItemService extends Service<ItemApi> {
         sharedWith,
         ownerId,
         own !== undefined ? own.toString() : undefined,
+        undefined,
         cursor
       )
     ).then(reducePages);
@@ -204,7 +205,7 @@ export class ItemService extends Service<ItemApi> {
       ownerId,
       own !== undefined ? own.toString() : undefined,
       options?.nextPageAfter,
-      options?.perPage
+      options?.perPage?.toString()
     );
 
     const slots = await Promise.all(result.slots.map(s => SlotHelpers.decryptSlot(credentials, s)));

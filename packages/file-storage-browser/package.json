@@ -17,16 +17,16 @@
     "build:demo": "webpack",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
-    "docs": "typedoc --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate src/index.ts"
+    "docs": "typedoc --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate --excludeProtected src/index.ts"
   },
   "dependencies": {
-    "@meeco/cryppo": "^2.0.0",
-    "@meeco/file-storage-common": "^4.0.0",
-    "@meeco/vault-api-sdk": "^22.0.4",
+    "@meeco/cryppo": "2.0.2",
+    "@meeco/file-storage-common": "4.0.1",
+    "@meeco/vault-api-sdk": "31.0.0-develop.20210520004057.f7aee4e",
     "axios": "^0.21.1"
   },
   "devDependencies": {
-    "@meeco/sdk": "^2.1.0",
+    "@meeco/sdk": "2.2.3",
     "bili": "^4.10.0",
     "typedoc": "^0.20.30",
     "typescript": "^3.9.6",

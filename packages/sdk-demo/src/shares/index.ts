@@ -19,7 +19,7 @@ import {
   TemplateService,
   UserService,
 } from '@meeco/sdk';
-import { Share } from '@meeco/vault-api-sdk';
+import { Share, ShareAcceptanceRequiredEnum } from '@meeco/vault-api-sdk';
 
 const $ = id => document.getElementById(id)!;
 const $get = (id: string) => ($(id) as HTMLInputElement)?.value;
@@ -269,7 +269,9 @@ function AppComponent() {
       state.share = response.share;
 
       // get the item if acceptance is not required
-      if (response.share.acceptance_required === AcceptanceRequest.NotRequired) {
+      if (
+        response.share.acceptance_required === ShareAcceptanceRequiredEnum.AcceptanceNotRequired
+      ) {
         const { item } = await new ShareService(environment, log).getSharedItem(
           state.auth,
           share.id,
@@ -691,7 +693,7 @@ function AcceptShareComponent(vInit: {
 
     try {
       // cannot use this API method if acceptance is not required
-      if (userState.share!.acceptance_required === AcceptanceRequest.Required) {
+      if (userState.share!.acceptance_required === ShareAcceptanceRequiredEnum.AcceptanceRequired) {
         await service.acceptIncomingShare(userState.auth, shareId);
       }
 

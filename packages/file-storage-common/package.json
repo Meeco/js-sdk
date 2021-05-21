@@ -17,7 +17,8 @@
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
   },
   "dependencies": {
-    "@meeco/cryppo": "^2.0.0",
+    "@meeco/cryppo": "2.0.2",
+    "@meeco/vault-api-sdk": "31.0.0-develop.20210520004057.f7aee4e",
     "axios": "^0.21.1"
   },
   "devDependencies": {
