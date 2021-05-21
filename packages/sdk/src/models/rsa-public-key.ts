@@ -15,10 +15,10 @@ export default class RSAPublicKey {
     }
   }
 
-  /** 
+  /**
    *  @deprecated use {@link pem}
    *  PEM formatted key string
-   **/
+   */
   get key() {
     return this._value;
   }

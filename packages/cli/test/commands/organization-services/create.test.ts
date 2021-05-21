@@ -51,7 +51,7 @@ function create(organizationId, service) {
       pem: '--PRIVATE_KEY--12324',
     },
     publicKey: {
-      key: '--PUBLIC_KEY--ABCD',
+      pem: '--PUBLIC_KEY--ABCD',
     },
   });
 }
