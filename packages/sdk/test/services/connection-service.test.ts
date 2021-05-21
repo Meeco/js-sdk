@@ -277,13 +277,9 @@ describe('ConnectionService', () => {
 
     function emptyAPI(token: string) {
       return api => {
-        api
-          .get('/connections')
-          .matchHeader('Authorization', token)
-          .once()
-          .reply(200, {
-            connections: [],
-          });
+        api.get('/connections').matchHeader('Authorization', token).once().reply(200, {
+          connections: [],
+        });
       };
     }
 
@@ -311,12 +307,9 @@ describe('ConnectionService', () => {
 
     customTest
       .nock('https://sandbox.meeco.me/vault', api =>
-        api
-          .get('/connections')
-          .once()
-          .reply(200, {
-            connections: [],
-          })
+        api.get('/connections').once().reply(200, {
+          connections: [],
+        })
       )
       .add('result', () =>
         new ConnectionService(environment).findConnectionBetween(

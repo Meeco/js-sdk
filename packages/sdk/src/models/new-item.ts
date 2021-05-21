@@ -55,8 +55,9 @@ export class NewItem extends ItemChange {
     const badValue = SlotHelpers.findWithEncryptedValue(this.slots);
     if (badValue) {
       throw new Error(
-        `Slot ${badValue['name'] ||
-          badValue['label']} with existing encrypted_value with be overwritten`
+        `Slot ${
+          badValue['name'] || badValue['label']
+        } with existing encrypted_value with be overwritten`
       );
     }
     // TODO should enforce map integrity?

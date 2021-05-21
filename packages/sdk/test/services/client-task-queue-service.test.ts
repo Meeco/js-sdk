@@ -35,7 +35,7 @@ describe('ClientTaskQueueService', () => {
     const updateStub = sinon.stub();
     updateStub.withArgs(testUserAuth, 'a').resolves({
       ...itemResponse,
-      slots: ((itemResponse.slots as any) as Slot[]).map(x => ({ ...x, value: '1234' })),
+      slots: (itemResponse.slots as any as Slot[]).map(x => ({ ...x, value: '1234' })),
     });
 
     const doneTasksResult = [mockTask('a', ClientTaskStateEnum.Done)];
