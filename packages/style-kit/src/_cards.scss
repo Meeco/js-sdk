@@ -1,3 +1,4 @@
+@use "sass:math";
 @import './variables';
 
 @mixin item-spacing($spacing: $grid) {
@@ -14,7 +15,7 @@
 
 @mixin item-spacing-column($spacing: $grid) {
   > * {
-    margin: $spacing 0 ($spacing / 2) 0;
+    margin: $spacing 0 math.div($spacing, 2) 0;
     &:last-child {
       margin-bottom: 0;
     }
