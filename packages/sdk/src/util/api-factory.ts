@@ -29,7 +29,7 @@ type KeysOfType<T, TProp> = { [P in keyof T]: T[P] extends TProp ? P : never }[k
 type VaultAPIName = KeysOfType<typeof Vault, VaultAPIConstructor>;
 type KeystoreAPIName = KeysOfType<typeof Keystore, KeystoreAPIConstructor>;
 
-interface IHeaders {
+export interface IHeaders {
   [key: string]: string;
 }
 

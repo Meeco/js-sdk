@@ -39,4 +39,10 @@ export { default as SlotHelpers } from './util/slot-helpers';
 export * from './util/transformers';
 export * from './util/value-verification';
 import _cryppo from './services/cryppo-service';
+import { keystoreAPIFactory, vaultAPIFactory } from './util/api-factory';
 export const _cryppoService = _cryppo;
+
+export const mockableFactories = {
+  vaultAPIFactory,
+  keystoreAPIFactory,
+};

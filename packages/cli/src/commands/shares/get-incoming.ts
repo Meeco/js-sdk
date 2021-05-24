@@ -42,7 +42,7 @@ export default class SharesGetIncoming extends MeecoCommand {
         delete clone['value_verification_key'];
         return clone;
       });
-      const output: any = { ...result, item: { ...result.item, slots: slots } };
+      const output: any = { ...result, item: { ...result.item, slots } };
       this.printYaml(output);
     } catch (err) {
       await this.handleException(err);

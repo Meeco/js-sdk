@@ -11,7 +11,7 @@ import {
 
 describe('organizations:update', () => {
   customTest
-    .stub(sdk, 'vaultAPIFactory', vaultAPIFactory as any)
+    .stub(sdk.mockableFactories, 'vaultAPIFactory', vaultAPIFactory as any)
     .stdout()
     .stderr()
     .run([

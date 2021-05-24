@@ -1,5 +1,6 @@
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
+import YAML from 'yaml';
 import { MOCK_NEXT_PAGE_AFTER } from '../../../src/util/constants';
 import {
   customTest,
@@ -22,11 +23,10 @@ describe('organization-members:list', () => {
     })
     .run(['organization-members:list', 'organization_id', ...testUserAuth, ...testEnvironmentFile])
     .it('shows a list of validated organizations', ctx => {
-      const expected = readFileSync(
-        outputFixture('list-organization-members-validated.output.yaml'),
-        'utf-8'
+      const expected = YAML.parse(
+        readFileSync(outputFixture('list-organization-members-validated.output.yaml'), 'utf-8')
       );
-      expect(ctx.stdout.trim()).to.equal(expected.trim());
+      expect(YAML.parse(ctx.stdout)).to.deep.equal(expected);
     });
 
   customTest
@@ -52,11 +52,10 @@ describe('organization-members:list', () => {
       ...testGetAll,
     ])
     .it('fetches a list of validated organizations when paginated', ctx => {
-      const expected = readFileSync(
-        outputFixture('list-organization-members-validated.output.yaml'),
-        'utf-8'
+      const expected = YAML.parse(
+        readFileSync(outputFixture('list-organization-members-validated.output.yaml'), 'utf-8')
       );
-      expect(ctx.stdout.trim()).to.equal(expected.trim());
+      expect(YAML.parse(ctx.stdout)).to.deep.equal(expected);
     });
 });
 
