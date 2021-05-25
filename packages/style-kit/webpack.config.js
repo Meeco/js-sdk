@@ -11,7 +11,7 @@ module.exports = {
         test: /\.s[ac]ss$/i,
         use: [
           // Creates `style` nodes from JS strings
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           // Translates CSS into CommonJS
           'css-loader',
           // Compiles Sass to CSS
@@ -19,12 +19,8 @@ module.exports = {
         ],
       },
       {
-        test: /\.(ttf|eot|svg|woff)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        use: [
-          {
-            loader: 'file-loader',
-          },
-        ],
+        test: /\.(ttf|eot|svg|woff)$/,
+        loader: 'ignore-loader',
       },
     ],
   },
