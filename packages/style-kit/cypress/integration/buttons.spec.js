@@ -68,9 +68,7 @@ describe('Buttons', () => {
       cy.get('button')
         .contains(button.label)
         .should('have.css', 'background-color', button.background);
-      cy.get('button')
-        .contains(button.label)
-        .should('have.css', 'color', button.foreground);
+      cy.get('button').contains(button.label).should('have.css', 'color', button.foreground);
     });
 
     // Snapshot testing is currently not very workable between headed and headless versions of cpres
