@@ -1,6 +1,6 @@
 import { onlyOn } from '@cypress/skip-test';
 
-describe('Colors', () => {
+describe.skip('Colors', () => {
   before(() => {
     cy.visit('/iframe.html?id=colors--color-palette');
   });
