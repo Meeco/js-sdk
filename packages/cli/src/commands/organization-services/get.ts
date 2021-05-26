@@ -1,4 +1,4 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { mockableFactories } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationServiceConfig } from '../../configs/organization-service-config';
 import authFlags from '../../flags/auth-flags';
@@ -35,12 +35,12 @@ export default class OrganizationServicesGet extends MeecoCommand {
 
     try {
       this.updateStatus('Fetching service details');
-      const result = await vaultAPIFactory(environment)(
-        authConfig
-      ).OrganizationsForVaultUsersApi.organizationsOrganizationIdServicesIdGet(
-        organization_id,
-        service_id
-      );
+      const result = await mockableFactories
+        .vaultAPIFactory(environment)(authConfig)
+        .OrganizationsForVaultUsersApi.organizationsOrganizationIdServicesIdGet(
+          organization_id,
+          service_id
+        );
       this.finish();
       this.printYaml(OrganizationServiceConfig.encodeFromJSON(result.service));
     } catch (err) {

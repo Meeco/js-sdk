@@ -1,3 +1,4 @@
+@use "sass:math";
 @import './variables';
 @import './icons';
 
@@ -44,7 +45,7 @@
   @include input($theme);
   display: inline-flex;
   flex-direction: column;
-  padding: $grid / 4;
+  padding: math.div($grid, 4);
   background-color: transparent;
   border-width: 1.5px;
   .content {

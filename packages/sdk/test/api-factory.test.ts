@@ -71,9 +71,7 @@ describe('API Factories', () => {
     });
 
     it('captures api version issues and throws a special error', async () => {
-      nock('https://meeco-keystore.example.com/')
-        .get('/keypairs/my-id')
-        .reply(426);
+      nock('https://meeco-keystore.example.com/').get('/keypairs/my-id').reply(426);
       const apiFactory = keystoreAPIFactory(<any>{
         keystore: {
           subscription_key: 'my_sub_key',
@@ -171,9 +169,7 @@ describe('API Factories', () => {
     });
 
     it('captures api version issues and throws a special error', async () => {
-      nock('https://meeco-vault.example.com/')
-        .get('/items/my-id')
-        .reply(426);
+      nock('https://meeco-vault.example.com/').get('/items/my-id').reply(426);
       const apiFactory = vaultAPIFactory(<any>{
         vault: {
           subscription_key: 'my_sub_key',

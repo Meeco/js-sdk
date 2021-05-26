@@ -27,12 +27,12 @@
   },
   "devDependencies": {
     "@meeco/sdk": "2.2.3",
-    "bili": "^4.10.0",
-    "typedoc": "^0.20.30",
-    "typescript": "^3.9.6",
-    "webpack": "^4.44.1",
+    "bili": "^5.0.5",
+    "typedoc": "^0.20.36",
+    "typescript": "^4.2.4",
+    "webpack": "^4.46.0",
     "webpack-bundle-analyzer": "^3.8.0",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.2"
   },
   "keywords": [],
   "author": "",

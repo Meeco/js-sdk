@@ -91,9 +91,9 @@ export class DelegationService extends Service<DelegationApi> {
     connectionName: string,
     keypairId?: string
   ) {
-    const { delegation } = await this.keystoreAPIFactory(
-      credentials
-    ).DelegationApi.delegationsPost({ vault_account_id, delegation_role });
+    const { delegation } = await this.keystoreAPIFactory(credentials).DelegationApi.delegationsPost(
+      { vault_account_id, delegation_role }
+    );
 
     return await new InvitationService(this.environment).create(
       credentials,
@@ -129,9 +129,10 @@ export class DelegationService extends Service<DelegationApi> {
       new TextEncoder().encode(delegationToken)
     ).serialized;
 
-    await this.keystoreAPIFactory(
-      credentials
-    ).DelegationApi.delegationsDelegationTokenClaimPost(delegationToken, { delegate_signature });
+    await this.keystoreAPIFactory(credentials).DelegationApi.delegationsDelegationTokenClaimPost(
+      delegationToken,
+      { delegate_signature }
+    );
 
     return connection;
   }

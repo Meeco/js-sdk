@@ -3,7 +3,8 @@
   "compilerOptions": {
     "declaration": true,
     "outDir": "./lib",
-    "types": ["node", "mocha"]
+    "types": ["node", "mocha"],
+    "skipLibCheck": true
   },
   "include": ["src"]
 }

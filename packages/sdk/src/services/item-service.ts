@@ -105,9 +105,8 @@ export class ItemService extends Service<ItemApi> {
     listFilterOptions?: IItemListFilterOptions,
     options?: IPageOptions
   ): Promise<ItemsResponse> {
-    const { classificationNodeName, classificationNodeNames } = this.getClassifications(
-      listFilterOptions
-    );
+    const { classificationNodeName, classificationNodeNames } =
+      this.getClassifications(listFilterOptions);
 
     const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
 
@@ -153,9 +152,8 @@ export class ItemService extends Service<ItemApi> {
   ): Promise<ItemsResponse> {
     const api = this.vaultAPIFactory(credentials).ItemApi;
 
-    const { classificationNodeName, classificationNodeNames } = this.getClassifications(
-      listFilterOptions
-    );
+    const { classificationNodeName, classificationNodeNames } =
+      this.getClassifications(listFilterOptions);
 
     const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
 
@@ -190,9 +188,8 @@ export class ItemService extends Service<ItemApi> {
     listFilterOptions?: IItemListFilterOptions,
     options?: IPageOptions
   ): Promise<DecryptedItems> {
-    const { classificationNodeName, classificationNodeNames } = this.getClassifications(
-      listFilterOptions
-    );
+    const { classificationNodeName, classificationNodeNames } =
+      this.getClassifications(listFilterOptions);
 
     const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
 

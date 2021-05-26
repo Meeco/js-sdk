@@ -63,11 +63,7 @@ describe('items:get-thumbnail', () => {
       ...testUserAuth,
       ...testEnvironmentFile,
     ])
-    .catch(err =>
-      expect(err.message)
-        .to.contain('The destination file')
-        .and.to.contain('exists')
-    )
+    .catch(err => expect(err.message).to.contain('The destination file').and.to.contain('exists'))
     .it('does not overwrite existing files');
 
   customTest

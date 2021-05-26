@@ -268,7 +268,7 @@ async function createItem() {
   }
 }
 
-function readItemSlots(): Array<{ name: string; value: string }> {
+function readItemSlots(): { name: string; value: string }[] {
   const result: any[] = [];
   $('formSlots')
     .querySelectorAll('input')

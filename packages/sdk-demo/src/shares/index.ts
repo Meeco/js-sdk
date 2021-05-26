@@ -73,7 +73,7 @@ const STATE: {
   otherUsers: AuthData[];
   templates: SDKTemplate[];
   // username to array of <connectionId, username>
-  connections: Record<string, Array<{ connectionId: string; name: string }>>;
+  connections: Record<string, { connectionId: string; name: string }[]>;
 } = { otherUsers: [], templates: [], connections: {} };
 
 // Assumes modern browser with fetch

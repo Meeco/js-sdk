@@ -83,10 +83,7 @@ export default class Secrets {
       throw new Error('Incorrect secret provided. Please destructure the secret_key.');
     }
 
-    const salt = secretKey
-      .split('')
-      .reverse()
-      .join('');
+    const salt = secretKey.split('').reverse().join('');
 
     const { key } = await cryppo.generateDerivedKey({
       ...this.derivationConstants,

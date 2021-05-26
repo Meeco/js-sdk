@@ -29,25 +29,24 @@ type KeysOfType<T, TProp> = { [P in keyof T]: T[P] extends TProp ? P : never }[k
 type VaultAPIName = KeysOfType<typeof Vault, VaultAPIConstructor>;
 type KeystoreAPIName = KeysOfType<typeof Keystore, KeystoreAPIConstructor>;
 
-interface IHeaders {
+export interface IHeaders {
   [key: string]: string;
 }
 
 /**
  * Pluck environment and user auth values to create `apiKey` [Keystore.Configuration] parameter
  */
-const keystoreAPIKeys = (
-  environment: Environment,
-  userAuth: IKeystoreToken
-): ((name: string) => string) => (name: string) =>
-  ({
-    'Meeco-Subscription-Key': environment.keystore.subscription_key,
-    // Must be uppercase
-    // prettier-ignore
-    'Authorization': userAuth.keystore_access_token,
-    'Meeco-Delegation-Id': userAuth.delegation_id || '',
-    authorizationoidc2: userAuth.oidc_token || '',
-  }[name] as string);
+const keystoreAPIKeys =
+  (environment: Environment, userAuth: IKeystoreToken): ((name: string) => string) =>
+  (name: string) =>
+    ({
+      'Meeco-Subscription-Key': environment.keystore.subscription_key,
+      // Must be uppercase
+      // prettier-ignore
+      'Authorization': userAuth.keystore_access_token,
+      'Meeco-Delegation-Id': userAuth.delegation_id || '',
+      authorizationoidc2: userAuth.oidc_token || '',
+    }[name] as string);
 
 /**
  * Pluck environment and user auth values to create `apiKey` [Vault.Configuration] parameter
@@ -252,34 +251,31 @@ export type VaultAPIFactoryInstance = { [key in VaultAPIName]: InstanceType<type
  * Results in a factory function that can be passed user auth information and then get
  * arbitrary Keystore api instances to use.
  */
-export const keystoreAPIFactory = (environment: Environment) => (
-  userAuth: IKeystoreToken,
-  headers?: IHeaders
-) =>
-  new Proxy(
-    {},
-    {
-      get(target, property: KeystoreAPIName) {
-        return keystoreAPI(property, environment, userAuth, headers);
-      },
-    }
-  ) as KeystoreAPIFactoryInstance;
+export const keystoreAPIFactory =
+  (environment: Environment) => (userAuth: IKeystoreToken, headers?: IHeaders) =>
+    new Proxy(
+      {},
+      {
+        get(target, property: KeystoreAPIName) {
+          return keystoreAPI(property, environment, userAuth, headers);
+        },
+      }
+    ) as KeystoreAPIFactoryInstance;
 
 /**
  * Results in a factory function that can be passed user auth information and then get
  * arbitrary Vault api instances to use.
  */
-export const vaultAPIFactory: (Environment) => (UserAuth, IHeaders?) => VaultAPIFactoryInstance = (
-  environment: Environment
-) => (userAuth: IVaultToken, headers?: IHeaders) =>
-  new Proxy(
-    {},
-    {
-      get(target, property: VaultAPIName) {
-        return vaultAPI(property, environment, userAuth, headers);
-      },
-    }
-  ) as VaultAPIFactoryInstance;
+export const vaultAPIFactory: (Environment) => (UserAuth, IHeaders?) => VaultAPIFactoryInstance =
+  (environment: Environment) => (userAuth: IVaultToken, headers?: IHeaders) =>
+    new Proxy(
+      {},
+      {
+        get(target, property: VaultAPIName) {
+          return vaultAPI(property, environment, userAuth, headers);
+        },
+      }
+    ) as VaultAPIFactoryInstance;
 
 const toCurl = (url, options) => {
   const defaultHeaders = {

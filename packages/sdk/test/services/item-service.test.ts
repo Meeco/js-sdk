@@ -456,9 +456,12 @@ describe('ItemService', () => {
         });
         const result = await new ItemService(environment).update(testUserAuth, updateData);
 
-        const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
-          'update-item.output.json'
-        );
+        const {
+          slots: expectedSlots,
+          thumbnails,
+          attachments,
+          ...expectedItem
+        } = getOutputFixture('update-item.output.json');
         expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
         expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
       });

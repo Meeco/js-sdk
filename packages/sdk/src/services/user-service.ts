@@ -30,8 +30,8 @@ export class UserService extends Service<UserApi> {
   }
 
   private async requestExternalAdmissionTokens(credentials: IKeystoreToken) {
-    const keystoreExternalAdmissionApi = this.keystoreAPIFactory(credentials)
-      .ExternalAdmissionTokensApi;
+    const keystoreExternalAdmissionApi =
+      this.keystoreAPIFactory(credentials).ExternalAdmissionTokensApi;
     this.logger.log('Request external admission tokens from keystore');
     return keystoreExternalAdmissionApi
       .externalAdmissionTokensGet()
