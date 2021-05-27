@@ -1,6 +1,6 @@
 {
   "name": "@meeco/file-storage-browser",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Browser module for uploading and downloading encrypted files",
   "source": "src/index.ts",
   "types": "./lib/index.d.ts",
