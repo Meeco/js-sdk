@@ -10,8 +10,8 @@
   "types": "dist/src/index.d.ts",
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
-    "@meeco/keystore-api-sdk": "5.4.2-develop.20210513203737.fe12d31",
-    "@meeco/vault-api-sdk": "31.0.0-develop.20210520004057.f7aee4e",
+    "@meeco/keystore-api-sdk": "5.6.0-stage.20210527121738.c3654c9",
+    "@meeco/vault-api-sdk": "32.0.0-stage.20210527103605.f1f76f0",
     "@types/node-forge": "~0.9.7",
     "@types/parameterize": "^1.0.1",
     "base58-string": "0.0.3",
