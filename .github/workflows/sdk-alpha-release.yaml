@@ -3,7 +3,7 @@ name: Release SDK Alpha
 on:
   push:
     tags:
-      - 'releases/sdk/**-alpha'
+      - 'releases/sdk/**-alpha*'
 
 jobs:
   create_sdk_alpha_release:
@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -23,6 +23,8 @@ jobs:
       - run: npx lerna run test --scope @meeco/sdk
         env:
           CI: true
+      # Tag all versions with `-alpha` and update all inter-dependant packages to use "alpha" as the version
+      - run: npm run alpha
       - run: npx lerna run build --scope @meeco/sdk
       - name: Publish NPM
         run: |

@@ -7,9 +7,7 @@ describe('Cards and Shadows', () => {
     });
 
     it('has a soft shadow card', () => {
-      cy.get('.card')
-        .eq(0)
-        .should('have.css', 'box-shadow', 'rgba(0, 0, 0, 0.16) 0px 2px 8px 0px');
+      cy.get('.card').eq(0).should('have.css', 'box-shadow', 'rgba(0, 0, 0, 0.16) 0px 2px 8px 0px');
     });
 
     it('has a hard shadow card', () => {

@@ -71,3 +71,10 @@ export const readBlock = (filePath, from, to) =>
       reject(error);
     }
   });
+
+/**
+ * Base 64 encode the string
+ */
+export function base64(str: string): string {
+  return Buffer.from(str).toString('base64');
+}

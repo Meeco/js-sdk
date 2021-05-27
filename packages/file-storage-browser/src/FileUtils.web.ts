@@ -31,3 +31,10 @@ export const readBlock = (file, from, to) =>
     };
     reader.readAsArrayBuffer(slicedFile);
   });
+
+/**
+ * Base 64 encode the string
+ */
+export function base64(str: string): string {
+  return window.btoa(str);
+}

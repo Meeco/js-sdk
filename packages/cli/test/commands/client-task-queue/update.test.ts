@@ -1,5 +1,9 @@
 import { ClientTaskState } from '@meeco/sdk';
-import { ClientTaskQueueResponse1 } from '@meeco/vault-api-sdk';
+import {
+  ClientTaskQueueResponse1,
+  ClientTaskStateEnum,
+  ClientTaskWorkTypeEnum,
+} from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
 import { readFileSync } from 'fs';
 import {
@@ -21,7 +25,7 @@ describe('client-task-queue:update', () => {
         )
         .matchHeader('Authorization', testVaultToken)
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, response(ClientTaskState.InProgress));
+        .reply(200, response(ClientTaskStateEnum.InProgress));
     })
     .stdout()
     .stderr()
@@ -44,7 +48,7 @@ describe('client-task-queue:update', () => {
         )
         .matchHeader('Authorization', testVaultToken)
         .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
-        .reply(200, response(ClientTaskState.Todo));
+        .reply(200, response(ClientTaskStateEnum.Todo));
     })
     .stdout()
     .run([
@@ -61,7 +65,7 @@ describe('client-task-queue:update', () => {
     });
 });
 
-function response(state: ClientTaskState): ClientTaskQueueResponse1 {
+function response(state: ClientTaskStateEnum): ClientTaskQueueResponse1 {
   return {
     client_tasks: ['1', '2', '3'].map(nId => ({
       id: nId,
@@ -71,7 +75,7 @@ function response(state: ClientTaskState): ClientTaskQueueResponse1 {
       additional_options: {},
       last_state_transition_at: new Date(1),
       created_at: new Date(1),
-      work_type: 'update_item_shares',
+      work_type: ClientTaskWorkTypeEnum.UpdateItemShares,
     })),
   };
 }

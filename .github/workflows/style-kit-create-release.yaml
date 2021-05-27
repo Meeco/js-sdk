@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - 'releases/style-kit/**'
-      - '!releases/style-kit/**-beta'
+      - '!releases/style-kit/**-beta*'
 
 jobs:
   create_style_kit_release:
@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npx lerna run test
+      - run: npm test
         env:
           CI: true
       - run: npx lerna run build --scope @meeco/style-kit

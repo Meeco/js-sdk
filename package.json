@@ -6,12 +6,23 @@
     "bootstrap": "lerna bootstrap --hoist --nohoist=mithril --nohoist=@types/mithril",
     "build": "lerna run build",
     "docs": "lerna run docs",
-    "postinstall": "npm run bootstrap",
-    "test": "lerna run test"
+    "postinstall": "ts-node scripts/check-node-and-npm-versions.ts && npm run bootstrap",
+    "alpha": "ts-node scripts/tag-packages.ts alpha",
+    "beta": "ts-node scripts/tag-packages.ts beta",
+    "test": "lerna run test",
+    "pretest": "ts-node scripts/check-packages.ts"
   },
   "devDependencies": {
-    "chalk": "^4.0.0",
-    "cypress": "^4.12.0",
-    "lerna": "^3.22.0"
+    "@types/node": "^15.3.1",
+    "chalk": "^4.1.1",
+    "cypress": "^4.12.1",
+    "lerna": "^4.0.0",
+    "semver": "^7.3.5",
+    "ts-node": "^9.1.1",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.2.4"
+  },
+  "engines": {
+    "node": "^16.2.0"
   }
 }

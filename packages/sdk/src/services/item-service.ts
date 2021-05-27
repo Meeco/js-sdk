@@ -1,4 +1,3 @@
-// import * as MeecoAzure from '@meeco/azure-block-upload';
 import { Item, ItemApi, ItemsResponse, Share } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
 import DecryptedKeypair from '../models/decrypted-keypair';
@@ -6,7 +5,32 @@ import { ItemUpdate } from '../models/item-update';
 import { NewItem } from '../models/new-item';
 import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, reducePages, resultHasNext } from '../util/paged';
+import SlotHelpers from '../util/slot-helpers';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
+
+/**
+ * Filter Item list with following params
+ * @param templateIds array of item template ids
+ * @param scheme name of item scheme
+ * @param classifications array of item classification names e.g. pets, vehicle
+ * @param sharedWith user Id. item shared with provided user id.
+ * Works for items owned by the current user as well as for items owned by someone else and on-shared by the current user.
+ * @param ownerId only return Items created by the given user id.
+ * @param own only return Items you created.
+ */
+export interface IItemListFilterOptions {
+  templateIds?: string[];
+  scheme?: string;
+  classifications?: string[];
+  sharedWith?: string;
+  ownerId?: string;
+  own?: boolean;
+}
+
+/** DecryptedItems together with response metadata if needed for paging etc. */
+export type DecryptedItems = Pick<ItemsResponse, 'meta' | 'next_page_after'> & {
+  items: DecryptedItem[];
+};
 
 /**
  * Used for fetching and sending `Items` to and from the Vault.
@@ -15,7 +39,6 @@ export class ItemService extends Service<ItemApi> {
   /**
    * True if the Item was received via a Share from another user.
    * In that case, it must be decrypted with the Share DEK, not the user's own DEK.
-   * @param item
    */
   public static itemIsFromShare(item: Item): boolean {
     return item.own === false || !!item.share_id;
@@ -54,7 +77,6 @@ export class ItemService extends Service<ItemApi> {
    * Get an Item and decrypt all of its Slots.
    * Works for both owned and shared Items.
    * @param id ItemId
-   * @param user
    */
   public async get(
     credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
@@ -80,17 +102,24 @@ export class ItemService extends Service<ItemApi> {
 
   public async list(
     credentials: IVaultToken,
-    templateIds?: string,
+    listFilterOptions?: IItemListFilterOptions,
     options?: IPageOptions
   ): Promise<ItemsResponse> {
+    const { classificationNodeName, classificationNodeNames } =
+      this.getClassifications(listFilterOptions);
+
+    const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
+
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
-      templateIds,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
+      templateIds?.join(','),
+      scheme,
+      classificationNodeName,
+      classificationNodeNames,
+      sharedWith,
+      ownerId,
+      own !== undefined ? own.toString() : undefined,
       options?.nextPageAfter,
-      options?.perPage
+      options?.perPage?.toString()
     );
 
     if (resultHasNext(result) && options?.perPage === undefined) {
@@ -100,12 +129,89 @@ export class ItemService extends Service<ItemApi> {
     return result;
   }
 
-  public async listAll(credentials: IVaultToken, templateIds?: string): Promise<ItemsResponse> {
+  // smooth over classificationNodeName/classificationNodeNames...
+  private getClassifications({ classifications }: IItemListFilterOptions = {}) {
+    if (!classifications) {
+      return {};
+    }
+
+    if (classifications.length === 1) {
+      return {
+        classificationNodeName: classifications[0],
+      };
+    } else {
+      return {
+        classificationNodeNames: classifications.join(','),
+      };
+    }
+  }
+
+  public async listAll(
+    credentials: IVaultToken,
+    listFilterOptions?: IItemListFilterOptions
+  ): Promise<ItemsResponse> {
     const api = this.vaultAPIFactory(credentials).ItemApi;
 
+    const { classificationNodeName, classificationNodeNames } =
+      this.getClassifications(listFilterOptions);
+
+    const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
+
     return getAllPaged(cursor =>
-      api.itemsGet(templateIds, undefined, undefined, undefined, undefined, cursor)
+      api.itemsGet(
+        templateIds?.join(','),
+        scheme,
+        classificationNodeName,
+        classificationNodeNames,
+        sharedWith,
+        ownerId,
+        own !== undefined ? own.toString() : undefined,
+        undefined,
+        cursor
+      )
     ).then(reducePages);
+  }
+
+  /**
+   * Behaves like [[list]] but chains [[DecryptedItem]] constructor and preserves response metadata.
+   * Item attachments, thumbnails and associations are added to the appropriate Item and so are not present in
+   * the result.
+   *
+   * If you want to pull all pages, use the following snippet
+   * ```typescript
+   * const allItems: DecryptedItems =
+   *   await getAllPaged(cursor => listDecrypted(credentials, filterOpts, { nextPageAfter: cursor })).then(reducePages);
+   * ```
+   */
+  public async listDecrypted(
+    credentials: IVaultToken & IDEK,
+    listFilterOptions?: IItemListFilterOptions,
+    options?: IPageOptions
+  ): Promise<DecryptedItems> {
+    const { classificationNodeName, classificationNodeNames } =
+      this.getClassifications(listFilterOptions);
+
+    const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
+
+    const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
+      templateIds?.join(','),
+      scheme,
+      classificationNodeName,
+      classificationNodeNames,
+      sharedWith,
+      ownerId,
+      own !== undefined ? own.toString() : undefined,
+      options?.nextPageAfter,
+      options?.perPage?.toString()
+    );
+
+    const slots = await Promise.all(result.slots.map(s => SlotHelpers.decryptSlot(credentials, s)));
+
+    return {
+      next_page_after: result.next_page_after,
+      meta: result.meta,
+      items: result.items.map(i => new DecryptedItem(i, slots, result)),
+    };
   }
 
   /**
@@ -113,8 +219,6 @@ export class ItemService extends Service<ItemApi> {
    * A shared Item may be either encrypted with a shared data-encryption key (DEK) or with
    * the user's personal DEK. This method inspects the share record and returns the appropriate
    * key.
-   * @param user
-   * @param shareId
    */
   public async getShareDEK(
     credentials: IKeystoreToken & IKEK & IDEK,

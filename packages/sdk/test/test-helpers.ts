@@ -1,3 +1,4 @@
+import { OrganizationAuthData } from '@meeco/sdk';
 import { ClassificationNode } from '@meeco/vault-api-sdk';
 import test from '@oclif/test';
 import { join } from 'path';
@@ -31,6 +32,7 @@ export const getInputFixture = (fileName: string) => {
 };
 
 export const testUserAuthFixture = getInputFixture('user-auth.input.json');
+export const testOrganizationUserAuthFixture = getInputFixture('organization-user-auth.input.json');
 
 export const customTest = test.register('mockCryppo', _mockCryppo).register('mockSRP', mockSRP);
 
@@ -74,8 +76,17 @@ export const buildTestAuthData = (config: {
     vault_access_token: config.vault_access_token,
   });
 
+export const buildTestOrganizationAuthData = (config: { vault_access_token: string }) =>
+  new OrganizationAuthData({
+    vault_access_token: config.vault_access_token,
+  });
+
 export const testUserAuth = buildTestAuthData({
   ...testUserAuthFixture,
+});
+
+export const testOrganizationUserAuth = buildTestOrganizationAuthData({
+  ...testOrganizationUserAuthFixture,
 });
 
 const { vault, keystore } = getInputFixture('test-environment.input.json');
@@ -101,5 +112,6 @@ export function mockClassificationNode(id: string = 'id'): ClassificationNode {
     name: 'a_classification',
     ordinal: 1,
     scheme: 'tag',
+    classifications_count: 1,
   };
 }

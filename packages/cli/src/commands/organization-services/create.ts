@@ -51,8 +51,8 @@ or rejected by meeco`;
       this.finish();
       this.printYaml(
         OrganizationServiceConfig.encodeFromJSON(result.service, {
-          privateKey: result.privateKey,
-          publicKey: result.publicKey,
+          privateKey: result.privateKey.pem,
+          publicKey: result.publicKey.pem,
         })
       );
     } catch (err) {

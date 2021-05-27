@@ -112,7 +112,7 @@ export const meecoIcons = () => {
   let iconTable =
     '<table class="fixed"><tr><th>Icon</th><th>Ligature value</th></tr></table><table>';
 
-  icon_list.forEach(function(icon_name) {
+  icon_list.forEach(function (icon_name) {
     iconTable += '<tr><td><i>' + icon_name + '</i></td><td>' + icon_name + '</td></tr>';
   });
 

@@ -1,4 +1,4 @@
-import { ClientTaskQueueService, ItemService, ItemUpdate } from '@meeco/sdk';
+import { ClientTaskQueueService, ItemService, ItemUpdate, NewSlot } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { ItemUpdateConfig } from '../../configs/item-update-config';
@@ -46,7 +46,7 @@ export default class ItemsUpdate extends MeecoCommand {
 
     const updateData = new ItemUpdate(itemConfig?.id!, {
       label: itemConfig?.label,
-      slots: itemConfig?.slots,
+      slots: itemConfig?.slots as any as NewSlot[],
     });
 
     try {

@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -20,12 +20,16 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npx lerna run test
+      - run: npm test
         env:
           CI: true
+      # Tag all versions with `-beta` and update all inter-dependant packages to use "beta" as the version
+      - run: npm run beta
       # It is currently a dependency
       - run: npx lerna run build --scope '@meeco/sdk'
-      - run: npx lerna run build --scope '@meeco/{file-storage-common,file-storage-browser,file-storage-node}'
+      # Build common first as the others depend on it
+      - run: npx lerna run build --scope '@meeco/file-storage-common'
+      - run: npx lerna run build --scope '@meeco/{file-storage-browser,file-storage-node}'
       - name: Publish NPM
         run: |
           npx lerna exec --scope '@meeco/{file-storage-common,file-storage-browser,file-storage-node}' -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN

@@ -1,21 +1,10 @@
 import { ExternalAdmissionTokens, Session, SrpChallenge } from '@meeco/keystore-api-sdk';
 import { expect } from '@oclif/test';
-import open from 'cli-ux/lib/open';
-import * as request from 'node-fetch';
 import { UserService } from '../../src/services/user-service';
 import Secrets from '../../src/util/secrets';
 import { customTest, environment, getOutputFixture } from '../test-helpers';
 
 describe('User creation', () => {
-  (<any>open) = () => {
-    return request('http://localhost:5210/', {
-      method: 'post',
-      body: JSON.stringify({
-        'g-recaptcha-response': 'mock_captcha',
-      }),
-      headers: { 'Content-Type': 'application/json' },
-    });
-  };
   customTest
     .nock('https://sandbox.meeco.me/keystore', stubKeystore(false))
     .nock('https://sandbox.meeco.me/vault', stubVault)
@@ -152,7 +141,6 @@ function stubVault(api) {
         id: 'vault_user',
       },
       encrypted_session_authentication_string: 'encrypted_vault_session_string',
-      associations: [],
     });
 
   api
@@ -168,6 +156,5 @@ function stubVault(api) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       user: {},
-      associations: [],
     });
 }

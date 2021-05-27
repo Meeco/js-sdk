@@ -27,6 +27,55 @@ describe('items:list', () => {
       const expected = readFileSync(outputFixture('list-items.output.yaml'), 'utf-8');
       expect(ctx.stdout).to.contain(expected);
     });
+
+  customTest
+    .stub(ItemService.prototype, 'list', list as any)
+    .stdout()
+    .run([
+      'items:list',
+      '--templateId',
+      'e30a36a5-6cd3-4d58-b838-b3a96384beab',
+      '--templateId',
+      'e25b48c9-4011-4020-a96d-7f5116680db4',
+      ...testUserAuth,
+      ...testEnvironmentFile,
+    ])
+    .it('list items that the user has', ctx => {
+      const expected = readFileSync(outputFixture('list-items.output.yaml'), 'utf-8');
+      expect(ctx.stdout.trim()).to.contain(expected.trim());
+    });
+
+  customTest
+    .stub(ItemService.prototype, 'list', list as any)
+    .stdout()
+    .run([
+      'items:list',
+      '--classification',
+      'pets',
+      '--classification',
+      'vehicles',
+      ...testUserAuth,
+      ...testEnvironmentFile,
+    ])
+    .it('list items that the user has', ctx => {
+      const expected = readFileSync(outputFixture('list-items.output.yaml'), 'utf-8');
+      expect(ctx.stdout.trim()).to.contain(expected.trim());
+    });
+
+  customTest
+    .stub(ItemService.prototype, 'list', list as any)
+    .stdout()
+    .run([
+      'items:list',
+      '--sharedWith',
+      '79277a11-ad81-4f86-afda-8ac1b9b72079',
+      ...testUserAuth,
+      ...testEnvironmentFile,
+    ])
+    .it('list items that the user has', ctx => {
+      const expected = readFileSync(outputFixture('list-items.output.yaml'), 'utf-8');
+      expect(ctx.stdout.trim()).to.contain(expected.trim());
+    });
 });
 
 function list(vaultAccessToken: string) {
@@ -35,8 +84,6 @@ function list(vaultAccessToken: string) {
 
 const response = {
   next_page_after: null,
-  associations: [],
-  associations_to: [],
   attachments: [],
   thumbnails: [],
   classification_nodes: [],
@@ -61,7 +108,6 @@ const response = {
       encrypted_value: null,
       encrypted_value_verification_key: null,
       value_verification_hash: null,
-      image: null,
       label: null,
       original_id: null,
       owner_id: null,
@@ -86,7 +132,6 @@ const response = {
       encrypted_value: null,
       encrypted_value_verification_key: null,
       value_verification_hash: null,
-      image: null,
       label: null,
       original_id: null,
       owner_id: null,
@@ -100,17 +145,15 @@ const response = {
       label: null,
       description: null,
       created_at: new Date(1),
-      item_template_id: null,
+      item_template_id: 'e30a36a5-6cd3-4d58-b838-b3a96384beab',
       ordinal: null,
       visible: null,
       updated_at: new Date(1),
-      item_template_label: null,
+      item_template_label: 'Vehicle',
       image: null,
       item_image: null,
       item_image_background_colour: null,
       classification_node_ids: null,
-      association_ids: null,
-      associations_to_ids: null,
       slot_ids: ['make_model'],
       me: null,
       background_color: null,
@@ -121,21 +164,19 @@ const response = {
     {
       id: 'b',
       own: null,
-      name: 'My House',
+      name: 'My Dog',
       label: null,
       description: null,
       created_at: new Date(1),
-      item_template_id: null,
+      item_template_id: 'e25b48c9-4011-4020-a96d-7f5116680db4',
       ordinal: null,
       visible: null,
       updated_at: new Date(1),
-      item_template_label: null,
+      item_template_label: 'Pet',
       image: null,
       item_image: null,
       item_image_background_colour: null,
       classification_node_ids: null,
-      association_ids: null,
-      associations_to_ids: null,
       slot_ids: ['add'],
       me: null,
       background_color: null,

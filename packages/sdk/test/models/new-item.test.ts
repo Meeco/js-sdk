@@ -98,21 +98,21 @@ describe('NewItem', () => {
       for (const slot of result.item!.slots_attributes!) {
         // tslint:disable-next-line:no-unused-expression
         expect(slot.encrypted_value).to.exist;
-        // tslint:disable-next-line:no-unused-expression
-        expect(slot.value).to.be.undefined;
       }
     });
 
     it('does not encrypt slots without values', async () => {
       newItem.slots = [{ name: 'empty_slot' }, { label: 'Another Empty Slot' }];
       const result = await newItem.toRequest(dek);
-      expect(result.item!.slots_attributes!.length).to.equal(2);
-      for (const slot of result.item!.slots_attributes!) {
-        // tslint:disable-next-line:no-unused-expression
-        expect(slot.encrypted_value).to.be.undefined;
-        // tslint:disable-next-line:no-unused-expression
-        expect(slot.value).to.be.undefined;
-      }
+      // tslint:disable-next-line:no-unused-expression
+      expect(result.item!.slots_attributes).to.be.empty;
+    });
+
+    it('treats empty strings as null and filters them', async () => {
+      newItem.slots = [{ name: 'empty_slot', value: '' }];
+      const result = await newItem.toRequest(dek);
+      // tslint:disable-next-line:no-unused-expression
+      expect(result.item!.slots_attributes).to.be.empty;
     });
 
     it('throws an error if any slot has encrypted_value', async () => {
@@ -123,6 +123,16 @@ describe('NewItem', () => {
       } catch (e) {
         expect(e).to.be.an('error');
       }
+    });
+
+    it('strips slot ids if present', async () => {
+      newItem.slots = [{ id: '1', name: 'bad_slot', value: 'some_value' }];
+      const result = await newItem.toRequest(dek);
+
+      // tslint:disable-next-line:no-unused-expression
+      expect(result.item!.slots_attributes![0]).to.exist;
+      // tslint:disable-next-line:no-unused-expression
+      expect(result.item!.slots_attributes![0]['id']).to.be.undefined;
     });
 
     // it('throws an error if there are duplicate slots', () => {

@@ -1,3 +1,4 @@
+@use "sass:math";
 @import './variables';
 
 @mixin tag-base($theme) {
@@ -31,7 +32,7 @@
   i,
   .icon {
     @include icon-align;
-    margin-right: $grid / 2;
+    margin-right: math.div($grid, 2);
   }
 }
 

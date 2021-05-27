@@ -38,8 +38,6 @@ describe('items:update', () => {
 
 function update(vaultAccessToken, dataEncryptionKey, updateData) {
   return Promise.resolve({
-    associations_to: [],
-    associations: [],
     attachments: [],
     classification_nodes: [],
     item: {
@@ -54,12 +52,9 @@ function update(vaultAccessToken, dataEncryptionKey, updateData) {
       visible: null,
       updated_at: new Date(1),
       item_template_label: null,
-      image: null,
       item_image: null,
       item_image_background_colour: null,
       classification_node_ids: null,
-      association_ids: null,
-      associations_to_ids: null,
       slot_ids: ['pizza'],
       me: null,
       background_color: null,
@@ -88,7 +83,6 @@ function update(vaultAccessToken, dataEncryptionKey, updateData) {
         encrypted_value: 'Supreme',
         encrypted_value_verification_key: null,
         value_verification_hash: null,
-        image: null,
         label: 'Pizza',
         original_id: null,
         owner_id: null,

@@ -7,6 +7,7 @@ import { _mockCryppo } from './mock-cryppo';
 export const inputFixture = (fileName: string) => join(__dirname, 'fixtures', 'inputs', fileName);
 export const outputFixture = (fileName: string) => join(__dirname, 'fixtures', 'outputs', fileName);
 export const testUserAuth = ['-a', inputFixture('user-auth.input.yaml')];
+export const testOrganizationUserAuth = ['-a', inputFixture('organization-user-auth.input.yaml')];
 export const testEnvironmentFile = ['-e', inputFixture('test-environment.input.yaml')];
 export const testGetAll = ['--all'];
 export const MOCK_NEXT_PAGE_AFTER = '00856148-6188-4b58-aca1-e15ceb7bbe13';

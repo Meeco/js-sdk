@@ -72,6 +72,5 @@ function getUser(token) {
       association_ids: [],
       user_type: null,
     },
-    associations: [],
   });
 }

@@ -9,11 +9,17 @@ import {
   SlotHelpers,
   SymmetricKey,
 } from '@meeco/sdk';
-import { Share, SharesIncomingResponse, SharesOutgoingResponse } from '@meeco/vault-api-sdk';
+import {
+  Connection,
+  Share,
+  ShareAcceptanceRequiredEnum,
+  ShareSharingModeEnum,
+  SharesIncomingResponse,
+  SharesOutgoingResponse,
+} from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { default as itemResponse } from '../fixtures/responses/item-response/basic';
-import { default as receivedItem } from '../fixtures/responses/item-response/received';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('ShareService', () => {
@@ -46,6 +52,27 @@ describe('ShareService', () => {
       .do(() => service.shareItem(testUserAuth, connectionId, itemId))
       .it('shares an item');
 
+    customTest
+      .mockCryppo()
+      .nock('https://sandbox.meeco.me/vault', api => {
+        api.post(`/items/${itemId}/shares`).reply(201, { shares: [] });
+      })
+      .do(async () =>
+        service.shareItem(
+          testUserAuth,
+          {
+            own: {},
+            the_other_user: {
+              user_public_key: fakePublicKey,
+              user_keypair_external_id: '123',
+              user_id: '123',
+            },
+          } as Connection,
+          await DecryptedItem.fromAPI(testUserAuth, itemResponse)
+        )
+      )
+      .it('accepts Item and Connection object params');
+
     connectionStub
       .nock('https://sandbox.meeco.me/vault', api => {
         api.get(`/items/${itemId}`).reply(200, itemResponse);
@@ -74,19 +101,16 @@ describe('ShareService', () => {
 
     connectionStub
       .nock('https://sandbox.meeco.me/vault', api => {
-        api.get(`/items/${itemId}`).reply(200, itemWithNull);
-        // Test: if nullSlotId is in the POST body, it's value must be undefined
         api
+          .get(`/items/${itemId}`)
+          .reply(200, itemWithNull)
           .post(`/items/${itemId}/shares`, body =>
-            body.shares[0].slot_values.every(
-              ({ slot_id, encrypted_value }) =>
-                slot_id !== nullSlotId || encrypted_value === undefined
-            )
+            body.shares[0].slot_values.every(({ slot_id }) => slot_id !== nullSlotId)
           )
           .reply(201, { shares: [] });
       })
       .do(() => service.shareItem(testUserAuth, connectionId, itemId))
-      .it('does not post slots with null values');
+      .it('slots with null values are not included in POST body');
 
     connectionStub
       .nock('https://sandbox.meeco.me/vault', api => {
@@ -105,9 +129,26 @@ describe('ShareService', () => {
       .it('shares a single slot');
 
     connectionStub
+      .nock('https://sandbox.meeco.me/vault', api => {
+        api.get(`/items/${itemId}`).reply(200, itemResponse);
+        api
+          .post(
+            `/items/${itemId}/shares`,
+            body =>
+              body.shares[0].slot_id === 'pizza' &&
+              body.shares[0].slot_values[0].slot_id === 'pizza' &&
+              body.shares[0].slot_values[0].encrypted_value ===
+                '[serialized][encrypted]Hawaiian[decrypted with my_generated_dek][with randomly_generated_key]'
+          )
+          .reply(201, { shares: [] });
+      })
+      .do(() => service.shareItem(testUserAuth, connectionId, itemId, { slot_id: 'pizza' }))
+      .it('single slot is encrypted with the share DEK');
+
+    connectionStub
       .stub(
         SlotHelpers,
-        'decryptSlot',
+        'toEncryptedSlotValue',
         sinon.fake((cred, slot) => ({
           ...slot,
           value: 'abc',
@@ -115,12 +156,8 @@ describe('ShareService', () => {
           value_verification_hash: '123',
         }))
       )
-      .stub(
-        ItemService.prototype,
-        'get',
-        sinon.fake(() => DecryptedItem.fromAPI(testUserAuth, receivedItem))
-      )
       .nock('https://sandbox.meeco.me/vault', api => {
+        api.get(`/items/${itemId}`).reply(200, itemResponse);
         api
           .post(`/items/${itemId}/shares`, body =>
             body.shares[0].slot_values.every(
@@ -366,11 +403,11 @@ describe('ShareService', () => {
           owner_id: '1c84f97a-877f-4f50-a85e-838c27750c95',
           sender_id: '1c84f97a-877f-4f50-a85e-838c27750c95',
           recipient_id: 'da5b0a98-4ef7-4cb7-889b-f17c77e94adc',
-          acceptance_required: 'acceptance_required',
+          acceptance_required: ShareAcceptanceRequiredEnum.AcceptanceRequired,
           item_id: '2c9b15f1-7b28-44af-9fe0-70e3ea308c0c',
           slot_id: null,
           public_key: '-----BEGIN PUBLIC KEY-----ABCD',
-          sharing_mode: 'anyone',
+          sharing_mode: ShareSharingModeEnum.Anyone,
           keypair_external_id: 'edff1a41-5cc9-45ef-8800-20948c86fd5c',
           encrypted_dek: null,
           terms: null,
@@ -382,11 +419,11 @@ describe('ShareService', () => {
           owner_id: '1c84f97a-877f-4f50-a85e-838c27750c95',
           sender_id: '1c84f97a-877f-4f50-a85e-838c27750c95',
           recipient_id: 'da5b0a98-4ef7-4cb7-889b-f17c77e94adc',
-          acceptance_required: 'acceptance_not_required',
+          acceptance_required: ShareAcceptanceRequiredEnum.AcceptanceNotRequired,
           item_id: '325f5e77-c670-4ecf-a4d9-84bcc6c9e46e',
           slot_id: null,
           public_key: '-----BEGIN PUBLIC KEY-----ABCD',
-          sharing_mode: 'owner',
+          sharing_mode: ShareSharingModeEnum.Owner,
           keypair_external_id: 'edff1a41-5cc9-45ef-8800-20948c86fd5c',
           encrypted_dek:
             'Rsa4096.omdqu-um6RWbqcCOBwk6-9FVY1tAlkjCD1tU7i1l94vLksE2K4PsuFqbM5QLJdHj7mShKywCCC18LW7ShTj7wXI9L9dRcqVhSZCd4fAS_BK-r0Mi9MeS6284zPjW26KIetu28pIdfUZOLhmiWmSq_xUvbx7wqAahFrHuHfjfl7UKd1lnaWabMQe7GbL0giJWhFliHtTOF2h74nqWnHwYT-sqJLyECacUb3N5p6ySKzv0Vjqf7CWu-lW6rsL0c2_VoRQTBZSBNyWx98Ig3dQHGVYgs1c__94M4w5TLY0QrCZWUcrqlwik7QpJQhCPioQGM32xRMxBi584TfqPQ_KmImAr7H9Rh-EW39fhH_7cqnYpvvZYNl1FYrF4GIvb_EVmqjIILpFLuhtmXuu8NLXUAy2-BpgJteqOLM0sqnMoeayuQQxO1OZJ38GYcHTTUPCoEnRfkTsQMJOuZq7PjC_PpWP1MsG3WfY4haBHvhqN0CcPS-TpcDPqcDwAxaEADHOTvl6WdorTLjO6mV2WLQfrQfMbFQ4Kkrt_YB-gm-_PCw-04o27amg59Tzu3HnPijb27GnfV3yMv_jGiY-_wK98evxNHDbvApk97LQXvLVmyO-_DLlkSnBvByLlf2CZwFOWvxqUTRchlRtjLDX7Cw7GQqBnuzEplP5LZ9QhnLAUQfU=.QQUAAAAA',
@@ -395,7 +432,7 @@ describe('ShareService', () => {
           expires_at: null,
         },
       ],
-      next_page_after: null,
+      next_page_after: '3',
       meta: [],
     };
 

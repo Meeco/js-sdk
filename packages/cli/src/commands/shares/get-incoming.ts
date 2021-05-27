@@ -37,8 +37,13 @@ export default class SharesGetIncoming extends MeecoCommand {
     try {
       const result = await service.getSharedItem(authConfig, shareId);
       // TODO: remove it properly, this is temp fix to make e2e test pass as jq/yq fails to parse value_verification_key in yml file.
-      result.item.slots.forEach(f => delete f['value_verification_key']);
-      this.printYaml(result);
+      const slots = result.item.slots.map(f => {
+        const clone: any = { ...f };
+        delete clone['value_verification_key'];
+        return clone;
+      });
+      const output: any = { ...result, item: { ...result.item, slots } };
+      this.printYaml(output);
     } catch (err) {
       await this.handleException(err);
     }

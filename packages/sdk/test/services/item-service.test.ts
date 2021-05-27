@@ -201,8 +201,6 @@ describe('ItemService', () => {
           updated_at: new Date(1),
         },
       ],
-      associations_to: [],
-      associations: [],
       attachments: [],
       classification_nodes: [],
       shares: [],
@@ -218,7 +216,7 @@ describe('ItemService', () => {
           .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
           .reply(200, response)
       )
-      .it('list items that the user has', async () => {
+      .it('list items that the user has 1', async () => {
         const result = await new ItemService(environment).list(testUserAuth);
 
         const expected = getOutputFixture('list-items.output.json');
@@ -260,8 +258,6 @@ describe('ItemService', () => {
           updated_at: new Date(1),
         },
       ],
-      associations_to: [],
-      associations: [],
       attachments: [],
       classification_nodes: [],
       shares: [],
@@ -296,11 +292,92 @@ describe('ItemService', () => {
           .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
           .reply(200, responsePart2)
       )
-      .it('list items that the user has', async () => {
+      .it('list items that the user has 2', async () => {
         const result = await new ItemService(environment).listAll(testUserAuth);
 
         const expected = getOutputFixture('list-items.output.json');
         expect(replaceUndefinedWithNull(result.items)).to.deep.members(expected);
+      });
+  });
+
+  describe('#listDecrypted', () => {
+    const mockResponse = {
+      items: [
+        {
+          id: 'a',
+          name: 'My Car',
+          slot_ids: ['make_model'],
+          created_at: new Date(1),
+          updated_at: new Date(1),
+        },
+        {
+          id: 'b',
+          name: 'My House',
+          slot_ids: ['add'],
+          created_at: new Date(1),
+          updated_at: new Date(1),
+        },
+      ],
+      slots: [
+        {
+          id: 'make_model',
+          name: 'Make and Model',
+          encrypted_value: 'value',
+          created_at: new Date(1),
+          updated_at: new Date(1),
+        },
+        {
+          id: 'add',
+          name: 'address',
+          encrypted_value: 'value',
+          created_at: new Date(1),
+          updated_at: new Date(1),
+        },
+      ],
+      attachments: [],
+      classification_nodes: [],
+      shares: [],
+      thumbnails: [],
+      meta: [],
+    };
+
+    customTest
+      .nock('https://sandbox.meeco.me/vault', api =>
+        api
+          .get('/items')
+          .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+          .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+          .reply(200, {
+            ...mockResponse,
+            items: [],
+            slots: [],
+          })
+      )
+      .add('response', async () => await new ItemService(environment).listDecrypted(testUserAuth))
+      .it('works for no items', ({ response }) => {
+        // tslint:disable-next-line:no-unused-expression
+        expect(response.items).to.be.empty;
+        // tslint:disable-next-line:no-unused-expression
+        expect(response.meta).to.be.empty;
+      });
+
+    customTest
+      .mockCryppo()
+      .nock('https://sandbox.meeco.me/vault', api =>
+        api
+          .get('/items')
+          .matchHeader('Authorization', '2FPN4n5T68xy78i6HHuQ')
+          .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
+          .reply(200, mockResponse)
+      )
+      .add('response', async () => await new ItemService(environment).listDecrypted(testUserAuth))
+      .it('list items and decrypts their slots', ({ response }) => {
+        expect(response.items.length).to.equal(2);
+        for (const i of response.items) {
+          for (const s of i.slots) {
+            expect(s.value).to.match(/^.+\[decrypted with .+\]$/);
+          }
+        }
       });
   });
 
@@ -340,8 +417,6 @@ describe('ItemService', () => {
           updated_at: new Date(1),
         },
       ],
-      associations_to: [],
-      associations: [],
       attachments: [],
       classification_nodes: [],
       shares: [],
@@ -381,9 +456,12 @@ describe('ItemService', () => {
         });
         const result = await new ItemService(environment).update(testUserAuth, updateData);
 
-        const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
-          'update-item.output.json'
-        );
+        const {
+          slots: expectedSlots,
+          thumbnails,
+          attachments,
+          ...expectedItem
+        } = getOutputFixture('update-item.output.json');
         expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
         expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
       });

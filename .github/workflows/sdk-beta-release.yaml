@@ -3,7 +3,7 @@ name: Release SDK Beta
 on:
   push:
     tags:
-      - 'releases/sdk/**-beta'
+      - 'releases/sdk/**-beta*'
 
 jobs:
   create_sdk_beta_release:
@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -23,6 +23,8 @@ jobs:
       - run: npx lerna run test --scope '@meeco/{sdk,sdk-demo}'
         env:
           CI: true
+      # Tag all versions with `-beta` and update all inter-dependant packages to use "beta" as the version
+      - run: npm run beta
       - run: npx lerna run build --scope @meeco/sdk
       - name: Publish NPM
         run: |

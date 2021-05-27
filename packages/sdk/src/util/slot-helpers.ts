@@ -38,7 +38,7 @@ export default class SlotHelpers {
       return decrypted;
     }
 
-    if (!slot.encrypted) {
+    if (slot.encrypted_value == null) {
       return cleanResult({
         encrypted: false,
         value: null,
@@ -152,7 +152,7 @@ export default class SlotHelpers {
     }
   }
 
-  static anyDuplicateSlotNames(slots: Array<{ name?: string }>): boolean {
+  static anyDuplicateSlotNames(slots: { name?: string }[]): boolean {
     const namesSeen = {};
 
     for (const s of slots) {
@@ -191,7 +191,7 @@ export default class SlotHelpers {
       withHash = await SlotHelpers.addHashAndKey(slot);
     } else {
       // re-encrypt key, keep hash
-      if (!slot.value_verification_hash || !slot.value_verification_key) {
+      if (slot.value && (!slot.value_verification_hash || !slot.value_verification_key)) {
         throw Error('value verification key or hash missing in on-shared slot');
       }
 
@@ -202,12 +202,8 @@ export default class SlotHelpers {
       };
     }
 
-    const {
-      id,
-      encrypted_value,
-      encrypted_value_verification_key,
-      value_verification_hash,
-    } = await SlotHelpers.encryptSlot(credentials, withHash);
+    const { id, encrypted_value, encrypted_value_verification_key, value_verification_hash } =
+      await SlotHelpers.encryptSlot(credentials, withHash);
 
     // TODO due to an API bug, this doesn't typecheck when encrypted_value is undefined
     return {

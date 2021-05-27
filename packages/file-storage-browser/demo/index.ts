@@ -27,6 +27,8 @@ function loadEnvironmentFromStorage() {
   loadKey('dataEncryptionKey');
   loadKey('keyEncryptionKey');
   loadKey('subscriptionKey');
+  loadKey('vaultAccessToken');
+  loadKey('oidcAccessToken');
 
   updateEnvironment();
 }
@@ -37,18 +39,14 @@ function updateEnvironment() {
   const subscriptionKey = $get('subscriptionKey');
   const vaultAccessToken = $get('vaultAccessToken');
   const keyEncryptionKey = $get('keyEncryptionKey') || '';
-  const keystoreAccessToken = $get('keystoreAccessToken') || '';
-  const passphraseDerivedKey = $get('passphraseDerivedKey') || '';
-  const secret = $get('secret') || '';
+  const oidcAccessToken = $get('oidcAccessToken');
 
   localStorage.setItem('vaultUrl', vaultUrl);
   localStorage.setItem('dataEncryptionKey', dataEncryptionKey);
   localStorage.setItem('subscriptionKey', subscriptionKey);
   localStorage.setItem('vaultAccessToken', vaultAccessToken);
   localStorage.setItem('keyEncryptionKey', keyEncryptionKey);
-  localStorage.setItem('keystoreAccessToken', keystoreAccessToken);
-  localStorage.setItem('passphraseDerivedKey', passphraseDerivedKey);
-  localStorage.setItem('secret', secret);
+  localStorage.setItem('oidcAccessToken', oidcAccessToken);
 
   if (!vaultUrl || !dataEncryptionKey) {
     return $set('environmentStatus', 'Error: Please configure all environment fields');
@@ -61,6 +59,7 @@ $('cancelAttachFile').hidden = true;
 $('attachFile').addEventListener('click', attachFile, false);
 $('cancelDownloadAttachment').hidden = true;
 $('downloadAttachment').addEventListener('click', downloadAttachment);
+// The "Save" button
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 $('attachThumbnail').addEventListener('click', attachThumbnail);
 $('thumbnailDownload').addEventListener('click', thumbnailDownload);
@@ -81,6 +80,7 @@ async function attachFile() {
     const privateDek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const oidcAccessToken = localStorage.getItem('oidcAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
 
     const keyEncryptionKey = SymmetricKey.fromSerialized(
@@ -113,30 +113,19 @@ async function attachFile() {
       {
         data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
       itemId
     );
 
-    // const { attachment: attachment, dek: attachmentDek } = await fileUploadBrowser({
-    //   file,
-    //   vaultUrl,
-    //   authConfig: {
-    //     data_encryption_key: privateDek,
-    //     vault_access_token: vaultAccessToken,
-    //     subscription_key: subscriptionKey,
-    //   },
-    //   videoCodec,
-    //   progressUpdateFunc,
-    // });
-
     const { cancel, success } = fileUploadBrowserWithCancel({
       file,
       vaultUrl,
       authConfig: {
-        data_encryption_key: EncryptionKey.fromBytes(privateDek.key),
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
       videoCodec,
@@ -183,6 +172,7 @@ async function attachFile() {
     const updated = await itemService.update(
       {
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         data_encryption_key: privateDek,
       },
       itemUpdateData
@@ -208,6 +198,7 @@ async function downloadAttachment() {
     const dek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultUrl = localStorage.getItem('vaultUrl') || '';
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const oidcAccessToken = localStorage.getItem('oidcAccessToken') || '';
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
 
     const keyEncryptionKey = SymmetricKey.fromSerialized(
@@ -280,20 +271,22 @@ async function downloadAttachment() {
       {
         data_encryption_key: dek,
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
       itemId
     );
-    const attachmentSlot = itemFetchResult.slots.find(slot => slot.id === slotId); // return type from the vault-api-sdk is wrong thus the type to any
+    const attachmentSlot = itemFetchResult.slots.find(slot => slot.id === slotId);
 
+    log('Downloading attachment');
     const { cancel, success } = fileDownloadBrowserWithCancel({
       attachmentId: attachmentSlot?.attachment_id,
       dek: EncryptionKey.fromSerialized(attachmentSlot?.value),
       vaultUrl,
       authConfig: {
-        data_encryption_key: EncryptionKey.fromBytes(dek.key),
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
       progressUpdateFunc,
@@ -359,6 +352,7 @@ async function attachThumbnail() {
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
     const privateDek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const oidcAccessToken = localStorage.getItem('oidcAccessToken') || '';
     const keyEncryptionKey = SymmetricKey.fromSerialized(
       localStorage.getItem('keyEncryptionKey') || ''
     );
@@ -381,6 +375,7 @@ async function attachThumbnail() {
       {
         data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
@@ -403,6 +398,7 @@ async function attachThumbnail() {
       sizeType,
       authConfig: {
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
       vaultUrl,
@@ -433,6 +429,7 @@ async function thumbnailDownload() {
     const subscriptionKey = localStorage.getItem('subscriptionKey') || '';
     const privateDek = SymmetricKey.fromSerialized(localStorage.getItem('dataEncryptionKey') || '');
     const vaultAccessToken = localStorage.getItem('vaultAccessToken') || '';
+    const oidcAccessToken = localStorage.getItem('oidcAccessToken') || '';
     const keyEncryptionKey = SymmetricKey.fromSerialized(
       localStorage.getItem('keyEncryptionKey') || ''
     );
@@ -455,6 +452,7 @@ async function thumbnailDownload() {
       {
         data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
@@ -480,6 +478,7 @@ async function thumbnailDownload() {
       vaultUrl: environment.vault.url,
       authConfig: {
         vault_access_token: vaultAccessToken,
+        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
     });
@@ -503,6 +502,7 @@ async function thumbnailDownload() {
 }
 
 async function handleException(error) {
+  console.log(error);
   let errorMessage: string;
   if (error && error.json && typeof error.json === 'function') {
     error = await error.json();

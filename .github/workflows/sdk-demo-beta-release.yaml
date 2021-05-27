@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'releases/sdk/**-beta'
+      - 'releases/sdk/**-beta*'
 
 jobs:
   push_sdk_demo_beta:
@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -21,6 +21,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
+      # Tag all versions with `-beta` and update all inter-dependant packages to use "beta" as the version
+      - run: npm run beta
       - name: Build SDK Demo
         run:  npx lerna run build --scope @meeco/sdk-demo
       - name: Deploy SDK Demo GH page

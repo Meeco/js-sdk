@@ -1,3 +1,4 @@
+@use "sass:math";
 @import '../index';
 
 $base-size: 180px;
@@ -15,7 +16,7 @@ $base-size: 180px;
   }
 
   .color-container {
-    width: $base-size + ($base-size / 3);
+    width: $base-size + math.div($base-size, 3);
     margin: 0 16px;
     display: inline-block;
   }
@@ -31,8 +32,8 @@ $base-size: 180px;
   }
 
   .variant {
-    width: $base-size / 3;
-    height: $base-size / 3;
+    width: math.div($base-size, 3);
+    height: math.div($base-size, 3);
     float: right;
   }
 
@@ -61,12 +62,14 @@ $base-size: 180px;
 
   // https://codepen.io/davidhalford/pen/wlDxL
   @function text-contrast($n) {
-    $color-brightness: round((red($n) * 299) + (green($n) * 587) + (blue($n) * 114) / 1000);
+    $color-brightness: round(
+      math.div((red($n) * 299) + (green($n) * 587) + (blue($n) * 114), 1000)
+    );
     $light-color: round(
-      (red(#ffffff) * 299) + (green(#ffffff) * 587) + (blue(#ffffff) * 114) / 1000
+      math.div((red(#ffffff) * 299) + (green(#ffffff) * 587) + (blue(#ffffff) * 114), 1000)
     );
 
-    @if abs($color-brightness) < ($light-color/2) {
+    @if abs($color-brightness) < math.div($light-color, 2) {
       @return white;
     } @else {
       @return black;
