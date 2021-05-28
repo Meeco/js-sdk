@@ -1,12 +1,11 @@
-name: Release CLI
+name: Release CLI Beta
 
 on:
   push:
     tags:
-      - 'releases/cli/*'
-      - '!releases/cli/**-beta*'
+      - 'releases/cli/**-beta*'
 jobs:
-  create_cli_release:
+  create_cli_beta_release:
     runs-on: ubuntu-latest
 
     strategy:
@@ -23,6 +22,7 @@ jobs:
       - run: npm test
         env:
           CI: true
+      - run: npm run beta
       - run: npx lerna run build
       - name: Create Release
         id: create_release
@@ -30,3 +30,4 @@ jobs:
         with:
           artifacts: 'packages/cli/dist/**/*.tar.gz'
           token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
