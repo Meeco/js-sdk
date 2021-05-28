@@ -3,12 +3,13 @@ import { DecryptedKeypair, DelegationService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
 import sinon from 'sinon';
 import { default as connectionResponse } from '../fixtures/responses/connection-response';
+import { default as connectionResponseWithCreatedSharesReport } from '../fixtures/responses/connection-response-with-created-shares-report';
 import { decryptedPrivateKey } from '../fixtures/responses/keypair-response';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('DelegationService', () => {
   const connectionName = 'name';
-  const delegationConnectionResponse = connectionResponse;
+  const delegationConnectionResponse = connectionResponseWithCreatedSharesReport;
   delegationConnectionResponse.connection.the_other_user.integration_data = {
     delegation_token: 'd0b2519e-4b19-4d34-98f5-505ae44d18fe',
     intent: 'delegate',

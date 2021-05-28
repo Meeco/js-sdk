@@ -110,7 +110,6 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
       item_template_label: null,
       image: null,
       item_image: null,
-      item_image_background_colour: null,
       classification_node_ids: null,
       slot_ids: ['steak', 'pizza', 'yoghurt'],
       me: null,

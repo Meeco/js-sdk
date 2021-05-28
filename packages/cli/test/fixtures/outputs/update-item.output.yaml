@@ -12,7 +12,6 @@ spec:
   updated_at: 1970-01-01T00:00:00.001Z
   item_template_label: null
   item_image: null
-  item_image_background_colour: null
   classification_node_ids: null
   slot_ids:
     - pizza
