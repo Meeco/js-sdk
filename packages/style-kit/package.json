@@ -2,7 +2,8 @@
   "name": "@meeco/style-kit",
   "version": "2.0.0",
   "description": "Meeco branded components and style mixins",
-  "main": "dist/index.css",
+  "style": "build/main.css",
+  "main": "build/bundle.js",
   "scripts": {
     "build": "webpack",
     "demo": "webpack-dev-server demo",
