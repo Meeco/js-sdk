@@ -23,7 +23,10 @@ jobs:
         env:
           CI: true
       - run: npm run beta
-      - run: npx lerna run build
+      - working-directory: ./packages/cli
+        run: npm install
+      - working-directory: ./packages/cli
+        run: npm build
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
