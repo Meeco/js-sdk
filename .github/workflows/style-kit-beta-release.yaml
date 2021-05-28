@@ -1,0 +1,36 @@
+name: Release Beta Style Kit
+
+on:
+  push:
+    tags:
+      - 'releases/style-kit/**-beta*'
+
+jobs:
+  create_style_kit_beta_release:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm test
+        env:
+          CI: true
+      # Tag all versions with `-beta` and update all inter-dependant packages to use "beta" as the version
+      - run: npm run beta
+      - run: npx lerna run build --scope @meeco/style-kit
+      - name: Publish NPM
+        run: |
+          npx lerna exec --scope @meeco/style-kit -- npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
+          npx lerna exec --scope @meeco/style-kit -- npm config set scope "@meeco"
+          npx lerna exec --scope @meeco/style-kit -- npm publish --access public --tag beta
+        env:
+          CI: true
+          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
