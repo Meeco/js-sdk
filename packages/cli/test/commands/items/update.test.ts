@@ -53,7 +53,6 @@ function update(vaultAccessToken, dataEncryptionKey, updateData) {
       updated_at: new Date(1),
       item_template_label: null,
       item_image: null,
-      item_image_background_colour: null,
       classification_node_ids: null,
       slot_ids: ['pizza'],
       me: null,

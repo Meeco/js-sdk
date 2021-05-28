@@ -14,13 +14,10 @@ const response: ItemResponse = {
     updated_at: new Date(1),
     item_template_label: 'Vehicle',
     item_image: 'http://localhost:3000/images/0f6712af-910f-41f7-9201-b3067d0b0c79',
-    item_image_background_colour: null,
     original_id: null,
     owner_id: '76104cdb-6452-4e84-ae3e-1903f4c62708',
     share_id: null,
     image: 'http://localhost:3000/images/0f6712af-910f-41f7-9201-b3067d0b0c79',
-    me: false,
-    background_color: null,
     classification_node_ids: [
       'dfd8b1ad-6da1-4c25-ad4e-98e66fdc787e',
       '8e6bb745-1260-4163-a336-ec461aea97ec',

@@ -1,7 +1,7 @@
 import { bytesToBinaryString } from '@meeco/cryppo';
 import { InvitationService } from '@meeco/sdk';
 import { expect } from 'chai';
-import { default as connectionResponse } from '../fixtures/responses/connection-response';
+import { default as connectionResponseWithCreatedSharesReport } from '../fixtures/responses/connection-response-with-created-shares-report';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('InvitationService', () => {
@@ -99,7 +99,7 @@ describe('InvitationService', () => {
           )
           .matchHeader('Authorization', testUserAuth.vault_access_token)
           .matchHeader('Meeco-Subscription-Key', environment.vault.subscription_key)
-          .reply(200, connectionResponse);
+          .reply(200, connectionResponseWithCreatedSharesReport);
     }
 
     customTest
