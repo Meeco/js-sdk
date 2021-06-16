@@ -4,9 +4,17 @@ Styled building blocks for Meeco web applications.
 
 <img width="100px" src="https://uploads-ssl.webflow.com/5cd5168c6c861f4fc7cfe969/5ddcaba04d724676d8758927_Meeco-Logo-2019-Circle-RGB.svg">
 
-### Installation
+## Installation
 
-As with all projects in this repo, be sure to run `npm install` in the project root first.
+### In your node application/module
+
+1. Run `npm install --save @meeco/stylekit`
+2. Import the css file into the top of your main `scss` file with
+   `@import '~@meeco/style-kit/build/main';`
+
+## Usage
+
+For detailed usage instructions and examples see the docs at [https://meeco.github.io/sdk-docs/style-kit/?path=/docs/](https://meeco.github.io/sdk-docs/style-kit/?path=/docs/).
 
 ### Assets
 
@@ -24,6 +32,8 @@ node_modules/
 ```
 
 ### Development
+
+Once you have checked out this repository change to the project repository and run `npm install`.
 
 If you run `npm start` in this directory, it will start the [storybook](https://storybook.js.org/) project which should open itself in your default browser;
 

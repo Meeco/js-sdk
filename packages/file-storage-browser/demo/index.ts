@@ -160,9 +160,7 @@ async function attachFile() {
         {
           label,
           slot_type_name: 'attachment',
-          attachment_attributes: {
-            id: attachment.id,
-          },
+          attachment_id: attachment.id,
           value: attachmentDek.serialize,
         },
       ],
