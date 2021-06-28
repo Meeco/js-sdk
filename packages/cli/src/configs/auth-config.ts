@@ -65,6 +65,13 @@ export class AuthConfig {
     });
   }
 
+  overrideWithFlags(flags) {
+    return {
+      ...this,
+      delegation_id: flags.delegationId ? flags.delegationId : undefined,
+    };
+  }
+
   static fromMetadata(metadata: IAuthMetadata) {
     return AuthConfig.fromYamlConfig({
       kind: AuthConfig.kind,

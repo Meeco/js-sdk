@@ -29,7 +29,7 @@ export default class OrganizationMembersUpdate extends MeecoCommand {
       OrganizationMemberConfig,
       organizationMemberConfig
     );
-    const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
 
     if (!organizationMemberConfigFile) {
       this.error('Valid org member config file must be supplied');

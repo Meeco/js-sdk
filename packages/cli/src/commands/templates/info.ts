@@ -43,7 +43,9 @@ export default class TemplatesInfo extends MeecoCommand {
       const { auth, classificationName, classificationScheme } = flags;
       const { templateName } = args;
       const environment = await this.readEnvironmentFile();
-      const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+      const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(
+        flags
+      );
       const service = mockableFactories.vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
       cli.action.start(`Fetching template '${templateName}'`);
       const result = await service.itemTemplatesGet(classificationScheme, classificationName);

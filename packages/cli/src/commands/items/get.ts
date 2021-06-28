@@ -20,7 +20,7 @@ export default class ItemsGet extends MeecoCommand {
     const { auth } = flags;
     const { itemId } = args;
     const environment = await this.readEnvironmentFile();
-    const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
     const service = new ItemService(environment);
 
     if (!authConfig) {

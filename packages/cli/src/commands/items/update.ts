@@ -26,7 +26,7 @@ export default class ItemsUpdate extends MeecoCommand {
     const environment = await this.readEnvironmentFile();
 
     const itemConfigFile = await this.readConfigFromFile(ItemUpdateConfig, item);
-    const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
 
     const service = new ItemService(environment);
     const clientTaskQueueService = new ClientTaskQueueService(environment);

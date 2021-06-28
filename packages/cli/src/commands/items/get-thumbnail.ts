@@ -44,7 +44,9 @@ export default class ItemsGetThumbnail extends MeecoCommand {
     const { itemId, slotId, thumbnailId } = args;
 
     try {
-      const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+      const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(
+        flags
+      );
 
       if (!authConfig) {
         this.error('Must specify a valid auth config file');

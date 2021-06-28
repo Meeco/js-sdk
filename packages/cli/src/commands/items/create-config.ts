@@ -41,7 +41,7 @@ export default class ItemsCreateConfig extends MeecoCommand {
     const environment = await this.readEnvironmentFile();
     const { templateName } = args;
     const { auth, classificationName, classificationScheme } = flags;
-    const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
 
     if (!authConfig) {
       this.error('Must specify a valid auth config file');

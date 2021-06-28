@@ -31,7 +31,9 @@ export default class OrganizationsList extends MeecoCommand {
       const { flags } = this.parse(this.constructor as typeof OrganizationsList);
       const { auth, all, mode } = flags;
       const environment = await this.readEnvironmentFile();
-      const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+      const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(
+        flags
+      );
       this.updateStatus('Fetching ' + mode + ' organizations');
       const api = vaultAPIFactory(environment)(authConfig);
       const modeParam = (mode === 'validated' ? undefined : mode) as OrganizationsGetModeEnum;

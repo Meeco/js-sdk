@@ -25,7 +25,9 @@ export default class OrganizationMembersList extends MeecoCommand {
       const { organization_id } = args;
 
       const environment = await this.readEnvironmentFile();
-      const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+      const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(
+        flags
+      );
 
       this.updateStatus('Fetching organization members');
 

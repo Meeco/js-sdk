@@ -37,7 +37,7 @@ export default class ClientTaskQueueUpdate extends MeecoCommand {
     const environment = await this.readEnvironmentFile();
     const service = new ClientTaskQueueService(environment, this);
 
-    const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
     const tasks = await this.readYamlFile(tasks_file);
 
     if (!authConfig) {

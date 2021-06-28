@@ -21,7 +21,7 @@ export default class ItemsCreate extends MeecoCommand {
     const environment = await this.readEnvironmentFile();
 
     const itemConfigFile = await this.readConfigFromFile(NewItemConfig, item);
-    const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
 
     const service = new ItemService(environment);
 

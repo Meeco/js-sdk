@@ -27,7 +27,7 @@ export default class OrganizationMembersAcceptInvitation extends MeecoCommand {
     const { flags } = this.parse(this.constructor as typeof OrganizationMembersAcceptInvitation);
     const { invitationConfig, auth } = flags;
     const environment = await this.readEnvironmentFile();
-    const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
     const invitationConfigFile = await this.readConfigFromFile(InvitationConfig, invitationConfig);
 
     if (!authConfig) {

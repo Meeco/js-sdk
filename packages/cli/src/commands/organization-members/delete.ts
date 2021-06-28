@@ -26,7 +26,7 @@ export default class OrganizationMembersDelete extends MeecoCommand {
     const { organization_id, id } = args;
     const environment = await this.readEnvironmentFile();
 
-    const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
 
     if (!authConfig) {
       this.error('Valid auth config file must be supplied');

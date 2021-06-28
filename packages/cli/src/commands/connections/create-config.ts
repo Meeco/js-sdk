@@ -25,8 +25,8 @@ export default class ConnectionsCreateConfig extends MeecoCommand {
   async run() {
     const { flags } = this.parse(this.constructor as typeof ConnectionsCreateConfig);
     const { from, to } = flags;
-    const fromUser = await this.readConfigFromFile(AuthConfig, from);
-    const toUser = await this.readConfigFromFile(AuthConfig, to);
+    const fromUser = (await this.readConfigFromFile(AuthConfig, from))?.overrideWithFlags(flags);
+    const toUser = (await this.readConfigFromFile(AuthConfig, to))?.overrideWithFlags(flags);
     if (!fromUser || !toUser) {
       this.error('Both a valid from and to user config file are required');
     }

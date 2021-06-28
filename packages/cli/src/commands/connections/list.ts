@@ -18,7 +18,9 @@ export default class ConnectionsList extends MeecoCommand {
     const { auth, all } = flags;
     try {
       const environment = await this.readEnvironmentFile();
-      const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+      const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(
+        flags
+      );
 
       if (!authConfig) {
         this.error('Must specify authentication file');

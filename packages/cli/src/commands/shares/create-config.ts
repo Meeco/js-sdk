@@ -40,7 +40,7 @@ export default class SharesCreateConfig extends MeecoCommand {
       const { flags } = this.parse(this.constructor as typeof SharesCreateConfig);
       const { from, connection, slotName, item } = flags;
       const environment = await this.readEnvironmentFile();
-      const fromUser = await this.readConfigFromFile(AuthConfig, from);
+      const fromUser = (await this.readConfigFromFile(AuthConfig, from))?.overrideWithFlags(flags);
       const connectionConfig = await this.readConfigFromFile(ExistingConnectionConfig, connection);
       const itemConfigFile = await this.readYamlFile(item);
 

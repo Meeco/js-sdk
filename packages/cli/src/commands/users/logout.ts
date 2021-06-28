@@ -19,7 +19,9 @@ export default class LogoutUser extends MeecoCommand {
       const environment = await this.readEnvironmentFile();
       const service = new UserService(environment);
       const { auth } = flags;
-      const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+      const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(
+        flags
+      );
       if (!authConfig) {
         this.error('Must specify a valid auth config file');
       }

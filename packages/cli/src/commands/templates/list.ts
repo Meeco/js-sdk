@@ -39,7 +39,9 @@ export default class TemplatesList extends MeecoCommand {
       const { flags } = this.parse(this.constructor as typeof TemplatesList);
       const { auth, all, classificationName, classificationScheme, label } = flags;
       const environment = await this.readEnvironmentFile();
-      const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+      const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(
+        flags
+      );
       const service = mockableFactories.vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
       cli.action.start('Fetching available templates');
       const templates = all
