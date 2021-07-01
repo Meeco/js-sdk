@@ -162,8 +162,9 @@ export class ShareService extends Service<SharesApi> {
   }
 
   /**
+   * @deprecated Use either [[listIncomingshares]] or [[listOutgoingshares]] as needed.
    * @param shareType Filter by ShareType, either incoming or outgoing.
-   * @param acceptanceStatus Filter by acceptance status. Other vaules are 'accepted', 'rejected'.
+   * @param mustAccept Filter to only incoming shares which must be accepted or not.
    */
   public async listShares(
     credentials: IVaultToken,
@@ -186,6 +187,36 @@ export class ShareService extends Service<SharesApi> {
         );
         break;
     }
+    return response.shares;
+  }
+
+  public async listIncomingShares(
+    credentials: IVaultToken,
+    mustAccept?: AcceptanceRequest | string,
+    shareIds?: string[],
+    options?: IPageOptions
+  ): Promise<Share[]> {
+    const api = this.vaultAPIFactory(credentials).SharesApi;
+
+    const shareFilter = shareIds ? shareIds.join(',') : undefined;
+    const response = await api.incomingSharesGet(
+      options?.nextPageAfter,
+      options?.perPage,
+      mustAccept,
+      shareFilter
+    );
+    return response.shares;
+  }
+
+  public async listOutgoingShares(
+    credentials: IVaultToken,
+    itemIds?: string[],
+    options?: IPageOptions
+  ): Promise<Share[]> {
+    const api = this.vaultAPIFactory(credentials).SharesApi;
+
+    const response = await api.outgoingSharesGet(options?.nextPageAfter, options?.perPage, itemIds);
+
     return response.shares;
   }
 
