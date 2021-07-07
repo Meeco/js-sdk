@@ -84,7 +84,7 @@ export class UserService extends Service<UserApi> {
     };
   }
 
-  private async getDataEncryptionKey(
+  public async getDataEncryptionKey(
     credentials: IKeystoreToken & IKEK,
     encryptionSpaceId: string
   ): Promise<SymmetricKey> {

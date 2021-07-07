@@ -1,4 +1,12 @@
-import { AuthData, SymmetricKey } from '@meeco/sdk';
+import {
+  AuthData,
+  DelegationService,
+  keystoreAPIFactory,
+  SymmetricKey,
+  UserService,
+  vaultAPIFactory,
+  VaultAPIFactoryInstance,
+} from '@meeco/sdk';
 import { CLIError } from '@oclif/errors';
 import { IYamlConfig } from './yaml-config';
 
@@ -19,8 +27,8 @@ export class AuthConfig {
   public readonly secret: string;
   public readonly vault_access_token: string;
   public readonly keystore_access_token: string;
-  public readonly data_encryption_key: SymmetricKey;
-  public readonly key_encryption_key: SymmetricKey;
+  public data_encryption_key: SymmetricKey;
+  public key_encryption_key: SymmetricKey;
   public readonly passphrase_derived_key: SymmetricKey;
   public delegation_id?: string;
   public oidc_token?: string;
@@ -66,10 +74,51 @@ export class AuthConfig {
   }
 
   overrideWithFlags(flags) {
-    return {
-      ...this,
-      delegation_id: flags.delegationId ? flags.delegationId : undefined,
-    };
+    this.delegation_id = flags.delegationId ? flags.delegationId : undefined;
+    return this;
+  }
+
+  async loadDelegationDekIfNeeded(environment, updateStatus): Promise<AuthConfig> {
+    if (this.delegation_id) {
+      const vaultApi = vaultAPIFactory(environment)(this);
+      const connection = await this.getConnectionForDelegationId(vaultApi);
+      const delegationsService = new DelegationService(environment, updateStatus);
+      const delegationToken = (connection?.own.integration_data || {})['delegation_token'];
+      const keystoreApiUser = keystoreAPIFactory(environment)({
+        ...this,
+        delegation_id: undefined,
+      });
+      const { delegation } = await keystoreApiUser.DelegationApi.delegationsDelegationTokenGet(
+        delegationToken
+      );
+      const kek = await delegationsService.getAccountOwnerKek(this, delegation);
+      const user = await vaultApi.UserApi.meGet();
+      this.key_encryption_key = kek;
+      const userService = new UserService(environment, updateStatus);
+      const dek = await userService.getDataEncryptionKey(
+        this,
+        user.user.private_dek_external_id || ''
+      );
+      this.data_encryption_key = dek;
+    }
+    return this;
+  }
+
+  private async getConnectionForDelegationId(vaultApi: VaultAPIFactoryInstance) {
+    let cursor;
+    let connection;
+    do {
+      const { next_page_after, connections } = await vaultApi.ConnectionApi.connectionsGet(cursor);
+      cursor = next_page_after;
+      connection = connections.find(conn => conn.own.user_id == this.delegation_id);
+      // finish if there is a cursor and a connection
+      // finish if there is is not a cursor
+      // continue if there is a cursor but not a connection
+    } while (cursor && !connection);
+    if (!connection) {
+      throw new Error('cannot find connection for delegation id');
+    }
+    return connection;
   }
 
   static fromMetadata(metadata: IAuthMetadata) {

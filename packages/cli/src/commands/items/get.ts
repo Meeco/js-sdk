@@ -19,15 +19,17 @@ export default class ItemsGet extends MeecoCommand {
     const { flags, args } = this.parse(this.constructor as typeof ItemsList);
     const { auth } = flags;
     const { itemId } = args;
-    const environment = await this.readEnvironmentFile();
-    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
-    const service = new ItemService(environment);
-
-    if (!authConfig) {
-      this.error('Valid auth config file must be supplied');
-    }
-
     try {
+      const environment = await this.readEnvironmentFile();
+      const authConfig = await (await this.readConfigFromFile(AuthConfig, auth))
+        ?.overrideWithFlags(flags)
+        .loadDelegationDekIfNeeded(environment, this.updateStatus);
+      const service = new ItemService(environment);
+
+      if (!authConfig) {
+        this.error('Valid auth config file must be supplied');
+      }
+
       this.updateStatus('Fetching item details');
       const result = await service.get(authConfig, itemId);
       this.printYaml(NewItemConfig.encodeFromJSON(result));
