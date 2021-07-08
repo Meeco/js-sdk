@@ -44,12 +44,12 @@ export default class ItemsList extends MeecoCommand {
     const { flags } = this.parse(this.constructor as typeof ItemsList);
     const { auth, all, templateId, scheme, classification, sharedWith } = flags;
     const environment = await this.readEnvironmentFile();
-    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
-    const service = new ItemService(environment, this.log);
-
+    let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
     if (!authConfig) {
-      this.error('Must specify a valid auth config file');
+      this.error('Valid auth config file must be supplied');
     }
+    authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
+    const service = new ItemService(environment, this.log);
 
     const filters: IItemListFilterOptions = {
       templateIds: templateId,

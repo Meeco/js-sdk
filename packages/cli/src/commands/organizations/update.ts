@@ -22,13 +22,14 @@ export default class OrganizationsUpdate extends MeecoCommand {
     const environment = await this.readEnvironmentFile();
 
     const organizationConfigFile = await this.readConfigFromFile(OrganizationConfig, org);
-    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
+    let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
+    if (!authConfig) {
+      this.error('Valid auth config file must be supplied');
+    }
+    authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
 
     if (!organizationConfigFile) {
       this.error('Valid organization config file must be supplied');
-    }
-    if (!authConfig) {
-      this.error('Valid auth config file must be supplied');
     }
 
     const { organization } = organizationConfigFile;

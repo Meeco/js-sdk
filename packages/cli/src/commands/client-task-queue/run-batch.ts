@@ -36,12 +36,12 @@ export default class ClientTaskQueueRunBatch extends MeecoCommand {
     const { flags } = this.parse(this.constructor as typeof ClientTaskQueueRunBatch);
     const { all, state, limit, auth } = flags;
     const environment = await this.readEnvironmentFile();
-    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
-    const service = new ClientTaskQueueService(environment, this);
-
+    let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
     if (!authConfig) {
-      this.error('Must specify a valid auth config file');
+      this.error('Valid auth config file must be supplied');
     }
+    authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
+    const service = new ClientTaskQueueService(environment, this);
 
     if (limit && limit <= 0) {
       this.error('Must specify a positive limit');

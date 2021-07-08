@@ -36,11 +36,11 @@ or rejected by meeco`;
       OrganizationServiceConfig,
       organizationServiceConfig
     );
-    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
-
+    let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
     if (!authConfig) {
       this.error('Valid auth config file must be supplied');
     }
+    authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
     if (!organizationServiceConfigFile) {
       this.error('Valid organization service config file must be supplied');
     }

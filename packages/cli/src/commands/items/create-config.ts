@@ -41,11 +41,11 @@ export default class ItemsCreateConfig extends MeecoCommand {
     const environment = await this.readEnvironmentFile();
     const { templateName } = args;
     const { auth, classificationName, classificationScheme } = flags;
-    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
-
+    let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
     if (!authConfig) {
-      this.error('Must specify a valid auth config file');
+      this.error('Valid auth config file must be supplied');
     }
+    authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
 
     const service = mockableFactories.vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
     const templates = await service.itemTemplatesGet(classificationScheme, classificationName);

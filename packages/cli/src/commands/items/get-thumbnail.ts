@@ -44,13 +44,11 @@ export default class ItemsGetThumbnail extends MeecoCommand {
     const { itemId, slotId, thumbnailId } = args;
 
     try {
-      const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(
-        flags
-      );
-
+      let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
       if (!authConfig) {
-        this.error('Must specify a valid auth config file');
+        this.error('Valid auth config file must be supplied');
       }
+      authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
 
       const itemService = new ItemService(environment, this.updateStatus);
       const itemFetchResult: any = await itemService.get(authConfig, itemId);

@@ -40,11 +40,15 @@ export default class SharesCreateConfig extends MeecoCommand {
       const { flags } = this.parse(this.constructor as typeof SharesCreateConfig);
       const { from, connection, slotName, item } = flags;
       const environment = await this.readEnvironmentFile();
-      const fromUser = (await this.readConfigFromFile(AuthConfig, from))?.overrideWithFlags(flags);
+      let fromUser = (await this.readConfigFromFile(AuthConfig, from))?.overrideWithFlags(flags);
+      if (!fromUser) {
+        this.error('Valid auth config file must be supplied');
+      }
+      fromUser = this.returnDelegationAuthIfDelegationIdPresent(fromUser);
       const connectionConfig = await this.readConfigFromFile(ExistingConnectionConfig, connection);
       const itemConfigFile = await this.readYamlFile(item);
 
-      if (!fromUser || !connectionConfig || !itemConfigFile) {
+      if (!connectionConfig || !itemConfigFile) {
         throw new CLIError('Invalid config file');
       }
 

@@ -29,14 +29,14 @@ export default class OrganizationServicesLogin extends MeecoCommand {
       OrganizationServiceConfig,
       organizationServiceConfig
     );
-    const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
+    let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
+    if (!authConfig) {
+      this.error('Valid auth config file must be supplied');
+    }
+    authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
 
     if (!organizationServiceConfigFile) {
       this.error('Valid service config file must be supplied');
-    }
-
-    if (!authConfig) {
-      this.error('Valid auth config file must be supplied');
     }
 
     const { service, metadata } = organizationServiceConfigFile;

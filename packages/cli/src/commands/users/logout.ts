@@ -19,12 +19,11 @@ export default class LogoutUser extends MeecoCommand {
       const environment = await this.readEnvironmentFile();
       const service = new UserService(environment);
       const { auth } = flags;
-      const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(
-        flags
-      );
+      let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
       if (!authConfig) {
-        this.error('Must specify a valid auth config file');
+        this.error('Valid auth config file must be supplied');
       }
+      authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
 
       this.updateStatus('Logging out');
       await service.deleteSessionTokens(
