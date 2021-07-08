@@ -51,7 +51,7 @@ export default class DelegationLoadAuthConfig extends MeecoCommand {
         ...authConfig,
         loaded_delegations: {
           ...authConfig.loaded_delegations,
-          [connection.own.user_id]: {
+          [connection.the_other_user.user_id]: {
             data_encryption_key: dek,
             key_encryption_key: kek,
             connection_id: connection.own.id,

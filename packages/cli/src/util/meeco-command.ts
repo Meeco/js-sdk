@@ -61,7 +61,7 @@ export default class MeecoCommand extends Command {
     if (!authConfig.delegation_id) {
       return authConfig;
     }
-    const delegationToLoad = (authConfig.loaded_delegations || {})['delegationId'];
+    const delegationToLoad = (authConfig.loaded_delegations || {})[authConfig.delegation_id];
     if (!delegationToLoad) {
       this.error(
         'No loaded delegation found for provided delegationId, first run delegations:load-auth-config'
