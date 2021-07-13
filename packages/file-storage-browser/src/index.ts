@@ -1,18 +1,18 @@
 import { EncryptionKey } from '@meeco/cryppo';
-import { IFileStorageAuthConfiguration } from '@meeco/file-storage-common';
-import { DirectAttachment, ThumbnailResponse } from '@meeco/vault-api-sdk';
-
 import * as Common from '@meeco/file-storage-common';
-import * as Latest from './lib';
+import { IFileStorageAuthConfiguration } from '@meeco/file-storage-common';
+import { DirectAttachment, Thumbnail } from '@meeco/vault-api-sdk';
+import { ThumbnailService } from './thumbnail-service';
+import { AttachmentService } from './attachment-service';
 
 /**
- * Record v 3.1.2 interface
- * Note that removal of data_encryption_key from IFilestorageauthconfiguration is a breaking change anyway.
+ * API v4.0.0
  * Deprecations will be removed in v.5.0.0 release
  */
 
-export { ThumbnailType, ThumbnailTypes, uploadThumbnail } from '@meeco/file-storage-common';
-export { downloadAttachment, uploadAttachment } from './lib';
+export { ThumbnailType, ThumbnailTypes } from '@meeco/file-storage-common';
+export * from './thumbnail-service';
+export * from './attachment-service';
 
 export const thumbSizeTypeToMimeExt: (
   sizeTypeString: Common.ThumbnailType | string
@@ -21,7 +21,8 @@ export const thumbSizeTypeToMimeExt: (
   fileExtension: string;
 } = Common.thumbSizeTypeToMimeExt;
 
-export const downloadThumbnail: ({
+/** @deprecated Use [[ThumbnailService.download]] */
+export function downloadThumbnail({
   id,
   dataEncryptionKey,
   vaultUrl,
@@ -31,17 +32,19 @@ export const downloadThumbnail: ({
   dataEncryptionKey: EncryptionKey;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
-}) => Promise<Uint8Array> = Common.downloadThumbnail;
+}): Promise<Uint8Array> {
+  const service = new ThumbnailService(vaultUrl);
+  return service.download({ id, key: dataEncryptionKey, authConfig });
+}
 
-/** @deprecated Use [[uploadThumbnail]] */
-export const encryptAndUploadThumbnail: ({
+/** @deprecated Use [[ThumbnailService.upload]] */
+export function encryptAndUploadThumbnail({
   thumbnail,
   binaryId,
   attachmentDek,
   sizeType,
   authConfig,
   vaultUrl,
-  fetchApi,
 }: {
   thumbnail: Uint8Array;
   binaryId: string;
@@ -49,11 +52,25 @@ export const encryptAndUploadThumbnail: ({
   sizeType: Common.ThumbnailType;
   authConfig: IFileStorageAuthConfiguration;
   vaultUrl: string;
-  fetchApi?: any;
-}) => Promise<ThumbnailResponse> = Common.uploadThumbnail;
+}): Promise<Thumbnail> {
+  const service = new ThumbnailService(vaultUrl);
+  return service.upload({
+    thumbnail: { data: thumbnail, sizeType },
+    attachmentId: binaryId,
+    key: attachmentDek,
+    authConfig,
+  });
+}
 
-/** @deprecated Use [[uploadAttachment]] */
-export const fileUploadBrowser: (_: {
+/** @deprecated Use [[AttachmentService.upload]] */
+export function fileUploadBrowser({
+  file,
+  vaultUrl,
+  authConfig,
+  videoCodec,
+  progressUpdateFunc,
+  onCancel,
+}: {
   file: File;
   vaultUrl: string;
   authConfig: IFileStorageAuthConfiguration;
@@ -62,9 +79,32 @@ export const fileUploadBrowser: (_: {
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number) => void)
     | null;
   onCancel?: any;
-}) => Promise<{ attachment: DirectAttachment; dek: EncryptionKey }> = Latest.uploadAttachment;
+}): Promise<{ attachment: DirectAttachment; dek: EncryptionKey }> {
+  const service = new AttachmentService(vaultUrl);
+  const dek = EncryptionKey.generateRandom();
+  return service
+    .upload({
+      file,
+      authConfig,
+      videoCodec,
+      key: dek,
+      progressUpdateFunc: progressUpdateFunc || undefined,
+      cancel: onCancel,
+    })
+    .then(res => ({ attachment: res, dek }));
+}
 
-// TODO: deprecate uploadWithCancel functions and merge that capability to upload
+/**
+ * Wraps [[fileDownloadBrowser]] injecting a callable function that will cancel the action.
+ * For example
+ * ```typescript
+ * const { cancel, success } = fileDownloadBrowserWithCancel(...);
+ * cancel(); // kills download
+ * file = await success // original result
+ * ```
+ * @returns An object with attributes `cancel`: the function to cancel the download, `success` contains
+ * the original result promise.
+ */
 export const fileUploadBrowserWithCancel: (_: {
   file: File;
   vaultUrl: string;
@@ -76,10 +116,17 @@ export const fileUploadBrowserWithCancel: (_: {
 }) => {
   cancel: () => void;
   success: Promise<{ attachment: DirectAttachment; dek: EncryptionKey }>;
-} = Latest.fileUploadBrowserWithCancel;
+} = Common.withCancel(fileUploadBrowser);
 
-/** @deprecated Use [[downloadAttachment]] */
-export const fileDownloadBrowser: (_: {
+/** @deprecated Use [[AttachmentService.download]] */
+export function fileDownloadBrowser({
+  attachmentId,
+  dek,
+  vaultUrl,
+  authConfig,
+  progressUpdateFunc,
+  onCancel,
+}: {
   attachmentId: string;
   dek: EncryptionKey;
   vaultUrl: string;
@@ -88,8 +135,28 @@ export const fileDownloadBrowser: (_: {
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
     | null;
   onCancel?: any;
-}) => Promise<File> = Latest.downloadAttachment;
+}): Promise<File> {
+  const service = new AttachmentService(vaultUrl);
+  return service.download({
+    id: attachmentId,
+    key: dek,
+    authConfig,
+    progressUpdateFunc,
+    cancel: onCancel,
+  });
+}
 
+/**
+ * Wraps [[fileDownloadBrowser]] injecting a callable function that will cancel the action.
+ * For example
+ * ```typescript
+ * const { cancel, success } = fileDownloadBrowserWithCancel(...);
+ * cancel(); // kills download
+ * file = await success // original result
+ * ```
+ * @returns An object with attributes `cancel`: the function to cancel the download, `success` contains
+ * the original result promise.
+ */
 export const fileDownloadBrowserWithCancel: (_: {
   attachmentId: string;
   dek: EncryptionKey;
@@ -99,4 +166,4 @@ export const fileDownloadBrowserWithCancel: (_: {
     | ((chunkBuffer: ArrayBuffer | null, percentageComplete: number, videoCodec?: string) => void)
     | null;
   onCancel?: any;
-}) => { cancel: () => void; success: Promise<File> } = Latest.fileDownloadBrowserWithCancel;
+}) => { cancel: () => void; success: Promise<File> } = Common.withCancel(fileDownloadBrowser);

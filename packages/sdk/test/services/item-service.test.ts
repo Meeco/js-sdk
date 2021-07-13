@@ -238,8 +238,6 @@ describe('ItemService', () => {
           updated_at: new Date(1),
         },
       ],
-      associations_to: [],
-      associations: [],
       attachments: [],
       classification_nodes: [],
       shares: [],
@@ -255,7 +253,7 @@ describe('ItemService', () => {
           .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
           .reply(200, response)
       )
-      .it('list items that the user has', async () => {
+      .it('list items that the user has 1', async () => {
         const result = await new ItemService(environment).list(testUserAuth);
 
         const expected = getOutputFixture('list-items.output.json');
@@ -297,8 +295,6 @@ describe('ItemService', () => {
           updated_at: new Date(1),
         },
       ],
-      associations_to: [],
-      associations: [],
       attachments: [],
       classification_nodes: [],
       shares: [],
@@ -333,7 +329,7 @@ describe('ItemService', () => {
           .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
           .reply(200, responsePart2)
       )
-      .it('list items that the user has', async () => {
+      .it('list items that the user has 2', async () => {
         const result = await new ItemService(environment).listAll(testUserAuth);
 
         const expected = getOutputFixture('list-items.output.json');
@@ -375,8 +371,6 @@ describe('ItemService', () => {
           updated_at: new Date(1),
         },
       ],
-      associations_to: [],
-      associations: [],
       attachments: [],
       classification_nodes: [],
       shares: [],
@@ -460,8 +454,6 @@ describe('ItemService', () => {
           updated_at: new Date(1),
         },
       ],
-      associations_to: [],
-      associations: [],
       attachments: [],
       classification_nodes: [],
       shares: [],
@@ -501,9 +493,12 @@ describe('ItemService', () => {
         });
         const result = await new ItemService(environment).update(testUserAuth, updateData);
 
-        const { slots: expectedSlots, thumbnails, attachments, ...expectedItem } = getOutputFixture(
-          'update-item.output.json'
-        );
+        const {
+          slots: expectedSlots,
+          thumbnails,
+          attachments,
+          ...expectedItem
+        } = getOutputFixture('update-item.output.json');
         expect(replaceUndefinedWithNull(result.item)).to.eql(expectedItem);
         expect(replaceUndefinedWithNull(result.slots)).to.deep.members(expectedSlots);
       });

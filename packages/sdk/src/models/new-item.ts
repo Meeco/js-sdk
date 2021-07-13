@@ -1,7 +1,7 @@
 import {
   ClassificationNode,
+  ClassificationNodeAttributes,
   ItemTemplate,
-  NestedClassificationNodeAttributes,
   NestedSlotAttributes,
   PostItemsRequest,
   Slot,
@@ -56,8 +56,9 @@ export class NewItem extends ItemChange {
     const badValue = SlotHelpers.findWithEncryptedValue(this.slots);
     if (badValue) {
       throw new Error(
-        `Slot ${badValue['name'] ||
-          badValue['label']} with existing encrypted_value with be overwritten`
+        `Slot ${
+          badValue['name'] || badValue['label']
+        } with existing encrypted_value with be overwritten`
       );
     }
     // TODO should enforce map integrity?
@@ -78,7 +79,7 @@ export class NewItem extends ItemChange {
       slot => slot.encrypted_value !== null && slot.encrypted_value !== undefined
     );
 
-    let classification_nodes_attributes: NestedClassificationNodeAttributes[] | undefined = [];
+    let classification_nodes_attributes: ClassificationNodeAttributes[] | undefined = [];
     if (this.classification_nodes.length > 0) {
       classification_nodes_attributes = this.classification_nodes.map(toNestedClassificationNode);
     }

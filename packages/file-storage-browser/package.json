@@ -1,6 +1,6 @@
 {
   "name": "@meeco/file-storage-browser",
-  "version": "3.2.1",
+  "version": "5.0.0",
   "description": "Browser module for uploading and downloading encrypted files",
   "source": "src/index.ts",
   "types": "./lib/index.d.ts",
@@ -17,22 +17,23 @@
     "build:demo": "webpack",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
-    "docs": "typedoc --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate src/index.ts"
+    "docs": "typedoc --out docs --tsconfig tsconfig.json --disableOutputCheck --excludePrivate --excludeProtected src/index.ts"
   },
   "dependencies": {
-    "@meeco/cryppo": "^2.0.0",
-    "@meeco/file-storage-common": "^4.0.0",
-    "@meeco/vault-api-sdk": "^22.0.4",
+    "@meeco/cryppo": "2.0.2",
+    "@meeco/file-storage-common": "^5.0.0",
+    "@meeco/style-kit": "^2.0.1",
+    "@meeco/vault-api-sdk": "32.0.0-stage.20210527103605.f1f76f0",
     "axios": "^0.21.1"
   },
   "devDependencies": {
-    "@meeco/sdk": "^2.1.0",
-    "bili": "^4.10.0",
-    "typedoc": "^0.20.30",
-    "typescript": "^3.9.6",
-    "webpack": "^4.44.1",
+    "@meeco/sdk": "^3.0.1",
+    "bili": "^5.0.5",
+    "typedoc": "^0.20.36",
+    "typescript": "^4.2.4",
+    "webpack": "^4.46.0",
     "webpack-bundle-analyzer": "^3.8.0",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.2"
   },
   "keywords": [],
   "author": "",

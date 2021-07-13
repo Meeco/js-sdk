@@ -12,10 +12,10 @@ module.exports = {
   mode: 'development',
   devServer: {
     port: 1234,
-    hot: true
+    hot: true,
   },
   watchOptions: {
-    ignored:/.*\.#.*/
+    ignored: /.*\.#.*/,
   },
   module: {
     rules: [
@@ -23,8 +23,8 @@ module.exports = {
         test: /\.ts$/,
         loader: 'ts-loader',
         options: {
-          configFile: path.resolve('./tsconfig.json')
-        }
+          configFile: path.resolve('./tsconfig.json'),
+        },
       },
       {
         test: /\.s[ac]ss$/i,
@@ -34,37 +34,37 @@ module.exports = {
           // Translates CSS into CommonJS
           'css-loader',
           // Compiles Sass to CSS
-          'sass-loader'
-        ]
-      }
-    ]
+          'sass-loader',
+        ],
+      },
+    ],
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
-    plugins: [new TsconfigPathsPlugin({ configFile: path.resolve('./tsconfig.json') })]
+    plugins: [new TsconfigPathsPlugin({ configFile: path.resolve('./tsconfig.json') })],
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/index.html'),
-      chunks: ['styles']
+      chunks: ['styles'],
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/basic/index.html'),
       filename: 'basic/index.html',
-      chunks: [ 'styles', 'basic' ],
+      chunks: ['styles', 'basic'],
       // emit non-blocking scripts to improve page load appearance
       scriptLoading: 'defer',
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/shares/index.html'),
       filename: 'shares/index.html',
-      chunks: [ 'styles', 'shares' ],
+      chunks: ['styles', 'shares'],
       scriptLoading: 'defer',
     }),
-    new ProgressBarPlugin()
+    new ProgressBarPlugin(),
   ],
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, '../../docs/sdk-demo')
-  }
+    path: path.resolve(__dirname, '../../docs/sdk-demo'),
+  },
 };

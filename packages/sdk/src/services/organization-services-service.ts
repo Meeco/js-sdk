@@ -44,7 +44,7 @@ export class OrganizationServicesService extends Service<OrganizationsManagingSe
 
   public async create(organizationId: string, service: PostServiceRequest) {
     const rsaKeyPair = await DecryptedKeypair.generate();
-    service.public_key = rsaKeyPair.publicKey.key;
+    service.public_key = rsaKeyPair.publicKey.pem;
     const result = await this.vaultAPIFactory(
       this.credentials
     ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesPost(organizationId, {

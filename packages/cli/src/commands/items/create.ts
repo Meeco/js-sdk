@@ -37,7 +37,7 @@ export default class ItemsCreate extends MeecoCommand {
     const newItem = new NewItem(
       itemConfig!.label,
       itemConfigFile.templateName,
-      (itemConfig!.slots as any) as NewSlot[]
+      itemConfig!.slots as any as NewSlot[]
     );
 
     try {

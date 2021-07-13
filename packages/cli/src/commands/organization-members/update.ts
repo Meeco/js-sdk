@@ -1,4 +1,4 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { mockableFactories } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationMemberConfig } from '../../configs/organization-member-config';
@@ -55,17 +55,17 @@ export default class OrganizationMembersUpdate extends MeecoCommand {
     }
 
     try {
-      await vaultAPIFactory(environment)(
-        authConfig
-      ).OrganizationsManagingMembersApi.organizationsOrganizationIdMembersIdPut(
-        member.organization_id,
-        member.id,
-        {
-          organization_member: {
-            role: member.role,
-          },
-        }
-      );
+      await mockableFactories
+        .vaultAPIFactory(environment)(authConfig)
+        .OrganizationsManagingMembersApi.organizationsOrganizationIdMembersIdPut(
+          member.organization_id,
+          member.id,
+          {
+            organization_member: {
+              role: member.role,
+            },
+          }
+        );
       this.log('Successfully updated');
     } catch (err) {
       await this.handleException(err);

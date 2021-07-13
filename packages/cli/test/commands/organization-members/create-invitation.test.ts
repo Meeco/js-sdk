@@ -6,7 +6,7 @@ import {
   inputFixture,
   outputFixture,
   testEnvironmentFile,
-  testUserAuth,
+  testOrganizationUserAuth,
 } from '../../test-helpers';
 
 describe('organization-members:create-invitation', () => {
@@ -16,7 +16,7 @@ describe('organization-members:create-invitation', () => {
     .stderr()
     .run([
       'organization-members:create-invitation',
-      ...testUserAuth,
+      ...testOrganizationUserAuth,
       ...testEnvironmentFile,
       '-o',
       inputFixture('create-organization-members-invitation.input.yaml'),
@@ -40,7 +40,6 @@ function createInvite(vaultAccessToken, publicKey, memberRole) {
     token: 'I2aUc0zEU2veqg52QtKbwEsJ1eNIqWlBdjH5FrRIKXg',
     outgoing: true,
     user_name: 'Anonymous User',
-    user_image: 'http://localhost:3000/images/69074548-24cb-403d-828c-09af6002e1c3',
     // user_email: '',
     keypair_external_id: null,
     encrypted_recipient_name: null,

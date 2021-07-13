@@ -141,7 +141,6 @@ function stubVault(api) {
         id: 'vault_user',
       },
       encrypted_session_authentication_string: 'encrypted_vault_session_string',
-      associations: [],
     });
 
   api
@@ -157,6 +156,5 @@ function stubVault(api) {
     .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
     .reply(200, {
       user: {},
-      associations: [],
     });
 }

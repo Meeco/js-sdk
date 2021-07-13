@@ -15,14 +15,18 @@ module.exports = {
           // Translates CSS into CommonJS
           'css-loader',
           // Compiles Sass to CSS
-          'sass-loader'
-        ]
-      }
-    ]
+          'sass-loader',
+        ],
+      },
+      {
+        test: /\.(ttf|eot|svg|woff)$/,
+        loader: 'url-loader',
+      },
+    ],
   },
   plugins: [new MiniCssExtractPlugin(), new ProgressBarPlugin()],
   output: {
     filename: 'bundle.js', // extraneous but can't be avoided - it's an artifact of webpack
-    path: path.resolve(__dirname, './build')
-  }
+    path: path.resolve(__dirname, './build'),
+  },
 };

@@ -5,8 +5,8 @@ import { readFileSync } from 'fs';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 describe('items:create-config', () => {
-  customTest
-    .stub(sdk, 'vaultAPIFactory', vaultAPIFactory as any)
+  return customTest
+    .stub(sdk.mockableFactories, 'vaultAPIFactory', vaultAPIFactory as any)
     .stdout()
     .stderr()
     .run(['items:create-config', 'food', ...testUserAuth, ...testEnvironmentFile])
@@ -42,7 +42,6 @@ const templates = {
       encrypted_value: 'Hawaiian',
       encrypted_value_verification_key: null,
       value_verification_hash: null,
-      image: null,
       label: 'Pizza',
       original_id: null,
       owner_id: null,
@@ -67,7 +66,6 @@ const templates = {
       encrypted_value: 'Rump',
       encrypted_value_verification_key: null,
       value_verification_hash: null,
-      image: null,
       label: 'Steak',
       original_id: null,
       owner_id: null,
@@ -92,7 +90,6 @@ const templates = {
       encrypted_value: 'Session Ale',
       encrypted_value_verification_key: null,
       value_verification_hash: null,
-      image: null,
       label: 'Beer',
       original_id: null,
       owner_id: null,

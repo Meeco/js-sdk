@@ -1,5 +1,6 @@
 import {
   Organization,
+  OrganizationsGetModeEnum,
   OrganizationsManagingOrganizationsApi,
   Service as APIService,
 } from '@meeco/vault-api-sdk';
@@ -56,14 +57,14 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
       credentials
     ).OrganizationsManagingOrganizationsApi.organizationsPost({
       name,
-      public_key: public_key.key,
+      public_key: public_key.pem,
       ...info,
     });
 
     return {
       organization: result.organization,
       privateKey: rsaKeyPair.privateKey.pem,
-      publicKey: rsaKeyPair.publicKey.key,
+      publicKey: rsaKeyPair.publicKey.pem,
     };
   }
 
@@ -72,7 +73,7 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
    */
   public async listAll(
     credentials: IVaultToken,
-    mode?: 'requested' | 'member'
+    mode?: OrganizationsGetModeEnum
   ): Promise<{ organizations: Organization[]; services: APIService[] }> {
     const api = this.vaultAPIFactory(credentials).OrganizationsForVaultUsersApi;
 

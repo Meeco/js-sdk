@@ -1,0 +1,36 @@
+name: Release CLI Beta
+
+on:
+  push:
+    tags:
+      - 'releases/cli/**-beta*'
+jobs:
+  create_cli_beta_release:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm test
+        env:
+          CI: true
+      - run: npm run beta
+      - working-directory: ./packages/cli
+        run: npm install
+      - working-directory: ./packages/cli
+        run: npm build
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: 'packages/cli/dist/**/*.tar.gz'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true

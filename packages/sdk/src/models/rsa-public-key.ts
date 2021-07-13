@@ -15,8 +15,16 @@ export default class RSAPublicKey {
     }
   }
 
-  /** PEM formatted key string */
+  /**
+   *  @deprecated use {@link pem}
+   *  PEM formatted key string
+   */
   get key() {
+    return this._value;
+  }
+
+  /* PEM formatted key string */
+  get pem() {
     return this._value;
   }
 
@@ -27,7 +35,7 @@ export default class RSAPublicKey {
   async encryptToken(value: string): Promise<string> {
     return cryppo
       .encryptWithPublicKey({
-        publicKeyPem: this.key,
+        publicKeyPem: this.pem,
         data: value,
         scheme: ASYMMETRIC_KEY_STRATEGY,
       })

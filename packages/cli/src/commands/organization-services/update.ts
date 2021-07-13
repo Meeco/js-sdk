@@ -1,4 +1,4 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { mockableFactories } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationServiceConfig } from '../../configs/organization-service-config';
@@ -50,15 +50,15 @@ export default class OrganizationServicesUpdate extends MeecoCommand {
 
     try {
       this.updateStatus('Updating service details');
-      const result = await vaultAPIFactory(environment)(
-        authConfig
-      ).OrganizationsManagingServicesApi.organizationsOrganizationIdServicesIdPut(
-        service.id,
-        organization_id,
-        {
-          service: organizationServiceConfigFile.service,
-        }
-      );
+      const result = await mockableFactories
+        .vaultAPIFactory(environment)(authConfig)
+        .OrganizationsManagingServicesApi.organizationsOrganizationIdServicesIdPut(
+          service.id,
+          organization_id,
+          {
+            service: organizationServiceConfigFile.service,
+          }
+        );
       this.printYaml(OrganizationServiceConfig.encodeFromJSON(result.service));
       this.updateStatus('Successfully updated');
     } catch (err) {

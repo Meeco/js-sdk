@@ -1,4 +1,4 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { mockableFactories } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
 import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
@@ -35,9 +35,9 @@ export default class OrganizationsDelete extends MeecoCommand {
       this.error('Valid auth config file must be supplied');
     }
     try {
-      await vaultAPIFactory(environment)(
-        authConfig
-      ).OrganizationsManagingOrganizationsApi.organizationsIdDelete(id);
+      await mockableFactories
+        .vaultAPIFactory(environment)(authConfig)
+        .OrganizationsManagingOrganizationsApi.organizationsIdDelete(id);
       this.log('Organization successfully deleted');
     } catch (err) {
       await this.handleException(err);

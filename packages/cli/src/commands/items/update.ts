@@ -46,7 +46,7 @@ export default class ItemsUpdate extends MeecoCommand {
 
     const updateData = new ItemUpdate(itemConfig?.id!, {
       label: itemConfig?.label,
-      slots: (itemConfig?.slots as any) as NewSlot[],
+      slots: itemConfig?.slots as any as NewSlot[],
     });
 
     try {
