@@ -32,7 +32,7 @@ export class ItemUpdate extends ItemChange {
     public readonly id: string,
     update: Partial<{
       label: string;
-      classification_nodes: Array<Partial<ClassificationNode & { _destroy: boolean }>>;
+      classification_nodes: Partial<ClassificationNode & { _destroy: boolean }>[];
       slots: NewSlot[];
     }>
   ) {

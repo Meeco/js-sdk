@@ -32,7 +32,7 @@ export class NewItem extends ItemChange {
     public readonly label: string,
     public template_name: string,
     public slots: NewSlot[] = [],
-    public classification_nodes: Array<Partial<ClassificationNode>> = []
+    public classification_nodes: Partial<ClassificationNode>[] = []
   ) {
     super(slots, classification_nodes);
     if (this.label === '') {
