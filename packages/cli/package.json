@@ -12,7 +12,7 @@
     "@meeco/cryppo": "2.0.2",
     "@meeco/file-storage-node": "5.0.0",
     "@meeco/keystore-api-sdk": "5.6.0-stage.20210527121738.c3654c9",
-    "@meeco/sdk": "^3.0.1",
+    "@meeco/sdk": "^4.0.0",
     "@meeco/vault-api-sdk": "32.0.0-stage.20210527103605.f1f76f0",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
