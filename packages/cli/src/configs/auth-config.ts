@@ -102,11 +102,6 @@ export class AuthConfig {
     });
   }
 
-  overrideWithFlags(flags) {
-    this.delegation_id = flags.delegationId ? flags.delegationId : undefined;
-    return this;
-  }
-
   static fromMetadata(metadata: IAuthMetadata) {
     return AuthConfig.fromYamlConfig({
       kind: AuthConfig.kind,
@@ -184,6 +179,12 @@ export class AuthConfig {
   /**
    * Allow AuthConfig to be serialized for easier storage
    */
+
+  overrideWithFlags(flags) {
+    this.delegation_id = flags.delegationId ? flags.delegationId : undefined;
+    return this;
+  }
+
   toJSON() {
     const loadedDelegations = this.loaded_delegations;
     const loadedDelegationsSerializedKeys = {};

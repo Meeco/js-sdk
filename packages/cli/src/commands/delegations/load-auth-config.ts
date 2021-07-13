@@ -77,7 +77,7 @@ export default class DelegationLoadAuthConfig extends MeecoCommand {
       const { next_page_after, connections } = await vaultApi.ConnectionApi.connectionsGet(cursor);
       cursor = next_page_after;
       connection = connections.find(
-        conn => conn.the_other_user.user_id == authConfig.delegation_id
+        conn => conn.the_other_user.user_id === authConfig.delegation_id
       );
       // finish if there is a cursor and a connection
       // finish if there is is not a cursor

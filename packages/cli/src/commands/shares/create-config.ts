@@ -67,6 +67,9 @@ export default class SharesCreateConfig extends MeecoCommand {
               throw new CLIError(`Slot with name '${slotName}' was not found on the item`);
             }
           }
+          if (!fromUser) {
+            throw new Error('fromUser not found');
+          }
 
           this.printYaml(
             ShareConfig.encodeFromUsersWithItem(fromUser, connectionId, itemId, slotId)
