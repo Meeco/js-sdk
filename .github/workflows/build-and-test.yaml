@@ -36,4 +36,9 @@ jobs:
       #   with:
       #     name: Cypress Failure Diffs
       #     path: packages/style-kit/cypress/snapshots/
-      - run: npx lerna run build
+      - run: npx lerna run build --ignore @meeco/cli
+      - run: npm run beta
+      - working-directory: ./packages/cli
+        run: npm install
+      - working-directory: ./packages/cli
+        run: npm build
