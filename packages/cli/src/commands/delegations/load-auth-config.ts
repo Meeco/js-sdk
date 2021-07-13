@@ -1,4 +1,4 @@
-import { DelegationService, keystoreAPIFactory, UserService, vaultAPIFactory } from '@meeco/sdk';
+import { DelegationService, mockableFactories, UserService } from '@meeco/sdk';
 import { Connection } from '@meeco/vault-api-sdk';
 import { AuthConfig } from '../../configs/auth-config';
 import authFlags from '../../flags/auth-flags';
@@ -31,7 +31,7 @@ export default class DelegationLoadAuthConfig extends MeecoCommand {
       const delegationToken = (connection?.the_other_user.integration_data || {})[
         'delegation_token'
       ];
-      const keystoreApi = keystoreAPIFactory(environment)({
+      const keystoreApi = mockableFactories.keystoreAPIFactory(environment)({
         ...authConfig,
         delegation_id: undefined,
       });
@@ -39,7 +39,7 @@ export default class DelegationLoadAuthConfig extends MeecoCommand {
         delegationToken
       );
       const kek = await delegationsService.getAccountOwnerKek(authConfig, delegation);
-      const vaultApi = vaultAPIFactory(environment)(authConfig);
+      const vaultApi = mockableFactories.vaultAPIFactory(environment)(authConfig);
       const user = await vaultApi.UserApi.meGet();
       const userService = new UserService(environment, this.updateStatus);
       const dek = await userService.getDataEncryptionKey(
@@ -67,7 +67,7 @@ export default class DelegationLoadAuthConfig extends MeecoCommand {
   }
 
   private async getConnectionForDelegationId(environment, authConfig: AuthConfig) {
-    const vaultApi = vaultAPIFactory(environment)({
+    const vaultApi = mockableFactories.vaultAPIFactory(environment)({
       ...authConfig,
       delegation_id: undefined,
     });
