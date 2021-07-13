@@ -1,0 +1,14 @@
+{
+  "id": "item-foo",
+  "template_name": "password",
+  "label": "My Account",
+  "slot_ids": [],
+  "classification_node_ids": ["i"],
+  "classification_nodes_attributes": [
+    {
+      "id": "i",
+      "name": "tag",
+      "label": "MyTag"
+    }
+  ]
+}

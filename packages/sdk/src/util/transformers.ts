@@ -11,7 +11,9 @@ function fix<T>(x: T | null): T | undefined {
   return x === null ? undefined : x;
 }
 
-export function toNestedClassificationNode(node: ClassificationNode): ClassificationNodeAttributes {
+export function toNestedClassificationNode(
+  node: Partial<ClassificationNode>
+): ClassificationNodeAttributes {
   return Object.keys(node).reduce((acc, k) => {
     acc[k] = fix(node[k]);
     return acc;

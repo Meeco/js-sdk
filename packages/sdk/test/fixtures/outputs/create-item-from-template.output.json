@@ -2,10 +2,8 @@
   "id": "item-foo",
   "template_name": "vehicle",
   "label": "DMC DeLorean",
-  "slot_ids": [
-    "a",
-    "b"
-  ],
+  "classification_node_ids": [],
+  "slot_ids": ["a", "b"],
   "slots": [
     {
       "id": "a",

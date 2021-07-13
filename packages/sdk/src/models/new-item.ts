@@ -1,12 +1,13 @@
 import {
   ClassificationNode,
+  ClassificationNodeAttributes,
   ItemTemplate,
   NestedSlotAttributes,
   PostItemsRequest,
   Slot,
 } from '@meeco/vault-api-sdk';
 import SlotHelpers from '../util/slot-helpers';
-import { slotToNewSlot } from '../util/transformers';
+import { slotToNewSlot, toNestedClassificationNode } from '../util/transformers';
 import ItemChange from './item-change';
 import { NewSlot } from './slot-types';
 import { SymmetricKey } from './symmetric-key';
@@ -31,7 +32,7 @@ export class NewItem extends ItemChange {
     public readonly label: string,
     public template_name: string,
     public slots: NewSlot[] = [],
-    public classification_nodes: ClassificationNode[] = []
+    public classification_nodes: Partial<ClassificationNode>[] = []
   ) {
     super(slots, classification_nodes);
     if (this.label === '') {
@@ -78,11 +79,17 @@ export class NewItem extends ItemChange {
       slot => slot.encrypted_value !== null && slot.encrypted_value !== undefined
     );
 
+    let classification_nodes_attributes: ClassificationNodeAttributes[] | undefined = [];
+    if (this.classification_nodes.length > 0) {
+      classification_nodes_attributes = this.classification_nodes.map(toNestedClassificationNode);
+    }
+
     return {
       template_name: this.template_name,
       item: {
         label: this.label,
         slots_attributes,
+        classification_nodes_attributes,
       },
     };
   }
