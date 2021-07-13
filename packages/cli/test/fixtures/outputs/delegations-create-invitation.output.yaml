@@ -1,0 +1,17 @@
+kind: Invitation
+spec:
+  id: 8481aad1-2961-4530-90bf-b1557cc4c246
+  message: null
+  sent_at: null
+  invited_user_id: null
+  token: V_PVzZjXRwAKWHyAIEmnzNeBd1Ak44q-NcbDHDXm6Cc
+  outgoing: true
+  user_name: Anonymous User
+  keypair_external_id: 9e78a843-a37d-456a-a01e-5867fd709db8
+  encrypted_recipient_name: Aes256Gcm.AQ-b6Ts=.QUAAAAAFaXYADAAAAAC6NQnnUH6ZNC4ghlQFYXQAEAAAAABi5VogadDhulQ2PolCmBngAmFkAAUAAABub25lAAA=
+  integration_data:
+    intent: delegate
+    role: reader
+    delegation_token: 7aa22b5d-0413-41e2-9cdc-47e11c2b3540
+  expire_at: "2021-07-27T05:31:32.795Z"
+  shares_to_be_created: 0

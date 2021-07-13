@@ -5,7 +5,7 @@ import {
   generateRSAKeyPair,
   utf8ToBytes,
 } from '@meeco/cryppo';
-import { DelegationService, keystoreAPIFactory, vaultAPIFactory } from '@meeco/sdk';
+import { DelegationService, mockableFactories } from '@meeco/sdk';
 import { AuthConfig } from '../../configs/auth-config';
 import { InvitationConfig } from '../../configs/invitation-config';
 import authFlags from '../../flags/auth-flags';
@@ -43,37 +43,33 @@ export default class DelegationCreateInvitation extends MeecoCommand {
     if (!authConfig) {
       this.error('authConfig must be present');
     }
-    try {
-      const keypairKey = await generateRSAKeyPair();
-      const encryptedPrivateKey = await encryptWithKey({
-        key: EncryptionKey.fromBytes(authConfig.data_encryption_key.key),
-        data: utf8ToBytes(keypairKey.privateKey),
-        strategy: CipherStrategy.AES_GCM,
-      });
+    const keypairKey = await generateRSAKeyPair();
+    const encryptedPrivateKey = await encryptWithKey({
+      key: EncryptionKey.fromBytes(authConfig.data_encryption_key.key),
+      data: utf8ToBytes(keypairKey.privateKey),
+      strategy: CipherStrategy.AES_GCM,
+    });
 
-      const keypairApi = keystoreAPIFactory(environment)(authConfig).KeypairApi;
-      const { keypair } = await keypairApi.keypairsPost({
-        public_key: keypairKey.publicKey,
-        encrypted_serialized_key: encryptedPrivateKey.serialized || '',
-        metadata: {},
-        external_identifiers: [],
-      });
+    const keypairApi = mockableFactories.keystoreAPIFactory(environment)(authConfig).KeypairApi;
+    const { keypair } = await keypairApi.keypairsPost({
+      public_key: keypairKey.publicKey,
+      encrypted_serialized_key: encryptedPrivateKey.serialized || '',
+      metadata: {},
+      external_identifiers: [],
+    });
 
-      const userApi = vaultAPIFactory(environment)(authConfig).UserApi;
-      const { user } = await userApi.meGet();
+    const userApi = mockableFactories.vaultAPIFactory(environment)(authConfig).UserApi;
+    const { user } = await userApi.meGet();
 
-      const delegationsService = new DelegationService(environment, this.updateStatus);
-      const invitation = await delegationsService.createDelegationInvitation(
-        authConfig,
-        user.id,
-        delegation_role,
-        recipient_name,
-        keypair.id
-      );
+    const delegationsService = new DelegationService(environment, this.updateStatus);
+    const invitation = await delegationsService.createDelegationInvitation(
+      authConfig,
+      user.id,
+      delegation_role,
+      recipient_name,
+      keypair.id
+    );
 
-      this.printYaml(InvitationConfig.encodeFromJSON(invitation));
-    } catch (e) {
-      this.error('something went wrong ' + e);
-    }
+    this.printYaml(InvitationConfig.encodeFromJSON(invitation));
   }
 }
