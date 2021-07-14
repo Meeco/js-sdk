@@ -1,6 +1,6 @@
 {
   "name": "@meeco/sdk-demo",
-  "version": "2.0.0",
+  "version": "3.0.2",
   "description": "A small demo of some SDK features",
   "author": "Meeco",
   "private": true,
@@ -13,7 +13,7 @@
     "lint": "tslint -p . -t stylish -c ../../tslint.json"
   },
   "dependencies": {
-    "@meeco/sdk": "^3.0.0",
+    "@meeco/sdk": "^3.0.2",
     "@meeco/style-kit": "^2.0.1",
     "clean-webpack-plugin": "^3.0.0",
     "html-webpack-plugin": "^4.5.2",
