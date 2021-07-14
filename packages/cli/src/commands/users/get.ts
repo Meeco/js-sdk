@@ -55,10 +55,13 @@ export default class GetUser extends MeecoCommand {
           .getOrCreateVaultToken(password, secret)
           .then(token => service.getUser(token));
       } else {
-        const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+        let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(
+          flags
+        );
         if (!authConfig) {
-          this.error('Must specify a valid auth config file');
+          this.error('Valid auth config file must be supplied');
         }
+        authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
         result = await service.getUser(authConfig);
       }
 

@@ -1,0 +1,18 @@
+kind: Authentication
+metadata:
+  data_encryption_key: bXlfZ2VuZXJhdGVkX2Rlaw==
+  delegation_id: 223009b5-bd8f-454b-b117-33f553e5ee06
+  key_encryption_key: bXlfa2V5X2VuY3J5cHRpb25fa2V5
+  keystore_access_token: a2V5c3RvcmVfYXV0aF90b2tlbg==
+  loaded_delegations: null
+  oidc_token: null
+  passphrase_derived_key: BsKhFEfDtTfDscK6PMOrwr3DiToiwrFbJ2V4OMO7wqFmw55Q
+  secret: 1.mocked_generated_username.my_secret_key
+  vault_access_token: 2FPN4n5T68xy78i6HHuQ
+spec:
+  loaded_delegations:
+    223009b5-bd8f-454b-b117-33f553e5ee06:
+      data_encryption_key: hZHHXNXVDOZEhwbZZHC82A4I98LaFjPUSNj-prBEgEs=
+      key_encryption_key: GV5zf72jRXwQJNa6rLQwxGzn7KoU3xQBePnrL3dYMcY=
+      connection_id: a2b78a17-8033-4afc-bcbe-728a4386fbc4
+      delegation_token: 309963f7-a103-496b-a136-ce78b9fbcbd0

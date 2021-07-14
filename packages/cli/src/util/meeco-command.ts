@@ -5,6 +5,7 @@ import { CLIError } from '@oclif/errors';
 import cli from 'cli-ux';
 import nodeFetch from 'node-fetch';
 import { stringify } from 'yaml';
+import { AuthConfig } from '../configs/auth-config';
 import { UserConfig } from '../configs/user-config';
 import { IYamlConfig, IYamlConfigReader } from '../configs/yaml-config';
 import { readEnvironmentFromYamlFile } from './parse-environment';
@@ -54,6 +55,19 @@ export default class MeecoCommand extends Command {
     const { flags } = this.parse(this.constructor as typeof MeecoCommand);
     const { environment } = flags;
     return readEnvironmentFromYamlFile(environment);
+  }
+
+  protected returnDelegationAuthIfDelegationIdPresent(authConfig: AuthConfig): AuthConfig {
+    if (!authConfig.delegation_id) {
+      return authConfig;
+    }
+    const delegationToLoad = (authConfig.loaded_delegations || {})[authConfig.delegation_id];
+    if (!delegationToLoad) {
+      this.error(
+        'No loaded delegation found for provided delegationId, first run delegations:load-auth-config'
+      );
+    }
+    return new AuthConfig({ ...authConfig, ...delegationToLoad });
   }
 
   protected async readUserConfig() {

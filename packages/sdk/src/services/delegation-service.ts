@@ -1,4 +1,4 @@
-import { encryptWithPublicKey, signWithPrivateKey } from '@meeco/cryppo';
+import { bytesToBinaryString, encryptWithPublicKey, signWithPrivateKey } from '@meeco/cryppo';
 import { Delegation } from '@meeco/keystore-api-sdk';
 import { Connection, DelegationApi } from '@meeco/vault-api-sdk';
 import DecryptedKeypair from '../models/decrypted-keypair';
@@ -149,7 +149,7 @@ export class DelegationService extends Service<DelegationApi> {
 
     const encryptedKek = await encryptWithPublicKey({
       publicKeyPem: delegatePublicKey,
-      data: credentials.key_encryption_key.toJSON(),
+      data: bytesToBinaryString(credentials.key_encryption_key.key),
     });
 
     await this.keystoreAPIFactory(credentials).DelegationApi.delegationsDelegationTokenSharePut(

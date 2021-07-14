@@ -12,6 +12,7 @@ spec:
     vault_access_token: from_vault_access
     delegation_id: null
     oidc_token: null
+    loaded_delegations: {}
   to:
     data_encryption_key: dG9fZGVr
     key_encryption_key: dG9fa2Vr
@@ -21,3 +22,4 @@ spec:
     vault_access_token: to_vault_access
     delegation_id: null
     oidc_token: null
+    loaded_delegations: {}

@@ -39,11 +39,11 @@ export default class ItemsGetAttachment extends MeecoCommand {
     const { itemId, slotId } = args;
 
     try {
-      const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-
+      let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
       if (!authConfig) {
-        this.error('Must specify a valid auth config file');
+        this.error('Valid auth config file must be supplied');
       }
+      authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
 
       const itemService = new ItemService(environment);
       const itemFetchResult: any = await itemService.get(authConfig, itemId);

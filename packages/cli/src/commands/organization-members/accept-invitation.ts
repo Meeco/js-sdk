@@ -27,12 +27,13 @@ export default class OrganizationMembersAcceptInvitation extends MeecoCommand {
     const { flags } = this.parse(this.constructor as typeof OrganizationMembersAcceptInvitation);
     const { invitationConfig, auth } = flags;
     const environment = await this.readEnvironmentFile();
-    const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-    const invitationConfigFile = await this.readConfigFromFile(InvitationConfig, invitationConfig);
-
+    let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
     if (!authConfig) {
       this.error('Valid auth config file must be supplied');
     }
+    authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
+    const invitationConfigFile = await this.readConfigFromFile(InvitationConfig, invitationConfig);
+
     if (!invitationConfigFile) {
       this.error('Valid organization config file must be supplied');
     }

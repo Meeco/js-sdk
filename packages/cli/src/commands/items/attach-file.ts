@@ -33,12 +33,13 @@ export default class ItemsAttachFile extends MeecoCommand {
     const { auth, config } = flags;
 
     try {
-      const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+      let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
+      if (!authConfig) {
+        this.error('Valid auth config file must be supplied');
+      }
+      authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
       const fileConfig = await this.readConfigFromFile(FileAttachmentConfig, config);
 
-      if (!authConfig) {
-        this.error('Must specify a valid auth config file');
-      }
       if (!fileConfig) {
         this.error('Must specify a valid file attachment config');
       }
