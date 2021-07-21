@@ -1,0 +1,38 @@
+name: Release Style Kit Docs
+
+on:
+  push:
+    tags:
+      - 'releases/style-kit/**'
+      - '!releases/style-kit/**-beta*'
+
+jobs:
+  create_style_kit_release:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm test
+        env:
+          CI: true
+      - run: npm run build --ignore @meeco/cli
+      - run: npm run docs
+      - name: Deploy SDK docs to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.SDK_DOCS_DEPLOY_KEY }}
+          publish_dir: ./docs/style-kit
+          destination_dir: style-kit
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          external_repository: Meeco/sdk-docs
+          publish_branch: master
