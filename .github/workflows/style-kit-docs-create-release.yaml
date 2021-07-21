@@ -24,7 +24,7 @@ jobs:
       - run: npm test
         env:
           CI: true
-      - run: npm run build --ignore @meeco/cli
+      - run: npm run build -- --ignore @meeco/cli
       - run: npm run docs
       - name: Deploy SDK docs to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
