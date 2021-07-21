@@ -63,11 +63,7 @@ describe('items:get-thumbnail', () => {
       ...testUserAuth,
       ...testEnvironmentFile,
     ])
-    .catch(err =>
-      expect(err.message)
-        .to.contain('The destination file')
-        .and.to.contain('exists')
-    )
+    .catch(err => expect(err.message).to.contain('The destination file').and.to.contain('exists'))
     .it('does not overwrite existing files');
 
   customTest
@@ -114,10 +110,7 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
       item_template_label: null,
       image: null,
       item_image: null,
-      item_image_background_colour: null,
       classification_node_ids: null,
-      association_ids: null,
-      associations_to_ids: null,
       slot_ids: ['steak', 'pizza', 'yoghurt'],
       me: null,
       background_color: null,
@@ -146,7 +139,6 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         encrypted_value: 'Hawaiian',
         encrypted_value_verification_key: null,
         value_verification_hash: null,
-        image: null,
         label: 'Pizza',
         original_id: null,
         owner_id: null,
@@ -172,7 +164,6 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         encrypted_value: 'Rump',
         encrypted_value_verification_key: null,
         value_verification_hash: null,
-        image: null,
         label: 'Steak',
         original_id: null,
         owner_id: null,
@@ -198,7 +189,6 @@ function get(itemId, vaultAccessToken, dataEncryptionKey) {
         encrypted_value: 'Session Ale',
         encrypted_value_verification_key: null,
         value_verification_hash: null,
-        image: null,
         label: 'Beer',
         original_id: null,
         owner_id: null,

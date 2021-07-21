@@ -5,7 +5,7 @@ import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '..
 
 describe('organizations:get', () => {
   customTest
-    .stub(sdk, 'vaultAPIFactory', vaultAPIFactory as any)
+    .stub(sdk.mockableFactories, 'vaultAPIFactory', vaultAPIFactory as any)
     .stdout()
     .stderr()
     .run(['organizations:get', 'id', ...testUserAuth, ...testEnvironmentFile])

@@ -16,7 +16,7 @@ import {
 
 describe('templates:list', () => {
   customTest
-    .stub(sdk, 'vaultAPIFactory', vaultAPIFactory as any)
+    .stub(sdk.mockableFactories, 'vaultAPIFactory', vaultAPIFactory as any)
     .stderr()
     .stdout()
     .run(['templates:list', ...testUserAuth, ...testEnvironmentFile])
@@ -29,7 +29,7 @@ describe('templates:list', () => {
     );
 
   customTest
-    .stub(sdk, 'vaultAPIFactory', vaultAPIFactory as any)
+    .stub(sdk.mockableFactories, 'vaultAPIFactory', vaultAPIFactory as any)
     .stderr()
     .stdout()
     .run([

@@ -1,4 +1,4 @@
-@import '../../style-kit/main';
+@import '~@meeco/style-kit/build/main';
 
 html,
 body {
@@ -17,7 +17,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  background-color: $meeco-red;
+  background-color: #e61e3d;
   color: white;
   padding: 12px;
   font-size: 12px;
@@ -32,7 +32,16 @@ body {
 .page-subtitle {
   @extend .title;
   top: 64px;
-  background-color: map-get($meeco-charcoal-palette, 'tint50');
+  // background-color: map-get($meeco-charcoal-palette, 'tint50');
+  background-color: map-get(
+    (
+      base: #555555,
+      shade: _shade(#555555, 20%),
+      tint50: _tint(#555555, 50%),
+      tint10: _tint(#555555, 90%),
+    ),
+    'tint50'
+  );
   div {
     display: flex;
     align-items: center;
@@ -67,7 +76,7 @@ div.card {
   label {
     display: inline-block;
   }
-  input[type="text"] {
+  input[type='text'] {
     width: 100%;
   }
 }
@@ -86,13 +95,14 @@ div.card {
   width: 450px;
 }
 
-input[type="button"], input[type="reset"] {
+input[type='button'],
+input[type='reset'] {
   @extend button;
   width: auto;
   display: inline-block;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   width: auto;
   margin-left: 1em;
   display: inline;
@@ -111,7 +121,8 @@ select {
 }
 
 button:disabled {
-  background-color: $meeco-smoke;
+  // background-color: $meeco-smoke;
+  background-color: #dce1e4;
 }
 
 .on-top {

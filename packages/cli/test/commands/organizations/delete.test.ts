@@ -4,7 +4,7 @@ import { customTest, testEnvironmentFile, testUserAuth } from '../../test-helper
 
 describe('organizations:delete', () => {
   customTest
-    .stub(sdk, 'vaultAPIFactory', vaultAPIFactory as any)
+    .stub(sdk.mockableFactories, 'vaultAPIFactory', vaultAPIFactory as any)
     .stdout()
     .stderr()
     .run(['organizations:delete', 'id', ...testUserAuth, ...testEnvironmentFile])

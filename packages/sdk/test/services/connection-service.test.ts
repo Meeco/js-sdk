@@ -182,9 +182,11 @@ describe('ConnectionService', () => {
           .reply(200, { connections: [{ own: { encrypted_recipient_name: null } }], meta: [] });
       })
       .add('connections', () => new ConnectionService(environment).list(testUserAuth))
-      .it('handles connections with null encrypted_recipient_name', ({ connections }) => {
-        expect(connections[0].recipient_name).to.match(/^\[decrypted with .*\]$/);
-      });
+      .it(
+        'handles connections with null encrypted_recipient_name',
+        ({ connections }) =>
+          expect(connections[0].connection.own.encrypted_recipient_name).to.be.null
+      );
   });
 
   describe('#listAll', () => {
@@ -275,13 +277,9 @@ describe('ConnectionService', () => {
 
     function emptyAPI(token: string) {
       return api => {
-        api
-          .get('/connections')
-          .matchHeader('Authorization', token)
-          .once()
-          .reply(200, {
-            connections: [],
-          });
+        api.get('/connections').matchHeader('Authorization', token).once().reply(200, {
+          connections: [],
+        });
       };
     }
 
@@ -309,12 +307,9 @@ describe('ConnectionService', () => {
 
     customTest
       .nock('https://sandbox.meeco.me/vault', api =>
-        api
-          .get('/connections')
-          .once()
-          .reply(200, {
-            connections: [],
-          })
+        api.get('/connections').once().reply(200, {
+          connections: [],
+        })
       )
       .add('result', () =>
         new ConnectionService(environment).findConnectionBetween(

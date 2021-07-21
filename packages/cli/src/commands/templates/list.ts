@@ -1,4 +1,4 @@
-import { getAllPaged, reducePages, reportIfTruncated, vaultAPIFactory } from '@meeco/sdk';
+import { getAllPaged, mockableFactories, reducePages, reportIfTruncated } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { cli } from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
@@ -40,7 +40,7 @@ export default class TemplatesList extends MeecoCommand {
       const { auth, all, classificationName, classificationScheme, label } = flags;
       const environment = await this.readEnvironmentFile();
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-      const service = vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
+      const service = mockableFactories.vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
       cli.action.start('Fetching available templates');
       const templates = all
         ? await getAllPaged(cursor =>

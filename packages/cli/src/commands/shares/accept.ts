@@ -1,4 +1,5 @@
-import { AcceptanceStatus, ShareService, vaultAPIFactory } from '@meeco/sdk';
+import { ShareService, vaultAPIFactory } from '@meeco/sdk';
+import { ShareAcceptanceRequiredEnum } from '@meeco/vault-api-sdk';
 import { flags as _flags } from '@oclif/command';
 import cli from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
@@ -46,7 +47,7 @@ export default class SharesAccept extends MeecoCommand {
         .then(resp => resp.share);
 
       // if acceptance is required prompt for user input
-      if (share.acceptance_required === AcceptanceStatus.Required) {
+      if (share.acceptance_required === ShareAcceptanceRequiredEnum.AcceptanceRequired) {
         this.log('Share Terms: ' + share.terms);
         if (!yes) {
           const willAccept = await cli.confirm('Do you accept the terms?');

@@ -13,10 +13,7 @@ spec:
     item_template_label: Vehicle
     image: null
     item_image: null
-    item_image_background_colour: null
     classification_node_ids: null
-    association_ids: null
-    associations_to_ids: null
     slot_ids:
       - make_model
     me: null
@@ -37,10 +34,7 @@ spec:
     item_template_label: Pet
     image: null
     item_image: null
-    item_image_background_colour: null
     classification_node_ids: null
-    association_ids: null
-    associations_to_ids: null
     slot_ids:
       - add
     me: null

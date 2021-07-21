@@ -1,4 +1,10 @@
-import { ItemTemplate, NestedSlotAttributes, PostItemsRequest, Slot } from '@meeco/vault-api-sdk';
+import {
+  ClassificationNode,
+  ItemTemplate,
+  NestedSlotAttributes,
+  PostItemsRequest,
+  Slot,
+} from '@meeco/vault-api-sdk';
 import SlotHelpers from '../util/slot-helpers';
 import { slotToNewSlot } from '../util/transformers';
 import ItemChange from './item-change';
@@ -25,7 +31,7 @@ export class NewItem extends ItemChange {
     public readonly label: string,
     public template_name: string,
     public slots: NewSlot[] = [],
-    public classification_nodes = []
+    public classification_nodes: ClassificationNode[] = []
   ) {
     super(slots, classification_nodes);
     if (this.label === '') {
@@ -49,8 +55,9 @@ export class NewItem extends ItemChange {
     const badValue = SlotHelpers.findWithEncryptedValue(this.slots);
     if (badValue) {
       throw new Error(
-        `Slot ${badValue['name'] ||
-          badValue['label']} with existing encrypted_value with be overwritten`
+        `Slot ${
+          badValue['name'] || badValue['label']
+        } with existing encrypted_value with be overwritten`
       );
     }
     // TODO should enforce map integrity?

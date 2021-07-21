@@ -3,14 +3,15 @@ name: Release CLI
 on:
   push:
     tags:
-      - releases/cli/*
+      - 'releases/cli/*'
+      - '!releases/cli/**-beta*'
 jobs:
   create_cli_release:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [16.x]
 
     steps:
       - uses: actions/checkout@v2

@@ -46,8 +46,6 @@ describe('API Factories', () => {
         .matchHeader('X_MEECO_API_COMPONENT', 'keystore')
         .matchHeader('X_MY_CUSTOM_HEADER', 'foo')
         .reply(200, {
-          associations_to: [],
-          associations: [],
           attachments: [],
           classification_nodes: [],
           shares: [],
@@ -73,9 +71,7 @@ describe('API Factories', () => {
     });
 
     it('captures api version issues and throws a special error', async () => {
-      nock('https://meeco-keystore.example.com/')
-        .get('/keypairs/my-id')
-        .reply(426);
+      nock('https://meeco-keystore.example.com/').get('/keypairs/my-id').reply(426);
       const apiFactory = keystoreAPIFactory(<any>{
         keystore: {
           subscription_key: 'my_sub_key',
@@ -113,8 +109,6 @@ describe('API Factories', () => {
         .matchHeader('X_MEECO_API_VERSION', '2.0.0')
         .matchHeader('X_MEECO_API_COMPONENT', 'vault')
         .reply(200, {
-          associations_to: [],
-          associations: [],
           attachments: [],
           classification_nodes: [],
           shares: [],
@@ -144,8 +138,6 @@ describe('API Factories', () => {
         .matchHeader('X_MEECO_API_COMPONENT', 'vault')
         .matchHeader('X_MY_CUSTOM_HEADER', 'foo')
         .reply(200, {
-          associations_to: [],
-          associations: [],
           attachments: [],
           classification_nodes: [],
           shares: [],
@@ -169,8 +161,6 @@ describe('API Factories', () => {
       const result = await forUser.ItemApi.itemsIdGet('my-id');
       expect(result).to.eql({
         item: undefined,
-        associations_to: [],
-        associations: [],
         attachments: [],
         classification_nodes: [],
         slots: [],
@@ -179,9 +169,7 @@ describe('API Factories', () => {
     });
 
     it('captures api version issues and throws a special error', async () => {
-      nock('https://meeco-vault.example.com/')
-        .get('/items/my-id')
-        .reply(426);
+      nock('https://meeco-vault.example.com/').get('/items/my-id').reply(426);
       const apiFactory = vaultAPIFactory(<any>{
         vault: {
           subscription_key: 'my_sub_key',

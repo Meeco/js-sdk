@@ -1,4 +1,4 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { mockableFactories } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
@@ -47,7 +47,7 @@ export default class ItemsCreateConfig extends MeecoCommand {
       this.error('Must specify a valid auth config file');
     }
 
-    const service = vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
+    const service = mockableFactories.vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
     const templates = await service.itemTemplatesGet(classificationScheme, classificationName);
     const template = templates.item_templates.find(_template => _template.name === templateName);
 

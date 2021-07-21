@@ -71,5 +71,9 @@ export function getBlobHeaders(auth: IFileStorageAuthConfiguration): { [header: 
     headers['authorizationoidc2'] = auth.oidc_token;
   }
 
+  if (auth.vault_access_token) {
+    headers['Authorization'] = auth.vault_access_token;
+  }
+
   return headers;
 }

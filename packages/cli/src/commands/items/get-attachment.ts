@@ -1,5 +1,5 @@
 import { EncryptionKey } from '@meeco/cryppo';
-import { fileDownloadNode } from '@meeco/file-storage-node';
+import { AttachmentService } from '@meeco/file-storage-node';
 import { ItemService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
@@ -51,17 +51,15 @@ export default class ItemsGetAttachment extends MeecoCommand {
       const attachmentSlotValueDek = attachmentSlot.value;
       const attachmentId = attachmentSlot.attachment_id;
 
-      const downloadedFile = await fileDownloadNode(
-        attachmentId,
-        environment,
-        {
+      const downloadedFile = await new AttachmentService(environment.vault.url).download({
+        id: attachmentId,
+        key: EncryptionKey.fromSerialized(attachmentSlotValueDek),
+        authConfig: {
           vault_access_token: authConfig.vault_access_token,
           subscription_key: environment.vault.subscription_key,
         },
-        EncryptionKey.fromSerialized(attachmentSlotValueDek),
-        this.updateStatus
-      );
-      await this.writeFile(outputPath + downloadedFile.fileName, downloadedFile.buffer);
+      });
+      await this.writeFile(outputPath + downloadedFile.info.filename, downloadedFile.data);
     } catch (err) {
       await this.handleException(err);
     }

@@ -1,4 +1,4 @@
-import { vaultAPIFactory } from '@meeco/sdk';
+import { mockableFactories } from '@meeco/sdk';
 import { Slot } from '@meeco/vault-api-sdk';
 import { flags as _flags } from '@oclif/command';
 import { CLIError } from '@oclif/errors';
@@ -44,7 +44,7 @@ export default class TemplatesInfo extends MeecoCommand {
       const { templateName } = args;
       const environment = await this.readEnvironmentFile();
       const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-      const service = vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
+      const service = mockableFactories.vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
       cli.action.start(`Fetching template '${templateName}'`);
       const result = await service.itemTemplatesGet(classificationScheme, classificationName);
       const matchingTemplates = result.item_templates.filter(

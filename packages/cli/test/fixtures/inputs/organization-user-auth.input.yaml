@@ -1,0 +1,4 @@
+kind: Authentication
+metadata:
+  vault_access_token: 2FPN4n5T68xy78i6HHuQ
+spec: {}

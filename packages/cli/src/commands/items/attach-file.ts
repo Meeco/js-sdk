@@ -67,9 +67,7 @@ export default class ItemsAttachFile extends MeecoCommand {
           {
             label,
             slot_type_name: SlotType.Attachment,
-            attachment_attributes: {
-              id: uploadedFile.attachment.id,
-            },
+            attachment_id: uploadedFile.attachment.id,
             value: uploadedFile.dek.serialize,
           },
         ],
