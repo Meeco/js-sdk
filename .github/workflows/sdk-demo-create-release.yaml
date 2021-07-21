@@ -24,7 +24,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - name: Build SDK Demo
-        run:  npx lerna run build --scope @meeco/sdk-demo
+        run:  npx lerna run build --scope '@meeco/{style-kit,sdk-demo}'
       - name: Deploy SDK Demo GH page
         uses: peaceiris/actions-gh-pages@v3
         with:
