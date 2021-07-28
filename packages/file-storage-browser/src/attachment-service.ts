@@ -6,7 +6,7 @@ import * as FileUtils from './FileUtils.web';
 
 export class AttachmentService extends Common.AttachmentService {
   constructor(vaultUrl: string) {
-    super(vaultUrl, fetch);
+    super(vaultUrl, (url, args) => window.fetch(url, args));
   }
 
   /**
