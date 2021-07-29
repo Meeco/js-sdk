@@ -23,7 +23,7 @@
     "@meeco/cryppo": "2.0.2",
     "@meeco/file-storage-common": "^5.0.0",
     "@meeco/style-kit": "^2.0.1",
-    "@meeco/vault-api-sdk": "32.0.0-stage.20210527103605.f1f76f0",
+    "@meeco/vault-api-sdk": "32.4.3-stage.20210729091619.50f41f3",
     "axios": "^0.21.1"
   },
   "devDependencies": {
