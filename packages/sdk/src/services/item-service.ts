@@ -160,6 +160,7 @@ export class ItemService extends Service<ItemApi> {
     return getAllPaged(cursor =>
       api.itemsGet(
         templateIds?.join(','),
+        undefined,
         scheme,
         classificationNodeName,
         classificationNodeNames,
