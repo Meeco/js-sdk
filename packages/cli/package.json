@@ -1,7 +1,7 @@
 {
   "name": "@meeco/cli",
   "description": "A CLI tool for interacting with the Meeco APIs",
-  "version": "3.0.1",
+  "version": "3.0.0",
   "author": "Meeco",
   "private": true,
   "bin": {
