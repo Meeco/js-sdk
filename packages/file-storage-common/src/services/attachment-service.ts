@@ -52,11 +52,11 @@ export class AttachmentService {
       {
         simultaneousUploads: 1,
         callbacks: {
-          onProgress: (progress) => {},
-          onSuccess: (success) => {
+          onProgress: progress => {},
+          onSuccess: success => {
             result = success;
           },
-          onError: (error) => {
+          onError: error => {
             throw error;
           },
         },
@@ -127,7 +127,7 @@ export class AttachmentService {
    */
   async getAttachmentInfo(id: string, auth: IFileStorageAuthConfiguration): Promise<Attachment> {
     const api = new AttachmentApi(buildApiConfig(auth, this.vaultUrl, this.fetchApi));
-    return api.attachmentsIdGet(id).then((response) => response.attachment);
+    return api.attachmentsIdGet(id).then(response => response.attachment);
   }
 
   /**
@@ -142,9 +142,6 @@ export class AttachmentService {
     const api = new DirectAttachmentsApi(buildApiConfig(auth, this.vaultUrl, this.fetchApi));
 
     try {
-      const something = await api.directAttachmentsIdGet(id);
-      console.log(something.attachment.encryption_artifact.url);
-
       const {
         attachment: {
           encryption_artifact: { url: artifactsUrl },
