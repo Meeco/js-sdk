@@ -1,15 +1,13 @@
-name: Publish SDK demo on release
+name: Release Style Kit Docs
 
 on:
-  workflow_dispatch:
   push:
     tags:
-      - 'releases/sdk/**'
-      - '!releases/sdk/**-beta*'
-      - '!releases/sdk/**-alpha*'
+      - 'releases/style-kit/**'
+      - '!releases/style-kit/**-beta*'
 
 jobs:
-  push_sdk_demo:
+  create_style_kit_release:
     runs-on: ubuntu-latest
 
     strategy:
@@ -23,14 +21,17 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - name: Build SDK Demo
-        run:  npx lerna run build --scope '@meeco/{style-kit,sdk-demo}'
-      - name: Deploy SDK Demo GH page
+      - run: npm test
+        env:
+          CI: true
+      - run: npm run build -- --ignore @meeco/cli
+      - run: npm run docs
+      - name: Deploy SDK docs to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{ secrets.SDK_DOCS_DEPLOY_KEY }}
-          publish_dir: ./docs/sdk-demo
-          destination_dir: sdk-demo
+          publish_dir: ./docs/style-kit
+          destination_dir: style-kit
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           external_repository: Meeco/sdk-docs
