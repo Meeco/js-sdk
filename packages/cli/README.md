@@ -39,9 +39,10 @@ After cloning the repo, run `npm install` at the root of the js-sdk to install d
 
 ## The `meeco` command
 
-If you want to run `meeco <command>` and have it point to your dev environment - run `npm link .` to hook up a global `meeco` to the current workspace.
+Run `node --require tsconfig-paths/register ./bin/run` when developing (e.g. `node --require tsconfig-paths/register ./bin/run users:create -p Password123@`).
 
-Alternatively, just run `./bin/run` when developing (e.g. `/bin/run users:create`)
+You might want to set up an alias for this to make your life easier in your shell environment config (e.g. `.zshrc`)  
+`alias meeco="node --inspect --require tsconfig-paths/register /PATH/TO/WORKDIR/js-sdk/packages/cli/bin/run"` so you can simply run `meeco` when developing.
 
 # Usage
 
