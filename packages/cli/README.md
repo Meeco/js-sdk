@@ -16,7 +16,7 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 - [Table of Contents](#table-of-contents)
 - [Setup](#setup)
 - [Reporting Errors](#reporting-errors)
-- [Dev Set up](#dev-set-up)
+- [Running Meeco CLI From Sources](#running-meeco-cli-from-sources)
 - [Usage](#usage)
 - [Commands](#commands)
 - [Snippet of .my_item.yaml](#snippet-of-my_itemyaml)
@@ -33,16 +33,50 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 1. Always make sure you are running the [latest release](https://github.com/Meeco/cli/releases) of the CLI.
 1. Include any stack traces if possible (re-run your command with `MEECO_DEBUG=1` environment variable)
 
-# Dev Set up
+# Running Meeco CLI From Sources
 
-After cloning the repo, run `npm install` at the root of the js-sdk to install dependencies and link the packages together (https://lerna.js.org/). You can then run the meeco command as below.
+```sh-session
+$ git clone git@github.com:Meeco/js-sdk.git
+$ cd js-sdk
+$ npm install
+$ cd ./packages/cli
+$ cp example.environment.yaml .environment.yaml
+```
 
-## The `meeco` command
+Edit `.environment.yaml` and add URLs to the vault and the keystore, as well as the subscription key
+which you can request here: https://dev.meeco.me/signup
 
-Run `node --require tsconfig-paths/register ./bin/run` when developing (e.g. `node --require tsconfig-paths/register ./bin/run users:create -p Password123@`).
+Meeco CLI is now ready:
 
-You might want to set up an alias for this to make your life easier in your shell environment config (e.g. `.zshrc`)  
+```sh-session
+$ node --require tsconfig-paths/register ./bin/run
+A CLI tool for interacting with the Meeco APIs
+
+VERSION
+  @meeco/cli/3.0.1 darwin-x64 node-v16.2.0
+
+USAGE
+  $ meeco [COMMAND]
+
+TOPICS
+  client-task-queue      Commands related client-side jobs for the user
+  connections            Commands related to connections between Meeco users
+  delegations            Accept a delegation inivitation aka create a delegation connection
+  items                  Commands related to a Meeco vault items
+  organization-members   Commands related to managing members of an organizations within Meeco
+  organization-services  Commands related to managing services for an organizations within Meeco
+  organizations          Commands related to managing Organizations within Meeco
+  shares                 Commands related to shared data between connected Meeco users
+  templates              Commands related to vault item templates
+  users                  Commands related to a meeco user account
+
+COMMANDS
+  help  display help for meeco
+```
+
+You might want to set up an alias for this to make your life easier in your shell environment config (e.g. `.zshrc`)
 `alias meeco="node --inspect --require tsconfig-paths/register /PATH/TO/WORKDIR/js-sdk/packages/cli/bin/run"` so you can simply run `meeco` when developing.
+
 
 # Usage
 
