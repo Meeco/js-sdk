@@ -22,7 +22,11 @@ export default class ItemsRemoveSlot extends MeecoCommand {
     const { slotId } = args;
 
     try {
-      const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+      let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
+      if (!authConfig) {
+        this.error('Valid auth config file must be supplied');
+      }
+      authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
 
       if (!authConfig) {
         this.error('Must specify a valid auth config file');

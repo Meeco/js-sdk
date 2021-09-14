@@ -33,10 +33,11 @@ export default class ConnectionsAccept extends MeecoCommand {
 
     try {
       const environment = await this.readEnvironmentFile();
-      const authConfig = await this.readConfigFromFile(AuthConfig, auth);
+      let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
       if (!authConfig) {
         this.error('Valid auth config file must be supplied');
       }
+      authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
 
       const service = new InvitationService(environment, this.updateStatus);
       const result = await service.accept(authConfig, name, token);

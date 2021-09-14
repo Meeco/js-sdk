@@ -27,11 +27,11 @@ export default class OrganizationServicesGet extends MeecoCommand {
     const { auth } = flags;
     const { organization_id, service_id } = args;
     const environment = await this.readEnvironmentFile();
-    const authConfig = await this.readConfigFromFile(AuthConfig, auth);
-
+    let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
     if (!authConfig) {
       this.error('Valid auth config file must be supplied');
     }
+    authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
 
     try {
       this.updateStatus('Fetching service details');

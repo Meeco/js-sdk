@@ -1,0 +1,11 @@
+{
+  "template_name": "password",
+  "label": "My Account",
+  "slots": [],
+  "classification_nodes": [
+    {
+      "name": "tag",
+      "label": "MyTag"
+    }
+  ]
+}

@@ -53,7 +53,26 @@ describe('ItemUpdate', () => {
       }
     });
 
-    it('adds classification_nodes_attributes');
+    it('maps classification_nodes to classification_nodes_attributes correctly', async () => {
+      const withNodes = new ItemUpdate('label', {
+        classification_nodes: [
+          {
+            label: 'test',
+          },
+          { _destroy: true, label: 'example' },
+        ],
+      });
+      const req = await withNodes.toRequest(dek);
+      expect(req.item!.classification_nodes_attributes).to.eql([
+        {
+          label: 'test',
+        },
+        {
+          _destroy: true,
+          label: 'example',
+        },
+      ]);
+    });
 
     // it('throws an error if there are duplicate slots', () => {
     //   const result = newItem.toRequest(dek);
