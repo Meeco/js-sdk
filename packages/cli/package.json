@@ -1,7 +1,7 @@
 {
   "name": "@meeco/cli",
   "description": "A CLI tool for interacting with the Meeco APIs",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "author": "Meeco",
   "private": true,
   "bin": {
@@ -11,9 +11,9 @@
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
     "@meeco/file-storage-node": "5.0.1",
-    "@meeco/keystore-api-sdk": "5.6.0-stage.20210527121738.c3654c9",
+    "@meeco/keystore-api-sdk": "^5.8.0",
     "@meeco/sdk": "^4.0.0",
-    "@meeco/vault-api-sdk": "32.4.3-stage.20210729091619.50f41f3",
+    "@meeco/vault-api-sdk": "^32.4.3",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.2",
