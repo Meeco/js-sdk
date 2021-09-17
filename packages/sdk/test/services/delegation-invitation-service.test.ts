@@ -70,7 +70,7 @@ describe('DelegationInvitationService', () => {
   const fromApi = (key, keypair) =>
     new DecryptedKeypair(connectionResponse.connection.own.user_public_key, decryptedPrivateKey);
 
-  describe('#createDelegationInvitation', () => {
+  describe('#createDelegationUpgradeInvitation', () => {
     function postDelegationsAPI() {
       return api =>
         api
@@ -105,7 +105,7 @@ describe('DelegationInvitationService', () => {
       .nock('https://sandbox.meeco.me/keystore', postDelegationsAPI())
       .nock('https://sandbox.meeco.me/vault', postDelegationInvitationAPI())
       .do(() =>
-        new DelegationInvitationService(environment).createDelegationInvitation(
+        new DelegationInvitationService(environment).createDelegationUpgradeInvitation(
           testUserAuth,
           delegationResponse.delegation.vault_account_owner_id,
           delegationResponse.delegation.delegation_role,
@@ -115,7 +115,7 @@ describe('DelegationInvitationService', () => {
       .it('accepts an invitation creating a new keypair');
   });
 
-  describe('#acceptDelegationInvitation', () => {
+  describe('#acceptDelegationUpgradeInvitation', () => {
     function postAcceptDelegationInvitationAPI() {
       return api =>
         api
@@ -154,7 +154,7 @@ describe('DelegationInvitationService', () => {
       .nock('https://sandbox.meeco.me/vault', postAcceptDelegationInvitationAPI())
       .nock('https://sandbox.meeco.me/keystore', postClaimDelegationAPI())
       .do(() =>
-        new DelegationInvitationService(environment).acceptDelegationInvitation(
+        new DelegationInvitationService(environment).acceptDelegationUpgradeInvitation(
           testUserAuth,
           delegationInvitationResponse.delegation_invitation.id
         )

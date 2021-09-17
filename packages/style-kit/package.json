@@ -11,7 +11,7 @@
     "docs": "build-storybook -c .storybook -o ../../docs/style-kit",
     "start": "npm run storybook",
     "storybook": "start-storybook -s . -p 8085 --ci",
-    "test": "node --max_old_space_size=4096 node_modules/.bin/start-server-and-test 8085 'cypress run'",
+    "test": "start-server-and-test 8085 'cypress run'",
     "update-snapshots": "start-server-and-test 8085 'cypress run --env updateSnapshots=true'",
     "posttest": "npm run format:check",
     "format:check": "prettier -c \"{stories,cypress,src}/**/*.{ts,html,scss,js}\"",

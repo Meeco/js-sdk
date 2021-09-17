@@ -4,15 +4,18 @@ import DecryptedKeypair from '../models/decrypted-keypair';
 import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
 
 /**
- * Used for setting up delegation connections between Meeco User`s to allow the secure management of another users account
+ * Used for updating pre-existing standard connections between Meeco User`s to delegation
+ * connections to allow the secure management of another users account
  */
 export class DelegationInvitationService extends Service<DelegationInvitationApi> {
   public getAPI(token: IVaultToken) {
     return this.vaultAPIFactory(token).DelegationInvitationApi;
   }
 
-  // Delegation connection Step 1 - Account Owner (Existing connection)
-  public async createDelegationInvitation(
+  // Upgrade delegation connection Step 1 - Account Owner (Existing connection)
+  // This method is the equivalent to DelegationService.createDelegationInvitation()
+  // except for use with existing connections
+  public async createDelegationUpgradeInvitation(
     credentials: IDEK & IKEK & IVaultToken & IKeystoreToken,
     vault_account_id: string,
     delegation_role: string,
@@ -33,8 +36,10 @@ export class DelegationInvitationService extends Service<DelegationInvitationApi
     return delegation_invitation;
   }
 
-  // Delegation connection Step 2 - Delegate
-  public async acceptDelegationInvitation(
+  // Upgrade delegation connection Step 2 - Delegate
+  // This method is the equivalent to DelegationService.claimDelegationInvitation()
+  // except for use with existing connections
+  public async acceptDelegationUpgradeInvitation(
     credentials: IDEK & IKEK & IVaultToken & IKeystoreToken,
     delegationInvitationId: string
   ) {
