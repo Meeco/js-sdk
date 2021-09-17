@@ -21,6 +21,7 @@ export * from './models/symmetric-key';
 export * from './models/template-data';
 export * from './services/client-task-queue-service';
 export * from './services/connection-service';
+export * from './services/delegation-invitation-service';
 export * from './services/delegation-service';
 export * from './services/invitation-service';
 export * from './services/item-service';

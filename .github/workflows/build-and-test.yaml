@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
+      - run: npm ci
       - run: npm test
         env:
           CI: true
@@ -36,4 +36,6 @@ jobs:
       #   with:
       #     name: Cypress Failure Diffs
       #     path: packages/style-kit/cypress/snapshots/
-      - run: npx lerna run build
+      #
+      # Ignore @meeco/cli as the required SDK version does not exist at this point
+      - run: npm run build -- --ignore @meeco/cli
