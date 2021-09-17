@@ -83,7 +83,7 @@ export class DelegationService extends Service<DelegationApi> {
       });
   }
 
-  // Delegation connection Step 1 - Account Owner
+  // Delegation connection Step 1 - Account Owner (New connection)
   public async createDelegationInvitation(
     credentials: IDEK & IKEK & IVaultToken & IKeystoreToken,
     vault_account_id: string,
