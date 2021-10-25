@@ -11,8 +11,8 @@
 ### JS SDK
 
 - [Documentation](./packages/sdk)
-- [TypeDoc docs](https://meeco.github.io/js-sdk/)
-- [SDK Demo page](https://meeco.github.io/js-sdk/sdk-demo/)
+- [TypeDoc docs](https://meeco.github.io/sdk-docs/)
+- [SDK Demo page](https://meeco.github.io/sdk-docs/sdk-demo/)
 
 ### File Storage SDK
 
@@ -22,7 +22,7 @@
 ## Style Kit
 
 - [Documentation](./packages/style-kit)
-- [Storybook online](https://meeco.github.io/js-sdk/style-kit/)
+- [Storybook online](https://meeco.github.io/sdk-docs/style-kit/)
 
 ## Adding a Package to this Typescript Monorepo
 

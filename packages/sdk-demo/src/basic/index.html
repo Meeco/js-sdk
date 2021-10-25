@@ -6,7 +6,7 @@
   <body>
     <div class="title">
       <h6>Meeco JavaScript SDK Demo</h6>
-      <a class="button secondary" href="https://meeco.github.io/js-sdk/">View Documentation</a>
+      <a class="button secondary" href="https://meeco.github.io/sdk-docs/">View Documentation</a>
     </div>
     <div class="columns">
       <div class="single-column">
@@ -21,7 +21,7 @@
             autocapitalize="off"
             autocomplete="off"
             id="vaultUrl"
-            />
+          />
           <label for="keystoreUrl">Keystore API URL:</label>
           <input
             placeholder="e.g. https://sandbox.meeco.me/keystore"
@@ -30,7 +30,7 @@
             autocapitalize="off"
             autocomplete="off"
             id="keystoreUrl"
-            />
+          />
           <label for="subscriptionKey">Meeco Subscription Key:</label>
           <input
             placeholder="e.g. aaaaa11111bbbbb22222"
@@ -38,7 +38,7 @@
             autocapitalize="off"
             autocomplete="off"
             id="subscriptionKey"
-            />
+          />
           <button id="updateEnvironment">Save</button>
           <input value="Not set" class="full" disabled id="environmentStatus" />
         </div>
@@ -63,7 +63,7 @@
             autocapitalize="off"
             autocomplete="off"
             id="username"
-            />
+          />
           <button id="getUsername">Get Username</button>
         </div>
 
@@ -75,7 +75,7 @@
             autocapitalize="off"
             autocomplete="off"
             id="secret"
-            />
+          />
           <button id="getSecret">Generate Secret</button>
           <input
             placeholder="Enter Passphrase"
@@ -83,7 +83,7 @@
             autocapitalize="off"
             autocomplete="off"
             id="passphrase"
-            />
+          />
         </div>
 
         <div class="card">
@@ -102,7 +102,7 @@
             autocapitalize="off"
             autocomplete="off"
             id="accountOwnerId"
-            />
+          />
           <label id="enableDelegationLabel" class="checkbox-input pull-right disabled">
             Delegation Active
             <input type="checkbox" id="enableDelegation" disabled />
@@ -131,18 +131,17 @@
           <hr />
 
           <form>
-            <input type="button" id="createItem" value="Create">
-            <input type="reset" value="Reset">
+            <input type="button" id="createItem" value="Create" />
+            <input type="reset" value="Reset" />
             <div>
               <label for="templateSelect">Template</label>
               <select id="templateSelect" name="template_name"></select>
             </div>
             <div>
               <label for="labelField">Label</label>
-              <input name="label" id="labelField" required>
+              <input name="label" id="labelField" required />
             </div>
-            <div id="formSlots">
-            </div>
+            <div id="formSlots"></div>
           </form>
           <textarea disabled id="newItem" rows="10"> </textarea>
         </div>
