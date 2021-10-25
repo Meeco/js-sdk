@@ -4,7 +4,7 @@
 
 ### API Docs
 
-For SDK API Docs (TypeDoc docs) [See Here](https://meeco.github.io/js-sdk/)
+For SDK API Docs (TypeDoc docs) [See Here](https://meeco.github.io/sdk-docs/)
 
 ## Installation
 
@@ -42,7 +42,7 @@ You will also need to configure your `compilerOptions` in your `tsconfig.base.js
 
 ## Usage Basics
 
-This is not an exhaustive list of functionality - just some basic use-cases. For full usage [see the API docs](https://meeco.github.io/js-sdk/)
+This is not an exhaustive list of functionality - just some basic use-cases. For full usage [see the API docs](https://meeco.github.io/sdk-docs/)
 
 All examples expect you have your environment configured.
 
@@ -198,17 +198,16 @@ const authData = await userService.getAuthData(password, secret);
 // Create the item
 const service = new ItemService(environment);
 const selectedTemplate = availableTemplates.item_templates[0];
-const newItem =
-    NewItem.fromTemplate(selectedTemplate, selectedTemplate.slots, 'My Car',
-                         [{
-                             name: 'make_model',
-                             value: 'Ford Focus',
-                         },
-                          {
-                             name: 'year',
-                             value: '2017',
-                         }],
-                        );
+const newItem = NewItem.fromTemplate(selectedTemplate, selectedTemplate.slots, 'My Car', [
+  {
+    name: 'make_model',
+    value: 'Ford Focus',
+  },
+  {
+    name: 'year',
+    value: '2017',
+  },
+]);
 const item = await service.create(user.vault_access_token, authData, newItem);
 ```
 
@@ -230,6 +229,7 @@ const itemDetails = await service.get(items[0].id, authData);
 ```
 
 The SDK provides several convenience classes for the various interactions you will have with Items:
+
 - `NewItem`: describe an Item that doesn't yet exist in the backend (as above)
 - `DecryptedItem`: an Item retrieved with ItemService.get, automatically decrypted using user credentials
 - `ItemUpdate`: describe an Item update using only its id (i.e. you don't download the Item first).
@@ -238,7 +238,7 @@ There are two uses for `DecryptedItem` within the SDK: updating or sharing it.
 
 `DecryptedItem` is immutable (the API object it represents can be updated though), so an update must create an `ItemUpdate`:
 
-``` typescript
+```typescript
 const decryptedItem = await new ItemService(environment).get(...);
 
 // you can view item properties as usual
@@ -270,7 +270,8 @@ new ItemService(environment).update(credentials, update);
 ```
 
 To share
-``` typescript
+
+```typescript
 const item = await new ItemService(environment).get(credentials, 'item_id');
 new ShareService(environment).share(credentials, item);
 ```
@@ -278,7 +279,7 @@ new ShareService(environment).share(credentials, item);
 As you can see, the SDK handles all encryption/decryption in the background.
 If you would like to manage that yourself, you can easily access the base API method via ItemService:
 
-``` typescript
+```typescript
 const itemAPI: Meeco.ItemAPI = new ItemService(...).getAPI(...);
 const encryptedItem = api.get(id);
 // ... do some client-side encryption modification
