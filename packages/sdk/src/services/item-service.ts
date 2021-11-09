@@ -25,6 +25,7 @@ export interface IItemListFilterOptions {
   sharedWith?: string;
   ownerId?: string;
   own?: boolean;
+  itemIds?: string[];
 }
 
 /** DecryptedItems together with response metadata if needed for paging etc. */
@@ -108,7 +109,7 @@ export class ItemService extends Service<ItemApi> {
     const { classificationNodeName, classificationNodeNames } =
       this.getClassifications(listFilterOptions);
 
-    const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
+    const { templateIds, scheme, sharedWith, ownerId, own, itemIds } = listFilterOptions || {};
 
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
       templateIds?.join(','),
@@ -118,6 +119,7 @@ export class ItemService extends Service<ItemApi> {
       sharedWith,
       ownerId,
       own !== undefined ? own.toString() : undefined,
+      itemIds !== undefined ? itemIds.join(',') : undefined,
       options?.nextPageAfter,
       options?.perPage?.toString()
     );
