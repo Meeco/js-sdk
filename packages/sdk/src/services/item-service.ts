@@ -113,6 +113,7 @@ export class ItemService extends Service<ItemApi> {
 
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
       templateIds?.join(','),
+      undefined,
       scheme,
       classificationNodeName,
       classificationNodeNames,
@@ -121,7 +122,7 @@ export class ItemService extends Service<ItemApi> {
       own !== undefined ? own.toString() : undefined,
       itemIds !== undefined ? itemIds.join(',') : undefined,
       options?.nextPageAfter,
-      options?.perPage?.toString()
+      options?.perPage
     );
 
     if (resultHasNext(result) && options?.perPage === undefined) {
