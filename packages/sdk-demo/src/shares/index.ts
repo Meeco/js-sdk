@@ -94,7 +94,7 @@ async function getTemplates(auth: AuthData): Promise<SDKTemplate[]> {
 
     // note that SDKtemplate constructor filters the correct slots from the response
     return templates.item_templates.map(t => new SDKTemplate(t, templates.slots));
-  } catch (error) {
+  } catch (error: any) {
     log(error.message || error);
     throw error;
   }
@@ -280,7 +280,7 @@ function AppComponent() {
 
         state.item = item;
       }
-    } catch (error) {
+    } catch (error: any) {
       log(error.message || error);
       throw error;
     }
@@ -620,7 +620,7 @@ function CreateShareComponent(vInit: {
       } = await service.shareItem(ownerAuth, connectionValue, item.id, shareOptions);
 
       callback(share, receiverUsername);
-    } catch (error) {
+    } catch (error: any) {
       log(error.message || error);
       throw error;
     }
@@ -702,7 +702,7 @@ function AcceptShareComponent(vInit: {
       userState.share = share;
       userState.item = item;
       acceptCallback(item, share);
-    } catch (error) {
+    } catch (error: any) {
       log(error.message || error);
       throw error;
     }

@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
   target: 'web',
   entry: './main.scss',
+  mode: 'production',
   module: {
     rules: [
       {
@@ -20,9 +21,15 @@ module.exports = {
       },
       {
         test: /\.(ttf|eot|svg|woff)$/,
-        loader: 'url-loader',
+        type: 'asset/inline',
       },
     ],
+  },
+  resolve: {
+    fallback: {
+      stream: false,
+      crypto: false,
+    },
   },
   plugins: [new MiniCssExtractPlugin(), new ProgressBarPlugin()],
   output: {

@@ -1,14 +1,14 @@
+import styles from 'style-loader!./typography.stories.scss';
+
 export default { title: 'Typography' };
 
-import { story } from 'style-loader!./typography.stories.scss';
-
 export const font = () => `
-<p class=${story}><strong>Euclid Circular B</strong>, by the Swiss Typefaces foundry is the official
+<p class=${styles.story}><strong>Euclid Circular B</strong>, by the Swiss Typefaces foundry is the official
 Meeco font to be used across all UI and marketing. To stay consistant, we only use
 the Regular, Medium and Bold weights.</p>
 `;
 
-export const typographicStyles = () => `<div class="${story}">
+export const typographicStyles = () => `<div class="${styles.story}">
 
 <h1>Heading 1</h1>
 <h2>Heading 2</h2>
@@ -34,7 +34,7 @@ export const typographicStyles = () => `<div class="${story}">
 
 export const htmlTags = () => {
   return /*html*/ `
-  <div class="${story}">
+  <div class="${styles.story}">
     <h4>Lists</h4>
     <ol>
       <li>Option number 1</li>

@@ -1,6 +1,5 @@
 import mdx from './controls.mdx';
-
-import { story } from 'style-loader!./controls.stories.scss';
+import styles from 'style-loader!./controls.stories.scss';
 
 export default {
   title: 'Controls',
@@ -12,7 +11,7 @@ export default {
 };
 
 export const toggle = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <p>Toggle</p>
 
   <label class="switch-input">
@@ -22,7 +21,7 @@ export const toggle = () => /*html*/ `
 </div>`;
 
 export const checkbox = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <p>Checkbox</p>
 
   <label class="checkbox-input">
@@ -32,7 +31,7 @@ export const checkbox = () => /*html*/ `
 </div>`;
 
 export const radioButton = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <p>Radio button</p>
 
   <label class="radio-button">

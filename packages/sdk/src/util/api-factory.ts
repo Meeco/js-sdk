@@ -1,7 +1,7 @@
 import * as Keystore from '@meeco/keystore-api-sdk';
 import * as Vault from '@meeco/vault-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
-import { blue, green } from 'chalk';
+import chalk from 'chalk';
 import { debug } from 'debug';
 import { Environment } from '../models/environment';
 import { IKeystoreToken, IVaultToken } from '../services/service';
@@ -62,10 +62,10 @@ const vaultAPIKeys = (environment: Environment, userAuth: IVaultToken) => (name:
   }[name] as string);
 
 function fetchInterceptor(url, options) {
-  debugCurl(blue(`Sending Request:`));
+  debugCurl(chalk.blue(`Sending Request:`));
   debugCurl(toCurl(url, options));
   return fetchLib(url, options).then(async response => {
-    debugCurl(green(`Received Response:`));
+    debugCurl(chalk.green(`Received Response:`));
     debugCurl(`\
 status: ${response.status}
 statusText: ${response.statusText}

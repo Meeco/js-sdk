@@ -1,6 +1,6 @@
-export default { title: 'Custom Themes' };
+import 'style-loader!./custom-themes.stories.scss';
 
-import { story } from 'style-loader!./custom-themes.stories.scss';
+export default { title: 'Custom Themes' };
 
 export const customTheme = () => {
   return /*html*/ `

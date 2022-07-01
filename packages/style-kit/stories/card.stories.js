@@ -1,5 +1,5 @@
 import mdx from './card.mdx';
-import { story } from 'style-loader!./card.stories.scss';
+import styles from 'style-loader!./card.stories.scss';
 import { withKnobs, text } from '@storybook/addon-knobs';
 
 export default {
@@ -13,7 +13,7 @@ export default {
 };
 
 export const shadows = () => /*html*/ `
-<div class="${story} shadows">
+<div class="${styles.story} shadows">
   <p>Soft Shadow (Default for Cards)</p>
   <div class="card"></div>
   <p>Hard Shadow</p>
@@ -29,7 +29,7 @@ export const basicCard = () => {
 
   return /*html*/ `
 
-  <div class="${story} advanced">
+  <div class="${styles.story} advanced">
     <p>Basic Card</p>
     <div class="card basic">
       <div class="content">
@@ -46,7 +46,7 @@ export const basicCard = () => {
 export const cardWithFooter = () => {
   const footerText = text('Card Footer Text', 'Some Footer Text');
   return /*html*/ `
-    <div class="${story} advanced">
+    <div class="${styles.story} advanced">
       <p>Card with a Footer</p>
       <div class="card">
         <div class="content">
@@ -61,7 +61,7 @@ export const cardWithFooter = () => {
 };
 
 export const cardWithComplexFooter = () => /*html*/ `
-    <div class="${story} advanced">
+    <div class="${styles.story} advanced">
       <p>Complex Footers</p>
       <div class="card complex-footer">
         <div class="content">
@@ -81,7 +81,7 @@ export const cardWithComplexFooter = () => /*html*/ `
     </div>`;
 
 export const tile = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <div class="tile">
     <div class="content">
       <div class="icon"></div>

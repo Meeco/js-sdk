@@ -1,5 +1,5 @@
 import mdx from './notification.mdx';
-import { story } from 'style-loader!./notification.stories.scss';
+import styles from 'style-loader!./notification.stories.scss';
 import { withKnobs, text, boolean } from '@storybook/addon-knobs';
 
 export default {
@@ -9,7 +9,7 @@ export default {
 };
 
 export const notificationWithIcon = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <div class="notification" style="width:400px;">
     <div class="content">
         <i>tick-circled-reverse</i>
@@ -20,7 +20,7 @@ export const notificationWithIcon = () => /*html*/ `
 </div>`;
 
 export const notificationWithText = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <div class="notification">
     <div class="content">
         <i>tick-circled-reverse</i>
@@ -38,7 +38,7 @@ export const Notifications = () => {
 
   return /*html*/ `
 
-<div class="${story}">
+<div class="${styles.story}">
 
   <p>Default Notification with icon button</p>
 

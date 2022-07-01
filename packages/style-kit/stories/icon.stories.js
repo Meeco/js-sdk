@@ -1,4 +1,4 @@
-import { story } from 'style-loader!./icon.stories.scss';
+import styles from 'style-loader!./icon.stories.scss';
 import { withKnobs, select } from '@storybook/addon-knobs';
 
 export default { title: 'Icons', decorators: [withKnobs] };
@@ -120,7 +120,7 @@ export const meecoIcons = () => {
 
   return /*html*/ `
 
-<div class=${story}>
+<div class=${styles.story}>
 
   <h1>Meeco Icon Set</h1>
 

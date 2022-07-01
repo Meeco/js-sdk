@@ -42,6 +42,10 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     plugins: [new TsconfigPathsPlugin({ configFile: path.resolve('./tsconfig.json') })],
+    fallback: {
+      stream: false,
+      crypto: false,
+    },
   },
   plugins: [
     new HtmlWebpackPlugin({
