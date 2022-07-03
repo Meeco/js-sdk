@@ -74,7 +74,7 @@
     "lint": "tslint -p . -t stylish -c ../../tslint.json && tslint -p test/tsconfig.json -t stylish -c ../../tslint.json",
     "posttest": "npm run lint && npm run format:check",
     "prepack": "npm run build",
-    "build:typedoc": "typedoc --out ../../docs/js-sdk --tsconfig tsconfig.json --disableOutputCheck --name 'Meeco SDK Documentation' --toc AuthData,ConnectionService,DelegationService,EncryptionKey,Environment,InvitationService,ItemService,Secrets,Service,TemplatesService,UserService --excludePrivate src/index.ts",
+    "build:typedoc": "typedoc --out ../../docs/js-sdk --tsconfig tsconfig.json --cleanOutputDir --name 'Meeco SDK Documentation' --entryPoints AuthData  --excludePrivate src/index.ts",
     "docs": "npm run build:typedoc",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\""
   },

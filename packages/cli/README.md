@@ -21,7 +21,7 @@ A CLI tool for interacting with [Meeco](https://dev.meeco.me/) services and data
 - [Commands](#commands)
 - [Snippet of .my_item.yaml](#snippet-of-my_itemyaml)
 - [Config File Specifications](#config-file-specifications)
-  <!-- tocstop -->
+<!-- tocstop -->
 
 # Setup
 
@@ -76,7 +76,6 @@ COMMANDS
 
 You might want to set up an alias for this to make your life easier in your shell environment config (e.g. `.zshrc`)
 `alias meeco="node --inspect --require tsconfig-paths/register /PATH/TO/WORKDIR/js-sdk/packages/cli/bin/run"` so you can simply run `meeco` when developing.
-
 
 # Usage
 
@@ -307,6 +306,11 @@ once approved it can be access with follwoing command
 - [`meeco connections:create`](#meeco-connectionscreate)
 - [`meeco connections:create-config`](#meeco-connectionscreate-config)
 - [`meeco connections:list`](#meeco-connectionslist)
+- [`meeco delegations:accept-invitation RECIPIENT_NAME`](#meeco-delegationsaccept-invitation-recipient_name)
+- [`meeco delegations:accept-kek CONNECTIONID`](#meeco-delegationsaccept-kek-connectionid)
+- [`meeco delegations:create-invitation RECIPIENT_NAME [DELEGATION_ROLE]`](#meeco-delegationscreate-invitation-recipient_name-delegation_role)
+- [`meeco delegations:load-auth-config`](#meeco-delegationsload-auth-config)
+- [`meeco delegations:share-kek CONNECTIONID`](#meeco-delegationsshare-kek-connectionid)
 - [`meeco help [COMMAND]`](#meeco-help-command)
 - [`meeco items:attach-file`](#meeco-itemsattach-file)
 - [`meeco items:create`](#meeco-itemscreate)
@@ -353,8 +357,6 @@ once approved it can be access with follwoing command
 Read Client Tasks assigned to the user
 
 ```
-Read Client Tasks assigned to the user
-
 USAGE
   $ meeco client-task-queue:list
 
@@ -371,6 +373,8 @@ OPTIONS
 
   --all                          Get all possible results from web API, possibly with multiple calls.
 
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+
   --update                       Set the state of retrieved "todo" Client Tasks to "in_progress" in the API
 
 EXAMPLES
@@ -385,8 +389,6 @@ _See code: [src/commands/client-task-queue/list.ts](https://github.com/Meeco/cli
 Load and run Client Tasks from the queue
 
 ```
-Load and run Client Tasks from the queue
-
 USAGE
   $ meeco client-task-queue:run-batch
 
@@ -402,6 +404,8 @@ OPTIONS
 
   --all                          Get all possible results from web API, possibly with multiple calls.
 
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+
 EXAMPLES
   meeco client-task-queue:run-batch --limit 10
   meeco client-task-queue:run-batch --all --state failed
@@ -414,8 +418,6 @@ _See code: [src/commands/client-task-queue/run-batch.ts](https://github.com/Meec
 Set Client Task states using YAML file
 
 ```
-Set Client Task states using YAML file
-
 USAGE
   $ meeco client-task-queue:update TASKS_FILE
 
@@ -427,6 +429,8 @@ OPTIONS
                                         the default .user.yaml)
 
   -e, --environment=environment         [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId           delegation id of the connection to perform the task on behalf of
 
   --set=(todo|in_progress|done|failed)  Set all Client Tasks to this state
 
@@ -442,8 +446,6 @@ _See code: [src/commands/client-task-queue/update.ts](https://github.com/Meeco/c
 Create a new connection from an invitation token
 
 ```
-Create a new connection from an invitation token
-
 USAGE
   $ meeco connections:accept TOKEN
 
@@ -457,6 +459,8 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -n, --name=name                [default: anonymous] Name for new Connection
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 ```
 
 _See code: [src/commands/connections/accept.ts](https://github.com/Meeco/cli/blob/master/src/commands/connections/accept.ts)_
@@ -466,8 +470,6 @@ _See code: [src/commands/connections/accept.ts](https://github.com/Meeco/cli/blo
 Create a new connection between two users
 
 ```
-Create a new connection between two users
-
 USAGE
   $ meeco connections:create
 
@@ -483,8 +485,6 @@ _See code: [src/commands/connections/create.ts](https://github.com/Meeco/cli/blo
 Scaffold a connection config file when given two users
 
 ```
-Scaffold a connection config file when given two users
-
 USAGE
   $ meeco connections:create-config
 
@@ -501,8 +501,6 @@ _See code: [src/commands/connections/create-config.ts](https://github.com/Meeco/
 List connections for an authenticated user
 
 ```
-List connections for an authenticated user
-
 USAGE
   $ meeco connections:list
 
@@ -513,17 +511,127 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
   --all                          Get all possible results from web API, possibly with multiple calls.
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 ```
 
 _See code: [src/commands/connections/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/connections/list.ts)_
+
+## `meeco delegations:accept-invitation RECIPIENT_NAME`
+
+Accept a delegation inivitation aka create a delegation connection
+
+```
+USAGE
+  $ meeco delegations:accept-invitation RECIPIENT_NAME
+
+ARGUMENTS
+  RECIPIENT_NAME  Name of the user which the invitation is from
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
+
+  -c, --config=config            (required) Delegation Invitation Config
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+```
+
+_See code: [src/commands/delegations/accept-invitation.ts](https://github.com/Meeco/cli/blob/master/src/commands/delegations/accept-invitation.ts)_
+
+## `meeco delegations:accept-kek CONNECTIONID`
+
+Accept a shared KEK (key encryption key) with the from the user you are becoming a delegate for
+
+```
+USAGE
+  $ meeco delegations:accept-kek CONNECTIONID
+
+ARGUMENTS
+  CONNECTIONID  id of the delegate connection
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+```
+
+_See code: [src/commands/delegations/accept-kek.ts](https://github.com/Meeco/cli/blob/master/src/commands/delegations/accept-kek.ts)_
+
+## `meeco delegations:create-invitation RECIPIENT_NAME [DELEGATION_ROLE]`
+
+Create a delegation inivitation for another user to become a delegate connection
+
+```
+USAGE
+  $ meeco delegations:create-invitation RECIPIENT_NAME [DELEGATION_ROLE]
+
+ARGUMENTS
+  RECIPIENT_NAME   Name of the user which the invitation is to be sent to
+  DELEGATION_ROLE  [default: reader] delegation roles available are: owner, admin, and reader (default: reader)
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+```
+
+_See code: [src/commands/delegations/create-invitation.ts](https://github.com/Meeco/cli/blob/master/src/commands/delegations/create-invitation.ts)_
+
+## `meeco delegations:load-auth-config`
+
+Create a delegation inivitation for another user to become a delegate connection
+
+```
+USAGE
+  $ meeco delegations:load-auth-config
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+```
+
+_See code: [src/commands/delegations/load-auth-config.ts](https://github.com/Meeco/cli/blob/master/src/commands/delegations/load-auth-config.ts)_
+
+## `meeco delegations:share-kek CONNECTIONID`
+
+Share Users KEK (key encryption key) with the delegate user
+
+```
+USAGE
+  $ meeco delegations:share-kek CONNECTIONID
+
+ARGUMENTS
+  CONNECTIONID  id of the delegate connection
+
+OPTIONS
+  -a, --auth=auth                (required) [default: .user.yaml] Authorization config yaml file (if not using the
+                                 default .user.yaml)
+
+  -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+```
+
+_See code: [src/commands/delegations/share-kek.ts](https://github.com/Meeco/cli/blob/master/src/commands/delegations/share-kek.ts)_
 
 ## `meeco help [COMMAND]`
 
 display help for meeco
 
 ```
-display help for <%= config.bin %>
-
 USAGE
   $ meeco help [COMMAND]
 
@@ -534,15 +642,13 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.18/src/commands/help.ts)_
 
 ## `meeco items:attach-file`
 
 Encrypt and attach a file to an item
 
 ```
-Encrypt and attach a file to an item
-
 USAGE
   $ meeco items:attach-file
 
@@ -553,6 +659,8 @@ OPTIONS
   -c, --config=config            (required) file attachment config yaml
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 
 EXAMPLES
   meeco items:attach-file -c ./file-attachment-config.yaml
@@ -565,8 +673,6 @@ _See code: [src/commands/items/attach-file.ts](https://github.com/Meeco/cli/blob
 Create a new item for a user from a template
 
 ```
-Create a new item for a user from a template
-
 USAGE
   $ meeco items:create
 
@@ -577,6 +683,8 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -i, --item=item                (required) item yaml file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 
 EXAMPLE
   meeco items:create -i path/to/item-config.yaml -a path/to/auth.yaml
@@ -589,8 +697,6 @@ _See code: [src/commands/items/create.ts](https://github.com/Meeco/cli/blob/mast
 Provide a template name to construct an item config file
 
 ```
-Provide a template name to construct an item config file
-
 USAGE
   $ meeco items:create-config TEMPLATENAME
 
@@ -607,6 +713,8 @@ OPTIONS
 
   -s, --classificationScheme=classificationScheme  Scope templates to a particular classification scheme
 
+  --delegationId=delegationId                      delegation id of the connection to perform the task on behalf of
+
 EXAMPLES
   meeco items:create-config password
 ```
@@ -618,8 +726,6 @@ _See code: [src/commands/items/create-config.ts](https://github.com/Meeco/cli/bl
 Encrypt and attach a thumbnail to an attachment
 
 ```
-Encrypt and attach a thumbnail to an attachment
-
 USAGE
   $ meeco items:create-thumbnail
 
@@ -630,6 +736,8 @@ OPTIONS
   -c, --config=config            (required) thumbnail config yaml
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 
 EXAMPLES
   meeco items:create-thumbnail -c ./thumbnail-config.yaml
@@ -642,8 +750,6 @@ _See code: [src/commands/items/create-thumbnail.ts](https://github.com/Meeco/cli
 Get an item from the vault and decrypt its values
 
 ```
-Get an item from the vault and decrypt its values
-
 USAGE
   $ meeco items:get ITEMID
 
@@ -652,6 +758,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 ```
 
 _See code: [src/commands/items/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/items/get.ts)_
@@ -661,8 +769,6 @@ _See code: [src/commands/items/get.ts](https://github.com/Meeco/cli/blob/master/
 Download and decrypt an attachment by id
 
 ```
-Download and decrypt an attachment by id
-
 USAGE
   $ meeco items:get-attachment ITEMID SLOTID
 
@@ -678,6 +784,8 @@ OPTIONS
 
   -o, --outputPath=outputPath    (required) output file path
 
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+
 EXAMPLES
   meeco items:get-attachment my-attachment-item-id my-attachment-slot-id -o ./my-attachment.txt
 ```
@@ -689,8 +797,6 @@ _See code: [src/commands/items/get-attachment.ts](https://github.com/Meeco/cli/b
 Download and decrypt an thumbnail by id
 
 ```
-Download and decrypt an thumbnail by id
-
 USAGE
   $ meeco items:get-thumbnail ITEMID SLOTID THUMBNAILID
 
@@ -707,6 +813,8 @@ OPTIONS
 
   -o, --outputPath=outputPath    (required) output file path
 
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+
 EXAMPLES
   meeco items:get-thumbnail itemId slotId thumbnailId -o ./
 ```
@@ -718,8 +826,6 @@ _See code: [src/commands/items/get-thumbnail.ts](https://github.com/Meeco/cli/bl
 List the items that a user has in their vault
 
 ```
-List the items that a user has in their vault
-
 USAGE
   $ meeco items:list
 
@@ -732,6 +838,8 @@ OPTIONS
   --all                            Get all possible results from web API, possibly with multiple calls.
 
   --classification=classification  items with the given classification are fetched
+
+  --delegationId=delegationId      delegation id of the connection to perform the task on behalf of
 
   --scheme=scheme                  items with the given scheme are fetched
 
@@ -756,8 +864,6 @@ _See code: [src/commands/items/list.ts](https://github.com/Meeco/cli/blob/master
 Remove a slot from its associated item
 
 ```
-Remove a slot from its associated item
-
 USAGE
   $ meeco items:remove-slot SLOTID
 
@@ -766,6 +872,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 
 EXAMPLES
   meeco items:remove-slot slotId
@@ -778,8 +886,6 @@ _See code: [src/commands/items/remove-slot.ts](https://github.com/Meeco/cli/blob
 Update an item from the vault. For more detail, refers to README.md Update an Item section
 
 ```
-Update an item from the vault. For more detail, refers to README.md Update an Item section
-
 USAGE
   $ meeco items:update
 
@@ -792,6 +898,8 @@ OPTIONS
   -i, --item=item                (required) Updated item yaml file. For more detail, refers to README.md Update an Item
                                  section
 
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+
 EXAMPLE
   meeco items:update -i path/to/updated-item-config.yaml -a path/to/auth.yaml
 ```
@@ -803,8 +911,6 @@ _See code: [src/commands/items/update.ts](https://github.com/Meeco/cli/blob/mast
 Accept Invitation to become organization member.
 
 ```
-Accept Invitation to become organization member.
-
 USAGE
   $ meeco organization-members:accept-invitation
 
@@ -815,6 +921,8 @@ OPTIONS
   -e, --environment=environment            [default: .environment.yaml] environment config file
 
   -i, --invitationConfig=invitationConfig  (required) member invitation yaml file
+
+  --delegationId=delegationId              delegation id of the connection to perform the task on behalf of
 
 EXAMPLE
   meeco organization-members:accept-invitation -i .my-member-invitation.yaml -a .user_2.yaml >
@@ -828,8 +936,6 @@ _See code: [src/commands/organization-members/accept-invitation.ts](https://gith
 Create Invitation to invite other vault users as member of organization. This command is only accessible to organization agent.
 
 ```
-Create Invitation to invite other vault users as member of organization. This command is only accessible to organization agent.
-
 USAGE
   $ meeco organization-members:create-invitation [MEMBER_ROLE]
 
@@ -844,6 +950,8 @@ OPTIONS
 
   -o, --org=org                  (required) organization yaml file
 
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+
 EXAMPLE
   meeco organization-members:create-invitation -o .my-created-organization.yaml -a .my-org-login.yaml >
   .my-org-member-invitation.yaml
@@ -856,8 +964,6 @@ _See code: [src/commands/organization-members/create-invitation.ts](https://gith
 Delete a member of an organization. This command is only accessible to organization owners. The system will not allow to delete the last owner of the organization.
 
 ```
-Delete a member of an organization. This command is only accessible to organization owners. The system will not allow to delete the last owner of the organization.
-
 USAGE
   $ meeco organization-members:delete ORGANIZATION_ID ID
 
@@ -871,6 +977,8 @@ OPTIONS
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+
 EXAMPLE
   meeco organization-members:delete <organization_id> <id>
 ```
@@ -882,8 +990,6 @@ _See code: [src/commands/organization-members/delete.ts](https://github.com/Meec
 List all members of an organization. This command is only accessible to organization owners.
 
 ```
-List all members of an organization. This command is only accessible to organization owners.
-
 USAGE
   $ meeco organization-members:list ORGANIZATION_ID
 
@@ -894,6 +1000,8 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
   --all                          Get all possible results from web API, possibly with multiple calls.
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 
 EXAMPLE
   meeco organization-members:list <organization_id>
@@ -906,8 +1014,6 @@ _See code: [src/commands/organization-members/list.ts](https://github.com/Meeco/
 Change the role of a member. This command is only accessible to organization owners. The system will not allow to demote the last owner of the organization.
 
 ```
-Change the role of a member. This command is only accessible to organization owners. The system will not allow to demote the last owner of the organization.
-
 USAGE
   $ meeco organization-members:update
 
@@ -918,6 +1024,9 @@ OPTIONS
   -e, --environment=environment                            [default: .environment.yaml] environment config file
 
   -m, --organizationMemberConfig=organizationMemberConfig  (required) org member yaml file
+
+  --delegationId=delegationId                              delegation id of the connection to perform the task on behalf
+                                                           of
 
 EXAMPLE
   meeco organization-members:update -m .my-created-org-member.yaml
@@ -930,8 +1039,6 @@ _See code: [src/commands/organization-members/update.ts](https://github.com/Meec
 Request the creation of a new organization service. The organization service will remain in the 'requested' state until validated or rejected by meeco
 
 ```
-Request the creation of a new organization service. The organization service will remain in the 'requested' state until validated or rejected by meeco
-
 USAGE
   $ meeco organization-services:create ORGANIZATION_ID
 
@@ -942,6 +1049,9 @@ OPTIONS
   -c, --organizationServiceConfig=organizationServiceConfig  (required) organization service config file
 
   -e, --environment=environment                              [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId                                delegation id of the connection to perform the task on
+                                                             behalf of
 
 EXAMPLE
   meeco organization-services:create <organization_id> -c .my-service-config.yaml > .my-created-service.yaml
@@ -954,8 +1064,6 @@ _See code: [src/commands/organization-services/create.ts](https://github.com/Mee
 Retrieve a validated organization service. Only validated services are accessible.
 
 ```
-Retrieve a validated organization service. Only validated services are accessible.
-
 USAGE
   $ meeco organization-services:get ORGANIZATION_ID SERVICE_ID
 
@@ -964,6 +1072,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 
 EXAMPLE
   meeco organization-services:get <organization_id> <service_id> > .my-created-service.yaml
@@ -976,8 +1086,6 @@ _See code: [src/commands/organization-services/get.ts](https://github.com/Meeco/
 List requested services for a given organization. Members of the organization with roles owner and admin can use this command to list the requested services for this organization.
 
 ```
-List requested services for a given organization. Members of the organization with roles owner and admin can use this command to list the requested services for this organization.
-
 USAGE
   $ meeco organization-services:list ORGANIZATION_ID
 
@@ -988,6 +1096,8 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
   --all                          Get all possible results from web API, possibly with multiple calls.
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 
 EXAMPLE
   meeco organization-services:list <organization_id>
@@ -1000,8 +1110,6 @@ _See code: [src/commands/organization-services/list.ts](https://github.com/Meeco
 Login as a service agent. An organization owner or admin can use this command to obtain a session token for the service agent.
 
 ```
-Login as a service agent. An organization owner or admin can use this command to obtain a session token for the service agent.
-
 USAGE
   $ meeco organization-services:login
 
@@ -1012,6 +1120,9 @@ OPTIONS
   -e, --environment=environment                              [default: .environment.yaml] environment config file
 
   -s, --organizationServiceConfig=organizationServiceConfig  (required) service yaml file
+
+  --delegationId=delegationId                                delegation id of the connection to perform the task on
+                                                             behalf of
 
 EXAMPLE
   meeco organization-services:login -s .my-created-service.yaml
@@ -1024,8 +1135,6 @@ _See code: [src/commands/organization-services/login.ts](https://github.com/Meec
 Modify a requested organization service. Members of the organization with roles owner and admin can use this command to modify the requested service.
 
 ```
-Modify a requested organization service. Members of the organization with roles owner and admin can use this command to modify the requested service.
-
 USAGE
   $ meeco organization-services:update ORGANIZATION_ID
 
@@ -1036,6 +1145,9 @@ OPTIONS
   -e, --environment=environment                              [default: .environment.yaml] environment config file
 
   -s, --organizationServiceConfig=organizationServiceConfig  (required) service yaml file
+
+  --delegationId=delegationId                                delegation id of the connection to perform the task on
+                                                             behalf of
 
 EXAMPLE
   meeco organization-services:update <organization_id> -s .my-created-service.yaml
@@ -1048,8 +1160,6 @@ _See code: [src/commands/organization-services/update.ts](https://github.com/Mee
 Request the creation of a new organization. The organization will remain in the 'requested' state until validated or rejected by meeco
 
 ```
-Request the creation of a new organization. The organization will remain in the 'requested' state until validated or rejected by meeco
-
 USAGE
   $ meeco organizations:create
 
@@ -1060,6 +1170,8 @@ OPTIONS
   -c, --organizationConfig=organizationConfig  (required) organization config file
 
   -e, --environment=environment                [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId                  delegation id of the connection to perform the task on behalf of
 
 EXAMPLE
   meeco organizations:create -c .my-organization-config.yaml > .my-created-organization.yaml
@@ -1072,8 +1184,6 @@ _See code: [src/commands/organizations/create.ts](https://github.com/Meeco/cli/b
 Delete a requested organization. The user who requested the organization can use this command to delete the requested organization.
 
 ```
-Delete a requested organization. The user who requested the organization can use this command to delete the requested organization.
-
 USAGE
   $ meeco organizations:delete ID
 
@@ -1086,6 +1196,8 @@ OPTIONS
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
+
 EXAMPLE
   meeco organizations:delete <organization_id>
 ```
@@ -1097,8 +1209,6 @@ _See code: [src/commands/organizations/delete.ts](https://github.com/Meeco/cli/b
 Retrieve a validated organization or requested organization by logged in user. Only all validated organizations or requested organization requested by logged in user are accessible.
 
 ```
-Retrieve a validated organization or requested organization by logged in user. Only all validated organizations or requested organization requested by logged in user are accessible.
-
 USAGE
   $ meeco organizations:get ID
 
@@ -1107,6 +1217,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 
 EXAMPLE
   meeco organizations:get <organization_id>
@@ -1119,8 +1231,6 @@ _See code: [src/commands/organizations/get.ts](https://github.com/Meeco/cli/blob
 List organization. There are three modes: validated, requested and member
 
 ```
-List organization. There are three modes: validated, requested and member
-
 USAGE
   $ meeco organizations:list
 
@@ -1132,11 +1242,13 @@ OPTIONS
 
   -m, --mode=validated|requested|member  [default: validated] There are three modes: validated, requested and member
                                          validated - return all validated organizations
-                                         requested - list organizations in the requested state that the current user
-                                         has requested
+                                         requested - list organizations in the requested state that the current user has
+                                         requested
                                          member - list organizations in which the current user is a member.
 
   --all                                  Get all possible results from web API, possibly with multiple calls.
+
+  --delegationId=delegationId            delegation id of the connection to perform the task on behalf of
 
 EXAMPLE
   meeco organizations:list -m requested
@@ -1149,8 +1261,6 @@ _See code: [src/commands/organizations/list.ts](https://github.com/Meeco/cli/blo
 Login as an organization agent. An organization agent is a non-human Vault user account acting on behalf of the organization. An organization owner can use this command to obtain a session token for the organization agent.
 
 ```
-Login as an organization agent. An organization agent is a non-human Vault user account acting on behalf of the organization. An organization owner can use this command to obtain a session token for the organization agent.
-
 USAGE
   $ meeco organizations:login
 
@@ -1161,6 +1271,8 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -o, --org=org                  (required) organization yaml file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 
 EXAMPLE
   meeco organizations:login -o .my-created-organization.yaml > .my-org-login.yaml
@@ -1173,8 +1285,6 @@ _See code: [src/commands/organizations/login.ts](https://github.com/Meeco/cli/bl
 Modify a requested organization. The user who requested the organization can use this endpoint to modify the requested organization.
 
 ```
-Modify a requested organization. The user who requested the organization can use this endpoint to modify the requested organization.
-
 USAGE
   $ meeco organizations:update
 
@@ -1185,6 +1295,8 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -o, --org=org                  (required) organization yaml file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 
 EXAMPLE
   meeco organizations:update -o .my-updated-organization
@@ -1197,8 +1309,6 @@ _See code: [src/commands/organizations/update.ts](https://github.com/Meeco/cli/b
 Accept an incoming share
 
 ```
-Accept an incoming share
-
 USAGE
   $ meeco shares:accept SHAREID
 
@@ -1212,6 +1322,8 @@ OPTIONS
   -e, --environment=environment  [default: .environment.yaml] environment config file
 
   -y, --yes                      Automatically agree to any terms required by the sharer
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 ```
 
 _See code: [src/commands/shares/accept.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/accept.ts)_
@@ -1221,8 +1333,6 @@ _See code: [src/commands/shares/accept.ts](https://github.com/Meeco/cli/blob/mas
 Share an item between two users
 
 ```
-Share an item between two users
-
 USAGE
   $ meeco shares:create [FILE]
 
@@ -1244,8 +1354,6 @@ _See code: [src/commands/shares/create.ts](https://github.com/Meeco/cli/blob/mas
 Provide two users and either an item id to construct a share config file
 
 ```
-Provide two users and either an item id to construct a share config file
-
 USAGE
   $ meeco shares:create-config
 
@@ -1267,8 +1375,6 @@ _See code: [src/commands/shares/create-config.ts](https://github.com/Meeco/cli/b
 Delete a share. Both the owner of the shared data and the recipient of the share can delete the share
 
 ```
-Delete a share. Both the owner of the shared data and the recipient of the share can delete the share
-
 USAGE
   $ meeco shares:delete SHAREID
 
@@ -1280,6 +1386,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 ```
 
 _See code: [src/commands/shares/delete.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/delete.ts)_
@@ -1289,8 +1397,6 @@ _See code: [src/commands/shares/delete.ts](https://github.com/Meeco/cli/blob/mas
 Read an incoming share together with shared item, slots, and associated other data
 
 ```
-Read an incoming share together with shared item, slots, and associated other data
-
 USAGE
   $ meeco shares:get-incoming SHAREID
 
@@ -1302,6 +1408,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 ```
 
 _See code: [src/commands/shares/get-incoming.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/get-incoming.ts)_
@@ -1311,8 +1419,6 @@ _See code: [src/commands/shares/get-incoming.ts](https://github.com/Meeco/cli/bl
 Get a list of incoming or outgoing shares for the specified user
 
 ```
-Get a list of incoming or outgoing shares for the specified user
-
 USAGE
   $ meeco shares:list
 
@@ -1327,6 +1433,8 @@ OPTIONS
                                   outgoing - Items you have shared
 
   --all                           Get all possible results from web API, possibly with multiple calls.
+
+  --delegationId=delegationId     delegation id of the connection to perform the task on behalf of
 ```
 
 _See code: [src/commands/shares/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/list.ts)_
@@ -1336,8 +1444,6 @@ _See code: [src/commands/shares/list.ts](https://github.com/Meeco/cli/blob/maste
 Update all shared copies of an Item with the data in the original
 
 ```
-Update all shared copies of an Item with the data in the original
-
 USAGE
   $ meeco shares:update ITEMID
 
@@ -1349,6 +1455,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 ```
 
 _See code: [src/commands/shares/update.ts](https://github.com/Meeco/cli/blob/master/src/commands/shares/update.ts)_
@@ -1358,8 +1466,6 @@ _See code: [src/commands/shares/update.ts](https://github.com/Meeco/cli/blob/mas
 Get more information about an item template
 
 ```
-Get more information about an item template
-
 USAGE
   $ meeco templates:info TEMPLATENAME
 
@@ -1373,6 +1479,8 @@ OPTIONS
 
   -s, --classificationScheme=classificationScheme  Scope templates to a particular classification scheme
 
+  --delegationId=delegationId                      delegation id of the connection to perform the task on behalf of
+
 EXAMPLE
   meeco templates:info password
 ```
@@ -1384,8 +1492,6 @@ _See code: [src/commands/templates/info.ts](https://github.com/Meeco/cli/blob/ma
 List all the available item templates
 
 ```
-List all the available item templates
-
 USAGE
   $ meeco templates:list
 
@@ -1402,6 +1508,8 @@ OPTIONS
   -s, --classificationScheme=classificationScheme  Scope templates to a particular classification scheme
 
   --all                                            Get all possible results from web API, possibly with multiple calls.
+
+  --delegationId=delegationId                      delegation id of the connection to perform the task on behalf of
 ```
 
 _See code: [src/commands/templates/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/templates/list.ts)_
@@ -1411,8 +1519,6 @@ _See code: [src/commands/templates/list.ts](https://github.com/Meeco/cli/blob/ma
 Create a new Meeco user against the various microservices using only a password. Outputs an Authorization config file for use with future commands.
 
 ```
-Create a new Meeco user against the various microservices using only a password. Outputs an Authorization config file for use with future commands.
-
 USAGE
   $ meeco users:create
 
@@ -1434,8 +1540,6 @@ _See code: [src/commands/users/create.ts](https://github.com/Meeco/cli/blob/mast
 Fetch details about Meeco user from the various microservices.
 
 ```
-Fetch details about Meeco user from the various microservices.
-
 USAGE
   $ meeco users:get
 
@@ -1462,8 +1566,6 @@ _See code: [src/commands/users/get.ts](https://github.com/Meeco/cli/blob/master/
 Refresh tokens for Keystore and Vault for the given user. Outputs an Authorization config file for use with future commands.
 
 ```
-Refresh tokens for Keystore and Vault for the given user. Outputs an Authorization config file for use with future commands.
-
 USAGE
   $ meeco users:login
 
@@ -1489,8 +1591,6 @@ _See code: [src/commands/users/login.ts](https://github.com/Meeco/cli/blob/maste
 Log the given user out of both keystore and vault.
 
 ```
-Log the given user out of both keystore and vault.
-
 USAGE
   $ meeco users:logout
 
@@ -1499,6 +1599,8 @@ OPTIONS
                                  default .user.yaml)
 
   -e, --environment=environment  [default: .environment.yaml] environment config file
+
+  --delegationId=delegationId    delegation id of the connection to perform the task on behalf of
 
 EXAMPLE
   meeco users:logout -a path/to/user-auth.yaml
