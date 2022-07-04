@@ -149,7 +149,7 @@ describe('ShareService', () => {
       .stub(
         SlotHelpers,
         'toEncryptedSlotValue',
-        sinon.fake((cred, slot) => ({
+        sinon.fake<any, any>((cred, slot) => ({
           ...slot,
           value: 'abc',
           value_verification_key: SymmetricKey.fromSerialized(encodeSafe64('123')),

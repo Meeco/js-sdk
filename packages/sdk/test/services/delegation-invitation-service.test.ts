@@ -143,7 +143,7 @@ describe('DelegationInvitationService', () => {
 
     customTest
       .mockCryppo()
-      .stub(DecryptedKeypair, 'fromAPI', sinon.fake(fromApi))
+      .stub(DecryptedKeypair, 'fromAPI', sinon.fake<any, any>(fromApi))
       .nock(
         'https://sandbox.meeco.me/keystore',
         getKeyPairAPI({
