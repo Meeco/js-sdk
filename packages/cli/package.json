@@ -19,7 +19,7 @@
     "@oclif/plugin-help": "^5.1.12",
     "@oclif/plugin-update": "^3.0.0",
     "@types/node-forge": "~0.9.7",
-    "axios": "^0.21.1",
+    "axios": "^0.27.2",
     "body-parser": "^1.19.0",
     "chalk": "^4.1.2",
     "cli-ux": "~5.5.1",
@@ -32,7 +32,7 @@
     "node-fetch": "^2.6.1",
     "node-forge": "0.10.0",
     "qs": "~6.10.1",
-    "tslib": "^2.2.0",
+    "tslib": "^2.4.0",
     "yaml": "~1.10.2"
   },
   "devDependencies": {

@@ -24,7 +24,7 @@
     "@meeco/file-storage-common": "^5.0.1",
     "@meeco/style-kit": "^2.0.1",
     "@meeco/vault-api-sdk": "34.2.1-stage.20210917081401.619b618",
-    "axios": "^0.21.1",
+    "axios": "^0.27.2",
     "crypto-browserify": "^3.12.0",
     "process": "^0.11.10",
     "stream-browserify": "^3.0.0"
