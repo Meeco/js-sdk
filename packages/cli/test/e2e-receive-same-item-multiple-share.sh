@@ -9,16 +9,17 @@ run users:create -p supersecretpassword > .Alice.yaml
 echo "Create a 'Vehicle' card template for 'Alice'"
 run items:create-config vehicle -a .Alice.yaml > .template_vehicle.yaml
 
-cat .template_vehicle.yaml |
-yq -y '(.spec.label) = "My Vehicle"'|
-yq -y '(.spec.slots[0].value) = "20000101"' |
-yq -y '(.spec.slots[1].value) = "ABC123"' |
-yq -y '(.spec.slots[2].value) = "Mazda"' |
-yq -y '(.spec.slots[3].value) = "Familia"' |
-yq -y '(.spec.slots[4].value) = "VIN3322112223"' > .my_vehicle.yaml
+yq -i '
+  (.spec.label) = "My Vehicle" |
+  (.spec.slots[0].value) = "20000101" |
+  (.spec.slots[1].value) = "ABC123" |
+  (.spec.slots[2].value) = "Mazda" |
+  (.spec.slots[3].value) = "Familia" |
+  (.spec.slots[4].value) = "VIN3322112223"
+' .template_vehicle.yaml
 
 echo "Create a 'Vehicle' card for 'Alice'"
-run items:create -i .my_vehicle.yaml -a .Alice.yaml > .item_alice.yaml
+run items:create -i .template_vehicle.yaml -a .Alice.yaml > .item_alice.yaml
 
 
 echo "Create user 'Bob'"
@@ -39,7 +40,7 @@ itemId=$(cat .item_alice.yaml | yq -r .spec.id)
 
 echo "item id: ${itemId}"
 
-dateAFter30Days=$(date +'%Y-%m-%d' -d "30 day")
+dateAFter30Days=$(date -v+30d +'%Y-%m-%d')
 
 echo "Share alice to bob"
 run shares:create-config --from .Alice.yaml --connection .connection_Alice_Bob.created.yaml -i .item_alice.yaml > .share_Alice_Bob.yaml
@@ -57,7 +58,7 @@ run items:get $bobsItemId -a .Bob.yaml > .shared_item_Bob.yaml
 echo "Share bob to carol (create config)"
 run shares:create-config --from .Bob.yaml --connection .connection_Bob_Carol.created.yaml -i .shared_item_Bob.yaml > .share_Bob_Carol.yaml
 
-dateAFter29Days=$(date +'%Y-%m-%d' -d "29 day")
+dateAFter29Days=$(date -v+29d +'%Y-%m-%d')
 echo "Share bob to carol (create share)"
 run shares:create -c .share_Bob_Carol.yaml -d $dateAFter29Days > .share_Bob_Carol.created.yaml
 
@@ -71,7 +72,7 @@ echo "Create connection between Alice and Carol"
 run connections:create-config --from .Alice.yaml --to .Carol.yaml > .connection_Alice_Carol.yaml
 run connections:create -c .connection_Alice_Carol.yaml > .connection_Alice_Carol.created.yaml
 
-connectionIdAC=$(cat .connection_Alice_Carol.created.yaml | yq -r .metadata.from_user_connection_id)
+connectionIdAC=$(cat .connection_Alice_Carol.created.yaml | yq -r .spec.from_user_connection_id)
 
 echo "Share alice to Carol"
 run shares:create-config --from .Alice.yaml --connection .connection_Alice_Carol.created.yaml -i .item_alice.yaml > .share_Alice_Carol.yaml

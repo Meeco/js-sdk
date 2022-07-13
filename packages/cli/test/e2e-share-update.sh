@@ -7,18 +7,19 @@ echo "Create user 'Alice'"
 run users:create -p supersecretpassword > .Alice.yaml
 
 echo "Create a 'Vehicle' card template for 'Alice'"
-run items:create-config vehicle -a .Alice.yaml > .template_vehicle.yaml
+run items:create-config vehicle -a .Alice.yaml > .vehicle_item_config.yaml
 
-cat .template_vehicle.yaml |
-yq -y '(.spec.label) = "My Vehicle"'|
-yq -y '(.spec.slots[0].value) = "20000101"' |
-yq -y '(.spec.slots[1].value) = "ABC123"' |
-yq -y '(.spec.slots[2].value) = "Mazda"' |
-yq -y '(.spec.slots[3].value) = "Familia"' |
-yq -y '(.spec.slots[4].value) = "VIN3322112223"' > .my_vehicle.yaml
+yq -i '
+  (.spec.label) = "My Vehicle" |
+  (.spec.slots[0].value) = "20000101" |
+  (.spec.slots[1].value) = "ABC123" |
+  (.spec.slots[2].value) = "Mazda" |
+  (.spec.slots[3].value) = "Familia" |
+  (.spec.slots[4].value) = "VIN3322112223"
+' .vehicle_item_config.yaml
 
 echo "Create a 'Vehicle' card for 'Alice'"
-run items:create -i .my_vehicle.yaml -a .Alice.yaml > .item_alice.yaml
+run items:create -i .vehicle_item_config.yaml -a .Alice.yaml > .item_alice.yaml
 
 echo "Create user 'Bob'"
 run users:create -p supersecretpassword > .Bob.yaml
@@ -27,7 +28,7 @@ echo "Setup a connection between 'Alice' and 'Bob'"
 run connections:create-config --from .Alice.yaml --to .Bob.yaml > .connection_Alice_Bob.yaml
 run connections:create -c .connection_Alice_Bob.yaml > .connection_Alice_Bob.created.yaml
 
-connectionIdAB=$(cat .connection_Alice_Bob.created.yaml | yq -r .metadata.from_user_connection_id)
+connectionIdAB=$(cat .connection_Alice_Bob.created.yaml | yq -r .spec.from_user_connection_id)
 
 itemId=$(cat .item_alice.yaml | yq -r .spec.id)
 
@@ -45,15 +46,17 @@ echo "Read share as bob"
 run shares:get-incoming $bobsShareId -a .Bob.yaml
 
 echo "Update Item as alice"
-cat template_vehicle_update.yaml |
-yq -y --arg a ${itemId} '(.spec.id) = $a' |
-yq -y '(.spec.slots[0].value) = "30000101"' |
-yq -y '(.spec.slots[1].value) = "XYZ123"' |
-yq -y '(.spec.slots[2].value) = "Toyota"' |
-yq -y '(.spec.slots[3].value) = "YOOO"' |
-yq -y '(.spec.slots[4].value) = "VIN00000000"' > .my_vehicle_update.yaml
 
-run items:update -i .my_vehicle_update.yaml -a .Alice.yaml > .item_alice.yaml
+yq -i "
+  (.spec.id) = \"${itemId}\" |
+  (.spec.slots[0].value) = \"30000101\" |
+  (.spec.slots[1].value) = \"XYZ123\" |
+  (.spec.slots[2].value) = \"Toyota\" |
+  (.spec.slots[3].value) = \"YOOO\" |
+  (.spec.slots[4].value) = \"VIN00000000\"
+" .vehicle_item_config.yaml
+
+run items:update -i .vehicle_item_config.yaml -a .Alice.yaml > .item_alice.yaml
 
 echo "Update Share as alice"
 run shares:update $itemId -a .Alice.yaml

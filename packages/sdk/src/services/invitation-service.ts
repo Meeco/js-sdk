@@ -45,7 +45,8 @@ export class InvitationService extends Service<InvitationApi> {
           keypair_external_id: keyPair.id,
           public_key: keyPair.public_key,
         },
-        invitation: {
+        // TODO: check if delegation_token is back to swagger.json later
+        invitation: <any>{
           encrypted_recipient_name: encryptedName,
           delegation_token: delegationIntent?.delegationToken,
           delegate_role: delegationIntent?.delegateRole,

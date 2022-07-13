@@ -1,4 +1,4 @@
-import { AcceptanceRequest, ShareService, SharingMode } from '@meeco/sdk';
+import { AcceptanceRequest, ShareService } from '@meeco/sdk';
 import { flags as _flags } from '@oclif/command';
 import { isAfter, isValid, parse, parseISO } from 'date-fns';
 import { ShareConfig } from '../../configs/share-config';
@@ -63,7 +63,6 @@ export default class SharesCreate extends MeecoCommand {
       }
 
       const service = new ShareService(environment, this.updateStatus);
-      const sharing_mode = onshare ? SharingMode.Anyone : SharingMode.Owner;
 
       let acceptance_required = AcceptanceRequest.NotRequired;
       if (terms !== undefined && terms !== '') {
@@ -72,7 +71,7 @@ export default class SharesCreate extends MeecoCommand {
 
       const result = await service.shareItem(share.from, share.connectionId, share.itemId, {
         expires_at: expiry_date ? parseDate : undefined,
-        sharing_mode,
+        onsharing_permitted: onshare,
         acceptance_required,
         terms,
         ...(share.slotId ? { slot_id: share.slotId } : {}),

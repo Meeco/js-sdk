@@ -22,11 +22,6 @@ import { ConnectionService } from './connection-service';
 import { ItemService } from './item-service';
 import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 
-export enum SharingMode {
-  Owner = 'owner',
-  Anyone = 'anyone',
-}
-
 /** The result of an API call */
 export enum AcceptanceStatus {
   Required = 'acceptance_required',
@@ -49,7 +44,7 @@ export interface IShareOptions {
   slot_id?: string;
   expires_at?: Date;
   terms?: string;
-  sharing_mode?: SharingMode;
+  onsharing_permitted?: boolean;
   acceptance_required?: AcceptanceRequest;
 }
 

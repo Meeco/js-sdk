@@ -135,7 +135,6 @@ export class ConnectionService extends Service<ConnectionApi> {
   }
 
   public async get(credentials: IVaultToken, connectionId: string): Promise<Connection> {
-    this.logger.log('Fetching user connection');
     const response = await this.vaultAPIFactory(credentials).ConnectionApi.connectionsIdGet(
       connectionId
     );

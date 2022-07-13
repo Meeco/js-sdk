@@ -15,7 +15,6 @@ import {
   Secrets,
   ShareService,
   ShareType,
-  SharingMode,
   TemplateService,
   UserService,
 } from '@meeco/sdk';
@@ -566,7 +565,7 @@ function ExistingItemComponent(vInit: {
           value: JSON.stringify(vnode.attrs.item, null, 2),
         }),
         // only if we can onshare
-        vnode.attrs.item.isOwned || vnode.attrs.share?.sharing_mode === SharingMode.Anyone
+        vnode.attrs.item.isOwned || vnode.attrs.share?.onsharing_permitted === true
           ? m(shareComponent, { item: vnode.attrs.item })
           : null,
       ]),
@@ -608,7 +607,7 @@ function CreateShareComponent(vInit: {
       const shareOptions = {
         expires_at: expiry ? new Date(expiry) : undefined,
         terms,
-        sharing_mode: canOnshare ? SharingMode.Anyone : SharingMode.Owner,
+        onsharing_permitted: canOnshare,
         acceptance_required: mustAcceptTerms
           ? AcceptanceRequest.Required
           : AcceptanceRequest.NotRequired,
