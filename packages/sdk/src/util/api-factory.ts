@@ -1,11 +1,16 @@
 import * as Keystore from '@meeco/keystore-api-sdk';
 import * as Vault from '@meeco/vault-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
-import * as chalk from 'chalk';
 import { debug } from 'debug';
 import { Environment } from '../models/environment';
 import { IKeystoreToken, IVaultToken } from '../services/service';
 import SDKFormData from './sdk-form-data';
+
+/**
+ * INFO: using 'import' statement causes typescript errors either in tests or in built version of the package
+ */
+/* tslint:disable no-var-requires */
+const chalk = require('chalk');
 
 let fetchLib = (<any>global).fetch;
 
