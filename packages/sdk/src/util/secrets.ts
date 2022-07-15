@@ -1,5 +1,5 @@
 // tslint:disable-next-line: no-var-requires
-const b58 = require('base58-string');
+const b58 = require('bs58');
 import { binaryStringToBytes, bytesToBinaryString } from '@meeco/cryppo';
 import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import { SymmetricKey } from '../models/symmetric-key';
@@ -60,7 +60,7 @@ export default class Secrets {
    * @ignore
    */
   public static encodeBase58(val: Uint8Array) {
-    return b58.encode(bytesToBinaryString(val));
+    return b58.encode(val);
   }
 
   /**

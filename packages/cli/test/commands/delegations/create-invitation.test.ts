@@ -27,6 +27,9 @@ describe('delegations:create-invitation', () => {
         outputFixture('delegations-create-invitation.output.yaml'),
         'utf-8'
       );
+
+      console.log(expected);
+
       expect(ctx.stdout).to.contain(expected.trim());
     });
 });

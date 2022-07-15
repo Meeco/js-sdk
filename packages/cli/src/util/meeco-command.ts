@@ -36,7 +36,7 @@ export default class MeecoCommand extends Command {
   protected finish = cli.action.stop.bind(cli.action);
 
   protected printYaml(data: any) {
-    this.log(stringify(data));
+    this.log(stringify(data, null, { keepUndefined: true }));
   }
 
   protected readYamlFile(path: string): Promise<IYamlConfig | null> {
