@@ -1,5 +1,5 @@
 import { ConnectionService, SDKDecryptedSlot } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
 import { ExistingConnectionConfig } from '../../configs/existing-connection-config';
@@ -37,7 +37,7 @@ export default class SharesCreateConfig extends MeecoCommand {
 
   async run() {
     try {
-      const { flags } = this.parse(this.constructor as typeof SharesCreateConfig);
+      const { flags } = await this.parse(this.constructor as typeof SharesCreateConfig);
       const { from, connection, slotName, item } = flags;
       const environment = await this.readEnvironmentFile();
       let fromUser = (await this.readConfigFromFile(AuthConfig, from))?.overrideWithFlags(flags);

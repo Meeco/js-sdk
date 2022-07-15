@@ -1,5 +1,5 @@
 import { InvitationService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import { ConnectionV2Config } from '../../configs/connection-v2-config';
 import { InvitationConfig } from '../../configs/invitation-config';
@@ -24,7 +24,9 @@ export default class OrganizationMembersAcceptInvitation extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof OrganizationMembersAcceptInvitation);
+    const { flags } = await this.parse(
+      this.constructor as typeof OrganizationMembersAcceptInvitation
+    );
     const { invitationConfig, auth } = flags;
     const environment = await this.readEnvironmentFile();
     let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);

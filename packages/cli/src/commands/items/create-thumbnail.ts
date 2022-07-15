@@ -1,7 +1,7 @@
 import { EncryptionKey } from '@meeco/cryppo';
 import { encryptAndUploadThumbnail, ThumbnailType, ThumbnailTypes } from '@meeco/file-storage-node';
 import { ItemService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { CLIError } from '@oclif/errors';
 import { lookup } from 'mime-types';
 import { basename } from 'path';
@@ -29,7 +29,7 @@ export default class ItemsCreateThumbnail extends MeecoCommand {
   static args = [];
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof ItemsCreateThumbnail);
+    const { flags } = await this.parse(this.constructor as typeof ItemsCreateThumbnail);
     const environment = await this.readEnvironmentFile();
     const { auth, config } = flags;
 

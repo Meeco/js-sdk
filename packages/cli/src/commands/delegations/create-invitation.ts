@@ -35,7 +35,7 @@ export default class DelegationCreateInvitation extends MeecoCommand {
   };
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof DelegationCreateInvitation);
+    const { flags, args } = await this.parse(this.constructor as typeof DelegationCreateInvitation);
     const { auth } = flags;
     const { delegation_role, recipient_name } = args;
     const environment = await this.readEnvironmentFile();

@@ -16,7 +16,7 @@ export default class ItemsGet extends MeecoCommand {
   static args = [{ name: 'itemId', required: true }];
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof ItemsList);
+    const { flags, args } = await this.parse(this.constructor as typeof ItemsList);
     const { auth } = flags;
     const { itemId } = args;
     try {

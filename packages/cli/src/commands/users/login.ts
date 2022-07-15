@@ -1,6 +1,5 @@
 import { UserService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
-import cli from 'cli-ux';
+import { CliUx, Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import userFlags from '../../flags/user-flags';
 import MeecoCommand from '../../util/meeco-command';
@@ -25,7 +24,7 @@ export default class LoginUser extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof LoginUser);
+    const { flags } = await this.parse(this.constructor as typeof LoginUser);
     const { auth } = flags;
     let { secret, password } = flags;
 
@@ -35,7 +34,7 @@ export default class LoginUser extends MeecoCommand {
 
       if (!password) {
         while (!password) {
-          password = await cli.prompt('Enter your password', { type: 'hide' });
+          password = await CliUx.ux.prompt('Enter your password', { type: 'hide' });
         }
       }
 

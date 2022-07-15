@@ -1,5 +1,5 @@
 import { InvitationService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
@@ -27,7 +27,7 @@ export default class ConnectionsAccept extends MeecoCommand {
   ];
 
   async run() {
-    const { flags, args } = this.parse(ConnectionsAccept);
+    const { flags, args } = await this.parse(ConnectionsAccept);
     const { name, auth } = flags;
     const { token } = args;
 

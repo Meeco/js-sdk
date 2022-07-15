@@ -20,7 +20,7 @@ export default class DelegationShareKek extends MeecoCommand {
   };
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof DelegationShareKek);
+    const { flags, args } = await this.parse(this.constructor as typeof DelegationShareKek);
     const { auth } = flags;
     const { connectionId } = args;
     const environment = await this.readEnvironmentFile();

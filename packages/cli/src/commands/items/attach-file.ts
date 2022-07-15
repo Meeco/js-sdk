@@ -1,6 +1,6 @@
 import { largeFileUploadNode } from '@meeco/file-storage-node';
 import { ItemService, ItemUpdate, SlotType } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { CLIError } from '@oclif/errors';
 import { lookup } from 'mime-types';
 import { basename } from 'path';
@@ -28,7 +28,7 @@ export default class ItemsAttachFile extends MeecoCommand {
   static args = [];
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof ItemsAttachFile);
+    const { flags } = await this.parse(this.constructor as typeof ItemsAttachFile);
     const environment = await this.readEnvironmentFile();
     const { auth, config } = flags;
 

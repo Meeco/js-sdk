@@ -13,7 +13,7 @@ export default class LogoutUser extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof LogoutUser);
+    const { flags } = await this.parse(this.constructor as typeof LogoutUser);
 
     try {
       const environment = await this.readEnvironmentFile();

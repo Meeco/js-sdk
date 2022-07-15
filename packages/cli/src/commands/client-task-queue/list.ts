@@ -1,6 +1,6 @@
 import { ClientTaskQueueService, ClientTaskState } from '@meeco/sdk';
 import { ClientTask } from '@meeco/vault-api-sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import authFlags from '../../flags/auth-flags';
 import pageFlags from '../../flags/page-flags';
@@ -31,7 +31,7 @@ export default class ClientTaskQueueList extends MeecoCommand {
     state: _flags.build<ClientTaskState[]>({
       char: 's',
       required: false,
-      parse: input =>
+      parse: async input =>
         input
           .split(',')
           .filter(x =>
@@ -44,7 +44,7 @@ export default class ClientTaskQueueList extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof ClientTaskQueueList);
+    const { flags } = await this.parse(this.constructor as typeof ClientTaskQueueList);
     const { limit, update, auth, all } = flags;
 
     let { state } = flags;

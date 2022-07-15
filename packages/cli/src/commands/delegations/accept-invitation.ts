@@ -1,5 +1,5 @@
 import { DelegationService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import { ConnectionV2Config } from '../../configs/connection-v2-config';
 import { InvitationConfig } from '../../configs/invitation-config';
@@ -28,7 +28,7 @@ export default class DelegationAcceptInvitation extends MeecoCommand {
   };
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof DelegationAcceptInvitation);
+    const { flags, args } = await this.parse(this.constructor as typeof DelegationAcceptInvitation);
     const { auth, config } = flags;
     const { recipient_name } = args;
     const delegationInvitationConfig = await this.readConfigFromFile(InvitationConfig, config);

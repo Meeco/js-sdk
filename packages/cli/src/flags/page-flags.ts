@@ -1,7 +1,7 @@
-import { flags } from '@oclif/command';
+import { Flags } from '@oclif/core';
 
 export const pageFlags = {
-  all: flags.boolean({
+  all: Flags.boolean({
     description: 'Get all possible results from web API, possibly with multiple calls.',
     default: false,
   }),

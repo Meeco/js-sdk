@@ -1,7 +1,7 @@
 import { EncryptionKey } from '@meeco/cryppo';
 import * as fileStorageNode from '@meeco/file-storage-node';
 import { ItemService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
 import authFlags from '../../flags/auth-flags';
@@ -38,7 +38,7 @@ export default class ItemsGetThumbnail extends MeecoCommand {
   ];
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof ItemsGetThumbnail);
+    const { flags, args } = await this.parse(this.constructor as typeof ItemsGetThumbnail);
     const environment = await this.readEnvironmentFile();
     const { auth, outputPath } = flags;
     const { itemId, slotId, thumbnailId } = args;

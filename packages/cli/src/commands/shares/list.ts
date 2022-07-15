@@ -1,5 +1,5 @@
 import { ShareService, ShareType } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import authFlags from '../../flags/auth-flags';
 import pageFlags from '../../flags/page-flags';
@@ -23,7 +23,7 @@ export default class SharesList extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof SharesList);
+    const { flags } = await this.parse(this.constructor as typeof SharesList);
     const { type, auth, all } = flags;
 
     const environment = await this.readEnvironmentFile();

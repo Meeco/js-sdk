@@ -1,5 +1,5 @@
 import { AcceptanceRequest, ShareService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { isAfter, isValid, parse, parseISO } from 'date-fns';
 import { ShareConfig } from '../../configs/share-config';
 import MeecoCommand from '../../util/meeco-command';
@@ -37,7 +37,7 @@ export default class SharesCreate extends MeecoCommand {
   static args = [{ name: 'file' }];
 
   async run() {
-    const { flags } = this.parse(SharesCreate);
+    const { flags } = await this.parse(SharesCreate);
     const { config, onshare, terms, expiry_date } = flags;
 
     try {

@@ -19,7 +19,7 @@ export default class OrganizationServicesList extends MeecoCommand {
   static args = [{ name: 'organization_id', required: true }];
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof OrganizationServicesList);
+    const { flags, args } = await this.parse(this.constructor as typeof OrganizationServicesList);
     const { auth, all } = flags;
     const { organization_id } = args;
     const environment = await this.readEnvironmentFile();

@@ -20,7 +20,7 @@ export default class SharesUpdate extends MeecoCommand {
   ];
 
   async run() {
-    const { args, flags } = this.parse(this.constructor as typeof SharesUpdate);
+    const { args, flags } = await this.parse(this.constructor as typeof SharesUpdate);
 
     const { auth } = flags;
     const { itemId } = args;

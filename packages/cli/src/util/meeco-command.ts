@@ -1,8 +1,6 @@
 import { configureFetch } from '@meeco/sdk';
-import { Command, flags as _flags } from '@oclif/command';
-import { IConfig } from '@oclif/config';
+import { CliUx, Command, Config, Flags as _flags } from '@oclif/core';
 import { CLIError } from '@oclif/errors';
-import cli from 'cli-ux';
 import nodeFetch from 'node-fetch';
 import { stringify } from 'yaml';
 import { AuthConfig } from '../configs/auth-config';
@@ -12,7 +10,7 @@ import { readEnvironmentFromYamlFile } from './parse-environment';
 import { parseInputFile } from './parse-input-file';
 
 export default class MeecoCommand extends Command {
-  constructor(argv: string[], config: IConfig) {
+  constructor(argv: string[], config: Config) {
     super(argv, config);
     configureFetch(nodeFetch);
   }
@@ -32,8 +30,8 @@ export default class MeecoCommand extends Command {
     }),
   };
 
-  protected updateStatus = cli.action.start.bind(cli.action);
-  protected finish = cli.action.stop.bind(cli.action);
+  protected updateStatus = CliUx.ux.action.start.bind(CliUx.ux.action);
+  protected finish = CliUx.ux.action.stop.bind(CliUx.ux.action);
 
   protected printYaml(data: any) {
     this.log(stringify(data, null, { keepUndefined: true }));
@@ -51,8 +49,8 @@ export default class MeecoCommand extends Command {
     return configReader.fromYamlConfig(config);
   }
 
-  protected readEnvironmentFile() {
-    const { flags } = this.parse(this.constructor as typeof MeecoCommand);
+  protected async readEnvironmentFile() {
+    const { flags } = await this.parse(this.constructor as typeof MeecoCommand);
     const { environment } = flags;
     return readEnvironmentFromYamlFile(environment);
   }
@@ -71,7 +69,7 @@ export default class MeecoCommand extends Command {
   }
 
   protected async readUserConfig() {
-    const { flags } = this.parse(this.constructor as typeof MeecoCommand);
+    const { flags } = await this.parse(this.constructor as typeof MeecoCommand);
     const { user } = flags as any;
     let secret, password;
     if (user) {
@@ -85,13 +83,13 @@ export default class MeecoCommand extends Command {
 
     if (!password) {
       while (!password) {
-        password = await cli.prompt('Enter password', { type: 'hide' });
+        password = await CliUx.ux.prompt('Enter password', { type: 'hide' });
       }
     }
 
     if (!secret) {
       while (!secret) {
-        secret = await cli.prompt('Enter secret', { type: 'normal' });
+        secret = await CliUx.ux.prompt('Enter secret', { type: 'normal' });
       }
     }
 

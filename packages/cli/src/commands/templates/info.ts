@@ -1,8 +1,7 @@
 import { mockableFactories } from '@meeco/sdk';
 import { Slot } from '@meeco/vault-api-sdk';
-import { flags as _flags } from '@oclif/command';
+import { CliUx, Flags as _flags } from '@oclif/core';
 import { CLIError } from '@oclif/errors';
-import { cli } from 'cli-ux';
 import { AuthConfig } from '../../configs/auth-config';
 import { TemplateConfig } from '../../configs/template-config';
 import authFlags from '../../flags/auth-flags';
@@ -39,7 +38,7 @@ export default class TemplatesInfo extends MeecoCommand {
 
   async run() {
     try {
-      const { flags, args } = this.parse(this.constructor as typeof TemplatesInfo);
+      const { flags, args } = await this.parse(this.constructor as typeof TemplatesInfo);
       const { auth, classificationName, classificationScheme } = flags;
       const { templateName } = args;
       const environment = await this.readEnvironmentFile();
@@ -49,7 +48,7 @@ export default class TemplatesInfo extends MeecoCommand {
       }
       authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
       const service = mockableFactories.vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
-      cli.action.start(`Fetching template '${templateName}'`);
+      CliUx.ux.action.start(`Fetching template '${templateName}'`);
       const result = await service.itemTemplatesGet(classificationScheme, classificationName);
       const matchingTemplates = result.item_templates.filter(
         template => template.name === templateName
@@ -70,7 +69,7 @@ export default class TemplatesInfo extends MeecoCommand {
         slots: template.slot_ids.map(slot => keyedSlots[slot]) as Slot[],
       }));
 
-      cli.action.stop();
+      CliUx.ux.action.stop();
       this.printYaml(TemplateConfig.encodeFromJSON(mappedTemplates));
     } catch (err) {
       await this.handleException(err);

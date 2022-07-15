@@ -14,7 +14,7 @@ export default class DelegationLoadAuthConfig extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof DelegationLoadAuthConfig);
+    const { flags } = await this.parse(this.constructor as typeof DelegationLoadAuthConfig);
     const { auth } = flags;
     const environment = await this.readEnvironmentFile();
     const authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);

@@ -1,5 +1,5 @@
 import { ConnectionService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { ConnectionConfig } from '../../configs/connection-config';
 import MeecoCommand from '../../util/meeco-command';
 
@@ -16,7 +16,7 @@ export default class ConnectionsCreate extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(ConnectionsCreate);
+    const { flags } = await this.parse(ConnectionsCreate);
     const { config } = flags;
 
     try {

@@ -1,6 +1,5 @@
 import { getAllPaged, mockableFactories, reducePages, reportIfTruncated } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
-import { cli } from 'cli-ux';
+import { CliUx, Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import { TemplateConfig } from '../../configs/template-config';
 import authFlags from '../../flags/auth-flags';
@@ -36,7 +35,7 @@ export default class TemplatesList extends MeecoCommand {
 
   async run() {
     try {
-      const { flags } = this.parse(this.constructor as typeof TemplatesList);
+      const { flags } = await this.parse(this.constructor as typeof TemplatesList);
       const { auth, all, classificationName, classificationScheme, label } = flags;
       const environment = await this.readEnvironmentFile();
       let authConfig = (await this.readConfigFromFile(AuthConfig, auth))?.overrideWithFlags(flags);
@@ -45,7 +44,7 @@ export default class TemplatesList extends MeecoCommand {
       }
       authConfig = this.returnDelegationAuthIfDelegationIdPresent(authConfig);
       const service = mockableFactories.vaultAPIFactory(environment)(authConfig).ItemTemplateApi;
-      cli.action.start('Fetching available templates');
+      CliUx.ux.action.start('Fetching available templates');
       const templates = all
         ? await getAllPaged(cursor =>
             service.itemTemplatesGet(classificationScheme, classificationName, label, cursor)
@@ -54,7 +53,7 @@ export default class TemplatesList extends MeecoCommand {
             .itemTemplatesGet(classificationScheme, classificationName, label)
             .then(reportIfTruncated(this.warn));
 
-      cli.action.stop();
+      CliUx.ux.action.stop();
       this.printYaml(TemplateConfig.encodeListFromJSON(templates));
     } catch (err) {
       await this.handleException(err);

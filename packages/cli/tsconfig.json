@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./lib",
-    "rootDir": "./src", // without this importing file-storage-node plays nicely with vscode, with this the commands actually run since oclif depends on this to find the commands
     "skipLibCheck": true
   },
   "include": ["src"]

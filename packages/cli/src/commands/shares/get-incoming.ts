@@ -21,7 +21,7 @@ export default class SharesGetIncoming extends MeecoCommand {
   ];
 
   async run() {
-    const { args, flags } = this.parse(this.constructor as typeof SharesGetIncoming);
+    const { args, flags } = await this.parse(this.constructor as typeof SharesGetIncoming);
 
     const { auth } = flags;
     const { shareId } = args;
