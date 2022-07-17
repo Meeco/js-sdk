@@ -115,7 +115,7 @@
   "repository": "Meeco/cli",
   "scripts": {
     "docs": "npm run readme",
-    "readme": "node -r tsconfig-paths/register node_modules/.bin/oclif-dev readme && prettier --write README.md",
+    "readme": "node -r tsconfig-paths/register node_modules/.bin/oclif readme && prettier --write README.md",
     "lint": "tslint -p . -t stylish -c ../../tslint.json && tslint -p test/tsconfig.json -t stylish -c ../../tslint.json",
     "posttest": "npm run lint && npm run format:check",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
