@@ -35,7 +35,7 @@ pipeline {
           
           image.inside("-v $WORKSPACE") {
             sh """
-              npm install --force;
+              npm install;
               npm run bootstrap;
               npm run build -- --ignore @meeco/cli
               npx lerna run prepack --scope @meeco/cli

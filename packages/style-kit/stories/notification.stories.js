@@ -1,10 +1,8 @@
 import mdx from './notification.mdx';
 import styles from 'style-loader!./notification.stories.scss';
-import { withKnobs, text, boolean } from '@storybook/addon-knobs';
 
 export default {
   title: 'Notifications',
-  decorators: [withKnobs],
   parameters: { docs: { page: mdx } },
 };
 
@@ -30,12 +28,7 @@ export const notificationWithText = () => /*html*/ `
   </div>
 </div>`;
 
-export const Notifications = () => {
-  const notificationText = text('Notification Text', 'Default notification text');
-  const buttonText = text('Button Text', 'Cancel');
-  const showIcon = boolean('Show Icon', true);
-  const showClose = boolean('Show Close Icon', true);
-
+export const Notifications = ({ notification, button, showIcon, showClose }) => {
   return /*html*/ `
 
 <div class="${styles.story}">
@@ -45,7 +38,7 @@ export const Notifications = () => {
   <div class="notification" style="width:400px;">
     <div class="content">
         ${showIcon ? `<i>tick-circled-reverse</i>` : ''}
-        <span>${notificationText}</span>
+        <span>${notification}</span>
         ${showClose ? `<button id="close-notification"><i>cross</i></button>` : ''}
     </div>
   </div>
@@ -57,12 +50,19 @@ export const Notifications = () => {
   <div class="notification">
     <div class="content">
         ${showIcon ? `<i>tick-circled-reverse</i>` : ''}
-        ${notificationText}
-        <button id="close-notification">${buttonText}</button>
+        ${notification}
+        <button id="close-notification">${button}</button>
     </div>
   </div>
 
 
 </div>
 `;
+};
+
+Notifications.args = {
+  notification: 'Default notification text',
+  button: 'Cancel',
+  showIcon: true,
+  showClose: true,
 };

@@ -1,7 +1,6 @@
 import styles from 'style-loader!./icon.stories.scss';
-import { withKnobs, select } from '@storybook/addon-knobs';
 
-export default { title: 'Icons', decorators: [withKnobs] };
+export default { title: 'Icons' };
 
 const icon_list = [
   'add-circled-reverse',
@@ -106,9 +105,7 @@ const icon_list = [
   'zoom',
 ];
 
-export const meecoIcons = () => {
-  const iconName = select('Icon name', icon_list, 'vault');
-
+export const meecoIcons = ({ iconName }) => {
   let iconTable =
     '<table class="fixed"><tr><th>Icon</th><th>Ligature value</th></tr></table><table>';
 
@@ -160,4 +157,8 @@ export const meecoIcons = () => {
 </div>
 
   `;
+};
+
+meecoIcons.argTypes = {
+  iconName: { name: 'Icon Name', defaultValue: 'undo', type: 'select', options: icon_list },
 };

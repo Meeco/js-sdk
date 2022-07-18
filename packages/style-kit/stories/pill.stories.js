@@ -1,14 +1,12 @@
 import mdx from './pill.mdx';
 import styles from 'style-loader!./pill.stories.scss';
-import { color, withKnobs } from '@storybook/addon-knobs';
 
 export default {
   title: 'Pills and Tabs',
-  decrators: [withKnobs],
   parameters: { docs: { page: mdx } },
 };
 
-const sampleColors = ['red', 'blue', 'grey', 'green'];
+// const sampleColors = ['red', 'blue', 'grey', 'green'];
 
 export const pill = () => /*html*/ `
 <div class=${styles.story}>
@@ -23,8 +21,7 @@ export const tabs = () => /*html*/ `
   </div>
 </div>`;
 
-export const pillsAndTabs = () => {
-  const background = color('Background Color', '#e61e3d');
+export const pillsAndTabs = ({ background }) => {
   return /*html*/ `
   <div class="${styles.story}">
     <span class="pill">A Simple Pill</span>
@@ -49,4 +46,8 @@ export const pillsAndTabs = () => {
     </div>
   </div>
 `;
+};
+
+pillsAndTabs.argTypes = {
+  background: { name: 'Background Color', defaultValue: '#e61e3d', control: 'color' },
 };

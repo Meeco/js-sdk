@@ -43,7 +43,6 @@ If this is the case to get started with a new package.
 2. Copy the contents from the `/examples/example-package` directory into the newly created directory.
 3. Change the name of the package in the `package.json`, preferable to something starting with `@meeco/` for most scenarios.
 4. Run `npm install` from the root of this project
-  4.1 `--force` flag might be needed for `@storybook/addon-knobs` to get installed. (TODO: migrate it's functionality to `@storybook/addon-controls`)
 5. Run `npm build` from inside the directory of the new package to make sure it's all working.
 6. Add the name of the package along with the directory of the src to the root's tsconfig.json under `"paths"`. e.g. `"@meeco/example-package": ["packages/example-package/src"]`
 
