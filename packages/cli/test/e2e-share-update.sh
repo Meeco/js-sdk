@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# INFO
+# expects yq version 4
+
 set -e
 shopt -s expand_aliases
 alias run="node --require tsconfig-paths/register ./bin/run"

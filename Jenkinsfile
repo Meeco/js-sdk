@@ -31,16 +31,25 @@ pipeline {
           echo "The KEYSTORE_URL is ${env.KEYSTORE_URL}"
           echo "The SUBSCRIPTION_KEY is ${env.SANDBOX_VAULT_SUBSCRIPTION_KEY}"
 
-          docker.image('nikolaik/python-nodejs').inside ("--user=root") {
+          image = docker.image('nikolaik/python-nodejs:python3.10-nodejs16')
+          
+          image.inside("-v $WORKSPACE") {
             sh """
-              npm install;
+              npm install --force;
               npm run bootstrap;
-              git submodule init;
-              git submodule update;
+              npm run build -- --ignore @meeco/cli
+              npx lerna run prepack --scope @meeco/cli
+            """
+          }
+
+          image.inside("-v $WORKSPACE --user=root") {
+            sh """
               apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com;
               apt-get update;
               apt-get install -y jq;
               pip3 install yq;
+              git submodule init;
+              git submodule update;
               cd packages/cli/;
               yq -y '(.vault.url) = "${env.VAULT_URL}" | (.keystore.url) = "${env.KEYSTORE_URL}" | (.vault,.keystore).subscription_key = "${env.SANDBOX_VAULT_SUBSCRIPTION_KEY}"' example.environment.yaml > .environment.yaml;
               cat .environment.yaml;
