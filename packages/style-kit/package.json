@@ -6,7 +6,6 @@
   "main": "build/bundle.js",
   "scripts": {
     "build": "webpack",
-    "demo": "webpack-dev-server demo",
     "cypress": "cypress open",
     "docs": "build-storybook -c .storybook -o ../../docs/style-kit",
     "start": "npm run storybook",
@@ -49,7 +48,6 @@
     "start-server-and-test": "^1.12.3",
     "style-loader": "^3.3.1",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.9.3",
     "webpack": "^5.73.0"
   }
 }
