@@ -1,4 +1,4 @@
-import { Item, ItemApi, ItemsResponse1, Share } from '@meeco/vault-api-sdk';
+import { Item, ItemApi, ItemsResponse, Share } from '@meeco/vault-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
 import DecryptedKeypair from '../models/decrypted-keypair';
 import { ItemUpdate } from '../models/item-update';
@@ -29,8 +29,7 @@ export interface IItemListFilterOptions {
 }
 
 /** DecryptedItems together with response metadata if needed for paging etc. */
-// TODO: fix ItemsResponse1 when new SDK is available
-export type DecryptedItems = Pick<ItemsResponse1, 'meta' | 'next_page_after'> & {
+export type DecryptedItems = Pick<ItemsResponse, 'meta' | 'next_page_after'> & {
   items: DecryptedItem[];
 };
 
@@ -106,7 +105,7 @@ export class ItemService extends Service<ItemApi> {
     credentials: IVaultToken,
     listFilterOptions?: IItemListFilterOptions,
     options?: IPageOptions
-  ): Promise<ItemsResponse1> {
+  ): Promise<ItemsResponse> {
     const { classificationNodeName, classificationNodeNames } =
       this.getClassifications(listFilterOptions);
 
@@ -153,7 +152,7 @@ export class ItemService extends Service<ItemApi> {
   public async listAll(
     credentials: IVaultToken,
     listFilterOptions?: IItemListFilterOptions
-  ): Promise<ItemsResponse1> {
+  ): Promise<ItemsResponse> {
     const api = this.vaultAPIFactory(credentials).ItemApi;
 
     const { classificationNodeName, classificationNodeNames } =
