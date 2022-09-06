@@ -79,7 +79,7 @@ export function* pagedToGenerator<T extends IPagedResponse>(
  * @param a
  * @param b
  */
-function combinePages<T>(checkObjects: boolean) {
+function combinePages<T extends {}>(checkObjects: boolean) {
   return (a: T, b: T) => {
     const result: T = { ...a };
 
@@ -108,7 +108,7 @@ function combinePages<T>(checkObjects: boolean) {
  * Any object-valued properties with raise an error.
  * Primitive-typed properties will take the last value.
  */
-export function reducePages<T>(pages: T[]): T {
+export function reducePages<T extends {}>(pages: T[]): T {
   return pages.reduce(combinePages(true));
 }
 
@@ -116,7 +116,7 @@ export function reducePages<T>(pages: T[]): T {
  * Join responses by appending individual components.
  * Any non-array properties will have the value of the last response.
  */
-export function reducePagesTakeLast<T>(pages: T[]): T {
+export function reducePagesTakeLast<T extends {}>(pages: T[]): T {
   return pages.reduce(combinePages(false));
 }
 
