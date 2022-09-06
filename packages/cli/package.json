@@ -11,57 +11,52 @@
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
     "@meeco/file-storage-node": "5.0.1",
-    "@meeco/keystore-api-sdk": "^5.8.0",
-    "@meeco/sdk": "^4.0.0",
-    "@meeco/vault-api-sdk": "34.2.1-stage.20210917081401.619b618",
-    "@oclif/command": "^1.8.0",
-    "@oclif/config": "^1.17.0",
-    "@oclif/plugin-help": "^3.2.2",
-    "@oclif/plugin-update": "~1.3.10",
-    "@types/node-forge": "~0.9.7",
-    "axios": "^0.21.1",
-    "body-parser": "^1.19.0",
-    "chalk": "^4.1.1",
-    "cli-ux": "~5.5.1",
-    "date-fns": "^2.21.3",
-    "debug": "^4.3.1",
-    "express": "^4.17.1",
+    "@meeco/keystore-api-sdk": "8.1.4-stage.20220707081255.9018cd6",
+    "@meeco/sdk": "^4.0.2",
+    "@meeco/vault-api-sdk": "37.1.15-develop.20220720121530.eed705a",
+    "oclif": "^3.1.0",
+    "@oclif/core": "^1.9.9",
+    "@oclif/plugin-version": "^1.1.1",
+    "@oclif/plugin-update": "^3.0.0",
+    "axios": "^0.27.2",
+    "body-parser": "^1.20.0",
+    "chalk": "^4.1.2",
+    "date-fns": "^2.28.0",
+    "debug": "^4.3.4",
+    "express": "^4.18.1",
     "form-data": "^4.0.0",
-    "globby": "~11.0.3",
     "jsrp": "~0.2.4",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "node-forge": "0.10.0",
-    "qs": "~6.10.1",
-    "tslib": "^2.2.0",
-    "yaml": "~1.10.2"
+    "qs": "^6.11.0",
+    "tslib": "^2.4.0",
+    "yaml": "~2.1.1"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.26.0",
-    "@oclif/test": "^1.2.8",
-    "@types/chai": "^4.2.18",
+    "@oclif/test": "^2.1.0",
+    "@types/chai": "^4.3.1",
     "@types/express": "^4.17.11",
-    "@types/jsrp": "~0.2.1",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^15.3.1",
+    "@types/jsrp": "~0.2.3",
     "@types/node-fetch": "^2.5.10",
-    "@types/sinon": "^10.0.0",
-    "@types/yaml": "~1.9.7",
-    "chai": "^4.3.4",
-    "lerna": "^4.0.0",
-    "mocha": "^8.4.0",
-    "nock": "^13.0.11",
-    "nyc": "~15.1.0",
-    "prettier": "^2.3.0",
-    "sinon": "^10.0.0",
-    "ts-mock-imports": "^1.3.6",
-    "ts-node": "^9.1.1",
-    "tsconfig-paths": "^3.9.0",
-    "tslint": "^6.1.3",
+    "@types/node-forge": "~0.9.7",
+    "@types/node": "^16.11.42",
+    "@types/mocha": "^9.1.1",
+    "@types/sinon": "^10.0.12",
+    "chai": "^4.3.6",
+    "lerna": "^5.1.6",
+    "ts-mocha": "^10.0.0",
+    "nock": "^13.2.8",
+    "prettier": "^2.7.1",
+    "sinon": "^14.0.0",
+    "ts-node": "^10.8.1",
+    "tsconfig-paths": "^4.0.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^4.2.4"
+    "tslint": "^6.1.3",
+    "typescript": "^4.7.4"
   },
   "engines": {
-    "node": "^16.2.0"
+    "node": "^16.15.1",
+    "npm": ">=8.0.0"
   },
   "files": [
     "/bin",
@@ -107,22 +102,29 @@
       }
     },
     "plugins": [
+      "@oclif/plugin-version",
       "@oclif/plugin-help"
+    ],
+    "additionalHelpFlags": [
+      "-h"
+    ],
+    "additionalVersionFlags": [
+      "-v"
     ]
   },
   "repository": "Meeco/cli",
   "scripts": {
     "docs": "npm run readme",
-    "readme": "node -r tsconfig-paths/register node_modules/.bin/oclif-dev readme && prettier --write README.md",
+    "readme": "node -r tsconfig-paths/register node_modules/.bin/oclif readme && prettier --write README.md",
     "lint": "tslint -p . -t stylish -c ../../tslint.json && tslint -p test/tsconfig.json -t stylish -c ../../tslint.json",
     "posttest": "npm run lint && npm run format:check",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
     "prepack": "touch package-lock.json && ./node_modules/.bin/tsc -p tsconfig.build.json",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "test": "ts-mocha -p ./test/tsconfig.json \"./test/**/*.test.ts\"",
     "prepkg": "npm run prepack",
     "build": "npm run pkg",
-    "pkg": "oclif-dev pack"
+    "pkg": "oclif pack tarballs"
   },
   "types": "lib/index.d.ts"
 }

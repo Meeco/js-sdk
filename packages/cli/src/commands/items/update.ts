@@ -1,5 +1,5 @@
 import { ClientTaskQueueService, ItemService, ItemUpdate, NewSlot } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import { ItemUpdateConfig } from '../../configs/item-update-config';
 import authFlags from '../../flags/auth-flags';
@@ -21,7 +21,7 @@ export default class ItemsUpdate extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof ItemsUpdate);
+    const { flags } = await this.parse(this.constructor as typeof ItemsUpdate);
     const { item, auth } = flags;
     const environment = await this.readEnvironmentFile();
 

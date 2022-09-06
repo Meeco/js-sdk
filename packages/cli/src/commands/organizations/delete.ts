@@ -23,7 +23,7 @@ export default class OrganizationsDelete extends MeecoCommand {
   ];
 
   async run() {
-    const { args, flags } = this.parse(this.constructor as typeof OrganizationsDelete);
+    const { args, flags } = await this.parse(this.constructor as typeof OrganizationsDelete);
 
     const { auth } = flags;
     const { id } = args;

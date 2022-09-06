@@ -1,10 +1,8 @@
 import mdx from './card.mdx';
-import { story } from 'style-loader!./card.stories.scss';
-import { withKnobs, text } from '@storybook/addon-knobs';
+import styles from 'style-loader!./card.stories.scss';
 
 export default {
   title: 'Cards',
-  decorators: [withKnobs],
   parameters: {
     docs: {
       page: mdx,
@@ -13,7 +11,7 @@ export default {
 };
 
 export const shadows = () => /*html*/ `
-<div class="${story} shadows">
+<div class="${styles.story} shadows">
   <p>Soft Shadow (Default for Cards)</p>
   <div class="card"></div>
   <p>Hard Shadow</p>
@@ -23,30 +21,31 @@ export const shadows = () => /*html*/ `
 </div>
 `;
 
-export const basicCard = () => {
-  const basicTitle = text('Basic Card Title', 'Basic Card');
-  const basicSubtitle = text('Basic Card Label', 'Sub-label (Optional)');
-
+export const basicCard = ({ title, subtitle }) => {
   return /*html*/ `
 
-  <div class="${story} advanced">
+  <div class="${styles.story} advanced">
     <p>Basic Card</p>
     <div class="card basic">
       <div class="content">
         <div class="icon"></div>
         <div>
-          <p class="card-label">${basicTitle}</p>
-          ${basicSubtitle ? `<p class="subtitle">${basicSubtitle}</p>` : ''}
+          <p class="card-label">${title}</p>
+          ${subtitle ? `<p class="subtitle">${subtitle}</p>` : ''}
         </div>
       </div>
     </div>
   </div>`;
 };
 
-export const cardWithFooter = () => {
-  const footerText = text('Card Footer Text', 'Some Footer Text');
+basicCard.args = {
+  title: 'Basic Card',
+  subtitle: 'Sub-label (Optional)',
+};
+
+export const cardWithFooter = ({ footer }) => {
   return /*html*/ `
-    <div class="${story} advanced">
+    <div class="${styles.story} advanced">
       <p>Card with a Footer</p>
       <div class="card">
         <div class="content">
@@ -54,14 +53,18 @@ export const cardWithFooter = () => {
           <p class="card-label">Default Card Label</p>
         </div>
         <div class="footer">
-          <p class="subtitle">${footerText}</p>
+          <p class="subtitle">${footer}</p>
         </div>
       </div>
     </div>`;
 };
 
+cardWithFooter.args = {
+  footer: 'Some Footer Text',
+};
+
 export const cardWithComplexFooter = () => /*html*/ `
-    <div class="${story} advanced">
+    <div class="${styles.story} advanced">
       <p>Complex Footers</p>
       <div class="card complex-footer">
         <div class="content">
@@ -81,7 +84,7 @@ export const cardWithComplexFooter = () => /*html*/ `
     </div>`;
 
 export const tile = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <div class="tile">
     <div class="content">
       <div class="icon"></div>

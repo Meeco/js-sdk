@@ -1,12 +1,12 @@
+import { CliUx } from '@oclif/core';
 import { expect } from '@oclif/test';
-import cli from 'cli-ux';
 import { readFileSync } from 'fs';
 import { customTest, outputFixture, testEnvironmentFile, testUserAuth } from '../../test-helpers';
 
 describe('shares:accept', () => {
   customTest
     .stdout()
-    .stub(cli, 'confirm', () => async () => 'Y')
+    .stub(CliUx.ux, 'confirm', () => async () => 'Y')
     .nock('https://sandbox.meeco.me/vault', mockVault)
     .run(['shares:accept', 'share1', ...testUserAuth, ...testEnvironmentFile])
     .it('accepts a share with terms after confirmation', ctx => {
@@ -39,7 +39,7 @@ function mockVault(api) {
         item_id: '',
         slot_id: null,
         public_key: '',
-        sharing_mode: 'owner',
+        onsharing_permitted: false,
         keypair_external_id: null,
         encrypted_dek: null,
         terms: 'Accept these or else',
@@ -62,7 +62,7 @@ function mockVault(api) {
         item_id: '',
         slot_id: null,
         public_key: '',
-        sharing_mode: 'owner',
+        onsharing_permitted: false,
         keypair_external_id: null,
         encrypted_dek: null,
         terms: null,

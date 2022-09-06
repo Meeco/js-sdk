@@ -1,27 +1,28 @@
-export default { title: 'Demo Display' };
-
-import { story } from 'style-loader!./demo-display.stories.scss';
-
+import styles from 'style-loader!./demo-display.stories.scss';
 import { useEffect } from '@storybook/client-api';
-
 import imagePlaceholder from '../assets/image-placeholder.png';
+
+export default { title: 'Demo Display' };
 
 export const mobileScreens = () => {
   useEffect(() => {
     const tabs = document.getElementsByClassName('tab');
+    const tabsArray = Array.from(tabs);
+
     const toggleTab = () => {
-      tabs.forEach(tab => {
+      tabsArray.forEach(tab => {
         tab.classList.contains('selected')
           ? tab.classList.remove('selected')
           : tab.classList.add('selected');
       });
     };
-    tabs.forEach(tab => {
+
+    tabsArray.forEach(tab => {
       tab.addEventListener('click', toggleTab);
     });
   });
   return /*html*/ `
-  <div class="${story} mobile">
+  <div class="${styles.story} mobile">
 
     <h1>Explore Meeco UI Components</h1>
 
@@ -229,7 +230,7 @@ export const mobileScreens = () => {
 
 export const dashboardDemo = () => {
   return /*html*/ `
-  <div class="${story} dashboard">
+  <div class="${styles.story} dashboard">
     <div class="sidebar">
       <ul>
         <li>Vault</li>
@@ -310,7 +311,7 @@ export const dashboardDemo = () => {
 
 export const kitchenSink = () => {
   return /*html*/ `
-  <div class="${story} sink-container">
+  <div class="${styles.story} sink-container">
     <div class="table-example">
       <h4>Table Example</h4>
       <table>

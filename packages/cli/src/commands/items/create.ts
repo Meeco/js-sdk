@@ -1,5 +1,5 @@
 import { ItemService, NewItem, NewSlot } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import { NewItemConfig } from '../../configs/new-item-config';
 import authFlags from '../../flags/auth-flags';
@@ -16,7 +16,7 @@ export default class ItemsCreate extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof ItemsCreate);
+    const { flags } = await this.parse(this.constructor as typeof ItemsCreate);
     const { item, auth } = flags;
     const environment = await this.readEnvironmentFile();
 

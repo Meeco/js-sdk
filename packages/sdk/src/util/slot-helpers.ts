@@ -1,5 +1,5 @@
 import { EncryptedSlotValue, Slot } from '@meeco/vault-api-sdk';
-import parameterize from 'parameterize';
+import parameterize from 'parameterize-js';
 import { SDKDecryptedSlot } from '../models/slot-types';
 import { SymmetricKey } from '../models/symmetric-key';
 import { IDEK } from '../services/service';
@@ -175,7 +175,7 @@ export default class SlotHelpers {
    * For example `A Slot/name?` becomes `a_slot_name`.
    */
   static nameFromLabel(label: string): string {
-    return parameterize(label, undefined, '_');
+    return parameterize(label, { separator: '_' });
   }
 
   /**

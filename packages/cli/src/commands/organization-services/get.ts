@@ -23,7 +23,7 @@ export default class OrganizationServicesGet extends MeecoCommand {
   ];
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof OrganizationServicesGet);
+    const { flags, args } = await this.parse(this.constructor as typeof OrganizationServicesGet);
     const { auth } = flags;
     const { organization_id, service_id } = args;
     const environment = await this.readEnvironmentFile();

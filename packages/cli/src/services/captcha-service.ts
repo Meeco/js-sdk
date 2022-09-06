@@ -1,6 +1,6 @@
 import { Environment } from '@meeco/sdk';
+import { CliUx } from '@oclif/core';
 import * as bodyParser from 'body-parser';
-import cli from 'cli-ux';
 import { Express } from 'express';
 import { Server } from 'http';
 // tslint:disable-next-line: no-var-requires
@@ -15,15 +15,15 @@ export class CaptchaService {
   constructor(private environment: Environment, private port = 5210) {}
 
   public async requestCaptchaToken(): Promise<string> {
-    cli.action.start('Starting server');
+    CliUx.ux.action.start('Starting server');
     await this.startServer();
-    await cli.open(
+    await CliUx.ux.open(
       `${this.environment.keystore.url}/home/captcha_callback_form?redirect_url=http://localhost:${this.port}&subscription-key=${this.environment.keystore.subscription_key}`
     );
-    cli.action.start('Please solve captcha in the browser - waiting for CAPTCHA token');
+    CliUx.ux.action.start('Please solve captcha in the browser - waiting for CAPTCHA token');
     const token = await this.tokenResult!;
     await this.stopServer();
-    cli.action.start('Got token');
+    CliUx.ux.action.start('Got token');
     return token;
   }
 

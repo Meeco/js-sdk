@@ -1,4 +1,4 @@
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import { ConnectionConfig } from '../../configs/connection-config';
 import MeecoCommand from '../../util/meeco-command';
@@ -23,7 +23,7 @@ export default class ConnectionsCreateConfig extends MeecoCommand {
   static args = [];
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof ConnectionsCreateConfig);
+    const { flags } = await this.parse(this.constructor as typeof ConnectionsCreateConfig);
     const { from, to } = flags;
     let fromUser = (await this.readConfigFromFile(AuthConfig, from))?.overrideWithFlags(flags);
     let toUser = (await this.readConfigFromFile(AuthConfig, to))?.overrideWithFlags(flags);

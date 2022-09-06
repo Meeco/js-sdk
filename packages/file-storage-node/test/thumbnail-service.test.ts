@@ -1,8 +1,8 @@
 import * as cryppo from '@meeco/cryppo';
 import { IFileStorageAuthConfiguration, ThumbnailTypes } from '@meeco/file-storage-common';
 import { fancy } from 'fancy-test';
+import * as sinon from 'sinon';
 import { ThumbnailService } from '../src/thumbnail-service';
-import sinon = require('sinon');
 
 const mock = require('mock-fs');
 
@@ -121,10 +121,6 @@ describe('ThumbnailService', () => {
         mock({
           'some/file.txt': 'abcd',
         });
-
-        sinon
-          .stub(cryppo, 'encryptWithKey')
-          .resolves({ serialized: 'abdDEF=' } as cryppo.IEncryptionResult);
 
         return new ThumbnailService(fakeVault, cryppo);
       })

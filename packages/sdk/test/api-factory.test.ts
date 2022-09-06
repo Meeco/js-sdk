@@ -20,7 +20,13 @@ describe('API Factories', () => {
         .matchHeader('X_MEECO_API_VERSION', '2.0.0')
         .matchHeader('X_MEECO_API_COMPONENT', 'keystore')
         .reply(200, {
-          status: 'ok',
+          keypair: {
+            id: 'my-id',
+            public_key: 'public-key-of-it',
+            encrypted_serialized_key: 'encrypted-key',
+            metadata: {},
+            external_identifiers: [],
+          },
         });
       const apiFactory = keystoreAPIFactory(<any>{
         keystore: {
@@ -31,9 +37,17 @@ describe('API Factories', () => {
       const forUser = apiFactory(<any>{
         keystore_access_token: 'my-keystore-token',
       });
+
       const result = await forUser.KeypairApi.keypairsIdGet('my-id');
+
       expect(result).to.eql({
-        status: 'ok',
+        keypair: {
+          id: 'my-id',
+          public_key: 'public-key-of-it',
+          encrypted_serialized_key: 'encrypted-key',
+          metadata: {},
+          external_identifiers: [],
+        },
       });
     });
 
@@ -46,11 +60,13 @@ describe('API Factories', () => {
         .matchHeader('X_MEECO_API_COMPONENT', 'keystore')
         .matchHeader('X_MY_CUSTOM_HEADER', 'foo')
         .reply(200, {
-          attachments: [],
-          classification_nodes: [],
-          shares: [],
-          slots: [],
-          thumbnails: [],
+          keypair: {
+            id: 'my-id',
+            public_key: 'public-key-of-it',
+            encrypted_serialized_key: 'encrypted-key',
+            metadata: {},
+            external_identifiers: [],
+          },
         });
       const apiFactory = keystoreAPIFactory(<any>{
         keystore: {
@@ -58,16 +74,25 @@ describe('API Factories', () => {
           url: 'https://meeco-keystore.example.com',
         },
       });
-      const forUser = apiFactory(<any>{
-        keystore_access_token: 'my-keystore-token',
-      });
-      const result = await forUser.KeypairApi.keypairsIdGet('my-id', {
-        headers: {
+      const forUser = apiFactory(
+        <any>{
+          keystore_access_token: 'my-keystore-token',
+        },
+        {
           X_MY_CUSTOM_HEADER: 'foo',
+        }
+      );
+      const result = await forUser.KeypairApi.keypairsIdGet('my-id');
+
+      expect(result).to.eql({
+        keypair: {
+          id: 'my-id',
+          public_key: 'public-key-of-it',
+          encrypted_serialized_key: 'encrypted-key',
+          metadata: {},
+          external_identifiers: [],
         },
       });
-      // tslint:disable-next-line
-      expect(result).to.be.ok;
     });
 
     it('captures api version issues and throws a special error', async () => {
@@ -78,16 +103,17 @@ describe('API Factories', () => {
           url: 'https://meeco-keystore.example.com',
         },
       });
-      const forUser = apiFactory(<any>{
-        keystore_access_token: 'my-keystore-token',
-      });
+      const forUser = apiFactory(
+        <any>{
+          keystore_access_token: 'my-keystore-token',
+        },
+        {
+          X_MY_CUSTOM_HEADER: 'foo',
+        }
+      );
       let error;
       try {
-        const result = await forUser.KeypairApi.keypairsIdGet('my-id', {
-          headers: {
-            X_MY_CUSTOM_HEADER: 'foo',
-          },
-        });
+        const result = await forUser.KeypairApi.keypairsIdGet('my-id');
         expect(result).to.eql({
           status: 'ok',
         });

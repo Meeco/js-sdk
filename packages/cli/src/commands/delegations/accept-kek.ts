@@ -21,7 +21,7 @@ export default class DelegationAcceptKek extends MeecoCommand {
   };
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof DelegationAcceptKek);
+    const { flags, args } = await this.parse(this.constructor as typeof DelegationAcceptKek);
     const { auth } = flags;
     const { connectionId } = args;
     const environment = await this.readEnvironmentFile();

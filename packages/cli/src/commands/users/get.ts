@@ -1,7 +1,6 @@
 import { UserService } from '@meeco/sdk';
 import { MeResponse } from '@meeco/vault-api-sdk';
-import { flags as _flags } from '@oclif/command';
-import cli from 'cli-ux';
+import { CliUx, Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import { UserDataConfig } from '../../configs/user-data-config';
 import userFlags from '../../flags/user-flags';
@@ -29,7 +28,7 @@ export default class GetUser extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof GetUser);
+    const { flags } = await this.parse(this.constructor as typeof GetUser);
 
     try {
       const environment = await this.readEnvironmentFile();
@@ -47,7 +46,7 @@ export default class GetUser extends MeecoCommand {
       if (secret) {
         if (!password) {
           while (!password) {
-            password = await cli.prompt('Enter your password', { type: 'hide' });
+            password = await CliUx.ux.prompt('Enter your password', { type: 'hide' });
           }
         }
 

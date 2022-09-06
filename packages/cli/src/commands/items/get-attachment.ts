@@ -1,7 +1,7 @@
 import { EncryptionKey } from '@meeco/cryppo';
 import { AttachmentService } from '@meeco/file-storage-node';
 import { ItemService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
 import { authFlags } from '../../flags/auth-flags';
@@ -33,7 +33,7 @@ export default class ItemsGetAttachment extends MeecoCommand {
   ];
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof ItemsGetAttachment);
+    const { flags, args } = await this.parse(this.constructor as typeof ItemsGetAttachment);
     const environment = await this.readEnvironmentFile();
     const { auth, outputPath } = flags;
     const { itemId, slotId } = args;

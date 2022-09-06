@@ -179,7 +179,7 @@ async function createChildUser() {
       STATE.user,
       'child_connection_' + Date.now()
     );
-    $set('accountOwnerId', delegation.vault_account_owner_id);
+    $set('accountOwnerId', delegation.vault_account_owner_id || '');
     $set('delegateUserData', JSON.stringify(delegation, null, 2));
 
     checkAccountOwnerId();

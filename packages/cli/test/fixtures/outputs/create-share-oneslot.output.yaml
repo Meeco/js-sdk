@@ -7,7 +7,7 @@ shares:
     item_id: from_user_vault_item_to_share_id
     slot_id: slot_a
     public_key: to_user_public_key
-    sharing_mode: owner
+    onsharing_permitted: false
     keypair_external_id: to_user_keypair_external_id
     encrypted_dek: "[serialized][rsa_encrypted]randomly_generated_key[with
       to_user_public_key]"

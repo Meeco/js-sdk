@@ -22,9 +22,10 @@ export const ThumbnailTypes: ThumbnailType[] = [
 /**
  * Convert a string like "128x128/jpg" to mimeType + file extension, e.g. "image/jpg" and "jpg".
  */
-export function thumbSizeTypeToMimeExt(
-  sizeTypeString: ThumbnailType | string
-): { mimeType: string; fileExtension: string } {
+export function thumbSizeTypeToMimeExt(sizeTypeString: ThumbnailType | string): {
+  mimeType: string;
+  fileExtension: string;
+} {
   let mimeType;
   let fileExtension;
   switch (sizeTypeString.split('/')[1]) {
@@ -113,8 +114,8 @@ export class ThumbnailService {
     let urlResponse: RedirectResponse;
     try {
       urlResponse = await api.thumbnailsIdGet(id);
-    } catch (e) {
-      throw new Error('Could not get Thumbnail URL. Http code: ' + e.status);
+    } catch (e: any) {
+      throw new Error('Could not get Thumbnail URL. Http code: ' + e?.status);
     }
 
     const url = urlResponse.redirect_url;
@@ -143,8 +144,8 @@ export class ThumbnailService {
       }
 
       return decryptedContents;
-    } catch (e) {
-      throw new Error('Failed to decrypt downloaded file: ' + e.message);
+    } catch (e: any) {
+      throw new Error('Failed to decrypt downloaded file: ' + e?.message);
     }
   }
 }

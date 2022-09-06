@@ -4,9 +4,10 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   ...config,
+  mode: 'production',
   optimization: {
     minimize: true,
-    minimizer: [new TerserPlugin()]
+    minimizer: [new TerserPlugin()],
   },
-  plugins: [...(config.plugins || []), new CleanWebpackPlugin()]
+  plugins: [...(config.plugins || []), new CleanWebpackPlugin()],
 };

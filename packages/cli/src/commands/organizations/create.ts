@@ -1,5 +1,5 @@
 import { OrganizationService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationConfig } from '../../configs/organization-config';
 import authFlags from '../../flags/auth-flags';
@@ -25,7 +25,7 @@ or rejected by meeco`;
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof CreateOrganisation);
+    const { flags } = await this.parse(this.constructor as typeof CreateOrganisation);
     const { organizationConfig, auth } = flags;
     const environment = await this.readEnvironmentFile();
 

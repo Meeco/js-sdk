@@ -13,16 +13,17 @@
     "pretest": "ts-node scripts/check-packages.ts"
   },
   "devDependencies": {
-    "@types/node": "^15.3.1",
-    "chalk": "^4.1.1",
-    "cypress": "^4.12.1",
-    "lerna": "^4.0.0",
-    "semver": "^7.3.5",
-    "ts-node": "^9.1.1",
-    "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.2.4"
+    "@types/node": "^16.11.42",
+    "chalk": "^4.1.2",
+    "cypress": "^4.5.0",
+    "lerna": "^5.1.6",
+    "semver": "^7.3.7",
+    "ts-node": "^10.8.1",
+    "tsconfig-paths": "^4.0.0",
+    "typescript": "^4.7.4"
   },
   "engines": {
-    "node": "^16.2.0"
+    "node": "^16.15.1",
+    "npm": ">=8.0.0"
   }
 }

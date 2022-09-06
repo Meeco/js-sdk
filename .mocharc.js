@@ -1,7 +1,7 @@
 module.exports = {
-  require: ['ts-node/register', 'tsconfig-paths/register'],
+  require: ['tsconfig-paths/register'],
   'watch-extensions': ['ts'],
   reporter: 'spec',
   recursive: true,
-  timeout: 50000
+  timeout: 50000,
 };

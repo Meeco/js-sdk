@@ -21,5 +21,5 @@
       "@meeco/file-storage-common": ["packages/file-storage-common/src"]
     }
   },
-  "exclude": ["node_modules", "dist", "lib"]
+  "exclude": ["node_modules", "dist", "lib"],
 }

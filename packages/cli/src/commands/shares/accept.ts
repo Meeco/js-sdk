@@ -1,7 +1,6 @@
 import { ShareService, vaultAPIFactory } from '@meeco/sdk';
 import { ShareAcceptanceRequiredEnum } from '@meeco/vault-api-sdk';
-import { flags as _flags } from '@oclif/command';
-import cli from 'cli-ux';
+import { CliUx, Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
@@ -28,7 +27,7 @@ export default class SharesAccept extends MeecoCommand {
   ];
 
   async run() {
-    const { args, flags } = this.parse(this.constructor as typeof SharesAccept);
+    const { args, flags } = await this.parse(this.constructor as typeof SharesAccept);
     const { auth, yes } = flags;
     const { shareId } = args;
 
@@ -51,7 +50,7 @@ export default class SharesAccept extends MeecoCommand {
       if (share.acceptance_required === ShareAcceptanceRequiredEnum.AcceptanceRequired) {
         this.log('Share Terms: ' + share.terms);
         if (!yes) {
-          const willAccept = await cli.confirm('Do you accept the terms?');
+          const willAccept = await CliUx.ux.confirm('Do you accept the terms?');
           if (!willAccept) {
             this.finish('Share terms not accepted');
           }

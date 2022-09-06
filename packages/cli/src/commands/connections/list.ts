@@ -14,7 +14,7 @@ export default class ConnectionsList extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(ConnectionsList);
+    const { flags } = await this.parse(ConnectionsList);
     const { auth, all } = flags;
     try {
       const environment = await this.readEnvironmentFile();

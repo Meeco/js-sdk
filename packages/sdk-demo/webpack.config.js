@@ -2,6 +2,7 @@ const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
   entry: {
@@ -42,8 +43,15 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     plugins: [new TsconfigPathsPlugin({ configFile: path.resolve('./tsconfig.json') })],
+    fallback: {
+      stream: require.resolve('stream-browserify'),
+      crypto: false,
+    },
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      process: 'process',
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/index.html'),
       chunks: ['styles'],

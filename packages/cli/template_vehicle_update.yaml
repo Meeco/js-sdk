@@ -1,14 +1,14 @@
 kind: Item
 spec:
-  id: ''
+  id: '626b842a-df42-466a-ad80-9951b03bc966'
   slots:
     - name: purchase_date
-      value: ''
+      value: '30000101'
     - name: model_make
-      value: ''
+      value: 'XYZ123'
     - name: type
-      value: ''
+      value: 'Toyota'
     - name: licence_plate
-      value: ''
+      value: 'YOOO'
     - name: vin
-      value: ''
+      value: 'VIN00000000'

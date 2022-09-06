@@ -1,11 +1,16 @@
 import * as Keystore from '@meeco/keystore-api-sdk';
 import * as Vault from '@meeco/vault-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
-import { blue, green } from 'chalk';
 import { debug } from 'debug';
 import { Environment } from '../models/environment';
 import { IKeystoreToken, IVaultToken } from '../services/service';
 import SDKFormData from './sdk-form-data';
+
+/**
+ * INFO: using 'import' statement causes typescript errors either in tests or in built version of the package
+ */
+/* tslint:disable no-var-requires */
+const chalk = require('chalk');
 
 let fetchLib = (<any>global).fetch;
 
@@ -62,10 +67,10 @@ const vaultAPIKeys = (environment: Environment, userAuth: IVaultToken) => (name:
   }[name] as string);
 
 function fetchInterceptor(url, options) {
-  debugCurl(blue(`Sending Request:`));
+  debugCurl(chalk.blue(`Sending Request:`));
   debugCurl(toCurl(url, options));
   return fetchLib(url, options).then(async response => {
-    debugCurl(green(`Received Response:`));
+    debugCurl(chalk.green(`Received Response:`));
     debugCurl(`\
 status: ${response.status}
 statusText: ${response.statusText}
@@ -96,16 +101,7 @@ const callApiWithHeaders = (
     fetchInterceptor
   );
   const apiMethod = apiInstance[apiMethodName];
-  // swagger-codegen style headers (Keystore still uses swagger-codegen)
-  if (apiInstance.constructor.__proto__ === Keystore.BaseAPI) {
-    const argsCount = apiMethod.length;
-    const fetchOptions = args[argsCount - 1] || {};
-    fetchOptions.headers = {
-      ...headers,
-      ...fetchOptions.headers,
-    };
-    args[argsCount - 1] = fetchOptions;
-  }
+
   return apiMethod.call(apiInstance, ...args).catch(err => {
     if (err.status === 426) {
       throw new Error(

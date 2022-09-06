@@ -20,7 +20,7 @@ export default class OrganizationMembersList extends MeecoCommand {
 
   async run() {
     try {
-      const { flags, args } = this.parse(this.constructor as typeof OrganizationMembersList);
+      const { flags, args } = await this.parse(this.constructor as typeof OrganizationMembersList);
       const { auth, all } = flags;
       const { organization_id } = args;
 

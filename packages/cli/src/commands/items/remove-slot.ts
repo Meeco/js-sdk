@@ -16,7 +16,7 @@ export default class ItemsRemoveSlot extends MeecoCommand {
   static args = [{ name: 'slotId', required: true }];
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof ItemsRemoveSlot);
+    const { flags, args } = await this.parse(this.constructor as typeof ItemsRemoveSlot);
     const environment = await this.readEnvironmentFile();
     const { auth } = flags;
     const { slotId } = args;

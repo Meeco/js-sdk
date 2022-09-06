@@ -18,7 +18,7 @@ describe('shares:create', () => {
         item_id: 'from_user_vault_item_to_share_id',
         slot_id: null,
         public_key: 'to_user_public_key',
-        sharing_mode: 'owner',
+        onsharing_permitted: true,
         keypair_external_id: 'to_user_keypair_external_id',
         encrypted_dek: '[serialized][rsa_encrypted]randomly_generated_key[with to_user_public_key]',
         terms: '',
@@ -47,7 +47,7 @@ describe('shares:create', () => {
       expect(itemId).to.eql('from_user_vault_item_to_share_id');
       expect(options).to.deep.equal({
         expires_at: new Date(current_year + '-12-30T13:00:00.000Z'),
-        sharing_mode: 'anyone',
+        onsharing_permitted: true,
         acceptance_required: 'acceptance_not_required',
         terms: undefined,
       });
@@ -65,7 +65,7 @@ describe('shares:create', () => {
         item_id: 'from_user_vault_item_to_share_id',
         slot_id: 'slot_a',
         public_key: 'to_user_public_key',
-        sharing_mode: 'owner',
+        onsharing_permitted: false,
         keypair_external_id: 'to_user_keypair_external_id',
         encrypted_dek: '[serialized][rsa_encrypted]randomly_generated_key[with to_user_public_key]',
         terms: '',
@@ -90,7 +90,7 @@ describe('shares:create', () => {
     .it('can share a single slot', () => {
       expect(stub2.args[0][3]).to.deep.equal({
         expires_at: new Date(current_year + '-12-30T13:00:00.000Z'),
-        sharing_mode: 'owner',
+        onsharing_permitted: false,
         slot_id: 'slot_a',
         acceptance_required: 'acceptance_not_required',
         terms: undefined,

@@ -13,5 +13,5 @@ spec:
     intent: delegate
     role: reader
     delegation_token: 7aa22b5d-0413-41e2-9cdc-47e11c2b3540
-  expire_at: "2021-07-27T05:31:32.795Z"
+  expire_at: 2021-07-27T05:31:32.795Z
   shares_to_be_created: 0

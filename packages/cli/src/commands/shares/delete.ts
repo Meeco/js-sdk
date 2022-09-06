@@ -21,7 +21,7 @@ export default class SharesDelete extends MeecoCommand {
   ];
 
   async run() {
-    const { args, flags } = this.parse(this.constructor as typeof SharesDelete);
+    const { args, flags } = await this.parse(this.constructor as typeof SharesDelete);
 
     const { auth } = flags;
     const { shareId } = args;

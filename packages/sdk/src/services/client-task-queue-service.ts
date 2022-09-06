@@ -178,7 +178,7 @@ export class ClientTaskQueueService extends Service<ClientTaskQueueApi> {
       } catch (error) {
         this.logger.warn(`Task with id=${task.id} failed!`);
         task.state = ClientTaskStateEnum.Failed;
-        taskReport.failed.push({ ...task, failureReason: error?.body });
+        taskReport.failed.push({ ...task, failureReason: (error as any)?.body });
       }
     };
 

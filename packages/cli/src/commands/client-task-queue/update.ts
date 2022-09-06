@@ -1,5 +1,5 @@
 import { ClientTaskQueueService, ClientTaskState } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import authFlags from '../../flags/auth-flags';
 import MeecoCommand from '../../util/meeco-command';
@@ -31,7 +31,7 @@ export default class ClientTaskQueueUpdate extends MeecoCommand {
   ];
 
   async run() {
-    const { flags, args } = this.parse(this.constructor as typeof ClientTaskQueueUpdate);
+    const { flags, args } = await this.parse(this.constructor as typeof ClientTaskQueueUpdate);
     const { set, auth } = flags;
     const { tasks_file } = args;
     const environment = await this.readEnvironmentFile();

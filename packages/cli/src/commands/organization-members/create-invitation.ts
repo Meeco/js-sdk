@@ -1,5 +1,5 @@
 import { OrganizationMemberRoles, OrganizationMembersService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { InvitationConfig } from '../../configs/invitation-config';
 import { OrganizationAuthConfig } from '../../configs/organization-auth-config';
 import { OrganizationConfig } from '../../configs/organization-config';
@@ -30,7 +30,7 @@ export default class OrganizationMembersCreateInvitation extends MeecoCommand {
   ];
 
   async run() {
-    const { flags, args } = this.parse(
+    const { flags, args } = await this.parse(
       this.constructor as typeof OrganizationMembersCreateInvitation
     );
     const { org, auth } = flags;

@@ -1,5 +1,5 @@
 import { OrganizationServicesService } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { AuthConfig } from '../../configs/auth-config';
 import { OrganizationServiceConfig } from '../../configs/organization-service-config';
 import authFlags from '../../flags/auth-flags';
@@ -21,7 +21,7 @@ export default class OrganizationServicesLogin extends MeecoCommand {
   };
 
   async run() {
-    const { flags } = this.parse(this.constructor as typeof OrganizationServicesLogin);
+    const { flags } = await this.parse(this.constructor as typeof OrganizationServicesLogin);
     const { auth, organizationServiceConfig } = flags;
     const environment = await this.readEnvironmentFile();
 

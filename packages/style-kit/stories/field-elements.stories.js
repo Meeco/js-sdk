@@ -1,5 +1,5 @@
 import mdx from './field-elements.mdx';
-import { story } from 'style-loader!./field-elements.stories.scss';
+import styles from 'style-loader!./field-elements.stories.scss';
 import placeholder from '../assets/image-placeholder.png';
 
 export default {
@@ -12,7 +12,7 @@ export default {
 };
 
 export const inputs = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <label for="fname">First name</label>
   <input name="fname" id="fname" type="text" placeholder="First Name"/>
   <br/>
@@ -20,13 +20,13 @@ export const inputs = () => /*html*/ `
 </div>`;
 
 export const datePicker = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <label>Date field label</label>
   <input type="date" placeholder="yyyy-mm-dd" />
 </div>`;
 
 export const dropdownInput = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <select class="dropdown-input">
     <option>Option 1</option>
     <option>Option 2</option>
@@ -35,7 +35,7 @@ export const dropdownInput = () => /*html*/ `
 </div>`;
 
 export const editMode = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <p>Field elements in edit mode</p>
 
   <div class="container">
@@ -62,7 +62,7 @@ export const editMode = () => /*html*/ `
 `;
 
 export const viewMode = () => /*html*/ `
-<div class=${story}>
+<div class=${styles.story}>
   <p>Field elements in View Mode</p>
 
     <div class="container">

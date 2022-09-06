@@ -15,7 +15,6 @@ import {
   Secrets,
   ShareService,
   ShareType,
-  SharingMode,
   TemplateService,
   UserService,
 } from '@meeco/sdk';
@@ -94,7 +93,7 @@ async function getTemplates(auth: AuthData): Promise<SDKTemplate[]> {
 
     // note that SDKtemplate constructor filters the correct slots from the response
     return templates.item_templates.map(t => new SDKTemplate(t, templates.slots));
-  } catch (error) {
+  } catch (error: any) {
     log(error.message || error);
     throw error;
   }
@@ -280,7 +279,7 @@ function AppComponent() {
 
         state.item = item;
       }
-    } catch (error) {
+    } catch (error: any) {
       log(error.message || error);
       throw error;
     }
@@ -566,7 +565,7 @@ function ExistingItemComponent(vInit: {
           value: JSON.stringify(vnode.attrs.item, null, 2),
         }),
         // only if we can onshare
-        vnode.attrs.item.isOwned || vnode.attrs.share?.sharing_mode === SharingMode.Anyone
+        vnode.attrs.item.isOwned || vnode.attrs.share?.onsharing_permitted === true
           ? m(shareComponent, { item: vnode.attrs.item })
           : null,
       ]),
@@ -608,7 +607,7 @@ function CreateShareComponent(vInit: {
       const shareOptions = {
         expires_at: expiry ? new Date(expiry) : undefined,
         terms,
-        sharing_mode: canOnshare ? SharingMode.Anyone : SharingMode.Owner,
+        onsharing_permitted: canOnshare,
         acceptance_required: mustAcceptTerms
           ? AcceptanceRequest.Required
           : AcceptanceRequest.NotRequired,
@@ -620,7 +619,7 @@ function CreateShareComponent(vInit: {
       } = await service.shareItem(ownerAuth, connectionValue, item.id, shareOptions);
 
       callback(share, receiverUsername);
-    } catch (error) {
+    } catch (error: any) {
       log(error.message || error);
       throw error;
     }
@@ -702,7 +701,7 @@ function AcceptShareComponent(vInit: {
       userState.share = share;
       userState.item = item;
       acceptCallback(item, share);
-    } catch (error) {
+    } catch (error: any) {
       log(error.message || error);
       throw error;
     }

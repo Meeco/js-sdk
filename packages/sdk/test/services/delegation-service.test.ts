@@ -211,7 +211,7 @@ describe('DelegationService', () => {
 
     customTest
       .mockCryppo()
-      .stub(DecryptedKeypair, 'fromAPI', sinon.fake(fromApi))
+      .stub(DecryptedKeypair, 'fromAPI', sinon.fake<any, any>(fromApi))
       .nock(
         'https://sandbox.meeco.me/keystore',
         postKeyPairAPI({
@@ -281,7 +281,7 @@ describe('DelegationService', () => {
 
     customTest
       .mockCryppo()
-      .stub(DecryptedKeypair, 'fromAPI', sinon.fake(fromApi))
+      .stub(DecryptedKeypair, 'fromAPI', sinon.fake<any, any>(fromApi))
       .nock('https://sandbox.meeco.me/vault', api =>
         api
           .get(`/connections/${delegationConnectionResponse.connection.own.id}`)

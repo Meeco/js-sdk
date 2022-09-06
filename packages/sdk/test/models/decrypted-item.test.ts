@@ -85,7 +85,7 @@ describe('DecryptedItem', () => {
       .stub(
         SlotHelpers,
         'decryptSlot',
-        sinon.fake((key, slot) => ({
+        sinon.fake<any, any>((key, slot) => ({
           id: slot.id,
           value: '123',
           value_verification_key: 'KEY',
@@ -113,7 +113,7 @@ describe('DecryptedItem', () => {
 
     customTest
       .mockCryppo()
-      .stub(SlotHelpers, 'decryptSlot', sinon.fake(fakeDecryptedOwnSlotFn))
+      .stub(SlotHelpers, 'decryptSlot', sinon.fake<any, any>(fakeDecryptedOwnSlotFn))
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
       .add('result', ({ item }) =>
         item.toShareSlots(
@@ -129,7 +129,7 @@ describe('DecryptedItem', () => {
 
     customTest
       .mockCryppo()
-      .stub(SlotHelpers, 'decryptSlot', sinon.fake(fakeDecryptedOwnSlotFn))
+      .stub(SlotHelpers, 'decryptSlot', sinon.fake<any, any>(fakeDecryptedOwnSlotFn))
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
       .add('result', ({ item }) =>
         item.toShareSlots(
@@ -145,7 +145,7 @@ describe('DecryptedItem', () => {
 
     customTest
       .mockCryppo()
-      .stub(SlotHelpers, 'decryptSlot', sinon.fake(fakeDecryptedOwnSlotFn))
+      .stub(SlotHelpers, 'decryptSlot', sinon.fake<any, any>(fakeDecryptedOwnSlotFn))
       .add('item', () => DecryptedItem.fromAPI(testUserAuth, OwnedItem))
       .add('result', ({ item }) =>
         item.toShareSlots(
@@ -162,7 +162,7 @@ describe('DecryptedItem', () => {
       .stub(
         SlotHelpers,
         'decryptSlot',
-        sinon.fake((key, slot) => ({
+        sinon.fake<any, any>((key, slot) => ({
           id: slot.id,
           own: false,
           value: null,

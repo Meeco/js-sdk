@@ -1,5 +1,5 @@
 import { mockableFactories } from '@meeco/sdk';
-import { flags as _flags } from '@oclif/command';
+import { Flags as _flags } from '@oclif/core';
 import { CLIError } from '@oclif/errors';
 import { AuthConfig } from '../../configs/auth-config';
 import { NewItemConfig } from '../../configs/new-item-config';
@@ -37,7 +37,7 @@ export default class ItemsCreateConfig extends MeecoCommand {
   ];
 
   async run() {
-    const { args, flags } = this.parse(this.constructor as typeof ItemsCreateConfig);
+    const { args, flags } = await this.parse(this.constructor as typeof ItemsCreateConfig);
     const environment = await this.readEnvironmentFile();
     const { templateName } = args;
     const { auth, classificationName, classificationScheme } = flags;

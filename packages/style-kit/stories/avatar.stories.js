@@ -1,5 +1,5 @@
 import mdx from './avatar.mdx';
-import { story } from 'style-loader!./avatar.stories.scss';
+import styles from 'style-loader!./avatar.stories.scss';
 import avatarImg from '../assets/avatar-img.png';
 
 export default {
@@ -13,7 +13,7 @@ export default {
 
 export const avatar = () =>
   /*html*/
-  `<div class=${story}>
+  `<div class=${styles.story}>
       <p><span class="avatar small">ME</span>This is a small avatar</p>
       <p><span class="avatar">ME</span>This is a default avatar</p>
       <p><span class="avatar large">ME</span>This is a large avatar</p>
@@ -21,7 +21,7 @@ export const avatar = () =>
   `;
 
 export const avatarStack = () => /*html*/ `
-  <div class=${story}>
+  <div class=${styles.story}>
     <div class="avatar-stack">
       <div class="avatar small">ME</div>
       <div class="avatar small">JV<img class="avatar-img" src=${avatarImg}/></div>
