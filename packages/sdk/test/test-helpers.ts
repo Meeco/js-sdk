@@ -89,10 +89,11 @@ export const testOrganizationUserAuth = buildTestOrganizationAuthData({
   ...testOrganizationUserAuthFixture,
 });
 
-const { vault, keystore } = getInputFixture('test-environment.input.json');
+const { vault, keystore, identityNetwork } = getInputFixture('test-environment.input.json');
 export const environment = new Environment({
   vault,
   keystore,
+  identityNetwork,
 });
 
 const undefinedToNullreplacer = (key, value) => {

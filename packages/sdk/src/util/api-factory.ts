@@ -210,11 +210,11 @@ const identityNetworkAPI = (
       get(target, apiMethodName) {
         return (...args) =>
           callApiWithHeaders(
-            Keystore,
+            IdentityNetwork,
             api,
             apiMethodName,
             identityNetworkAPIKeys(environment, userAuth) as (name: string) => string,
-            environment.keystore.url,
+            environment.identityNetwork.url,
             {
               ...additionalHeaders,
               X_MEECO_API_VERSION,
