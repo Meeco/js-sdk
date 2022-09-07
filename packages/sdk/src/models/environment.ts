@@ -10,12 +10,15 @@ interface IAPIConfig {
 export class Environment {
   public vault: IAPIConfig;
   public keystore: IAPIConfig;
+  public identityNetwork: IAPIConfig;
 
   constructor(config: {
     vault: IAPIConfig;
     keystore: IAPIConfig & { provider_api_key: string }; // TODO: check if this one is still needed
+    identityNetwork: IAPIConfig;
   }) {
     this.vault = config.vault;
     this.keystore = config.keystore;
+    this.identityNetwork = config.identityNetwork;
   }
 }
