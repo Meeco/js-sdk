@@ -1,4 +1,4 @@
-import { DIDManagementApi } from 'identity-network-api-sdk';
+import { DIDManagementApi } from '@meeco/identity-network-api-sdk';
 import Service, { IIdentityNetworkToken } from './service';
 
 /**

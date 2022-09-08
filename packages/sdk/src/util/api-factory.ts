@@ -1,6 +1,6 @@
 import * as Keystore from '@meeco/keystore-api-sdk';
 import * as Vault from '@meeco/vault-api-sdk';
-import * as IdentityNetwork from 'identity-network-api-sdk';
+import * as IdentityNetwork from '@meeco/identity-network-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
 import { debug } from 'debug';
 import { Environment } from '../models/environment';
