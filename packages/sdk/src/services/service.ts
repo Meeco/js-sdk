@@ -37,7 +37,7 @@ export interface IKeystoreToken {
 }
 
 export interface IIdentityNetworkToken {
-  identity_network_access_token: string;
+  identity_network_access_token?: string;
 }
 
 /**

@@ -25,12 +25,14 @@ export class DIDManagementService extends Service<DIDManagementApi> {
    * @param accept - The requested media type of the DID document representation or DID resolution result. See https://www.w3.org/TR/did-core/#representations and https://w3c-ccg.github.io/did-resolution/#did-resolution-result.
    * @returns Promise<DIDResolutionResultDto | DidDocumentDto>
    */
-  public async resolve(
+  public resolve(
     credentials: IIdentityNetworkToken,
     identifier: string,
     accept: MediaType = 'application/ld+json;profile="https://w3id.org/did-resolution"'
   ): Promise<DIDResolutionResultDto | DidDocumentDto> {
     const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
-    return api.didControllerResolve(identifier, accept);
+    return api.didControllerResolve(identifier, accept) as Promise<
+      DIDResolutionResultDto | DidDocumentDto
+    >;
   }
 }

@@ -33,6 +33,7 @@ function loadEnvironmentFromStorage() {
 
   loadKey('vaultUrl');
   loadKey('keystoreUrl');
+  loadKey('identityNetworkUrl');
   loadKey('subscriptionKey');
 
   updateEnvironment();
@@ -41,10 +42,12 @@ function loadEnvironmentFromStorage() {
 function updateEnvironment() {
   const vaultUrl = $get('vaultUrl');
   const keystoreUrl = $get('keystoreUrl');
+  const identityNetworkUrl = $get('identityNetworkUrl');
   const subscriptionKey = $get('subscriptionKey');
 
   localStorage.setItem('vaultUrl', vaultUrl);
   localStorage.setItem('keystoreUrl', keystoreUrl);
+  localStorage.setItem('identityNetworkUrl', identityNetworkUrl);
   localStorage.setItem('subscriptionKey', subscriptionKey);
 
   if (!vaultUrl || !keystoreUrl || !subscriptionKey) {
@@ -61,6 +64,10 @@ function updateEnvironment() {
       url: keystoreUrl,
       subscription_key: subscriptionKey,
       provider_api_key: '',
+    },
+    identityNetwork: {
+      url: identityNetworkUrl,
+      subscription_key: subscriptionKey,
     },
   });
 
