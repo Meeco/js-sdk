@@ -83,7 +83,7 @@ function combinePages<T>(checkObjects: boolean) {
   return (a: T, b: T) => {
     const result: T = { ...a };
 
-    Object.entries(result as Object).forEach(([k, e]) => {
+    Object.entries(result as object).forEach(([k, e]) => {
       if (e instanceof Array) {
         if (k === 'meta') {
           result[k] = b[k];
