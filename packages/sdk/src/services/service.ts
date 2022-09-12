@@ -2,11 +2,11 @@ import { Environment } from '../models/environment';
 import { SymmetricKey } from '../models/symmetric-key';
 import {
   IdentityNetworkAPIFactory,
+  identityNetworkPIFactory,
   KeystoreAPIFactory,
   keystoreAPIFactory,
   VaultAPIFactory,
   vaultAPIFactory,
-  identityNetworkPIFactory,
 } from '../util/api-factory';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 
@@ -37,9 +37,7 @@ export interface IKeystoreToken {
 }
 
 export interface IIdentityNetworkToken {
-  identity_network_access_token?: string;
-  delegation_id?: string;
-  oidc_token?: string;
+  identity_network_access_token: string;
 }
 
 /**
@@ -54,7 +52,7 @@ export default abstract class Service<API> {
   /**
    * Services ususally wrap a single API object, this makes it explicit and accessible.
    */
-  public abstract getAPI(token: IVaultToken | IKeystoreToken): API;
+  public abstract getAPI(token: IVaultToken | IKeystoreToken | IIdentityNetworkToken): API;
 
   constructor(protected environment: Environment, log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);

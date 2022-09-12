@@ -6,6 +6,7 @@ import { debug } from 'debug';
 import { Environment } from '../models/environment';
 import { IIdentityNetworkToken, IKeystoreToken, IVaultToken } from '../services/service';
 import SDKFormData from './sdk-form-data';
+import fetch from 'node-fetch';
 
 /**
  * INFO: using 'import' statement causes typescript errors either in tests or in built version of the package
@@ -13,7 +14,7 @@ import SDKFormData from './sdk-form-data';
 /* tslint:disable no-var-requires */
 const chalk = require('chalk');
 
-let fetchLib = (<any>global).fetch;
+let fetchLib = (<any>global).fetch || fetch;
 
 /**
  * Configure the fetch library to use for API requests
