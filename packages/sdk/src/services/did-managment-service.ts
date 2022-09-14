@@ -4,7 +4,7 @@ import {
   DIDManagementApi,
   DIDResolutionResultDto,
 } from '@meeco/identity-network-api-sdk';
-import { NewDID } from '../models/new-did';
+import { NewDID } from '../models/did-management/new-did';
 import Service, { IIdentityNetworkToken } from './service';
 
 export type MediaType =
