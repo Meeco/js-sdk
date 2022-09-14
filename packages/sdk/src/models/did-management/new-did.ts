@@ -13,6 +13,7 @@ export enum SupportedNetwork {
   DANUBE = 'danube',
   TESTNET = 'testnet',
   MAINNET = 'mainnet',
+  NONE = '',
 }
 
 export abstract class NewDID {
@@ -22,5 +23,5 @@ export abstract class NewDID {
     this.didDocument = didDocument;
   }
   abstract keyPair: IKeyPairDID;
-  abstract getHandlerChain(): DIDRequestHandler;
+  abstract getHandlerChain(): DIDRequestHandler | undefined;
 }

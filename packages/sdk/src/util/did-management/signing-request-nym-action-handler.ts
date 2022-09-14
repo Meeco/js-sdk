@@ -6,7 +6,7 @@ import {
 import { NewDID } from '../../models/did-management/new-did';
 import { AbstractActionHandler, SupportedDIDAction, SupportedDIDState } from './did-action-handler';
 
-export class SigningRequestActionHandler extends AbstractActionHandler {
+export class SigningRequestNymActionHandler extends AbstractActionHandler {
   constructor(public newDID: NewDID) {
     super();
     this.newDID = newDID;
@@ -18,10 +18,14 @@ export class SigningRequestActionHandler extends AbstractActionHandler {
     didCreateResultDto: DIDCreateResultDto,
     api: DIDManagementApi
   ): Promise<DIDCreateResultDto> {
-    const msg = Buffer.from(
-      didCreateResultDto.didState!.signingRequest!.signingRequestAttrib!.serializedPayload!,
-      'base64'
-    );
+    // check if signingRequestNym serialized payload exists or continue to next handler
+    if (!didCreateResultDto.didState?.signingRequest?.signingRequestNym?.serializedPayload)
+      return didCreateResultDto;
+
+    const serializedPayload =
+      didCreateResultDto.didState!.signingRequest?.signingRequestNym!.serializedPayload;
+
+    const msg = Buffer.from(serializedPayload!, 'base64');
 
     const didDto: CreateDidDto = {
       jobId: didCreateResultDto.jobId,
@@ -30,14 +34,13 @@ export class SigningRequestActionHandler extends AbstractActionHandler {
       },
       secret: {
         signingResponse: {
-          signingRequestAttrib: {
+          signingRequestNym: {
             signature: Buffer.from(this.newDID.keyPair.sign(msg)).toString('base64'),
           },
         },
       },
     };
 
-    const result = await api.didControllerCreate(this.newDID.method, didDto);
-    return result;
+    return await api.didControllerCreate(this.newDID.method, didDto);
   }
 }

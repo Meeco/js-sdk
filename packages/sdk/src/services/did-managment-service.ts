@@ -47,19 +47,26 @@ export class DIDManagementService extends Service<DIDManagementApi> {
    */
   public async create(
     credentials: IIdentityNetworkToken,
-    newDID: NewDID
+    newDID: NewDID,
+    customOption?: any
   ): Promise<DIDCreateResultDto> {
-    const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
-    const initialResult = await api.didControllerCreate(newDID.method, {
-      options: {
-        clientSecretMode: true,
-        network: newDID.network,
-      },
+    const options = customOption
+      ? customOption
+      : {
+          clientSecretMode: true,
+          network: newDID.network,
+        };
+
+    const createDidDto = {
+      options,
       didDocument: newDID.didDocument,
-    });
+    };
+
+    const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
+    const initialResult = await api.didControllerCreate(newDID.method, createDidDto);
 
     // process multi-step did creation with client-manage secret
     const handlerChain = newDID.getHandlerChain();
-    return handlerChain.processRequestResponse(initialResult, api);
+    return handlerChain ? handlerChain.processRequestResponse(initialResult, api) : initialResult;
   }
 }
