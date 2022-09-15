@@ -11,7 +11,7 @@ export class DIDKey extends NewDID {
     super(SupportedDidMethod.KEY, network, didDocument);
   }
 
-  getHandlerChain() {
+  getHandlerChain(): undefined {
     return undefined;
   }
 }

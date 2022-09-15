@@ -22,7 +22,7 @@ export class DIDWeb extends NewDID {
     }
   }
 
-  getHandlerChain() {
+  getHandlerChain(): undefined {
     return undefined;
   }
 }
