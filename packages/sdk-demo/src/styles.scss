@@ -69,7 +69,8 @@ div.card {
   display: block;
   margin: 2rem;
   padding: 1rem;
-  max-width: 600px;
+  max-width: fit-content;
+  min-width: 600px;
   textarea {
     width: 100%;
   }
@@ -80,6 +81,7 @@ div.card {
     width: 100%;
   }
 }
+
 
 .content {
   div:first-child {
@@ -138,3 +140,5 @@ button:disabled {
     text-align: center;
   }
 }
+
+

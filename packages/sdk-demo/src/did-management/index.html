@@ -1,0 +1,54 @@
+<!-- index.html -->
+<html>
+  <head>
+    <title>Meeco SDK Demo</title>
+  </head>
+  <body>
+    <div class="title">
+      <h6>Meeco JavaScript SDK Demo</h6>
+      <a class="button secondary" href="https://meeco.github.io/sdk-docs/">View Documentation</a>
+    </div>
+    <div class="columns">
+      <div class="single-column">
+        <div class="card">
+          <h4>Environment Configuration</h4>
+          <hr />
+          <label for="identityNetworkUrl">Identity Network API URL:</label>
+          <input
+            placeholder="e.g. https://identity-network-dev.meeco.me"
+            class="full"
+            value="https://identity-network-dev.meeco.me"
+            autocapitalize="off"
+            autocomplete="off"
+            id="identityNetworkUrl"
+          />
+          <label for="subscriptionKey">Meeco Subscription Key:</label>
+          <input
+            placeholder="e.g. aaaaa11111bbbbb22222"
+            class="full"
+            autocapitalize="off"
+            autocomplete="off"
+            id="subscriptionKey"
+          />
+          <button id="updateEnvironment">Save</button>
+          <input value="Not set" class="full" disabled id="environmentStatus" />
+        </div>
+
+        <div class="card">
+          <h4>Resolve DIDs</h4>
+          <hr />
+          <input
+            placeholder="e.g. did:ebsi:zqVe4PdB7J3rGPbKYp7QAHZ"
+            class="full"
+            value="did:ebsi:zqVe4PdB7J3rGPbKYp7QAHZ"
+            autocapitalize="off"
+            autocomplete="off"
+            id="identifier"
+          />
+          <button id="resolveDID">Resolve</button>
+          <div id="didResolutionResult"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

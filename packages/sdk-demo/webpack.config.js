@@ -9,6 +9,7 @@ module.exports = {
     styles: './src/styles.scss',
     basic: './src/basic/index.ts',
     shares: './src/shares/index.ts',
+    didManagement: './src/did-management/index.ts',
   },
   mode: 'development',
   devServer: {
@@ -67,6 +68,12 @@ module.exports = {
       template: path.resolve(__dirname, './src/shares/index.html'),
       filename: 'shares/index.html',
       chunks: ['styles', 'shares'],
+      scriptLoading: 'defer',
+    }),
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, './src/did-management/index.html'),
+      filename: 'did-management/index.html',
+      chunks: ['styles', 'didManagement'],
       scriptLoading: 'defer',
     }),
     new ProgressBarPlugin(),
