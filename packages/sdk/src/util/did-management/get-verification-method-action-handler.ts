@@ -24,10 +24,7 @@ export class GetVerificationMethodActionHandler extends AbstractActionHandler {
     ];
 
     const didDto = {
-      options: {
-        clientSecretMode: true,
-        network: this.newDID.network,
-      },
+      options: this.newDID.options,
       didDocument: this.newDID.didDocument,
     };
 

@@ -47,18 +47,10 @@ export class DIDManagementService extends Service<DIDManagementApi> {
    */
   public async create(
     credentials: IIdentityNetworkToken,
-    newDID: NewDID,
-    customOption?: any
+    newDID: NewDID
   ): Promise<DIDCreateResultDto> {
-    const options = customOption
-      ? customOption
-      : {
-          clientSecretMode: true,
-          network: newDID.network,
-        };
-
     const createDidDto = {
-      options,
+      options: newDID.options,
       didDocument: newDID.didDocument,
     };
 

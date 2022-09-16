@@ -13,13 +13,21 @@ export enum SupportedNetwork {
   DANUBE = 'danube',
   TESTNET = 'testnet',
   MAINNET = 'mainnet',
-  NONE = '',
 }
 
+export type SupportedOptions = {
+  clientSecretMode?: boolean;
+  network?: string;
+};
+
 export abstract class NewDID {
-  constructor(public method: string, public network: string, public didDocument: DidDocumentDto) {
+  constructor(
+    public method: string,
+    public didDocument: DidDocumentDto,
+    public options: SupportedOptions
+  ) {
     this.method = method;
-    this.network = network;
+    this.options = options;
     this.didDocument = didDocument;
   }
   abstract keyPair: IKeyPairDID;

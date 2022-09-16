@@ -30,7 +30,7 @@ export class SigningRequestAttribActionHandler extends AbstractActionHandler {
     const didDto: CreateDidDto = {
       jobId: didCreateResultDto.jobId,
       options: {
-        clientSecretMode: true,
+        clientSecretMode: this.newDID.options.clientSecretMode,
       },
       secret: {
         signingResponse: {
