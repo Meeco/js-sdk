@@ -28,4 +28,7 @@ export class DIDWeb extends DIDBase {
   getCreateHandlerChain(): undefined {
     return undefined;
   }
+  getUpdateHandlerChain(): undefined {
+    return undefined;
+  }
 }

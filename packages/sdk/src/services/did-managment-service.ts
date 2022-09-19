@@ -83,8 +83,8 @@ export class DIDManagementService extends Service<DIDManagementApi> {
     const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
     const initialResult = await api.didControllerCreate(did.method, createDidDto);
 
-    // process multi-step did creation with client-manage secret
-    const handlerChain = did.getCreateHandlerChain();
+    // process multi-step did update with client-manage secret
+    const handlerChain = did.getUpdateHandlerChain();
     return handlerChain
       ? handlerChain.processCreateRequestResponse(initialResult, api)
       : initialResult;

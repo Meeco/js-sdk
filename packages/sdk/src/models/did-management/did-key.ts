@@ -17,4 +17,7 @@ export class DIDKey extends DIDBase {
   getCreateHandlerChain(): undefined {
     return undefined;
   }
+  getUpdateHandlerChain(): undefined {
+    return undefined;
+  }
 }

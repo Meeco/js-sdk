@@ -27,4 +27,5 @@ export abstract class DIDBase {
   }
   abstract keyPair: IKeyPairDID;
   abstract getCreateHandlerChain(): DIDRequestHandler | undefined;
+  abstract getUpdateHandlerChain(): DIDRequestHandler | undefined;
 }
