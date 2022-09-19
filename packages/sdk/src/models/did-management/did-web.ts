@@ -1,12 +1,12 @@
-import { DidDocumentDto } from '@meeco/identity-network-api-sdk';
-import { NewDID, SupportedDidMethod, SupportedOptions } from './new-did';
+import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
 import { IKeyPairDID } from './key-pair-did';
+import { DIDBase, SupportedDidMethod } from './did-base';
 
-export class DIDWeb extends NewDID {
+export class DIDWeb extends DIDBase {
   constructor(
     public keyPair: IKeyPairDID,
     public didDocument: DidDocumentDto = {},
-    options: SupportedOptions = {
+    options: OptionsDto = {
       clientSecretMode: false,
       network: undefined,
     }
@@ -25,7 +25,7 @@ export class DIDWeb extends NewDID {
     }
   }
 
-  getHandlerChain(): undefined {
+  getCreateHandlerChain(): undefined {
     return undefined;
   }
 }

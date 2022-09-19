@@ -1,34 +1,36 @@
-import { DIDCreateResultDto, DIDManagementApi } from '@meeco/identity-network-api-sdk';
-import { NewDID } from '../../models/did-management/new-did';
+import {
+  CreateDidDto,
+  DIDCreateResultDto,
+  DIDUpdateResultDto,
+  UpdateDidDto,
+} from '@meeco/identity-network-api-sdk';
+import { DIDBase } from '../../models/did-management/did-base';
 import { AbstractActionHandler, SupportedDIDAction, SupportedDIDState } from './did-action-handler';
 
-export class GetVerificationMethodActionHandler extends AbstractActionHandler {
-  constructor(public newDID: NewDID) {
-    super();
-    this.newDID = newDID;
+export class GetVerificationMethodActionHandler extends AbstractActionHandler<
+  CreateDidDto,
+  UpdateDidDto
+> {
+  constructor(public did: DIDBase) {
+    super(did, SupportedDIDAction.getVerificationMethod, SupportedDIDState.action);
   }
 
-  action: SupportedDIDAction = SupportedDIDAction.getVerificationMethod;
-  state: SupportedDIDState = SupportedDIDState.action;
-
-  async handleRequest(
-    didCreateResultDto: DIDCreateResultDto,
-    api: DIDManagementApi
-  ): Promise<DIDCreateResultDto> {
-    this.newDID.didDocument.verificationMethod = [
+  handleCreateRequestResponse(didCreateResultDto: DIDCreateResultDto): CreateDidDto {
+    this.did.didDocument.verificationMethod = [
       {
         id: didCreateResultDto.didState!.verificationMethodTemplate![0].id,
         type: didCreateResultDto.didState!.verificationMethodTemplate![0].type,
-        publicKeyBase58: this.newDID.keyPair.getPublicKeyBase58(),
+        publicKeyBase58: this.did.keyPair.getPublicKeyBase58(),
       },
     ];
 
-    const didDto = {
-      options: this.newDID.options,
-      didDocument: this.newDID.didDocument,
+    return {
+      options: this.did.options,
+      didDocument: this.did.didDocument,
     };
+  }
 
-    const result = await api.didControllerCreate(this.newDID.method, didDto);
-    return result;
+  handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null {
+    return null;
   }
 }

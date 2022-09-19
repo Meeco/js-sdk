@@ -1,4 +1,4 @@
-import { DidDocumentDto } from '@meeco/identity-network-api-sdk';
+import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
 import { DIDRequestHandler } from '../../util/did-management/did-action-handler';
 import { IKeyPairDID } from './key-pair-did';
 
@@ -15,21 +15,16 @@ export enum SupportedNetwork {
   MAINNET = 'mainnet',
 }
 
-export type SupportedOptions = {
-  clientSecretMode?: boolean;
-  network?: string;
-};
-
-export abstract class NewDID {
+export abstract class DIDBase {
   constructor(
     public method: string,
     public didDocument: DidDocumentDto,
-    public options: SupportedOptions
+    public options: OptionsDto
   ) {
     this.method = method;
     this.options = options;
     this.didDocument = didDocument;
   }
   abstract keyPair: IKeyPairDID;
-  abstract getHandlerChain(): DIDRequestHandler | undefined;
+  abstract getCreateHandlerChain(): DIDRequestHandler | undefined;
 }

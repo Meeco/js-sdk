@@ -4,7 +4,7 @@ import {
   DIDManagementApi,
   DIDResolutionResultDto,
 } from '@meeco/identity-network-api-sdk';
-import { NewDID } from '../models/did-management/new-did';
+import { DIDBase } from '../models/did-management/did-base';
 import Service, { IIdentityNetworkToken } from './service';
 
 export type MediaType =
@@ -42,23 +42,51 @@ export class DIDManagementService extends Service<DIDManagementApi> {
    * Supported DID key, web, ebsi, sov
    *
    * @param credentials
-   * @param newDID - DID to be created e.g. SOV, WEB & KEY
+   * @param did - DID to be created e.g. SOV, WEB & KEY
    * @returns - Promise<DIDCreateResultDto>
    */
   public async create(
     credentials: IIdentityNetworkToken,
-    newDID: NewDID
+    did: DIDBase
   ): Promise<DIDCreateResultDto> {
     const createDidDto = {
-      options: newDID.options,
-      didDocument: newDID.didDocument,
+      options: did.options,
+      didDocument: did.didDocument,
     };
 
     const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
-    const initialResult = await api.didControllerCreate(newDID.method, createDidDto);
+    const initialResult = await api.didControllerCreate(did.method, createDidDto);
 
     // process multi-step did creation with client-manage secret
-    const handlerChain = newDID.getHandlerChain();
-    return handlerChain ? handlerChain.processRequestResponse(initialResult, api) : initialResult;
+    const handlerChain = did.getCreateHandlerChain();
+    return handlerChain
+      ? handlerChain.processCreateRequestResponse(initialResult, api)
+      : initialResult;
+  }
+
+  /**
+   * Supported DID key, web, ebsi, sov
+   *
+   * @param credentials
+   * @param did - DID to be created e.g. SOV, WEB & KEY
+   * @returns - Promise<DIDCreateResultDto>
+   */
+  public async update(
+    credentials: IIdentityNetworkToken,
+    did: DIDBase
+  ): Promise<DIDCreateResultDto> {
+    const createDidDto = {
+      options: did.options,
+      didDocument: did.didDocument,
+    };
+
+    const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
+    const initialResult = await api.didControllerCreate(did.method, createDidDto);
+
+    // process multi-step did creation with client-manage secret
+    const handlerChain = did.getCreateHandlerChain();
+    return handlerChain
+      ? handlerChain.processCreateRequestResponse(initialResult, api)
+      : initialResult;
   }
 }

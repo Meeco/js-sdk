@@ -1,47 +1,53 @@
 import {
   CreateDidDto,
   DIDCreateResultDto,
-  DIDManagementApi,
+  DIDUpdateResultDto,
+  UpdateDidDto,
 } from '@meeco/identity-network-api-sdk';
-import { NewDID } from '../../models/did-management/new-did';
+import { DIDBase } from '../../models/did-management/did-base';
 import { AbstractActionHandler, SupportedDIDAction, SupportedDIDState } from './did-action-handler';
 
-export class SigningRequestAttribActionHandler extends AbstractActionHandler {
-  constructor(public newDID: NewDID) {
-    super();
-    this.newDID = newDID;
+export class SigningRequestAttribActionHandler extends AbstractActionHandler<
+  CreateDidDto,
+  UpdateDidDto
+> {
+  constructor(public did: DIDBase) {
+    super(did, SupportedDIDAction.signPayload, SupportedDIDState.action);
   }
-  action: SupportedDIDAction = SupportedDIDAction.signPayload;
-  state: SupportedDIDState = SupportedDIDState.action;
 
-  async handleRequest(
-    didCreateResultDto: DIDCreateResultDto,
-    api: DIDManagementApi
-  ): Promise<DIDCreateResultDto> {
+  handleCreateRequestResponse(didCreateResultDto: DIDCreateResultDto): CreateDidDto | null {
+    return this.process(didCreateResultDto);
+  }
+
+  handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null {
+    const result = this.process(didUpdateResultDto);
+    return { ...result, did: '', didDocumentOperation: [] };
+  }
+
+  private process(didResultDto) {
     // check if signingRequestAttrib serialized payload exists or continue to next handler
-    if (!didCreateResultDto.didState?.signingRequest?.signingRequestAttrib?.serializedPayload)
-      return didCreateResultDto;
+    if (!didResultDto.didState?.signingRequest?.signingRequestAttrib?.serializedPayload)
+      return null;
 
     const serializedPayload =
-      didCreateResultDto.didState!.signingRequest?.signingRequestAttrib!.serializedPayload;
+      didResultDto.didState!.signingRequest?.signingRequestAttrib!.serializedPayload;
 
     const msg = Buffer.from(serializedPayload!, 'base64');
 
-    const didDto: CreateDidDto = {
-      jobId: didCreateResultDto.jobId,
+    const didDto = {
+      jobId: didResultDto.jobId,
       options: {
-        clientSecretMode: this.newDID.options.clientSecretMode,
+        clientSecretMode: this.did.options.clientSecretMode,
       },
       secret: {
         signingResponse: {
           signingRequestAttrib: {
-            signature: Buffer.from(this.newDID.keyPair.sign(msg)).toString('base64'),
+            signature: Buffer.from(this.did.keyPair.sign(msg)).toString('base64'),
           },
         },
       },
     };
 
-    const result = await api.didControllerCreate(this.newDID.method, didDto);
-    return result;
+    return didDto;
   }
 }
