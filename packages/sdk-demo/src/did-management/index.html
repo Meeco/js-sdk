@@ -46,7 +46,30 @@
             id="identifier"
           />
           <button id="resolveDID">Resolve</button>
+          <button id="copyResolveDID">Copy to Clipboard</button>
           <div id="didResolutionResult"></div>
+        </div>
+
+        <div class="card">
+          <h4>Create DIDs - Supported - SOV, WEB, KEY</h4>
+          <hr />
+          <button id="createDID">Create</button>
+          <button id="copyCreateDID">Copy to Clipboard</button>
+          <form>
+            <div>
+              <label for="DIDSelect">DID Type</label>
+              <select id="DIDSelect" name="did_type"></select>
+            </div>
+            <div>
+              <label for="secretField">Secret Hex</label>
+              <input name="label" id="secretField" disabled />
+            </div>
+            <div>
+              <label for="pkField">Public Key Hex</label>
+              <input name="label" id="pkField" disabled />
+            </div>
+            <div id="didCreationResult"></div>
+          </form>
         </div>
       </div>
     </div>

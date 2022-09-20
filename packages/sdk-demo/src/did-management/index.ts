@@ -1,9 +1,40 @@
-import { configureFetch, DIDManagementService, Environment } from '@meeco/sdk';
+import {
+  configureFetch,
+  DIDBase,
+  DIDKey,
+  DIDManagementService,
+  DIDSov,
+  DIDWeb,
+  Ed25519,
+  Environment,
+} from '@meeco/sdk';
 import JSONFormatter from 'json-formatter-js';
 
 const $ = id => document.getElementById(id)!;
 const $get = (id: string) => ($(id) as HTMLInputElement)?.value;
 const $set = (id: string, value: string) => (($(id) as HTMLInputElement).value = value);
+let resolvedDidResult: string = '';
+let createdDidResult: string = '';
+$('copyResolveDID').setAttribute('disabled', 'true');
+$('copyCreateDID').setAttribute('disabled', 'true');
+
+const options = [
+  {
+    name: 'sov',
+    label: 'sov',
+  },
+  {
+    name: 'key',
+    label: 'key',
+  },
+  {
+    name: 'web',
+    label: 'web',
+  },
+]
+  .map(t => `<option value="${t.name}">${t.label}</option>`)
+  .join('');
+$('DIDSelect').innerHTML = options;
 
 let environment: Environment;
 loadEnvironmentFromStorage();
@@ -53,11 +84,68 @@ configureFetch(window.fetch);
 
 $('resolveDID').addEventListener('click', resolveDID);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
+$('createDID').addEventListener('click', createDID);
+$('copyResolveDID').addEventListener('click', copyResolveDID);
+$('copyCreateDID').addEventListener('click', copyCreateDID);
 
 async function resolveDID() {
   const identifier = $get('identifier');
   const api = new DIDManagementService(environment);
   const result = await api.resolve({}, identifier);
   const formatter = new JSONFormatter(result, 2);
+  resolvedDidResult = JSON.stringify(result);
   $('didResolutionResult').replaceChildren(formatter.render());
+  $('copyResolveDID').removeAttribute('disabled');
+}
+
+async function createDID() {
+  const method = $get('DIDSelect');
+
+  const array = new Uint8Array(32);
+  const secret = self.crypto.getRandomValues(array);
+  const keyPair = new Ed25519(secret);
+  console.log(`public key hex: ${keyPair.getPublicKeyHex()}`);
+  console.log(`private key hex: ${keyPair.keyPair.getSecret('hex')}`);
+
+  let did: DIDBase;
+  switch (method) {
+    case 'sov':
+      did = new DIDSov(keyPair);
+      break;
+    case 'web':
+      did = new DIDWeb(keyPair);
+      break;
+    default:
+      did = new DIDKey(keyPair);
+      break;
+  }
+
+  const api = new DIDManagementService(environment);
+  const generatedDID = await api.create({}, did);
+  const formatter = new JSONFormatter(generatedDID, 2);
+  $('didCreationResult').replaceChildren(formatter.render());
+  createdDidResult = JSON.stringify({
+    secret: keyPair.keyPair.getSecret('hex'),
+    publicKey: keyPair.getPublicKeyHex(),
+    result: generatedDID,
+  });
+  $set('secretField', keyPair.keyPair.getSecret('hex'));
+  $set('pkField', keyPair.getPublicKeyHex());
+  $('copyCreateDID').removeAttribute('disabled');
+}
+
+function copyResolveDID() {
+  navigator.clipboard.writeText(resolvedDidResult).then(() => {
+    // Alert the user that the action took place.
+    // Nobody likes hidden stuff being done under the hood!
+    alert('Copied to clipboard');
+  });
+}
+
+function copyCreateDID() {
+  navigator.clipboard.writeText(createdDidResult).then(() => {
+    // Alert the user that the action took place.
+    // Nobody likes hidden stuff being done under the hood!
+    alert('Copied to clipboard');
+  });
 }
