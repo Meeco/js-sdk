@@ -3,5 +3,6 @@
   "vault_access_token": "2FPN4n5T68xy78i6HHuQ",
   "data_encryption_key": "bXlfZ2VuZXJhdGVkX2Rlaw==",
   "key_encryption_key": "bXlfa2V5X2VuY3J5cHRpb25fa2V5",
-  "passphrase_derived_key": "BsKhFEfDtTfDscK6PMOrwr3DiToiwrFbJ2V4OMO7wqFmw55Q"
+  "passphrase_derived_key": "BsKhFEfDtTfDscK6PMOrwr3DiToiwrFbJ2V4OMO7wqFmw55Q",
+  "identity_network_access_token": ""
 }
