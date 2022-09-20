@@ -1,4 +1,4 @@
-import { configureFetch, Environment } from '@meeco/sdk';
+import { configureFetch, DIDManagementService, Environment } from '@meeco/sdk';
 import JSONFormatter from 'json-formatter-js';
 
 const $ = id => document.getElementById(id)!;
@@ -55,7 +55,9 @@ $('resolveDID').addEventListener('click', resolveDID);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 
 async function resolveDID() {
-  console.log(environment);
-  const formatter = new JSONFormatter({}, 2);
-  $('didResolutionResult').appendChild(formatter.render());
+  const identifier = $get('identifier');
+  const api = new DIDManagementService(environment);
+  const result = await api.resolve({}, identifier);
+  const formatter = new JSONFormatter(result, 2);
+  $('didResolutionResult').replaceChildren(formatter.render());
 }
