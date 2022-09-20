@@ -85,8 +85,8 @@ configureFetch(window.fetch);
 $('resolveDID').addEventListener('click', resolveDID);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 $('createDID').addEventListener('click', createDID);
-$('copyResolveDID').addEventListener('click', copyResolveDID);
-$('copyCreateDID').addEventListener('click', copyCreateDID);
+$('copyResolveDID').addEventListener('click', () => copy(resolvedDidResult));
+$('copyCreateDID').addEventListener('click', () => copy(createdDidResult));
 
 async function resolveDID() {
   const identifier = $get('identifier');
@@ -134,18 +134,11 @@ async function createDID() {
   $('copyCreateDID').removeAttribute('disabled');
 }
 
-function copyResolveDID() {
-  navigator.clipboard.writeText(resolvedDidResult).then(() => {
-    // Alert the user that the action took place.
-    // Nobody likes hidden stuff being done under the hood!
-    alert('Copied to clipboard');
-  });
-}
-
-function copyCreateDID() {
-  navigator.clipboard.writeText(createdDidResult).then(() => {
-    // Alert the user that the action took place.
-    // Nobody likes hidden stuff being done under the hood!
-    alert('Copied to clipboard');
-  });
+function copy(text: string) {
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
+      alert('Copied to clipboard');
+    })
+    .catch(e => console.log(e));
 }
