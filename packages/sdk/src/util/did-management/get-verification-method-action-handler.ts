@@ -7,10 +7,7 @@ import {
 import { DIDBase } from '../../models/did-management/did-base';
 import { AbstractActionHandler, SupportedDIDAction, SupportedDIDState } from './did-action-handler';
 
-export class GetVerificationMethodActionHandler extends AbstractActionHandler<
-  CreateDidDto,
-  UpdateDidDto
-> {
+export class GetVerificationMethodActionHandler extends AbstractActionHandler {
   constructor(public did: DIDBase) {
     super(did, SupportedDIDAction.getVerificationMethod, SupportedDIDState.action);
   }

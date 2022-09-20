@@ -75,18 +75,25 @@ export class DIDManagementService extends Service<DIDManagementApi> {
     credentials: IIdentityNetworkToken,
     did: DIDBase
   ): Promise<DIDCreateResultDto> {
-    const createDidDto = {
+    const updateDidDto = {
       options: did.options,
       didDocument: did.didDocument,
+      did: did.did!,
+      didDocumentOperation: [],
     };
 
     const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
-    const initialResult = await api.didControllerCreate(did.method, createDidDto);
 
-    // process multi-step did update with client-manage secret
-    const handlerChain = did.getUpdateHandlerChain();
-    return handlerChain
-      ? handlerChain.processCreateRequestResponse(initialResult, api)
-      : initialResult;
+    try {
+      const initialResult = await api.didControllerUpdate(did.method, updateDidDto);
+      // process multi-step did update with client-manage secret
+      const handlerChain = did.getUpdateHandlerChain();
+      return handlerChain
+        ? handlerChain.processUpdateRequestResponse(initialResult, api)
+        : initialResult;
+    } catch (e) {
+      console.log(e);
+      return Promise.reject(e);
+    }
   }
 }

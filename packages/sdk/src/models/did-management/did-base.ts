@@ -19,11 +19,13 @@ export abstract class DIDBase {
   constructor(
     public method: string,
     public didDocument: DidDocumentDto,
-    public options: OptionsDto
+    public options: OptionsDto,
+    public did?: string
   ) {
     this.method = method;
     this.options = options;
     this.didDocument = didDocument;
+    this.did = did;
   }
   abstract keyPair: IKeyPairDID;
   abstract getCreateHandlerChain(): DIDRequestHandler | undefined;

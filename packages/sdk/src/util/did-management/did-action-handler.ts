@@ -26,12 +26,14 @@ export interface DIDRequestHandler {
     request: DIDCreateResultDto,
     api: DIDManagementApi
   ): Promise<DIDCreateResultDto>;
+  processUpdateRequestResponse(
+    request: DIDUpdateResultDto,
+    api: DIDManagementApi
+  ): Promise<DIDUpdateResultDto>;
   setNextHandler(handler: DIDRequestHandler): void;
 }
 
-export abstract class AbstractActionHandler<T extends CreateDidDto, U extends UpdateDidDto>
-  implements DIDRequestHandler
-{
+export abstract class AbstractActionHandler implements DIDRequestHandler {
   constructor(
     public did: DIDBase,
     public action: SupportedDIDAction,
@@ -40,8 +42,8 @@ export abstract class AbstractActionHandler<T extends CreateDidDto, U extends Up
 
   nextHandler!: DIDRequestHandler;
 
-  abstract handleCreateRequestResponse(didCreateResultDto: DIDCreateResultDto): T | null;
-  abstract handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): U | null;
+  abstract handleCreateRequestResponse(didCreateResultDto: DIDCreateResultDto): CreateDidDto | null;
+  abstract handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null;
 
   async processCreateRequestResponse(
     didCreateResultDto: DIDCreateResultDto,
@@ -76,7 +78,7 @@ export abstract class AbstractActionHandler<T extends CreateDidDto, U extends Up
       if (dto) didUpdateResultDto = await api.didControllerUpdate(this.did.method, dto);
     }
     if (this.nextHandler) {
-      didUpdateResultDto = await this.nextHandler.processCreateRequestResponse(
+      didUpdateResultDto = await this.nextHandler.processUpdateRequestResponse(
         didUpdateResultDto,
         api
       );

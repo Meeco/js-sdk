@@ -7,10 +7,7 @@ import {
 import { DIDBase } from '../../models/did-management/did-base';
 import { AbstractActionHandler, SupportedDIDAction, SupportedDIDState } from './did-action-handler';
 
-export class SigningRequestNymActionHandler extends AbstractActionHandler<
-  CreateDidDto,
-  UpdateDidDto
-> {
+export class SigningRequestNymActionHandler extends AbstractActionHandler {
   constructor(public did: DIDBase) {
     super(did, SupportedDIDAction.signPayload, SupportedDIDState.action);
   }
