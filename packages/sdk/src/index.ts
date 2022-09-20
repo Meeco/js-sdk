@@ -4,6 +4,7 @@
 export * from './models/auth-data';
 export * from './models/decrypted-item';
 export { default as DecryptedKeypair } from './models/decrypted-keypair';
+export * from './models/did-management';
 export * from './models/environment';
 export * from './models/file-attachment-data';
 export * from './models/item-change';
@@ -23,6 +24,7 @@ export * from './services/client-task-queue-service';
 export * from './services/connection-service';
 export * from './services/delegation-invitation-service';
 export * from './services/delegation-service';
+export * from './services/did-management-service';
 export * from './services/invitation-service';
 export * from './services/item-service';
 export * from './services/organization-members-service';
@@ -33,6 +35,7 @@ export * from './services/share-service';
 export * from './services/template-service';
 export * from './services/user-service';
 export * from './util/api-factory';
+export * from './util/did-management';
 export * from './util/find-connection-between';
 export * from './util/paged';
 export { default as Secrets } from './util/secrets';
@@ -40,10 +43,11 @@ export { default as SlotHelpers } from './util/slot-helpers';
 export * from './util/transformers';
 export * from './util/value-verification';
 import _cryppo from './services/cryppo-service';
-import { keystoreAPIFactory, vaultAPIFactory } from './util/api-factory';
+import { identityNetworkPIFactory, keystoreAPIFactory, vaultAPIFactory } from './util/api-factory';
 export const _cryppoService = _cryppo;
 
 export const mockableFactories = {
   vaultAPIFactory,
   keystoreAPIFactory,
+  identityNetworkPIFactory,
 };

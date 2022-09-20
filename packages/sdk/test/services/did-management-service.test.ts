@@ -1,6 +1,6 @@
 import { DidDocumentDto, DIDResolutionResultDto } from '@meeco/identity-network-api-sdk';
 import { expect } from 'chai';
-import { DIDManagementService } from '../../src/services/did-managment-service';
+import { DIDManagementService } from '../../src/services/did-management-service';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('IdentityNetworkService', () => {
