@@ -12,23 +12,38 @@ export class DIDWeb extends DIDBase {
     }
   ) {
     super(SupportedDidMethod.WEB, didDocument, options);
-
-    // add verification method, if not present
-    if (!this.didDocument.verificationMethod) {
-      this.didDocument.verificationMethod = [
-        {
-          id: `#key-1`,
-          type: 'Ed25519VerificationKey2018',
-          publicKeyBase58: this.keyPair.getPublicKeyBase58(),
-        },
-      ];
-    }
   }
 
-  getCreateHandlerChain(): undefined {
-    return undefined;
+  setVerificationMethod(domain: string = 'did-web-meeco.me') {
+    const id = `did:web:${domain}:${this.keyPair.getPublicKeyBase58()}#key-1`;
+    const verificationMethod = {
+      id,
+      type: 'Ed25519VerificationKey2018',
+      publicKeyBase58: this.keyPair.getPublicKeyBase58(),
+    };
+
+    this.didDocument.verificationMethod
+      ? this.didDocument.verificationMethod.push(verificationMethod)
+      : (this.didDocument.verificationMethod = [verificationMethod]);
+    return id;
   }
-  getUpdateHandlerChain(): undefined {
-    return undefined;
+
+  setAuthentication(id: string) {
+    this.didDocument.authentication
+      ? // tslint:disable-next-line
+        this.didDocument.authentication.push(new String(id))
+      : // tslint:disable-next-line
+        (this.didDocument.authentication = [new String(id)]);
+    return this;
+  }
+
+  setAssertionMethod(id: string) {
+    this.didDocument.assertionMethod
+      ? // tslint:disable-next-line
+        this.didDocument.assertionMethod.push(new String(id))
+      : // tslint:disable-next-line
+        (this.didDocument.assertionMethod = [new String(id)]);
+
+    return this;
   }
 }

@@ -18,7 +18,8 @@ export class SigningRequestAttribActionHandler extends AbstractActionHandler {
 
   handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null {
     const result = this.process(didUpdateResultDto);
-    return { ...result, did: '', didDocumentOperation: [] };
+    // did document operation not supported
+    return { ...result, did: this.did.did!, didDocumentOperation: [] };
   }
 
   private process(didResultDto) {

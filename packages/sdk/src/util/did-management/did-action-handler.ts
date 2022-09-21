@@ -1,7 +1,6 @@
 import {
   CreateDidDto,
   DIDCreateResultDto,
-  DIDManagementApi,
   DIDUpdateResultDto,
   UpdateDidDto,
 } from '@meeco/identity-network-api-sdk';
@@ -23,13 +22,15 @@ export enum SupportedDIDState {
 
 export interface DIDRequestHandler {
   processCreateRequestResponse(
-    request: DIDCreateResultDto,
-    api: DIDManagementApi
+    didCreateResultDto: DIDCreateResultDto,
+    sendRequest: (method: string, dto: CreateDidDto) => Promise<DIDCreateResultDto>
   ): Promise<DIDCreateResultDto>;
+
   processUpdateRequestResponse(
-    request: DIDUpdateResultDto,
-    api: DIDManagementApi
+    didUpdateResultDto: DIDUpdateResultDto,
+    sendRequest: (method: string, dto: UpdateDidDto) => Promise<DIDUpdateResultDto>
   ): Promise<DIDUpdateResultDto>;
+
   setNextHandler(handler: DIDRequestHandler): void;
 }
 
@@ -47,19 +48,19 @@ export abstract class AbstractActionHandler implements DIDRequestHandler {
 
   async processCreateRequestResponse(
     didCreateResultDto: DIDCreateResultDto,
-    api: DIDManagementApi
+    sendRequest: (method: string, dto: CreateDidDto) => Promise<DIDCreateResultDto>
   ): Promise<DIDCreateResultDto> {
     if (
       didCreateResultDto.didState!.state === this.state &&
       didCreateResultDto.didState!.action === this.action
     ) {
       const dto = this.handleCreateRequestResponse(didCreateResultDto);
-      if (dto) didCreateResultDto = await api.didControllerCreate(this.did.method, dto);
+      if (dto) didCreateResultDto = await sendRequest(this.did.method, dto);
     }
     if (this.nextHandler) {
       didCreateResultDto = await this.nextHandler.processCreateRequestResponse(
         didCreateResultDto,
-        api
+        sendRequest
       );
     }
 
@@ -68,19 +69,19 @@ export abstract class AbstractActionHandler implements DIDRequestHandler {
 
   async processUpdateRequestResponse(
     didUpdateResultDto: DIDUpdateResultDto,
-    api: DIDManagementApi
+    sendRequest: (method: string, dto: UpdateDidDto) => Promise<DIDUpdateResultDto>
   ): Promise<DIDUpdateResultDto> {
     if (
       didUpdateResultDto.didState!.state === this.state &&
       didUpdateResultDto.didState!.action === this.action
     ) {
       const dto = this.handleUpdateRequestResponse(didUpdateResultDto);
-      if (dto) didUpdateResultDto = await api.didControllerUpdate(this.did.method, dto);
+      if (dto) didUpdateResultDto = await sendRequest(this.did.method, dto);
     }
     if (this.nextHandler) {
       didUpdateResultDto = await this.nextHandler.processUpdateRequestResponse(
         didUpdateResultDto,
-        api
+        sendRequest
       );
     }
 

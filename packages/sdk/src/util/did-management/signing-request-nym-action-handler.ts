@@ -17,7 +17,7 @@ export class SigningRequestNymActionHandler extends AbstractActionHandler {
   }
   handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null {
     const result = this.process(didUpdateResultDto);
-    return { ...result, did: '', didDocumentOperation: [] };
+    return result ? { ...result, did: this.did.did!, didDocumentOperation: [] } : null;
   }
 
   private process(didResultDto) {

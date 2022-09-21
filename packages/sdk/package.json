@@ -6,7 +6,7 @@
   "bugs": "https://github.com/Meeco/cli/issues",
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "module": "dist/index.esm.js",
+  "module": "dist/index.es.js",
   "types": "dist/src/index.d.ts",
   "dependencies": {
     "@meeco/cryppo": "2.0.2",

@@ -13,11 +13,4 @@ export class DIDKey extends DIDBase {
   ) {
     super(SupportedDidMethod.KEY, didDocument, options);
   }
-
-  getCreateHandlerChain(): undefined {
-    return undefined;
-  }
-  getUpdateHandlerChain(): undefined {
-    return undefined;
-  }
 }
