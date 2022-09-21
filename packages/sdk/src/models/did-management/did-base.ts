@@ -28,6 +28,11 @@ export abstract class DIDBase {
     this.did = did;
   }
   abstract keyPair: IKeyPairDID;
-  abstract getCreateHandlerChain(): DIDRequestHandler | undefined;
-  abstract getUpdateHandlerChain(): DIDRequestHandler | undefined;
+
+  getCreateHandlerChain(): DIDRequestHandler | undefined {
+    return undefined;
+  }
+  getUpdateHandlerChain(): DIDRequestHandler | undefined {
+    return undefined;
+  }
 }

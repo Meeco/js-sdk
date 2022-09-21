@@ -3,6 +3,7 @@ import {
   DidDocumentDto,
   DIDManagementApi,
   DIDResolutionResultDto,
+  DIDUpdateResultDto,
 } from '@meeco/identity-network-api-sdk';
 import { DIDBase } from '../models/did-management/did-base';
 import Service, { IIdentityNetworkToken } from './service';
@@ -60,7 +61,9 @@ export class DIDManagementService extends Service<DIDManagementApi> {
     // process multi-step did creation with client-manage secret
     const handlerChain = did.getCreateHandlerChain();
     return handlerChain
-      ? handlerChain.processCreateRequestResponse(initialResult, api)
+      ? handlerChain.processCreateRequestResponse(initialResult, (method, dto) =>
+          api.didControllerCreate(method, dto)
+        )
       : initialResult;
   }
 
@@ -68,13 +71,13 @@ export class DIDManagementService extends Service<DIDManagementApi> {
    * Supported DID key, web, ebsi, sov
    *
    * @param credentials
-   * @param did - DID to be created e.g. SOV, WEB & KEY
-   * @returns - Promise<DIDCreateResultDto>
+   * @param did - DID to be updated e.g. SOV, WEB & KEY
+   * @returns - Promise<DIDUpdateResultDto>
    */
   public async update(
     credentials: IIdentityNetworkToken,
     did: DIDBase
-  ): Promise<DIDCreateResultDto> {
+  ): Promise<DIDUpdateResultDto> {
     const updateDidDto = {
       options: did.options,
       didDocument: did.didDocument,
@@ -89,7 +92,9 @@ export class DIDManagementService extends Service<DIDManagementApi> {
       // process multi-step did update with client-manage secret
       const handlerChain = did.getUpdateHandlerChain();
       return handlerChain
-        ? handlerChain.processUpdateRequestResponse(initialResult, api)
+        ? handlerChain.processUpdateRequestResponse(initialResult, (method, dto) =>
+            api.didControllerUpdate(method, dto)
+          )
         : initialResult;
     } catch (e) {
       console.log(e);
