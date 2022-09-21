@@ -20,7 +20,7 @@
       {
         "type": "node",
         "request": "launch",
-        "name": "Debug Current Test File",
+        "name": "Debug Current Test File", 
         "skipFiles": ["<node_internals>/**"],
         "program": "${workspaceRoot}/node_modules/.bin/ts-mocha",
         "args": ["--colors", "--forbid-only", "${relativeFile}"]
