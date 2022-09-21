@@ -111,6 +111,12 @@ async function createDID() {
   switch (method) {
     case 'sov':
       did = new DIDSov(keyPair);
+      did.didDocument.service = [
+        {
+          type: 'LinkedDomains',
+          serviceEndpoint: 'meeco.me',
+        },
+      ];
       break;
     case 'web':
       did = new DIDWeb(keyPair);
