@@ -19,13 +19,11 @@ export abstract class DIDBase {
   constructor(
     public method: string,
     public didDocument: DidDocumentDto,
-    public options: OptionsDto,
-    public did?: string
+    public options: OptionsDto
   ) {
     this.method = method;
     this.options = options;
     this.didDocument = didDocument;
-    this.did = did;
   }
   abstract keyPair: IKeyPairDID;
 
@@ -33,6 +31,9 @@ export abstract class DIDBase {
     return undefined;
   }
   getUpdateHandlerChain(): DIDRequestHandler | undefined {
+    return undefined;
+  }
+  getDeleteHandlerChain(): DIDRequestHandler | undefined {
     return undefined;
   }
 }
