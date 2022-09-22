@@ -36,4 +36,10 @@ export class DIDSov extends DIDBase {
 
     return signingRequestNym;
   }
+
+  getDeleteHandlerChain(): DIDRequestHandler {
+    const signingRequestNym = new SigningRequestNymActionHandler(this);
+
+    return signingRequestNym;
+  }
 }

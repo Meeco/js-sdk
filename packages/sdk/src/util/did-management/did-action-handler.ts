@@ -1,6 +1,8 @@
 import {
   CreateDidDto,
+  DeactivateDidDto,
   DIDCreateResultDto,
+  DIDDeactivateResultDto,
   DIDUpdateResultDto,
   UpdateDidDto,
 } from '@meeco/identity-network-api-sdk';
@@ -31,6 +33,11 @@ export interface DIDRequestHandler {
     sendRequest: (method: string, dto: UpdateDidDto) => Promise<DIDUpdateResultDto>
   ): Promise<DIDUpdateResultDto>;
 
+  processDeactivateRequestResponse(
+    didDeleteResultDto: DIDDeactivateResultDto,
+    sendRequest: (method: string, dto: DeactivateDidDto) => Promise<DIDDeactivateResultDto>
+  ): Promise<DIDDeactivateResultDto>;
+
   setNextHandler(handler: DIDRequestHandler): void;
 }
 
@@ -45,6 +52,9 @@ export abstract class AbstractActionHandler implements DIDRequestHandler {
 
   abstract handleCreateRequestResponse(didCreateResultDto: DIDCreateResultDto): CreateDidDto | null;
   abstract handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null;
+  abstract handleDeactivateRequestResponse(
+    didDeactivateResultDto: DIDDeactivateResultDto
+  ): DeactivateDidDto | null;
 
   async processCreateRequestResponse(
     didCreateResultDto: DIDCreateResultDto,
@@ -86,6 +96,27 @@ export abstract class AbstractActionHandler implements DIDRequestHandler {
     }
 
     return didUpdateResultDto;
+  }
+
+  async processDeactivateRequestResponse(
+    didDeactivateResultDto: DIDDeactivateResultDto,
+    sendRequest: (method: string, dto: DeactivateDidDto) => Promise<DIDDeactivateResultDto>
+  ): Promise<DIDDeactivateResultDto> {
+    if (
+      didDeactivateResultDto.didState!.state === this.state &&
+      didDeactivateResultDto.didState!.action === this.action
+    ) {
+      const dto = this.handleDeactivateRequestResponse(didDeactivateResultDto);
+      if (dto) didDeactivateResultDto = await sendRequest(this.did.method, dto);
+    }
+    if (this.nextHandler) {
+      didDeactivateResultDto = await this.nextHandler.processDeactivateRequestResponse(
+        didDeactivateResultDto,
+        sendRequest
+      );
+    }
+
+    return didDeactivateResultDto;
   }
 
   setNextHandler(nextHandler: DIDRequestHandler) {

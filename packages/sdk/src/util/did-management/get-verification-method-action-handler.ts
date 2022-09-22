@@ -1,6 +1,8 @@
 import {
   CreateDidDto,
+  DeactivateDidDto,
   DIDCreateResultDto,
+  DIDDeactivateResultDto,
   DIDUpdateResultDto,
   UpdateDidDto,
 } from '@meeco/identity-network-api-sdk';
@@ -28,6 +30,12 @@ export class GetVerificationMethodActionHandler extends AbstractActionHandler {
   }
 
   handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null {
+    return null;
+  }
+
+  handleDeactivateRequestResponse(
+    didDeactivateResultDto: DIDDeactivateResultDto
+  ): DeactivateDidDto | null {
     return null;
   }
 }

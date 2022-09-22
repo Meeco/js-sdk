@@ -249,8 +249,6 @@ describe('IdentityNetworkService', () => {
   describe('#Create did SOV', async () => {
     const secret = cryppo.generateRandomBytesString(32);
     const keyPair = new Ed25519(cryppo.binaryStringToBytes(secret));
-    console.log(`public key hex: ${keyPair.getPublicKeyHex()}`);
-    console.log(`private key hex: ${keyPair.keyPair.getSecret('hex')}`);
 
     const didSov = new DIDSov(keyPair);
 
@@ -282,6 +280,36 @@ describe('IdentityNetworkService', () => {
       .add(
         'result',
         async () => await new DIDManagementService(environment).create(testUserAuth, didSov)
+      )
+      .it('resolve did', ({ result }) => {
+        expect(result.didState?.state).equals('finished');
+      });
+  });
+
+  describe('#Deactivate did SOV', async () => {
+    const secret = cryppo.generateRandomBytesString(32);
+    const keyPair = new Ed25519(cryppo.binaryStringToBytes(secret));
+
+    const didSov = new DIDSov(keyPair, {
+      id: 'did:sov:danube:TVhirwuz9cqBLMAGTC5otN',
+    });
+
+    const response = {
+      jobId: '00000000-0000-0000-0000-000000000000',
+      didState: {
+        state: 'finished',
+        did: 'did:sov:danube:TVhirwuz9cqBLMAGTC5otN',
+        secret: {},
+      },
+    };
+
+    customTest
+      .nock('https://identity-network-dev.meeco.me', api => {
+        api.post(`/v1/did/deactivate?method=sov`).reply(200, response);
+      })
+      .add(
+        'result',
+        async () => await new DIDManagementService(environment).deactivate(testUserAuth, didSov)
       )
       .it('resolve did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
