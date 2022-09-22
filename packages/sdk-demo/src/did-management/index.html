@@ -1,0 +1,100 @@
+<!-- index.html -->
+<html>
+  <head>
+    <title>Meeco SDK Demo</title>
+  </head>
+  <body>
+    <div class="title">
+      <h6>Meeco JavaScript SDK Demo</h6>
+      <a class="button secondary" href="https://meeco.github.io/sdk-docs/">View Documentation</a>
+    </div>
+    <div class="columns">
+      <div class="single-column">
+        <div class="card">
+          <h4>Environment Configuration</h4>
+          <hr />
+          <label for="identityNetworkUrl">Identity Network API URL:</label>
+          <input
+            placeholder="e.g. https://identity-network-dev.meeco.me"
+            class="full"
+            value="https://identity-network-dev.meeco.me"
+            autocapitalize="off"
+            autocomplete="off"
+            id="identityNetworkUrl"
+          />
+          <label for="subscriptionKey">Meeco Subscription Key:</label>
+          <input
+            placeholder="e.g. aaaaa11111bbbbb22222"
+            class="full"
+            autocapitalize="off"
+            autocomplete="off"
+            id="subscriptionKey"
+          />
+          <button id="updateEnvironment">Save</button>
+          <input value="Not set" class="full" disabled id="environmentStatus" />
+        </div>
+
+        <div class="card">
+          <h4>Resolve DID</h4>
+          <hr />
+          <input
+            placeholder="e.g. did:sov:danube:YM4E9TzVcQU3uWdU358AAp"
+            class="full"
+            value="did:sov:danube:YM4E9TzVcQU3uWdU358AAp"
+            autocapitalize="off"
+            autocomplete="off"
+            id="identifier"
+          />
+          <button id="resolveDID">Resolve</button>
+          <button id="copyResolveDID">Copy to Clipboard</button>
+          <div id="didResolutionResult"></div>
+        </div>
+
+        <div class="card">
+          <h4>Create DID</h4>
+          <hr />
+          <button id="createDID">Create</button>
+          <button id="copyCreateDID">Copy to Clipboard</button>
+          <form>
+            <div>
+              <label for="DIDSelect">DID Type</label>
+              <select id="DIDSelect" name="did_type"></select>
+            </div>
+            <div>
+              <label for="secretField">Secret Hex</label>
+              <input name="label" id="secretField" disabled />
+            </div>
+            <div>
+              <label for="pkField">Public Key Hex</label>
+              <input name="label" id="pkField" disabled />
+            </div>
+            <div id="didCreationResult"></div>
+          </form>
+        </div>
+
+        <div class="card">
+          <h4>Deactivate DID</h4>
+          <hr />
+          <button id="deactivateDID">Deactivate</button>
+          <button id="copyDeativateDID">Copy to Clipboard</button>
+          <form>
+            <div>
+              <label for="DIDSelectDeactivate">DID Type</label>
+              <select id="DIDSelectDeactivate" name="did_type"></select>
+            </div>
+            <div>
+              <label for="secretFieldDeactivate">Secret Hex</label>
+              <input name="label" id="secretFieldDeactivate" />
+            </div>
+            <div>
+              <label for="didFieldDeactivate">DID</label>
+              <input name="label" id="didFieldDeactivate" />
+            </div>
+            <div id="didDeactivateResult"></div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>
