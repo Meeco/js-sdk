@@ -15,8 +15,11 @@ const $get = (id: string) => ($(id) as HTMLInputElement)?.value;
 const $set = (id: string, value: string) => (($(id) as HTMLInputElement).value = value);
 let resolvedDidResult: string = '';
 let createdDidResult: string = '';
+let deativateDIDResult: string = '';
+
 $('copyResolveDID').setAttribute('disabled', 'true');
 $('copyCreateDID').setAttribute('disabled', 'true');
+$('copyDeativateDID').setAttribute('disabled', 'true');
 
 const options = [
   {
@@ -35,6 +38,7 @@ const options = [
   .map(t => `<option value="${t.name}">${t.label}</option>`)
   .join('');
 $('DIDSelect').innerHTML = options;
+$('DIDSelectDeactivate').innerHTML = options;
 
 let environment: Environment;
 loadEnvironmentFromStorage();
@@ -85,8 +89,10 @@ configureFetch(window.fetch);
 $('resolveDID').addEventListener('click', resolveDID);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 $('createDID').addEventListener('click', createDID);
+$('deactivateDID').addEventListener('click', deactivateDID);
 $('copyResolveDID').addEventListener('click', () => copy(resolvedDidResult));
 $('copyCreateDID').addEventListener('click', () => copy(createdDidResult));
+$('copyDeativateDID').addEventListener('click', () => copy(deativateDIDResult));
 
 async function resolveDID() {
   const identifier = $get('identifier');
@@ -120,6 +126,11 @@ async function createDID() {
       break;
     case 'web':
       did = new DIDWeb(keyPair);
+      const verificationMethodId = (did as DIDWeb).setVerificationMethod();
+      (did as DIDWeb)
+        .setAssertionMethod(verificationMethodId)
+        .setAuthentication(verificationMethodId);
+
       break;
     default:
       did = new DIDKey(keyPair);
@@ -147,4 +158,38 @@ function copy(text: string) {
       alert('Copied to clipboard');
     })
     .catch(e => console.log(e));
+}
+
+async function deactivateDID() {
+  const method = $get('DIDSelect');
+  const didToDeactivate = $get('didFieldDeactivate');
+
+  const secretKeyHex = $get('secretFieldDeactivate');
+  const secret = Uint8Array.from(Buffer.from(secretKeyHex, 'hex'));
+
+  const keyPair = new Ed25519(secret);
+
+  let did: DIDBase;
+  switch (method) {
+    case 'sov':
+      did = new DIDSov(keyPair);
+      break;
+    case 'web':
+      did = new DIDWeb(keyPair);
+      break;
+    default:
+      did = new DIDKey(keyPair);
+      break;
+  }
+  did.didDocument.id = didToDeactivate;
+
+  const api = new DIDManagementService(environment);
+  const deactivatedDIDResult = await api.deactivate({}, did);
+  const formatter = new JSONFormatter(deactivatedDIDResult, 2);
+  $('didDeactivateResult').replaceChildren(formatter.render());
+  deativateDIDResult = JSON.stringify(deactivatedDIDResult);
+
+  $('copyDeativateDID').removeAttribute('disabled');
+
+  console.log('last line');
 }
