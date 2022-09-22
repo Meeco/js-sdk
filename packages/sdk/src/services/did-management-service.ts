@@ -1,5 +1,6 @@
 import {
   DIDCreateResultDto,
+  DIDDeactivateResultDto,
   DidDocumentDto,
   DIDManagementApi,
   DIDResolutionResultDto,
@@ -81,7 +82,7 @@ export class DIDManagementService extends Service<DIDManagementApi> {
     const updateDidDto = {
       options: did.options,
       didDocument: did.didDocument,
-      did: did.did!,
+      did: did.didDocument.id!,
       didDocumentOperation: [],
     };
 
@@ -94,6 +95,39 @@ export class DIDManagementService extends Service<DIDManagementApi> {
       return handlerChain
         ? handlerChain.processUpdateRequestResponse(initialResult, (method, dto) =>
             api.didControllerUpdate(method, dto)
+          )
+        : initialResult;
+    } catch (e) {
+      console.log(e);
+      return Promise.reject(e);
+    }
+  }
+
+  /**
+   * Supported DID key, web, ebsi, sov
+   *
+   * @param credentials
+   * @param did - DID to be updated e.g. SOV, WEB & KEY
+   * @returns - Promise<DIDUpdateResultDto>
+   */
+  public async deactivate(
+    credentials: IIdentityNetworkToken,
+    did: DIDBase
+  ): Promise<DIDDeactivateResultDto> {
+    const deactivateDidDto = {
+      options: did.options,
+      did: did.didDocument.id!,
+    };
+
+    const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
+
+    try {
+      const initialResult = await api.didControllerDeactivate(did.method, deactivateDidDto);
+      // process multi-step did update with client-manage secret
+      const handlerChain = did.getDeleteHandlerChain();
+      return handlerChain
+        ? handlerChain.processDeactivateRequestResponse(initialResult, (method, dto) =>
+            api.didControllerDeactivate(method, dto)
           )
         : initialResult;
     } catch (e) {

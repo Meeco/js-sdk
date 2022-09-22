@@ -1,6 +1,8 @@
 import {
   CreateDidDto,
+  DeactivateDidDto,
   DIDCreateResultDto,
+  DIDDeactivateResultDto,
   DIDUpdateResultDto,
   UpdateDidDto,
 } from '@meeco/identity-network-api-sdk';
@@ -19,7 +21,13 @@ export class SigningRequestAttribActionHandler extends AbstractActionHandler {
   handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null {
     const result = this.process(didUpdateResultDto);
     // did document operation not supported
-    return { ...result, did: this.did.did!, didDocumentOperation: [] };
+    return { ...result, did: this.did.didDocument.id!, didDocumentOperation: [] };
+  }
+
+  handleDeactivateRequestResponse(
+    didDeactivateResultDto: DIDDeactivateResultDto
+  ): DeactivateDidDto | null {
+    return null;
   }
 
   private process(didResultDto) {
