@@ -1,9 +1,8 @@
 import {
+  DidControllerResolve200Response,
   DIDCreateResultDto,
   DIDDeactivateResultDto,
-  DidDocumentDto,
   DIDManagementApi,
-  DIDResolutionResultDto,
   DIDUpdateResultDto,
 } from '@meeco/identity-network-api-sdk';
 import { DIDBase } from '../models/did-management/did-base';
@@ -33,11 +32,9 @@ export class DIDManagementService extends Service<DIDManagementApi> {
     credentials: IIdentityNetworkToken,
     identifier: string,
     accept: MediaType = 'application/ld+json;profile="https://w3id.org/did-resolution"'
-  ): Promise<DIDResolutionResultDto | DidDocumentDto> {
+  ): Promise<DidControllerResolve200Response> {
     const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
-    return api.didControllerResolve(identifier, accept) as Promise<
-      DIDResolutionResultDto | DidDocumentDto
-    >;
+    return api.didControllerResolve(identifier, accept);
   }
 
   /**
