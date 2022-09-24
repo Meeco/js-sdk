@@ -1,36 +1,33 @@
 import {
-  CreateDidDto,
-  DeactivateDidDto,
   DIDCreateResultDto,
-  DIDDeactivateResultDto,
+  CreateDidDto,
   DIDUpdateResultDto,
   UpdateDidDto,
+  DIDDeactivateResultDto,
+  DeactivateDidDto,
 } from '@meeco/identity-network-api-sdk';
 import { DIDBase } from '../../models/did-management/did-base';
-import { AbstractActionHandler, SupportedDIDAction, SupportedDIDState } from './did-action-handler';
+import {
+  AbstractActionHandler,
+  DidDto,
+  DIDResultDto,
+  SupportedDIDAction,
+  SupportedDIDState,
+} from './did-action-handler';
 
-export class SigningRequestNymActionHandler extends AbstractActionHandler {
+export class SigningRequestNymActionHandler<
+  TypeDIDResultDto extends DIDResultDto,
+  TypeDidDto extends DidDto
+> extends AbstractActionHandler<TypeDIDResultDto, TypeDidDto> {
   constructor(public did: DIDBase) {
     super(did, SupportedDIDAction.signPayload, SupportedDIDState.action);
   }
 
-  handleCreateRequestResponse(didCreateResultDto: DIDCreateResultDto): CreateDidDto | null {
-    return this.process(didCreateResultDto);
-  }
-  handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null {
-    const result = this.process(didUpdateResultDto);
-    return result ? { ...result, did: this.did.didDocument.id!, didDocumentOperation: [] } : null;
-  }
-
-  handleDeactivateRequestResponse(
-    didDeactivateResultDto: DIDDeactivateResultDto
-  ): DeactivateDidDto | null {
-    const result = this.process(didDeactivateResultDto);
-    return result ? { ...result, did: this.did.didDocument.id! } : null;
-  }
-
-  private process(
-    didResultDto: DIDCreateResultDto | DIDUpdateResultDto | DIDDeactivateResultDto
+  handleRequestResponse(didResultDto: DIDCreateResultDto): CreateDidDto | null;
+  handleRequestResponse(didResultDto: DIDUpdateResultDto): UpdateDidDto | null;
+  handleRequestResponse(didResultDto: DIDDeactivateResultDto): DeactivateDidDto | null;
+  handleRequestResponse(
+    didResultDto: TypeDIDResultDto
   ): CreateDidDto | UpdateDidDto | DeactivateDidDto | null {
     // check if signingRequestNym serialized payload exists or continue to next handler
     if (!didResultDto.didState?.signingRequest?.signingRequestNym?.serializedPayload) return null;
@@ -40,6 +37,8 @@ export class SigningRequestNymActionHandler extends AbstractActionHandler {
     const msg = Buffer.from(serializedPayload!, 'base64');
 
     const didDto = {
+      did: this.did.didDocument?.id ?? undefined,
+      didDocumentOperation: [],
       jobId: didResultDto.jobId,
       options: {
         clientSecretMode: this.did.options.clientSecretMode,

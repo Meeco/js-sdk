@@ -1,5 +1,14 @@
-import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
-import { DIDRequestHandler } from '../../util/did-management/did-action-handler';
+import {
+  CreateDidDto,
+  DIDCreateResultDto,
+  DidDocumentDto,
+  OptionsDto,
+} from '@meeco/identity-network-api-sdk';
+import {
+  DidDto,
+  DIDRequestHandler,
+  DIDResultDto,
+} from '../../util/did-management/did-action-handler';
 import { IKeyPairDID } from './key-pair-did';
 
 export enum SupportedDidMethod {
@@ -27,13 +36,7 @@ export abstract class DIDBase {
   }
   abstract keyPair: IKeyPairDID;
 
-  getCreateHandlerChain(): DIDRequestHandler | undefined {
-    return undefined;
-  }
-  getUpdateHandlerChain(): DIDRequestHandler | undefined {
-    return undefined;
-  }
-  getDeleteHandlerChain(): DIDRequestHandler | undefined {
-    return undefined;
-  }
+  abstract getHandlerChain<TypeDIDResultDto extends DIDResultDto, TypeDidDto extends DidDto>():
+    | DIDRequestHandler<TypeDIDResultDto, TypeDidDto>
+    | undefined;
 }

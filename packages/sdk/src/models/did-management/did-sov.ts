@@ -1,5 +1,9 @@
 import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
-import { DIDRequestHandler } from '../../util/did-management/did-action-handler';
+import {
+  DidDto,
+  DIDRequestHandler,
+  DIDResultDto,
+} from '../../util/did-management/did-action-handler';
 import { GetVerificationMethodActionHandler } from '../../util/did-management/get-verification-method-action-handler';
 import { SigningRequestAttribActionHandler } from '../../util/did-management/signing-request-attrib-action-handler';
 import { SigningRequestNymActionHandler } from '../../util/did-management/signing-request-nym-action-handler';
@@ -17,29 +21,24 @@ export class DIDSov extends DIDBase {
   ) {
     super(SupportedDidMethod.SOV, didDocument, options);
   }
-  getCreateHandlerChain(): DIDRequestHandler {
-    const verificationMethod = new GetVerificationMethodActionHandler(this);
-    const signingRequestNym = new SigningRequestNymActionHandler(this);
-    const signingRequestAttrib = new SigningRequestAttribActionHandler(this);
+  getHandlerChain<
+    TypeDIDResultDto extends DIDResultDto,
+    TypeDidDto extends DidDto
+  >(): DIDRequestHandler<TypeDIDResultDto, TypeDidDto> {
+    const verificationMethod = new GetVerificationMethodActionHandler<TypeDIDResultDto, TypeDidDto>(
+      this
+    );
+    const signingRequestNym = new SigningRequestNymActionHandler<TypeDIDResultDto, TypeDidDto>(
+      this
+    );
+    const signingRequestAttrib = new SigningRequestAttribActionHandler<
+      TypeDIDResultDto,
+      TypeDidDto
+    >(this);
 
     verificationMethod.setNextHandler(signingRequestNym);
     signingRequestNym.setNextHandler(signingRequestAttrib);
 
     return verificationMethod;
-  }
-
-  getUpdateHandlerChain(): DIDRequestHandler {
-    const signingRequestNym = new SigningRequestNymActionHandler(this);
-    const signingRequestAttrib = new SigningRequestAttribActionHandler(this);
-
-    signingRequestNym.setNextHandler(signingRequestAttrib);
-
-    return signingRequestNym;
-  }
-
-  getDeleteHandlerChain(): DIDRequestHandler {
-    const signingRequestNym = new SigningRequestNymActionHandler(this);
-
-    return signingRequestNym;
   }
 }

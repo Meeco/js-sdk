@@ -7,18 +7,32 @@ import {
   UpdateDidDto,
 } from '@meeco/identity-network-api-sdk';
 import { DIDBase } from '../../models/did-management/did-base';
-import { AbstractActionHandler, SupportedDIDAction, SupportedDIDState } from './did-action-handler';
+import {
+  AbstractActionHandler,
+  DidDto,
+  DIDResultDto,
+  SupportedDIDAction,
+  SupportedDIDState,
+} from './did-action-handler';
 
-export class GetVerificationMethodActionHandler extends AbstractActionHandler {
+export class GetVerificationMethodActionHandler<
+  TypeDIDResultDto extends DIDResultDto,
+  TypeDidDto extends DidDto
+> extends AbstractActionHandler<TypeDIDResultDto, TypeDidDto> {
   constructor(public did: DIDBase) {
     super(did, SupportedDIDAction.getVerificationMethod, SupportedDIDState.action);
   }
 
-  handleCreateRequestResponse(didCreateResultDto: DIDCreateResultDto): CreateDidDto {
+  handleRequestResponse(didResultDto: DIDCreateResultDto): CreateDidDto | null;
+  handleRequestResponse(didResultDto: DIDUpdateResultDto): UpdateDidDto | null;
+  handleRequestResponse(didResultDto: DIDDeactivateResultDto): DeactivateDidDto | null;
+  handleRequestResponse(
+    didResultDto: TypeDIDResultDto
+  ): CreateDidDto | UpdateDidDto | DeactivateDidDto | null {
     this.did.didDocument.verificationMethod = [
       {
-        id: didCreateResultDto.didState!.verificationMethodTemplate![0].id,
-        type: didCreateResultDto.didState!.verificationMethodTemplate![0].type,
+        id: didResultDto.didState!.verificationMethodTemplate![0].id,
+        type: didResultDto.didState!.verificationMethodTemplate![0].type,
         publicKeyBase58: this.did.keyPair.getPublicKeyBase58(),
       },
     ];
@@ -27,15 +41,5 @@ export class GetVerificationMethodActionHandler extends AbstractActionHandler {
       options: this.did.options,
       didDocument: this.did.didDocument,
     };
-  }
-
-  handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null {
-    return null;
-  }
-
-  handleDeactivateRequestResponse(
-    didDeactivateResultDto: DIDDeactivateResultDto
-  ): DeactivateDidDto | null {
-    return null;
   }
 }

@@ -1,36 +1,34 @@
 import {
-  CreateDidDto,
-  DeactivateDidDto,
   DIDCreateResultDto,
-  DIDDeactivateResultDto,
+  CreateDidDto,
   DIDUpdateResultDto,
   UpdateDidDto,
+  DIDDeactivateResultDto,
+  DeactivateDidDto,
 } from '@meeco/identity-network-api-sdk';
 import { DIDBase } from '../../models/did-management/did-base';
-import { AbstractActionHandler, SupportedDIDAction, SupportedDIDState } from './did-action-handler';
+import {
+  AbstractActionHandler,
+  DidDto,
+  DIDResultDto,
+  SupportedDIDAction,
+  SupportedDIDState,
+} from './did-action-handler';
 
-export class SigningRequestAttribActionHandler extends AbstractActionHandler {
+export class SigningRequestAttribActionHandler<
+  TypeDIDResultDto extends DIDResultDto,
+  TypeDidDto extends DidDto
+> extends AbstractActionHandler<TypeDIDResultDto, TypeDidDto> {
   constructor(public did: DIDBase) {
     super(did, SupportedDIDAction.signPayload, SupportedDIDState.action);
   }
 
-  handleCreateRequestResponse(didCreateResultDto: DIDCreateResultDto): CreateDidDto | null {
-    return this.process(didCreateResultDto);
-  }
-
-  handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null {
-    const result = this.process(didUpdateResultDto);
-    // did document operation not supported
-    return { ...result, did: this.did.didDocument.id!, didDocumentOperation: [] };
-  }
-
-  handleDeactivateRequestResponse(
-    didDeactivateResultDto: DIDDeactivateResultDto
-  ): DeactivateDidDto | null {
-    return null;
-  }
-
-  private process(didResultDto) {
+  handleRequestResponse(didResultDto: DIDCreateResultDto): CreateDidDto | null;
+  handleRequestResponse(didResultDto: DIDUpdateResultDto): UpdateDidDto | null;
+  handleRequestResponse(didResultDto: DIDDeactivateResultDto): DeactivateDidDto | null;
+  handleRequestResponse(
+    didResultDto: TypeDIDResultDto
+  ): CreateDidDto | UpdateDidDto | DeactivateDidDto | null {
     // check if signingRequestAttrib serialized payload exists or continue to next handler
     if (!didResultDto.didState?.signingRequest?.signingRequestAttrib?.serializedPayload)
       return null;
@@ -41,6 +39,8 @@ export class SigningRequestAttribActionHandler extends AbstractActionHandler {
     const msg = Buffer.from(serializedPayload!, 'base64');
 
     const didDto = {
+      did: this.did.didDocument?.id ?? undefined,
+      didDocumentOperation: [],
       jobId: didResultDto.jobId,
       options: {
         clientSecretMode: this.did.options.clientSecretMode,
