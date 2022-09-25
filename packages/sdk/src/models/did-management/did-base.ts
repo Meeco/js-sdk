@@ -1,9 +1,4 @@
-import {
-  CreateDidDto,
-  DIDCreateResultDto,
-  DidDocumentDto,
-  OptionsDto,
-} from '@meeco/identity-network-api-sdk';
+import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
 import {
   DidDto,
   DIDRequestHandler,
