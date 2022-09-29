@@ -11,6 +11,7 @@ export enum SupportedDidMethod {
   KEY = 'key',
   WEB = 'web',
   EBSI = 'ebsi',
+  INDY = 'indy',
 }
 
 export enum SupportedNetwork {
