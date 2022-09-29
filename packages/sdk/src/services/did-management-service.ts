@@ -1,10 +1,12 @@
 import {
+  CreateDidDto,
+  DeactivateDidDto,
+  DidControllerResolve200Response,
   DIDCreateResultDto,
   DIDDeactivateResultDto,
-  DidDocumentDto,
   DIDManagementApi,
-  DIDResolutionResultDto,
   DIDUpdateResultDto,
+  UpdateDidDto,
 } from '@meeco/identity-network-api-sdk';
 import { DIDBase } from '../models/did-management/did-base';
 import Service, { IIdentityNetworkToken } from './service';
@@ -33,11 +35,9 @@ export class DIDManagementService extends Service<DIDManagementApi> {
     credentials: IIdentityNetworkToken,
     identifier: string,
     accept: MediaType = 'application/ld+json;profile="https://w3id.org/did-resolution"'
-  ): Promise<DIDResolutionResultDto | DidDocumentDto> {
+  ): Promise<DidControllerResolve200Response> {
     const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
-    return api.didControllerResolve(identifier, accept) as Promise<
-      DIDResolutionResultDto | DidDocumentDto
-    >;
+    return api.didControllerResolve(identifier, accept);
   }
 
   /**
@@ -60,9 +60,9 @@ export class DIDManagementService extends Service<DIDManagementApi> {
     const initialResult = await api.didControllerCreate(did.method, createDidDto);
 
     // process multi-step did creation with client-manage secret
-    const handlerChain = did.getCreateHandlerChain();
+    const handlerChain = did.getHandlerChain<DIDCreateResultDto, CreateDidDto>();
     return handlerChain
-      ? handlerChain.processCreateRequestResponse(initialResult, (method, dto) =>
+      ? handlerChain.processRequestResponse(initialResult, (method, dto) =>
           api.didControllerCreate(method, dto)
         )
       : initialResult;
@@ -91,9 +91,9 @@ export class DIDManagementService extends Service<DIDManagementApi> {
     try {
       const initialResult = await api.didControllerUpdate(did.method, updateDidDto);
       // process multi-step did update with client-manage secret
-      const handlerChain = did.getUpdateHandlerChain();
+      const handlerChain = did.getHandlerChain<DIDUpdateResultDto, UpdateDidDto>();
       return handlerChain
-        ? handlerChain.processUpdateRequestResponse(initialResult, (method, dto) =>
+        ? handlerChain.processRequestResponse(initialResult, (method, dto) =>
             api.didControllerUpdate(method, dto)
           )
         : initialResult;
@@ -123,10 +123,10 @@ export class DIDManagementService extends Service<DIDManagementApi> {
 
     try {
       const initialResult = await api.didControllerDeactivate(did.method, deactivateDidDto);
-      // process multi-step did update with client-manage secret
-      const handlerChain = did.getDeleteHandlerChain();
+      // process multi-step did deactivate
+      const handlerChain = did.getHandlerChain<DIDDeactivateResultDto, DeactivateDidDto>();
       return handlerChain
-        ? handlerChain.processDeactivateRequestResponse(initialResult, (method, dto) =>
+        ? handlerChain.processRequestResponse(initialResult, (method, dto) =>
             api.didControllerDeactivate(method, dto)
           )
         : initialResult;

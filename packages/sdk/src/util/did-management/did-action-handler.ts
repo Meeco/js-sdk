@@ -22,104 +22,53 @@ export enum SupportedDIDState {
   wait = 'wait',
 }
 
-export interface DIDRequestHandler {
-  processCreateRequestResponse(
-    didCreateResultDto: DIDCreateResultDto,
-    sendRequest: (method: string, dto: CreateDidDto) => Promise<DIDCreateResultDto>
-  ): Promise<DIDCreateResultDto>;
+export type DIDResultDto = DIDCreateResultDto | DIDUpdateResultDto | DIDDeactivateResultDto;
+export type DidDto = CreateDidDto | UpdateDidDto | DeactivateDidDto;
 
-  processUpdateRequestResponse(
-    didUpdateResultDto: DIDUpdateResultDto,
-    sendRequest: (method: string, dto: UpdateDidDto) => Promise<DIDUpdateResultDto>
-  ): Promise<DIDUpdateResultDto>;
+export interface DIDRequestHandler<TypeDIDResultDto, TypeDidDto> {
+  processRequestResponse(
+    DIDResultDto: TypeDIDResultDto,
+    sendRequest: (method: string, dto: TypeDidDto) => Promise<TypeDIDResultDto>
+  ): Promise<TypeDIDResultDto>;
 
-  processDeactivateRequestResponse(
-    didDeleteResultDto: DIDDeactivateResultDto,
-    sendRequest: (method: string, dto: DeactivateDidDto) => Promise<DIDDeactivateResultDto>
-  ): Promise<DIDDeactivateResultDto>;
-
-  setNextHandler(handler: DIDRequestHandler): void;
+  setNextHandler(handler: DIDRequestHandler<TypeDIDResultDto, TypeDidDto>): void;
 }
 
-export abstract class AbstractActionHandler implements DIDRequestHandler {
+export abstract class AbstractActionHandler<
+  TypeDIDResultDto extends DIDResultDto,
+  TypeDidDto extends DidDto
+> implements DIDRequestHandler<TypeDIDResultDto, TypeDidDto>
+{
   constructor(
     public did: DIDBase,
     public action: SupportedDIDAction,
     public state: SupportedDIDState
   ) {}
 
-  nextHandler!: DIDRequestHandler;
+  nextHandler!: DIDRequestHandler<TypeDIDResultDto, TypeDidDto>;
 
-  abstract handleCreateRequestResponse(didCreateResultDto: DIDCreateResultDto): CreateDidDto | null;
-  abstract handleUpdateRequestResponse(didUpdateResultDto: DIDUpdateResultDto): UpdateDidDto | null;
-  abstract handleDeactivateRequestResponse(
-    didDeactivateResultDto: DIDDeactivateResultDto
-  ): DeactivateDidDto | null;
+  abstract handleRequestResponse(didResultDto: DIDCreateResultDto): CreateDidDto | null;
+  abstract handleRequestResponse(didResultDto: DIDUpdateResultDto): UpdateDidDto | null;
+  abstract handleRequestResponse(didResultDto: DIDDeactivateResultDto): DeactivateDidDto | null;
 
-  async processCreateRequestResponse(
-    didCreateResultDto: DIDCreateResultDto,
-    sendRequest: (method: string, dto: CreateDidDto) => Promise<DIDCreateResultDto>
-  ): Promise<DIDCreateResultDto> {
+  async processRequestResponse(
+    didResultDto: TypeDIDResultDto,
+    sendRequest: (method: string, dto: TypeDidDto) => Promise<TypeDIDResultDto>
+  ): Promise<TypeDIDResultDto> {
     if (
-      didCreateResultDto.didState!.state === this.state &&
-      didCreateResultDto.didState!.action === this.action
+      didResultDto.didState!.state === this.state &&
+      didResultDto.didState!.action === this.action
     ) {
-      const dto = this.handleCreateRequestResponse(didCreateResultDto);
-      if (dto) didCreateResultDto = await sendRequest(this.did.method, dto);
+      const dto = this.handleRequestResponse(didResultDto);
+      if (dto) didResultDto = await sendRequest(this.did.method, dto as any);
     }
     if (this.nextHandler) {
-      didCreateResultDto = await this.nextHandler.processCreateRequestResponse(
-        didCreateResultDto,
-        sendRequest
-      );
+      didResultDto = await this.nextHandler.processRequestResponse(didResultDto, sendRequest);
     }
-
-    return didCreateResultDto;
+    return didResultDto;
   }
 
-  async processUpdateRequestResponse(
-    didUpdateResultDto: DIDUpdateResultDto,
-    sendRequest: (method: string, dto: UpdateDidDto) => Promise<DIDUpdateResultDto>
-  ): Promise<DIDUpdateResultDto> {
-    if (
-      didUpdateResultDto.didState!.state === this.state &&
-      didUpdateResultDto.didState!.action === this.action
-    ) {
-      const dto = this.handleUpdateRequestResponse(didUpdateResultDto);
-      if (dto) didUpdateResultDto = await sendRequest(this.did.method, dto);
-    }
-    if (this.nextHandler) {
-      didUpdateResultDto = await this.nextHandler.processUpdateRequestResponse(
-        didUpdateResultDto,
-        sendRequest
-      );
-    }
-
-    return didUpdateResultDto;
-  }
-
-  async processDeactivateRequestResponse(
-    didDeactivateResultDto: DIDDeactivateResultDto,
-    sendRequest: (method: string, dto: DeactivateDidDto) => Promise<DIDDeactivateResultDto>
-  ): Promise<DIDDeactivateResultDto> {
-    if (
-      didDeactivateResultDto.didState!.state === this.state &&
-      didDeactivateResultDto.didState!.action === this.action
-    ) {
-      const dto = this.handleDeactivateRequestResponse(didDeactivateResultDto);
-      if (dto) didDeactivateResultDto = await sendRequest(this.did.method, dto);
-    }
-    if (this.nextHandler) {
-      didDeactivateResultDto = await this.nextHandler.processDeactivateRequestResponse(
-        didDeactivateResultDto,
-        sendRequest
-      );
-    }
-
-    return didDeactivateResultDto;
-  }
-
-  setNextHandler(nextHandler: DIDRequestHandler) {
+  setNextHandler(nextHandler: DIDRequestHandler<TypeDIDResultDto, TypeDidDto>) {
     this.nextHandler = nextHandler;
   }
 }

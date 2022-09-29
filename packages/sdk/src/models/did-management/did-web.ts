@@ -1,6 +1,7 @@
 import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
 import { IKeyPairDID } from './key-pair-did';
 import { DIDBase, SupportedDidMethod } from './did-base';
+import { DIDResultDto, DidDto, DIDRequestHandler } from '../../util/did-management';
 
 export class DIDWeb extends DIDBase {
   constructor(
@@ -45,5 +46,11 @@ export class DIDWeb extends DIDBase {
         (this.didDocument.assertionMethod = [new String(id)]);
 
     return this;
+  }
+
+  getHandlerChain<TypeDIDResultDto extends DIDResultDto, TypeDidDto extends DidDto>():
+    | DIDRequestHandler<TypeDIDResultDto, TypeDidDto>
+    | undefined {
+    return undefined;
   }
 }
