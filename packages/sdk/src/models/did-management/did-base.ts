@@ -20,6 +20,10 @@ export enum SupportedNetwork {
   MAINNET = 'mainnet',
 }
 
+export enum SupportedDidDocumentOperation {
+  SET_DID_DOCUMENT = 'setDidDocument',
+}
+
 export abstract class DIDBase {
   constructor(
     public method: string,

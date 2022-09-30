@@ -1,7 +1,7 @@
 import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
-import { IKeyPairDID } from './key-pair-did';
+import { DidDto, DIDRequestHandler, DIDResultDto } from '../../util/did-management';
 import { DIDBase, SupportedDidMethod } from './did-base';
-import { DIDResultDto, DidDto, DIDRequestHandler } from '../../util/did-management';
+import { IKeyPairDID } from './key-pair-did';
 
 export class DIDWeb extends DIDBase {
   constructor(
