@@ -11,12 +11,17 @@ export enum SupportedDidMethod {
   KEY = 'key',
   WEB = 'web',
   EBSI = 'ebsi',
+  INDY = 'indy',
 }
 
 export enum SupportedNetwork {
   DANUBE = 'danube',
   TESTNET = 'testnet',
   MAINNET = 'mainnet',
+}
+
+export enum SupportedDidDocumentOperation {
+  SET_DID_DOCUMENT = 'setDidDocument',
 }
 
 export abstract class DIDBase {

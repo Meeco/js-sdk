@@ -1,4 +1,5 @@
 export * from './did-base';
+export * from './did-indy';
 export * from './did-key';
 export * from './did-sov';
 export * from './did-web';

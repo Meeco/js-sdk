@@ -8,7 +8,7 @@ import {
   DIDUpdateResultDto,
   UpdateDidDto,
 } from '@meeco/identity-network-api-sdk';
-import { DIDBase } from '../models/did-management/did-base';
+import { DIDBase, SupportedDidDocumentOperation } from '../models/did-management/did-base';
 import Service, { IIdentityNetworkToken } from './service';
 
 export type MediaType =
@@ -83,7 +83,7 @@ export class DIDManagementService extends Service<DIDManagementApi> {
       options: did.options,
       didDocument: did.didDocument,
       did: did.didDocument.id!,
-      didDocumentOperation: [],
+      didDocumentOperation: [SupportedDidDocumentOperation.SET_DID_DOCUMENT],
     };
 
     const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;

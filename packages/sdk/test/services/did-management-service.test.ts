@@ -511,7 +511,7 @@ describe('IdentityNetworkService', () => {
                   },
                 ],
               },
-              didDocumentOperation: [],
+              didDocumentOperation: ['setDidDocument'],
               options: {
                 network: 'danube',
               },
