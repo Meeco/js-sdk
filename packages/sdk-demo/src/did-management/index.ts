@@ -1,6 +1,7 @@
 import {
   configureFetch,
   DIDBase,
+  DIDIndy,
   DIDKey,
   DIDManagementService,
   DIDSov,
@@ -22,6 +23,10 @@ $('copyCreateDID').setAttribute('disabled', 'true');
 $('copyDeativateDID').setAttribute('disabled', 'true');
 
 const options = [
+  {
+    name: 'indy',
+    label: 'indy',
+  },
   {
     name: 'sov',
     label: 'sov',
@@ -97,11 +102,31 @@ $('copyDeativateDID').addEventListener('click', () => copy(deativateDIDResult));
 async function resolveDID() {
   const identifier = $get('identifier');
   const api = new DIDManagementService(environment);
-  const result = await api.resolve({}, identifier);
+  let result: any = {};
+  try {
+    result = await api.resolve({}, identifier);
+  } catch (e: any) {
+    result = await extractResponseErrorBody(e, result);
+  }
   const formatter = new JSONFormatter(result, 2);
   resolvedDidResult = JSON.stringify(result);
   $('didResolutionResult').replaceChildren(formatter.render());
   $('copyResolveDID').removeAttribute('disabled');
+}
+
+async function extractResponseErrorBody(e: any, result: any) {
+  const textStreamReader = (e.response.body as ReadableStream)
+    .pipeThrough(new TextDecoderStream())
+    .getReader();
+  while (true) {
+    const { value, done } = await textStreamReader.read();
+    if (done) {
+      break;
+    }
+    console.log('Received', value);
+    result = JSON.parse(value);
+  }
+  return result;
 }
 
 async function createDID() {
@@ -115,6 +140,15 @@ async function createDID() {
 
   let did: DIDBase;
   switch (method) {
+    case 'indy':
+      did = new DIDIndy(keyPair);
+      did.didDocument.service = [
+        {
+          type: 'LinkedDomains',
+          serviceEndpoint: 'meeco.me',
+        },
+      ];
+      break;
     case 'sov':
       did = new DIDSov(keyPair);
       did.didDocument.service = [
@@ -138,7 +172,14 @@ async function createDID() {
   }
 
   const api = new DIDManagementService(environment);
-  const generatedDID = await api.create({}, did);
+
+  let generatedDID: any = {};
+  try {
+    generatedDID = await api.create({}, did);
+  } catch (e: any) {
+    generatedDID = await extractResponseErrorBody(e, generatedDID);
+  }
+
   const formatter = new JSONFormatter(generatedDID, 2);
   $('didCreationResult').replaceChildren(formatter.render());
   createdDidResult = JSON.stringify({
@@ -171,6 +212,9 @@ async function deactivateDID() {
 
   let did: DIDBase;
   switch (method) {
+    case 'indy':
+      did = new DIDIndy(keyPair);
+      break;
     case 'sov':
       did = new DIDSov(keyPair);
       break;
@@ -184,7 +228,14 @@ async function deactivateDID() {
   did.didDocument.id = didToDeactivate;
 
   const api = new DIDManagementService(environment);
-  const deactivatedDIDResult = await api.deactivate({}, did);
+
+  let deactivatedDIDResult: any = {};
+  try {
+    deactivatedDIDResult = await api.deactivate({}, did);
+  } catch (e: any) {
+    deactivatedDIDResult = await extractResponseErrorBody(e, deactivatedDIDResult);
+  }
+
   const formatter = new JSONFormatter(deactivatedDIDResult, 2);
   $('didDeactivateResult').replaceChildren(formatter.render());
   deativateDIDResult = JSON.stringify(deactivatedDIDResult);
