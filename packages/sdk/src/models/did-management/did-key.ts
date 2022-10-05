@@ -1,23 +1,34 @@
 import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
-import { IKeyPairDID } from './key-pair-did';
+import {
+  DidDto,
+  DIDRequestHandler,
+  DIDResultDto,
+  GetVerificationMethodActionHandler,
+} from '../../util/did-management';
 import { DIDBase, SupportedDidMethod } from './did-base';
-import { DIDResultDto, DidDto, DIDRequestHandler } from '../../util/did-management';
+import { IKeyPairDID } from './key-pair-did';
 
 export class DIDKey extends DIDBase {
   constructor(
     public keyPair: IKeyPairDID,
     public didDocument: DidDocumentDto = {},
     options: OptionsDto = {
-      clientSecretMode: false,
+      clientSecretMode: true,
       network: undefined,
+      keyType: keyPair.getName(),
     }
   ) {
     super(SupportedDidMethod.KEY, didDocument, options);
   }
 
-  getHandlerChain<TypeDIDResultDto extends DIDResultDto, TypeDidDto extends DidDto>():
-    | DIDRequestHandler<TypeDIDResultDto, TypeDidDto>
-    | undefined {
-    return undefined;
+  getHandlerChain<
+    TypeDIDResultDto extends DIDResultDto,
+    TypeDidDto extends DidDto
+  >(): DIDRequestHandler<TypeDIDResultDto, TypeDidDto> {
+    const verificationMethod = new GetVerificationMethodActionHandler<TypeDIDResultDto, TypeDidDto>(
+      this
+    );
+
+    return verificationMethod;
   }
 }

@@ -4,7 +4,6 @@ import {
   DIDIndy,
   DIDKey,
   DIDManagementService,
-  DIDSov,
   DIDWeb,
   Ed25519,
   Environment,
@@ -26,10 +25,6 @@ const options = [
   {
     name: 'indy',
     label: 'indy',
-  },
-  {
-    name: 'sov',
-    label: 'sov',
   },
   {
     name: 'key',
@@ -149,15 +144,6 @@ async function createDID() {
         },
       ];
       break;
-    case 'sov':
-      did = new DIDSov(keyPair);
-      did.didDocument.service = [
-        {
-          type: 'LinkedDomains',
-          serviceEndpoint: 'meeco.me',
-        },
-      ];
-      break;
     case 'web':
       did = new DIDWeb(keyPair);
       const verificationMethodId = (did as DIDWeb).setVerificationMethod();
@@ -214,9 +200,6 @@ async function deactivateDID() {
   switch (method) {
     case 'indy':
       did = new DIDIndy(keyPair);
-      break;
-    case 'sov':
-      did = new DIDSov(keyPair);
       break;
     case 'web':
       did = new DIDWeb(keyPair);

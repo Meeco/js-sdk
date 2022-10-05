@@ -1,7 +1,7 @@
 import { DidDocumentDto, DIDResolutionResultDto } from '@meeco/identity-network-api-sdk';
 import { expect } from 'chai';
+import { DIDIndy } from '../../src/models/did-management/did-indy';
 import { DIDKey } from '../../src/models/did-management/did-key';
-import { DIDSov } from '../../src/models/did-management/did-sov';
 import { DIDWeb } from '../../src/models/did-management/did-web';
 import { Ed25519 } from '../../src/models/did-management/Ed25519';
 import cryppo from '../../src/services/cryppo-service';
@@ -72,7 +72,7 @@ describe('IdentityNetworkService', () => {
     customTest
       .nock('https://identity-network-dev.meeco.me', api => {
         api
-          .get(`/v1/did/did%3Akey%3Az6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd`)
+          .get(`/did/did%3Akey%3Az6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd`)
           .once()
           .reply(200, response);
       })
@@ -128,7 +128,7 @@ describe('IdentityNetworkService', () => {
     customTest
       .nock('https://identity-network-dev.meeco.me', api => {
         api
-          .get(`/v1/did/did%3Akey%3Az6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd`)
+          .get(`/did/did%3Akey%3Az6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd`)
           .once()
           .reply(200, response);
       })
@@ -155,47 +155,59 @@ describe('IdentityNetworkService', () => {
     const keyPair = new Ed25519(secret);
     const didKey = new DIDKey(keyPair);
 
-    const response = {
+    const responseStep1 = {
       jobId: null,
       didState: {
-        did: 'did:key:z6MkgVzC5o5TJxiH3F8thDgvRZak3e2dLnSm14b8ZDeeuChp',
+        state: 'action',
+        action: 'getVerificationMethod',
+        verificationMethodTemplate: [
+          {
+            id: '#temp',
+            type: 'JsonWebKey2020',
+            purpose: ['authentication'],
+            publicKeyJwk: {
+              kty: 'OKP',
+              crv: 'Ed25519',
+            },
+          },
+        ],
+      },
+      didRegistrationMetadata: {
+        duration: 10,
+        method: 'key',
+      },
+      didDocumentMetadata: null,
+    };
+
+    const responseStep2 = {
+      jobId: null,
+      didState: {
+        did: 'did:key:z6Mkmg7DTLp6C6utxFduNBPvVohuHgVomCHV7YBH4suxRfwv',
         state: 'finished',
         secret: {
           verificationMethod: [
-            {
-              id: 'did:key:z6MkgVzC5o5TJxiH3F8thDgvRZak3e2dLnSm14b8ZDeeuChp#z6MkgVzC5o5TJxiH3F8thDgvRZak3e2dLnSm14b8ZDeeuChp',
-              type: 'JsonWebKey2020',
-              controller: 'did:key:z6MkgVzC5o5TJxiH3F8thDgvRZak3e2dLnSm14b8ZDeeuChp',
-              privateKeyJwk: {
-                kty: 'OKP',
-                crv: 'Ed25519',
-                x: 'HmowyanulqykwUZpaqER_P-KWJS3Q98bU7BRqgK971s',
-                d: 'vhUpstfWB_8gYyZ53RMECw6BBiqdvDugOfS-tnVhdec',
+            [
+              {
+                id: '#temp',
+                purpose: ['authentication'],
               },
-              purpose: [
-                'authentication',
-                'assertionMethod',
-                'capabilityInvocation',
-                'capabilityDelegation',
-              ],
-            },
-            {
-              id: 'did:key:z6MkgVzC5o5TJxiH3F8thDgvRZak3e2dLnSm14b8ZDeeuChp#z6LSmY7sgjKPfpnD1xypvb9LFS3GCAzPNV51kaqwj2nfcKQs',
-              type: 'JsonWebKey2020',
-              controller: 'did:key:z6MkgVzC5o5TJxiH3F8thDgvRZak3e2dLnSm14b8ZDeeuChp',
-              privateKeyJwk: {
-                kty: 'OKP',
-                crv: 'X25519',
-                x: 'koSAn4UymHmRLGFsuxmh9RiBWkYrYJvcmC0Mn0jAFCg',
-                d: '-Eqzz0IcePqmafE1euO76dN5W8rNrS9pNc6Wff_F8F4',
+              {
+                id: 'did:key:z6Mkmg7DTLp6C6utxFduNBPvVohuHgVomCHV7YBH4suxRfwv#z6Mkmg7DTLp6C6utxFduNBPvVohuHgVomCHV7YBH4suxRfwv',
+                controller: 'did:key:z6Mkmg7DTLp6C6utxFduNBPvVohuHgVomCHV7YBH4suxRfwv',
+                purpose: [
+                  'authentication',
+                  'assertionMethod',
+                  'capabilityInvocation',
+                  'capabilityDelegation',
+                  'keyAgreement',
+                ],
               },
-              purpose: ['keyAgreement'],
-            },
+            ],
           ],
         },
       },
       didRegistrationMetadata: {
-        duration: 159,
+        duration: 39,
         method: 'key',
       },
       didDocumentMetadata: null,
@@ -203,7 +215,32 @@ describe('IdentityNetworkService', () => {
 
     customTest
       .nock('https://identity-network-dev.meeco.me', api => {
-        api.post(`/v1/did/create?method=key`).reply(201, response);
+        api
+          .post(`/did/create?method=key`, body => {
+            expect(body.options).to.eql({
+              clientSecretMode: true,
+              keyType: 'Ed25519',
+            });
+            return true;
+          })
+          .once()
+          .reply(201, responseStep1);
+        api
+          .post(`/did/create?method=key`, body => {
+            expect(body.options).to.eql({
+              clientSecretMode: true,
+              keyType: 'Ed25519',
+            });
+            expect(body.didDocument.verificationMethod[0].type).to.equal('JsonWebKey2020');
+            expect(body.didDocument.verificationMethod[0].publicKeyJwk).to.be.deep.equal({
+              kty: 'OKP',
+              crv: 'Ed25519',
+              x: keyPair.getPublicKeyBase64URL(),
+            });
+            return true;
+          })
+          .once()
+          .reply(201, responseStep2);
       })
       .add('result', () => new DIDManagementService(environment).create(testUserAuth, didKey))
       .it('created did', ({ result }) => {
@@ -242,7 +279,7 @@ describe('IdentityNetworkService', () => {
 
     customTest
       .nock('https://identity-network-dev.meeco.me', api => {
-        api.post(`/v1/did/create?method=web`).reply(201, response);
+        api.post(`/did/create?method=web`).reply(201, response);
       })
       .add('result', () => new DIDManagementService(environment).create(testUserAuth, didKey))
       .it('created did', ({ result }) => {
@@ -251,13 +288,13 @@ describe('IdentityNetworkService', () => {
   });
 
   /**
-   * Create DID SOV
+   * Create DID Indy
    */
-  describe('#Create DID SOV', async () => {
+  describe('#Create DID Indy', async () => {
     const secret = cryppo.generateRandomBytesString(32);
     const keyPair = new Ed25519(cryppo.binaryStringToBytes(secret));
 
-    const didSov = new DIDSov(keyPair);
+    const didIndy = new DIDIndy(keyPair);
 
     const responseStep1 = {
       jobId: null,
@@ -277,7 +314,7 @@ describe('IdentityNetworkService', () => {
         action: 'getVerificationMethod',
         state: 'action',
       },
-      didRegistrationMetadata: { duration: 16, method: 'sov' },
+      didRegistrationMetadata: { duration: 16, method: 'indy' },
       didDocumentMetadata: {
         network: 'danube',
         poolVersion: 2,
@@ -310,7 +347,7 @@ describe('IdentityNetworkService', () => {
           },
         },
       },
-      didRegistrationMetadata: { duration: 236, method: 'sov' },
+      didRegistrationMetadata: { duration: 236, method: 'indy' },
       didDocumentMetadata: {
         network: 'danube',
         poolVersion: 2,
@@ -365,7 +402,7 @@ describe('IdentityNetworkService', () => {
       jobId: '00000000-0000-0000-0000-000000000000',
       didState: {
         state: 'finished',
-        did: 'did:sov:danube:1234567890123456789012',
+        did: 'did:indy:danube:1234567890123456789012',
         secret: {
           verificationMethod: [
             [
@@ -373,8 +410,8 @@ describe('IdentityNetworkService', () => {
                 id: '#key-1',
               },
               {
-                id: 'did:sov:danube:1234567890123456789012#key-1',
-                controller: 'did:sov:danube:1234567890123456789012',
+                id: 'did:indy:danube:1234567890123456789012#key-1',
+                controller: 'did:indy:danube:1234567890123456789012',
               },
             ],
           ],
@@ -385,7 +422,7 @@ describe('IdentityNetworkService', () => {
     customTest
       .nock('https://identity-network-dev.meeco.me', api => {
         api
-          .post(`/v1/did/create?method=sov`, body => {
+          .post(`/did/create?method=indy`, body => {
             expect(body).to.eql({
               options: { clientSecretMode: true, network: 'danube' },
               didDocument: {},
@@ -395,7 +432,7 @@ describe('IdentityNetworkService', () => {
           .once()
           .reply(201, responseStep1);
         api
-          .post(`/v1/did/create?method=sov`, body => {
+          .post(`/did/create?method=indy`, body => {
             expect(body.options).to.eql({ clientSecretMode: true, network: 'danube' });
             expect(body.didDocument.verificationMethod[0].id).to.equal('#key-1');
             expect(body.didDocument.verificationMethod[0].type).to.equal(
@@ -407,7 +444,7 @@ describe('IdentityNetworkService', () => {
           .once()
           .reply(201, responseStep2);
         api
-          .post(`/v1/did/create?method=sov`, body => {
+          .post(`/did/create?method=indy`, body => {
             expect(body.options).to.eql({ clientSecretMode: true });
             expect(body.jobId).to.eql('00000000-0000-0000-0000-000000000000');
             expect(body.secret.signingResponse.signingRequestAttrib.signature).to.be.a('string');
@@ -418,7 +455,7 @@ describe('IdentityNetworkService', () => {
       })
       .add(
         'result',
-        async () => await new DIDManagementService(environment).create(testUserAuth, didSov)
+        async () => await new DIDManagementService(environment).create(testUserAuth, didIndy)
       )
       .it('created did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
@@ -426,16 +463,16 @@ describe('IdentityNetworkService', () => {
   });
 
   /**
-   * Update DID SOV
+   * Update DID indy
    */
-  describe('#Update DID SOV', async () => {
+  describe('#Update DID indy', async () => {
     const secret = cryppo.binaryStringToBytes(cryppo.generateRandomBytesString(32));
     const keyPair = new Ed25519(secret);
 
-    const didSov = new DIDSov(
+    const didIndy = new DIDIndy(
       keyPair,
       {
-        id: 'did:sov:danube:9RJposSSY3pp4qzuN82gRw',
+        id: 'did:indy:danube:9RJposSSY3pp4qzuN82gRw',
         service: [{ type: 'DIDComm', serviceEndpoint: 'https://meeco.me' }],
       },
       { network: 'danube' }
@@ -443,8 +480,8 @@ describe('IdentityNetworkService', () => {
 
     const response = {
       jobId: null,
-      didState: { state: 'finished', secret: {}, did: 'did:sov:danube:9RJposSSY3pp4qzuN82gRw' },
-      didRegistrationMetadata: { duration: 1290, method: 'sov' },
+      didState: { state: 'finished', secret: {}, did: 'did:indy:danube:9RJposSSY3pp4qzuN82gRw' },
+      didRegistrationMetadata: { duration: 1290, method: 'indy' },
       didDocumentMetadata: {
         network: 'danube',
         poolVersion: 2,
@@ -499,11 +536,11 @@ describe('IdentityNetworkService', () => {
     customTest
       .nock('https://identity-network-dev.meeco.me', api => {
         api
-          .post(`/v1/did/update?method=sov`, body => {
+          .post(`/did/update?method=indy`, body => {
             expect(body).to.eql({
-              did: 'did:sov:danube:9RJposSSY3pp4qzuN82gRw',
+              did: 'did:indy:danube:9RJposSSY3pp4qzuN82gRw',
               didDocument: {
-                id: 'did:sov:danube:9RJposSSY3pp4qzuN82gRw',
+                id: 'did:indy:danube:9RJposSSY3pp4qzuN82gRw',
                 service: [
                   {
                     serviceEndpoint: 'https://meeco.me',
@@ -520,7 +557,7 @@ describe('IdentityNetworkService', () => {
           })
           .reply(200, response);
       })
-      .add('result', () => new DIDManagementService(environment).update(testUserAuth, didSov))
+      .add('result', () => new DIDManagementService(environment).update(testUserAuth, didIndy))
       .it('updated did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
       });
@@ -529,30 +566,30 @@ describe('IdentityNetworkService', () => {
   /**
    * Deactivate DID
    */
-  describe('#Deactivate DID SOV', async () => {
+  describe('#Deactivate DID Indy', async () => {
     const secret = cryppo.generateRandomBytesString(32);
     const keyPair = new Ed25519(cryppo.binaryStringToBytes(secret));
 
-    const didSov = new DIDSov(keyPair, {
-      id: 'did:sov:danube:TVhirwuz9cqBLMAGTC5otN',
+    const didIndy = new DIDIndy(keyPair, {
+      id: 'did:indy:danube:TVhirwuz9cqBLMAGTC5otN',
     });
 
     const response = {
       jobId: '00000000-0000-0000-0000-000000000000',
       didState: {
         state: 'finished',
-        did: 'did:sov:danube:TVhirwuz9cqBLMAGTC5otN',
+        did: 'did:indy:danube:TVhirwuz9cqBLMAGTC5otN',
         secret: {},
       },
     };
 
     customTest
       .nock('https://identity-network-dev.meeco.me', api => {
-        api.post(`/v1/did/deactivate?method=sov`).reply(200, response);
+        api.post(`/did/deactivate?method=indy`).reply(200, response);
       })
       .add(
         'result',
-        async () => await new DIDManagementService(environment).deactivate(testUserAuth, didSov)
+        async () => await new DIDManagementService(environment).deactivate(testUserAuth, didIndy)
       )
       .it('deactivated did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
