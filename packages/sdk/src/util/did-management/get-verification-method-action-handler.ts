@@ -23,17 +23,33 @@ export class GetVerificationMethodActionHandler<
     super(did, SupportedDIDAction.getVerificationMethod, SupportedDIDState.action);
   }
 
+  verificationMethodType = new Map<string, object>([
+    [
+      'JsonWebKey2020',
+      {
+        publicKeyJwk: {
+          kty: 'OKP',
+          crv: this.did.keyPair.getName(),
+          x: this.did.keyPair.getPublicKeyBase64URL(),
+        },
+      },
+    ],
+    ['Ed25519VerificationKey2018', { publicKeyBase58: this.did.keyPair.getPublicKeyBase58() }],
+  ]);
+
   handleRequestResponse(didResultDto: DIDCreateResultDto): CreateDidDto | null;
   handleRequestResponse(didResultDto: DIDUpdateResultDto): UpdateDidDto | null;
   handleRequestResponse(didResultDto: DIDDeactivateResultDto): DeactivateDidDto | null;
   handleRequestResponse(
     didResultDto: TypeDIDResultDto
   ): CreateDidDto | UpdateDidDto | DeactivateDidDto | null {
+    const type = didResultDto.didState!.verificationMethodTemplate![0].type;
+
     this.did.didDocument.verificationMethod = [
       {
         id: didResultDto.didState!.verificationMethodTemplate![0].id,
-        type: didResultDto.didState!.verificationMethodTemplate![0].type,
-        publicKeyBase58: this.did.keyPair.getPublicKeyBase58(),
+        type,
+        ...this.verificationMethodType.get(type!),
       },
     ];
 
