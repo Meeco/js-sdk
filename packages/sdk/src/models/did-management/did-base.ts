@@ -7,10 +7,8 @@ import {
 import { IKeyPairDID } from './key-pair-did';
 
 export enum SupportedDidMethod {
-  SOV = 'sov',
   KEY = 'key',
   WEB = 'web',
-  EBSI = 'ebsi',
   INDY = 'indy',
 }
 

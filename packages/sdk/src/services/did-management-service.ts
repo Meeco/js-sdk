@@ -41,10 +41,10 @@ export class DIDManagementService extends Service<DIDManagementApi> {
   }
 
   /**
-   * Supported DID key, web, ebsi, sov
+   * Supported DID key, web, indy
    *
    * @param credentials
-   * @param did - DID to be created e.g. SOV, WEB & KEY
+   * @param did - DID to be created e.g. INDY, WEB & KEY
    * @returns - Promise<DIDCreateResultDto>
    */
   public async create(
@@ -69,10 +69,10 @@ export class DIDManagementService extends Service<DIDManagementApi> {
   }
 
   /**
-   * Supported DID key, web, ebsi, sov
+   * Supported DID key, web, indy
    *
    * @param credentials
-   * @param did - DID to be updated e.g. SOV, WEB & KEY
+   * @param did - DID to be updated e.g. Indy, WEB & KEY
    * @returns - Promise<DIDUpdateResultDto>
    */
   public async update(
@@ -104,10 +104,10 @@ export class DIDManagementService extends Service<DIDManagementApi> {
   }
 
   /**
-   * Supported DID key, web, ebsi, sov
+   * Supported DID key, web, indy
    *
    * @param credentials
-   * @param did - DID to be updated e.g. SOV, WEB & KEY
+   * @param did - DID to be updated e.g. INDY, WEB & KEY
    * @returns - Promise<DIDUpdateResultDto>
    */
   public async deactivate(
