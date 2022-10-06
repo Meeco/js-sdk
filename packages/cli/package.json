@@ -18,7 +18,7 @@
     "@oclif/core": "^1.9.9",
     "@oclif/plugin-version": "^1.1.1",
     "@oclif/plugin-update": "^3.0.0",
-    "axios": "^0.27.2",
+    "axios": "^0.21.2",
     "body-parser": "^1.20.0",
     "chalk": "^4.1.2",
     "date-fns": "^2.28.0",
