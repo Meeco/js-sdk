@@ -38,9 +38,9 @@
           <h4>Resolve DID</h4>
           <hr />
           <input
-            placeholder="e.g. did:indy:danube:SUotdQ6o5oHBpKcSVoenRy"
+            placeholder="e.g. did:key:z6MkrzfsbRg73sk7FMBSASiT8UASWqRGiG2A6sRZdEdcwmZ8"
             class="full"
-            value="did:indy:danube:SUotdQ6o5oHBpKcSVoenRy"
+            value="did:key:z6MkrzfsbRg73sk7FMBSASiT8UASWqRGiG2A6sRZdEdcwmZ8"
             autocapitalize="off"
             autocomplete="off"
             id="identifier"
@@ -94,6 +94,27 @@
           </form>
         </div>
 
+        <div class="card">
+          <h4>Update DID</h4>
+          <hr />
+          <button id="updateDID">Update</button>
+          <button id="copyUpdateDID">Copy to Clipboard</button>
+          <form>
+            <div>
+              <label for="DIDSelectUpdate">DID Type</label>
+              <select id="DIDSelectUpdate" name="did_type"></select>
+            </div>
+            <div>
+              <label for="secretFieldUpdate">Secret Hex</label>
+              <input name="label" id="secretFieldUpdate" />
+            </div>
+            <div>
+              <label for="didDocumentUpdate">DID Document</label>
+              <textarea id="didDocumentUpdate" rows="20"> </textarea>
+            </div>
+            <div id="didUpdateResult"></div>
+          </form>
+        </div>
       </div>
     </div>
   </body>
