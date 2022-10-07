@@ -41,7 +41,7 @@ const allOptions = [
 const options = allOptions.map(t => `<option value="${t.name}">${t.label}</option>`).join('');
 
 const optionsUpdateDeactivate = allOptions
-  .filter(f => f.name != 'key')
+  .filter(f => f.name !== 'key')
   .map(t => `<option value="${t.name}">${t.label}</option>`)
   .join('');
 
