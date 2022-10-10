@@ -262,7 +262,10 @@ async function updateDID() {
     default:
       throw new Error('Not Supported');
   }
-  did.didDocument = JSON.parse($get('didDocumentUpdate'));
+
+  try {
+    did.didDocument = JSON.parse($get('didDocumentUpdate'));
+  } catch (e: any) {}
 
   const api = new DIDManagementService(environment);
 
