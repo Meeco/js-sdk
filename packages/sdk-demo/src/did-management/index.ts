@@ -273,7 +273,7 @@ async function updateDID() {
     updatedDIDResult = await extractResponseErrorBody(e, updatedDIDResult);
   }
 
-  const formatter = new JSONFormatter(updateDIDResult, 2);
+  const formatter = new JSONFormatter(updatedDIDResult, 2);
   $('didUpdateResult').replaceChildren(formatter.render());
   updateDIDResult = JSON.stringify(updatedDIDResult);
 
