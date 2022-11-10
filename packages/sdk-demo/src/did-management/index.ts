@@ -16,16 +16,14 @@ const $set = (id: string, value: string) => (($(id) as HTMLInputElement).value =
 let resolvedDidResult: string = '';
 let createdDidResult: string = '';
 let deativateDIDResult: string = '';
+let updateDIDResult: string = '';
 
 $('copyResolveDID').setAttribute('disabled', 'true');
 $('copyCreateDID').setAttribute('disabled', 'true');
 $('copyDeativateDID').setAttribute('disabled', 'true');
+$('copyUpdateDID').setAttribute('disabled', 'true');
 
-const options = [
-  {
-    name: 'indy',
-    label: 'indy',
-  },
+const allOptions = [
   {
     name: 'key',
     label: 'key',
@@ -34,11 +32,22 @@ const options = [
     name: 'web',
     label: 'web',
   },
-]
+  {
+    name: 'indy',
+    label: 'indy',
+  },
+];
+
+const options = allOptions.map(t => `<option value="${t.name}">${t.label}</option>`).join('');
+
+const optionsUpdateDeactivate = allOptions
+  .filter(f => f.name !== 'key')
   .map(t => `<option value="${t.name}">${t.label}</option>`)
   .join('');
+
 $('DIDSelect').innerHTML = options;
-$('DIDSelectDeactivate').innerHTML = options;
+$('DIDSelectDeactivate').innerHTML = optionsUpdateDeactivate;
+$('DIDSelectUpdate').innerHTML = optionsUpdateDeactivate;
 
 let environment: Environment;
 loadEnvironmentFromStorage();
@@ -90,9 +99,11 @@ $('resolveDID').addEventListener('click', resolveDID);
 $('updateEnvironment').addEventListener('click', updateEnvironment);
 $('createDID').addEventListener('click', createDID);
 $('deactivateDID').addEventListener('click', deactivateDID);
+$('updateDID').addEventListener('click', updateDID);
 $('copyResolveDID').addEventListener('click', () => copy(resolvedDidResult));
 $('copyCreateDID').addEventListener('click', () => copy(createdDidResult));
 $('copyDeativateDID').addEventListener('click', () => copy(deativateDIDResult));
+$('copyUpdateDID').addEventListener('click', () => copy(updateDIDResult));
 
 async function resolveDID() {
   const identifier = $get('identifier');
@@ -151,6 +162,13 @@ async function createDID() {
         .setAssertionMethod(verificationMethodId)
         .setAuthentication(verificationMethodId);
 
+      did.didDocument.service = [
+        {
+          type: 'LinkedDomains',
+          serviceEndpoint: 'meeco.me',
+        },
+      ];
+
       break;
     default:
       did = new DIDKey(keyPair);
@@ -188,7 +206,7 @@ function copy(text: string) {
 }
 
 async function deactivateDID() {
-  const method = $get('DIDSelect');
+  const method = $get('DIDSelectDeactivate');
   const didToDeactivate = $get('didFieldDeactivate');
 
   const secretKeyHex = $get('secretFieldDeactivate');
@@ -205,8 +223,7 @@ async function deactivateDID() {
       did = new DIDWeb(keyPair);
       break;
     default:
-      did = new DIDKey(keyPair);
-      break;
+      throw new Error('Not Supported');
   }
   did.didDocument.id = didToDeactivate;
 
@@ -224,6 +241,44 @@ async function deactivateDID() {
   deativateDIDResult = JSON.stringify(deactivatedDIDResult);
 
   $('copyDeativateDID').removeAttribute('disabled');
+}
 
-  console.log('last line');
+async function updateDID() {
+  const method = $get('DIDSelectUpdate');
+
+  const secretKeyHex = $get('secretFieldUpdate');
+  const secret = Uint8Array.from(Buffer.from(secretKeyHex, 'hex'));
+
+  const keyPair = new Ed25519(secret);
+
+  let did: DIDBase;
+  switch (method) {
+    case 'indy':
+      did = new DIDIndy(keyPair);
+      break;
+    case 'web':
+      did = new DIDWeb(keyPair);
+      break;
+    default:
+      throw new Error('Not Supported');
+  }
+
+  try {
+    did.didDocument = JSON.parse($get('didDocumentUpdate'));
+  } catch (e: any) {}
+
+  const api = new DIDManagementService(environment);
+
+  let updatedDIDResult: any = {};
+  try {
+    updatedDIDResult = await api.update({}, did);
+  } catch (e: any) {
+    updatedDIDResult = await extractResponseErrorBody(e, updatedDIDResult);
+  }
+
+  const formatter = new JSONFormatter(updatedDIDResult, 2);
+  $('didUpdateResult').replaceChildren(formatter.render());
+  updateDIDResult = JSON.stringify(updatedDIDResult);
+
+  $('copyUpdateDID').removeAttribute('disabled');
 }
