@@ -14,7 +14,7 @@ export class AuthData {
   public vault_access_token: string;
   public delegation_id?: string;
   public oidc_token?: string;
-  public identity_network_access_token?: string;
+  public identity_network_access_token: string;
 
   constructor(config: {
     data_encryption_key: SymmetricKey;
@@ -25,7 +25,7 @@ export class AuthData {
     vault_access_token: string;
     delegation_id?: string;
     oidc_token?: string;
-    identity_network_access_token?: string;
+    identity_network_access_token: string;
   }) {
     this.data_encryption_key = config.data_encryption_key;
     this.key_encryption_key = config.key_encryption_key;

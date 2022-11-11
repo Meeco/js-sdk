@@ -9,6 +9,7 @@ import { DIDManagementService } from '../../src/services/did-management-service'
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('IdentityNetworkService', () => {
+  const ORGANISATION_ID = 'e825bc79-fb0f-4a87-b94d-bcc0e2432100';
   /**
    * Resolve DID with DID document representation or DID resolution result. https://w3c-ccg.github.io/did-resolution/#resolving
    */
@@ -79,6 +80,7 @@ describe('IdentityNetworkService', () => {
       .add('result', () =>
         new DIDManagementService(environment).resolve(
           testUserAuth,
+          ORGANISATION_ID,
           'did:key:z6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd'
         )
       )
@@ -135,6 +137,7 @@ describe('IdentityNetworkService', () => {
       .add('result', () =>
         new DIDManagementService(environment).resolve(
           testUserAuth,
+          ORGANISATION_ID,
           'did:key:z6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd',
           'application/did+ld+json'
         )
@@ -242,7 +245,9 @@ describe('IdentityNetworkService', () => {
           .once()
           .reply(201, responseStep2);
       })
-      .add('result', () => new DIDManagementService(environment).create(testUserAuth, didKey))
+      .add('result', () =>
+        new DIDManagementService(environment).create(testUserAuth, ORGANISATION_ID, didKey)
+      )
       .it('created did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
       });
@@ -281,7 +286,9 @@ describe('IdentityNetworkService', () => {
       .nock('https://identity-network-dev.meeco.me', api => {
         api.post(`/did/create?method=web`).reply(201, response);
       })
-      .add('result', () => new DIDManagementService(environment).create(testUserAuth, didKey))
+      .add('result', () =>
+        new DIDManagementService(environment).create(testUserAuth, ORGANISATION_ID, didKey)
+      )
       .it('created did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
       });
@@ -455,7 +462,8 @@ describe('IdentityNetworkService', () => {
       })
       .add(
         'result',
-        async () => await new DIDManagementService(environment).create(testUserAuth, didIndy)
+        async () =>
+          await new DIDManagementService(environment).create(testUserAuth, ORGANISATION_ID, didIndy)
       )
       .it('created did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
@@ -557,7 +565,9 @@ describe('IdentityNetworkService', () => {
           })
           .reply(200, response);
       })
-      .add('result', () => new DIDManagementService(environment).update(testUserAuth, didIndy))
+      .add('result', () =>
+        new DIDManagementService(environment).update(testUserAuth, ORGANISATION_ID, didIndy)
+      )
       .it('updated did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
       });
@@ -589,7 +599,12 @@ describe('IdentityNetworkService', () => {
       })
       .add(
         'result',
-        async () => await new DIDManagementService(environment).deactivate(testUserAuth, didIndy)
+        async () =>
+          await new DIDManagementService(environment).deactivate(
+            testUserAuth,
+            ORGANISATION_ID,
+            didIndy
+          )
       )
       .it('deactivated did', ({ result }) => {
         expect(result.didState?.state).equals('finished');

@@ -223,6 +223,7 @@ export class UserService extends Service<UserApi> {
       data_encryption_key: privateEncryptionSpace.key,
       key_encryption_key: kek,
       passphrase_derived_key: derivedKey,
+      identity_network_access_token: '',
     });
   }
 
@@ -331,6 +332,7 @@ export class UserService extends Service<UserApi> {
       data_encryption_key: dek,
       key_encryption_key: kek,
       passphrase_derived_key: derivedKey,
+      identity_network_access_token: '',
     });
   }
 

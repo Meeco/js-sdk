@@ -1,12 +1,12 @@
+import * as IdentityNetwork from '@meeco/identity-network-api-sdk';
 import * as Keystore from '@meeco/keystore-api-sdk';
 import * as Vault from '@meeco/vault-api-sdk';
-import * as IdentityNetwork from '@meeco/identity-network-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
 import { debug } from 'debug';
+import fetch from 'node-fetch';
 import { Environment } from '../models/environment';
 import { IIdentityNetworkToken, IKeystoreToken, IVaultToken } from '../services/service';
 import SDKFormData from './sdk-form-data';
-import fetch from 'node-fetch';
 
 /**
  * INFO: using 'import' statement causes typescript errors either in tests or in built version of the package
@@ -69,21 +69,6 @@ const vaultAPIKeys = (environment: Environment, userAuth: IVaultToken) => (name:
     'Meeco-Delegation-Id': userAuth.delegation_id || '',
     authorizationoidc2: userAuth.oidc_token || '',
   }[name] as string);
-
-/**
- * Pluck environment and user auth values to create `apiKey` [IdentityNetwork.Configuration] parameter
- */
-const identityNetworkAPIKeys =
-  (environment: Environment, userAuth: IIdentityNetworkToken): ((name: string) => string) =>
-  (name: string) =>
-    ({
-      //  'Meeco-Subscription-Key': '',
-      // Must be uppercase
-      // prettier-ignore
-      'Authorization': '',
-      //  'Meeco-Delegation-Id':'',
-      //  authorizationoidc2: '',
-    }[name] as string);
 
 function fetchInterceptor(url, options) {
   debugCurl(chalk.blue(`Sending Request:`));
@@ -214,12 +199,13 @@ const identityNetworkAPI = (
             IdentityNetwork,
             api,
             apiMethodName,
-            identityNetworkAPIKeys(environment, userAuth) as (name: string) => string,
+            '',
             environment.identityNetwork.url,
             {
               ...additionalHeaders,
               X_MEECO_API_VERSION,
               X_MEECO_API_COMPONENT: 'identityNetwork',
+              Authorization: userAuth.identity_network_access_token,
             },
             args
           );
