@@ -33,12 +33,11 @@ export class DIDManagementService extends Service<DIDManagementApi> {
    */
   public resolve(
     credentials: IIdentityNetworkToken,
-    organisationID: string,
     identifier: string,
     accept: MediaType = 'application/ld+json;profile="https://w3id.org/did-resolution"'
   ): Promise<DidControllerResolve200Response> {
     const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
-    return api.didControllerResolve(organisationID, identifier, accept);
+    return api.didControllerResolve(identifier, accept);
   }
 
   /**
@@ -50,8 +49,8 @@ export class DIDManagementService extends Service<DIDManagementApi> {
    */
   public async create(
     credentials: IIdentityNetworkToken,
-    organisationID: string,
-    did: DIDBase
+    did: DIDBase,
+    organisationID?: string | undefined
   ): Promise<DIDCreateResultDto> {
     const createDidDto = {
       options: did.options,
@@ -59,13 +58,13 @@ export class DIDManagementService extends Service<DIDManagementApi> {
     };
 
     const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
-    const initialResult = await api.didControllerCreate(organisationID, did.method, createDidDto);
+    const initialResult = await api.didControllerCreate(did.method, createDidDto, organisationID);
 
     // process multi-step did creation with client-manage secret
     const handlerChain = did.getHandlerChain<DIDCreateResultDto, CreateDidDto>();
     return handlerChain
       ? handlerChain.processRequestResponse(initialResult, (method, dto) =>
-          api.didControllerCreate(organisationID, method, dto)
+          api.didControllerCreate(method, dto, organisationID)
         )
       : initialResult;
   }
@@ -79,8 +78,8 @@ export class DIDManagementService extends Service<DIDManagementApi> {
    */
   public async update(
     credentials: IIdentityNetworkToken,
-    organisationID: string,
-    did: DIDBase
+    did: DIDBase,
+    organisationID?: string | undefined
   ): Promise<DIDUpdateResultDto> {
     const updateDidDto = {
       options: did.options,
@@ -92,12 +91,12 @@ export class DIDManagementService extends Service<DIDManagementApi> {
     const api = this.identityNetworkAPIFactory(credentials).DIDManagementApi;
 
     try {
-      const initialResult = await api.didControllerUpdate(organisationID, did.method, updateDidDto);
+      const initialResult = await api.didControllerUpdate(did.method, updateDidDto, organisationID);
       // process multi-step did update with client-manage secret
       const handlerChain = did.getHandlerChain<DIDUpdateResultDto, UpdateDidDto>();
       return handlerChain
         ? handlerChain.processRequestResponse(initialResult, (method, dto) =>
-            api.didControllerUpdate(organisationID, method, dto)
+            api.didControllerUpdate(method, dto, organisationID)
           )
         : initialResult;
     } catch (e) {
@@ -115,8 +114,8 @@ export class DIDManagementService extends Service<DIDManagementApi> {
    */
   public async deactivate(
     credentials: IIdentityNetworkToken,
-    organisationID: string,
-    did: DIDBase
+    did: DIDBase,
+    organisationID?: string | undefined
   ): Promise<DIDDeactivateResultDto> {
     const deactivateDidDto = {
       options: did.options,
@@ -127,15 +126,15 @@ export class DIDManagementService extends Service<DIDManagementApi> {
 
     try {
       const initialResult = await api.didControllerDeactivate(
-        organisationID,
         did.method,
-        deactivateDidDto
+        deactivateDidDto,
+        organisationID
       );
       // process multi-step did deactivate
       const handlerChain = did.getHandlerChain<DIDDeactivateResultDto, DeactivateDidDto>();
       return handlerChain
         ? handlerChain.processRequestResponse(initialResult, (method, dto) =>
-            api.didControllerDeactivate(organisationID, method, dto)
+            api.didControllerDeactivate(method, dto, organisationID)
           )
         : initialResult;
     } catch (e) {

@@ -74,14 +74,14 @@ function updateEnvironment() {
   const subscriptionKey = $get('subscriptionKey');
 
   const authorizationToken = $get('authorizationToken');
-  const organisationId = $get('organisationId');
+  const organisationId = $get('organisationId').trim();
 
   localStorage.setItem('identityNetworkUrl', identityNetworkUrl);
   localStorage.setItem('subscriptionKey', subscriptionKey);
   localStorage.setItem('authorizationToken', authorizationToken);
   localStorage.setItem('organisationId', organisationId);
 
-  if (!identityNetworkUrl || !authorizationToken || !organisationId) {
+  if (!identityNetworkUrl || !authorizationToken) {
     return $set('environmentStatus', 'Error: Please configure all environment & auth fields');
   }
 
@@ -129,7 +129,6 @@ async function resolveDID() {
   try {
     result = await api.resolve(
       { identity_network_access_token: auth.authorizationToken },
-      auth.organisationId,
       identifier
     );
   } catch (e: any) {
@@ -202,8 +201,8 @@ async function createDID() {
   try {
     generatedDID = await api.create(
       { identity_network_access_token: auth.authorizationToken },
-      auth.organisationId,
-      did
+      did,
+      auth.organisationId || undefined
     );
   } catch (e: any) {
     generatedDID = await extractResponseErrorBody(e, generatedDID);
@@ -258,8 +257,8 @@ async function deactivateDID() {
   try {
     deactivatedDIDResult = await api.deactivate(
       { identity_network_access_token: auth.authorizationToken },
-      auth.organisationId,
-      did
+      did,
+      auth.organisationId || undefined
     );
   } catch (e: any) {
     deactivatedDIDResult = await extractResponseErrorBody(e, deactivatedDIDResult);
@@ -302,8 +301,8 @@ async function updateDID() {
   try {
     updatedDIDResult = await api.update(
       { identity_network_access_token: auth.authorizationToken },
-      auth.organisationId,
-      did
+      did,
+      auth.organisationId || undefined
     );
   } catch (e: any) {
     updatedDIDResult = await extractResponseErrorBody(e, updatedDIDResult);
