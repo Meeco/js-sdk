@@ -80,7 +80,6 @@ describe('IdentityNetworkService', () => {
       .add('result', () =>
         new DIDManagementService(environment).resolve(
           testUserAuth,
-          ORGANISATION_ID,
           'did:key:z6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd'
         )
       )
@@ -137,7 +136,6 @@ describe('IdentityNetworkService', () => {
       .add('result', () =>
         new DIDManagementService(environment).resolve(
           testUserAuth,
-          ORGANISATION_ID,
           'did:key:z6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd',
           'application/did+ld+json'
         )
@@ -246,7 +244,7 @@ describe('IdentityNetworkService', () => {
           .reply(201, responseStep2);
       })
       .add('result', () =>
-        new DIDManagementService(environment).create(testUserAuth, ORGANISATION_ID, didKey)
+        new DIDManagementService(environment).create(testUserAuth, didKey, ORGANISATION_ID)
       )
       .it('created did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
@@ -287,7 +285,7 @@ describe('IdentityNetworkService', () => {
         api.post(`/did/create?method=web`).reply(201, response);
       })
       .add('result', () =>
-        new DIDManagementService(environment).create(testUserAuth, ORGANISATION_ID, didKey)
+        new DIDManagementService(environment).create(testUserAuth, didKey, ORGANISATION_ID)
       )
       .it('created did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
@@ -463,7 +461,7 @@ describe('IdentityNetworkService', () => {
       .add(
         'result',
         async () =>
-          await new DIDManagementService(environment).create(testUserAuth, ORGANISATION_ID, didIndy)
+          await new DIDManagementService(environment).create(testUserAuth, didIndy, ORGANISATION_ID)
       )
       .it('created did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
@@ -566,7 +564,7 @@ describe('IdentityNetworkService', () => {
           .reply(200, response);
       })
       .add('result', () =>
-        new DIDManagementService(environment).update(testUserAuth, ORGANISATION_ID, didIndy)
+        new DIDManagementService(environment).update(testUserAuth, didIndy, ORGANISATION_ID)
       )
       .it('updated did', ({ result }) => {
         expect(result.didState?.state).equals('finished');
@@ -602,8 +600,8 @@ describe('IdentityNetworkService', () => {
         async () =>
           await new DIDManagementService(environment).deactivate(
             testUserAuth,
-            ORGANISATION_ID,
-            didIndy
+            didIndy,
+            ORGANISATION_ID
           )
       )
       .it('deactivated did', ({ result }) => {
