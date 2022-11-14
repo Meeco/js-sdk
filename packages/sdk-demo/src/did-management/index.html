@@ -22,14 +22,36 @@
             autocomplete="off"
             id="identityNetworkUrl"
           />
-          <label for="subscriptionKey">Meeco Subscription Key:</label>
+          <label for="subscriptionKey" style="display: none">Meeco Subscription Key:</label>
           <input
             placeholder="e.g. aaaaa11111bbbbb22222"
             class="full"
             autocapitalize="off"
             autocomplete="off"
             id="subscriptionKey"
+            value=""
+            style="display: none"
           />
+          <br /><br />
+          <h4>Auth Configuration</h4>
+          <hr />
+          <label for="authorizationToken">Authorization Token</label>
+          <input
+            placeholder="e.g. Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkRNMnpqSVVtVXJ5SHNVeGxVYkVXZkJySUt5eWJGZVR6T0w4VFF2OU1uVkkifQ.eyJuYW1lIjoiZXhhbXBsZSIsImVtYWlsIjoiZXhhbXBsZUBleGFtcGxlLmNvbSIsInRpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCIsInN1YiI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCIsImF0X2hhc2giOiJYZ1FBdHprSWJXYUFRa0tNVEU5Qy1RIiwiYXVkIjoidGVzdCIsImV4cCI6MTY2Nzk2MzAxOSwiaWF0IjoxNjY3OTU5NDE5LCJpc3MiOiJodHRwczovL3BvcnRhbC1kZXYubWVlY28ubWUifQ.eCYIePMjfn5uOTqs8GCFBV4KOeY24UR4PcjESPgx5cFKyneSBrDJCnWUd0t5L10Hf3IQjC2qGBmd9U21WzhYb4YFCRuGgjkSeO_KcUnlT1Z41pGwWevU-T25Z21ns4YOJ499c_zOTavagP6S6kzHBSqazCgL-FLXGOnXsL-Gdj0-wkfnnYpu7tu9xw8S7aBdBPH6_2Nb6wFq66qZyzTOKS-EIAYC5pPxoVcq1ZoMPC9LocH3JulDOs2OSJ3-p3Papu5_SK84h_0rYbz5Z6eUMEvGXwHKJsGcuwWAi9DeKdfpy2lWPbnW2kxlhpREiQLAj3kpvmcBE0O3lO359UNsag"
+            class="full"
+            autocapitalize="off"
+            autocomplete="off"
+            id="authorizationToken"
+          />
+          <label for="organisationId">Organisation ID:</label>
+          <input
+            placeholder="e.g. e825bc79-fb0f-4a87-b94d-bcc0e2432100"
+            class="full"
+            autocapitalize="off"
+            autocomplete="off"
+            id="organisationId"
+          />
+          <br />
           <button id="updateEnvironment">Save</button>
           <input value="Not set" class="full" disabled id="environmentStatus" />
         </div>

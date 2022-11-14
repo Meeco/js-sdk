@@ -50,6 +50,10 @@ $('DIDSelectDeactivate').innerHTML = optionsUpdateDeactivate;
 $('DIDSelectUpdate').innerHTML = optionsUpdateDeactivate;
 
 let environment: Environment;
+let auth: {
+  authorizationToken: string;
+  organisationId: string;
+};
 loadEnvironmentFromStorage();
 
 function loadEnvironmentFromStorage() {
@@ -59,6 +63,9 @@ function loadEnvironmentFromStorage() {
   loadKey('identityNetworkUrl');
   loadKey('subscriptionKey');
 
+  loadKey('authorizationToken');
+  loadKey('organisationId');
+
   updateEnvironment();
 }
 
@@ -66,11 +73,16 @@ function updateEnvironment() {
   const identityNetworkUrl = $get('identityNetworkUrl');
   const subscriptionKey = $get('subscriptionKey');
 
+  const authorizationToken = $get('authorizationToken');
+  const organisationId = $get('organisationId').trim();
+
   localStorage.setItem('identityNetworkUrl', identityNetworkUrl);
   localStorage.setItem('subscriptionKey', subscriptionKey);
+  localStorage.setItem('authorizationToken', authorizationToken);
+  localStorage.setItem('organisationId', organisationId);
 
-  if (!identityNetworkUrl || !subscriptionKey) {
-    return $set('environmentStatus', 'Error: Please configure all environment fields');
+  if (!identityNetworkUrl || !authorizationToken) {
+    return $set('environmentStatus', 'Error: Please configure all environment & auth fields');
   }
 
   environment = new Environment({
@@ -88,6 +100,11 @@ function updateEnvironment() {
       subscription_key: subscriptionKey,
     },
   });
+
+  auth = {
+    authorizationToken,
+    organisationId,
+  };
 
   $set('environmentStatus', 'Saved');
 }
@@ -110,7 +127,10 @@ async function resolveDID() {
   const api = new DIDManagementService(environment);
   let result: any = {};
   try {
-    result = await api.resolve({}, identifier);
+    result = await api.resolve(
+      { identity_network_access_token: auth.authorizationToken },
+      identifier
+    );
   } catch (e: any) {
     result = await extractResponseErrorBody(e, result);
   }
@@ -179,7 +199,11 @@ async function createDID() {
 
   let generatedDID: any = {};
   try {
-    generatedDID = await api.create({}, did);
+    generatedDID = await api.create(
+      { identity_network_access_token: auth.authorizationToken },
+      did,
+      auth.organisationId || undefined
+    );
   } catch (e: any) {
     generatedDID = await extractResponseErrorBody(e, generatedDID);
   }
@@ -231,7 +255,11 @@ async function deactivateDID() {
 
   let deactivatedDIDResult: any = {};
   try {
-    deactivatedDIDResult = await api.deactivate({}, did);
+    deactivatedDIDResult = await api.deactivate(
+      { identity_network_access_token: auth.authorizationToken },
+      did,
+      auth.organisationId || undefined
+    );
   } catch (e: any) {
     deactivatedDIDResult = await extractResponseErrorBody(e, deactivatedDIDResult);
   }
@@ -271,7 +299,11 @@ async function updateDID() {
 
   let updatedDIDResult: any = {};
   try {
-    updatedDIDResult = await api.update({}, did);
+    updatedDIDResult = await api.update(
+      { identity_network_access_token: auth.authorizationToken },
+      did,
+      auth.organisationId || undefined
+    );
   } catch (e: any) {
     updatedDIDResult = await extractResponseErrorBody(e, updatedDIDResult);
   }
