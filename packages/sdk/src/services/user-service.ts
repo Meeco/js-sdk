@@ -184,7 +184,7 @@ export class UserService extends Service<UserApi> {
   public async generateUsername(captcha_token?: string): Promise<string> {
     this.logger.log('Generating username');
     return this.keystoreAPIFactory({ keystore_access_token: '' })
-      .UserApi.srpUsernamePost({
+      .RegistrationViaSecureRemotePasswordProtocolApi.srpUsernamePost({
         captcha_token,
       })
       .then(res => res.username);
@@ -236,7 +236,7 @@ export class UserService extends Service<UserApi> {
 
     this.logger.log('Create SRP keystore user');
     await this.keystoreAPIFactory({ keystore_access_token: '' })
-      .UserApi.srpUsersPost({
+      .RegistrationViaSecureRemotePasswordProtocolApi.srpUsersPost({
         username,
         srp_salt: verifier.salt,
         srp_verifier: verifier.verifier,
@@ -265,7 +265,7 @@ export class UserService extends Service<UserApi> {
 
     this.logger.log('Requesting SRP challenge from server');
     const challenge = await this.keystoreAPIFactory({ keystore_access_token: '' })
-      .UserApi.srpChallengesPost({
+      .AuthenticationViaSecureRemotePasswordProtocolApi.srpChallengesPost({
         srp_a,
         username,
       })
@@ -278,7 +278,7 @@ export class UserService extends Service<UserApi> {
 
     this.logger.log('Creating SRP session with proof');
     const authString = await this.keystoreAPIFactory({ keystore_access_token: '' })
-      .SessionApi.srpSessionPost({
+      .AuthenticationViaSecureRemotePasswordProtocolApi.srpSessionPost({
         username,
         srp_a,
         srp_m,
