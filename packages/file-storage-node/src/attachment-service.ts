@@ -161,6 +161,7 @@ export class AttachmentService extends Common.AttachmentService {
         progressUpdateFunc(progress * 100);
       }
     }
+    console.log('number of blocks: ' + blocks.length);
     const byteArray = Buffer.concat(blocks);
     return { data: byteArray, info: fileInfo };
   }
