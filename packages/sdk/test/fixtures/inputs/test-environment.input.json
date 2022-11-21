@@ -18,5 +18,9 @@
   "identityNetwork": {
     "url": "https://identity-network-dev.meeco.me",
     "subscription_key": "environment_subscription_key"
+  },
+  "vc": {
+    "url": "https://vc-dev.meeco.me",
+    "subscription_key": "environment_subscription_key"
   }
 }

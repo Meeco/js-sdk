@@ -99,6 +99,10 @@ function updateEnvironment() {
       url: identityNetworkUrl,
       subscription_key: subscriptionKey,
     },
+    vc: {
+      url: '',
+      subscription_key: subscriptionKey,
+    },
   });
 
   auth = {

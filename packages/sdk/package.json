@@ -13,6 +13,7 @@
     "@meeco/identity-network-api-sdk": "1.0.1-develop.20221114120440.9b607fc",
     "@meeco/keystore-api-sdk": "9.1.1-develop.20221114150017.009a31b",
     "@meeco/vault-api-sdk": "37.6.1-develop.20221113172557.1b02443a9",
+    "@meeco/vc-api-sdk": "4.0.0-develop.20221118195006.3fd17b7",
     "bs58": "5.0.0",
     "buffer": "^6.0.3",
     "chalk": "^4.1.2",

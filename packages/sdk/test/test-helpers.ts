@@ -91,11 +91,12 @@ export const testOrganizationUserAuth = buildTestOrganizationAuthData({
   ...testOrganizationUserAuthFixture,
 });
 
-const { vault, keystore, identityNetwork } = getInputFixture('test-environment.input.json');
+const { vault, keystore, identityNetwork, vc } = getInputFixture('test-environment.input.json');
 export const environment = new Environment({
   vault,
   keystore,
   identityNetwork,
+  vc,
 });
 
 const undefinedToNullreplacer = (key, value) => {
@@ -116,5 +117,6 @@ export function mockClassificationNode(id: string = 'id'): ClassificationNode {
     ordinal: 1,
     scheme: 'tag',
     classifications_count: 1,
+    own: true,
   };
 }

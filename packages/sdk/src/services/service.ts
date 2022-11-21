@@ -2,11 +2,13 @@ import { Environment } from '../models/environment';
 import { SymmetricKey } from '../models/symmetric-key';
 import {
   IdentityNetworkAPIFactory,
-  identityNetworkPIFactory,
+  identityNetworkAPIFactory,
   KeystoreAPIFactory,
   keystoreAPIFactory,
   VaultAPIFactory,
   vaultAPIFactory,
+  VCAPIFactory,
+  vcAPIFactory,
 } from '../util/api-factory';
 import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 
@@ -42,6 +44,10 @@ export interface IIdentityNetworkToken {
   identity_network_access_token: string;
 }
 
+export interface IVCToken {
+  vc_access_token: string;
+}
+
 /**
  * Abstract SDK Service.
  */
@@ -49,17 +55,21 @@ export default abstract class Service<API> {
   protected vaultAPIFactory: VaultAPIFactory;
   protected keystoreAPIFactory: KeystoreAPIFactory;
   protected identityNetworkAPIFactory: IdentityNetworkAPIFactory;
+  protected vcAPIFactory: VCAPIFactory;
   protected logger: IFullLogger;
 
   /**
    * Services ususally wrap a single API object, this makes it explicit and accessible.
    */
-  public abstract getAPI(token: IVaultToken | IKeystoreToken | IIdentityNetworkToken): API;
+  public abstract getAPI(
+    token: IVaultToken | IKeystoreToken | IIdentityNetworkToken | IVCToken
+  ): API;
 
   constructor(protected environment: Environment, log: Logger = noopLogger) {
     this.vaultAPIFactory = vaultAPIFactory(environment);
     this.keystoreAPIFactory = keystoreAPIFactory(environment);
-    this.identityNetworkAPIFactory = identityNetworkPIFactory(environment);
+    this.identityNetworkAPIFactory = identityNetworkAPIFactory(environment);
+    this.vcAPIFactory = vcAPIFactory(environment);
     this.logger = toFullLogger(log);
   }
 
