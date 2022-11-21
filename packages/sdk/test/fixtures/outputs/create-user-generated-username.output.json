@@ -5,5 +5,6 @@
   "passphrase_derived_key": "ZGVyaXZlZF9rZXlfMTIzLmFzdXBlcnNlY3JldHBhc3NwaHJhc2U=",
   "secret": "1.mocked_generated_username.Y3ZXUY-tKdUxt-i35BfF-RGn4ZN-uWAxHe",
   "vault_access_token": "[decrypted]encrypted_vault_session_string-----BEGIN RSA PRIVATE KEY-----ABCD",
-  "identity_network_access_token": ""
+  "identity_network_access_token": "",
+  "vc_access_token": ""
 }
