@@ -16,11 +16,11 @@ const kateAuth = {
 const meeco = {
   vault: {
     url: 'https://sandbox.meeco.me/vault',
-    subscription_key: '24651cc96ff94b1b9751a0a1a5fc3de1',
+    subscription_key: '',
   },
   keystore: {
     url: 'https://sandbox.meeco.me/keystore',
-    subscription_key: '24651cc96ff94b1b9751a0a1a5fc3de1',
+    subscription_key: '',
   },
 };
 
