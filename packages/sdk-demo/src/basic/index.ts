@@ -56,6 +56,10 @@ function updateEnvironment() {
       url: '',
       subscription_key: subscriptionKey,
     },
+    vc: {
+      url: '',
+      subscription_key: subscriptionKey,
+    },
   });
 
   $set('environmentStatus', 'Saved');

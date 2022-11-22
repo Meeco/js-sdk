@@ -2,10 +2,11 @@ import * as IdentityNetwork from '@meeco/identity-network-api-sdk';
 import * as Keystore from '@meeco/keystore-api-sdk';
 import * as Vault from '@meeco/vault-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
+import * as VC from '@meeco/vc-api-sdk';
 import { debug } from 'debug';
 import fetch from 'node-fetch';
 import { Environment } from '../models/environment';
-import { IIdentityNetworkToken, IKeystoreToken, IVaultToken } from '../services/service';
+import { IIdentityNetworkToken, IKeystoreToken, IVaultToken, IVCToken } from '../services/service';
 import SDKFormData from './sdk-form-data';
 
 /**
@@ -32,11 +33,13 @@ const X_MEECO_API_VERSION = '2.0.0';
 type KeystoreAPIConstructor = new () => Keystore.BaseAPI;
 type VaultAPIConstructor = new () => Vault.BaseAPI;
 type IdentityNetworkAPIConstructor = new () => IdentityNetwork.BaseAPI;
+type VCAPIConstructor = new () => VC.BaseAPI;
 
 type KeysOfType<T, TProp> = { [P in keyof T]: T[P] extends TProp ? P : never }[keyof T];
 type VaultAPIName = KeysOfType<typeof Vault, VaultAPIConstructor>;
 type KeystoreAPIName = KeysOfType<typeof Keystore, KeystoreAPIConstructor>;
 type IdentityNetworkAPIName = KeysOfType<typeof IdentityNetwork, IdentityNetworkAPIConstructor>;
+type VCAPIName = KeysOfType<typeof VC, VCAPIConstructor>;
 
 export interface IHeaders {
   [key: string]: string;
@@ -217,6 +220,39 @@ const identityNetworkAPI = (
 };
 
 /**
+ * Helper for constructing instances of VC apis with all the required auth and header params
+ */
+const vcAPI = (
+  api: VCAPIName,
+  environment: Environment,
+  userAuth: IVCToken,
+  additionalHeaders: IHeaders = {}
+) => {
+  return new Proxy(
+    {},
+    {
+      get(target, apiMethodName) {
+        return (...args) =>
+          callApiWithHeaders(
+            VC,
+            api,
+            apiMethodName,
+            '',
+            environment.vc.url,
+            {
+              ...additionalHeaders,
+              X_MEECO_API_VERSION,
+              X_MEECO_API_COMPONENT: 'vc',
+              Authorization: userAuth.vc_access_token,
+            },
+            args
+          );
+      },
+    }
+  ) as InstanceType<typeof VC[typeof api]>;
+};
+
+/**
  * Convenience for the various headers and parameters that need to be setup when constructing an API.
  *
  * It avoids a lot of boilerplate in constructing arguments for an api (api keys, subscription keys etc.)
@@ -256,6 +292,11 @@ export type IdentityNetworkAPIFactory = (
 ) => IdentityNetworkAPIFactoryInstance;
 export type IdentityNetworkAPIFactoryInstance = {
   [key in IdentityNetworkAPIName]: InstanceType<typeof IdentityNetwork[key]>;
+};
+
+export type VCAPIFactory = (userAuth: IVCToken, headers?: IHeaders) => VCAPIFactoryInstance;
+export type VCAPIFactoryInstance = {
+  [key in VCAPIName]: InstanceType<typeof VC[key]>;
 };
 
 /**
@@ -320,6 +361,36 @@ export const vaultAPIFactory: (Environment) => (UserAuth, IHeaders?) => VaultAPI
       }
     ) as VaultAPIFactoryInstance;
 
+/**
+ * Results in a factory function that can be passed user auth information and then get
+ * arbitrary identityNetwork api instances to use.
+ */
+export const identityNetworkAPIFactory =
+  (environment: Environment) => (userAuth: IIdentityNetworkToken, headers?: IHeaders) =>
+    new Proxy(
+      {},
+      {
+        get(target, property: IdentityNetworkAPIName) {
+          return identityNetworkAPI(property, environment, userAuth, headers);
+        },
+      }
+    ) as IdentityNetworkAPIFactoryInstance;
+
+/**
+ * Results in a factory function that can be passed user auth information and then get
+ * arbitrary VC api instances to use.
+ */
+export const vcAPIFactory =
+  (environment: Environment) => (userAuth: IVCToken, headers?: IHeaders) =>
+    new Proxy(
+      {},
+      {
+        get(target, property: VCAPIName) {
+          return vcAPI(property, environment, userAuth, headers);
+        },
+      }
+    ) as VCAPIFactoryInstance;
+
 const toCurl = (url, options) => {
   const defaultHeaders = {
     'Content-Type': 'application/json',
@@ -340,18 +411,3 @@ curl \\
   "${url}"
   `;
 };
-
-/**
- * Results in a factory function that can be passed user auth information and then get
- * arbitrary identityNetwork api instances to use.
- */
-export const identityNetworkPIFactory =
-  (environment: Environment) => (userAuth: IIdentityNetworkToken, headers?: IHeaders) =>
-    new Proxy(
-      {},
-      {
-        get(target, property: IdentityNetworkAPIName) {
-          return identityNetworkAPI(property, environment, userAuth, headers);
-        },
-      }
-    ) as IdentityNetworkAPIFactoryInstance;

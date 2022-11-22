@@ -66,6 +66,10 @@ function updateEnvironment() {
       url: '',
       subscription_key: subscriptionKey,
     },
+    vc: {
+      url: '',
+      subscription_key: subscriptionKey,
+    },
   });
 
   log('Saved environment settings');

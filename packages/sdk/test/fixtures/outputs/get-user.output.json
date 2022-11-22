@@ -5,5 +5,6 @@
   "passphrase_derived_key": "ZGVyaXZlZF9rZXlfMTIzLmFzdXBlcnNlY3JldHBhc3NwaHJhc2U=",
   "secret": "1.user-1.my_secret_key",
   "vault_access_token": "[decrypted]vault_auth_token-----BEGIN RSA PRIVATE KEY-----ABCD[decrypted with key_encryption_key[decrypted with derived_key_123.asupersecretpassphrase]]",
-  "identity_network_access_token": ""
+  "identity_network_access_token": "",
+  "vc_access_token": ""
 }

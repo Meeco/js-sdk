@@ -67,6 +67,7 @@ export const buildTestAuthData = (config: {
   key_encryption_key: string;
   passphrase_derived_key: string;
   identity_network_access_token: string;
+  vc_access_token: string;
 }) =>
   new AuthData({
     secret: config.secret || '',
@@ -76,6 +77,7 @@ export const buildTestAuthData = (config: {
     passphrase_derived_key: SymmetricKey.fromSerialized(config.passphrase_derived_key),
     vault_access_token: config.vault_access_token,
     identity_network_access_token: config.identity_network_access_token,
+    vc_access_token: config.vc_access_token,
   });
 
 export const buildTestOrganizationAuthData = (config: { vault_access_token: string }) =>
@@ -91,11 +93,12 @@ export const testOrganizationUserAuth = buildTestOrganizationAuthData({
   ...testOrganizationUserAuthFixture,
 });
 
-const { vault, keystore, identityNetwork } = getInputFixture('test-environment.input.json');
+const { vault, keystore, identityNetwork, vc } = getInputFixture('test-environment.input.json');
 export const environment = new Environment({
   vault,
   keystore,
   identityNetwork,
+  vc,
 });
 
 const undefinedToNullreplacer = (key, value) => {
@@ -116,5 +119,6 @@ export function mockClassificationNode(id: string = 'id'): ClassificationNode {
     ordinal: 1,
     scheme: 'tag',
     classifications_count: 1,
+    own: true,
   };
 }
