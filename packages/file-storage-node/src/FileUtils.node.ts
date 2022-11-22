@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as mime from 'mime-types';
+import { Buffer } from 'node:buffer';
 
 // const fs = {
 //   statSync(a) {
@@ -36,37 +37,24 @@ export const readBlock = (filePath, from, to) =>
   new Promise((resolve, reject) => {
     try {
       const chunkSize = to - from;
-      const buffer = Buffer.alloc(chunkSize);
+      let buffer = Buffer.alloc(chunkSize);
 
       const fd = fs.openSync(filePath, 'r');
 
-      /**
-       * On read callbackj
-       * @param {Error} err
-       * @param {Number} nread
-       */
-      const onRead = (err, nread) => {
-        try {
-          if (err) {
-            return reject(err);
-          }
+      try {
+        const bytesRead = fs.readSync(fd, buffer, {
+          length: chunkSize,
+          position: from,
+        });
 
-          let data;
-          if (nread < chunkSize) {
-            data = buffer.slice(0, nread);
-          } else {
-            data = buffer;
-          }
-
-          fs.closeSync(fd);
-
-          resolve(data);
-        } catch (error) {
-          reject(error);
+        if (bytesRead < chunkSize) {
+          buffer = buffer.subarray(0, bytesRead);
         }
-      };
 
-      fs.read(fd, buffer, 0, chunkSize, null, onRead);
+        resolve(buffer);
+      } finally {
+        fs.closeSync(fd);
+      }
     } catch (error) {
       reject(error);
     }
