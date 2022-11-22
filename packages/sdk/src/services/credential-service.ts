@@ -1,5 +1,6 @@
 import { CredentialsApi, GenerateCredentialDto } from '@meeco/vc-api-sdk';
 import { Ed25519 } from '../models/did-management';
+import cryppo from './cryppo-service';
 import Service, { IVCToken } from './service';
 
 /**
@@ -40,6 +41,6 @@ export class CredentialService extends Service<CredentialsApi> {
     const toSign = typeof data === 'string' ? new Uint8Array(Buffer.from(data)) : data;
     const signature = key.sign(toSign);
 
-    return Promise.resolve(Buffer.from(signature).toString('base64url'));
+    return cryppo.encodeSafe64(cryppo.bytesBufferToBinaryString(Buffer.from(signature)));
   }
 }

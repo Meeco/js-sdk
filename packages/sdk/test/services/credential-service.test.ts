@@ -86,7 +86,7 @@ describe('CredentialService', () => {
       .it('returns signed credential and its metadata', ({ credential }) => {
         expect(credential).to.eql({
           credential:
-            'header.test_payload._R4IKOrGOs4ggEHWT598QqEsG2UnwR8oVMHg60DxRBpUT75QfJ__-URCSC5bPp5ngswug2RKMrx03miB-GI4Dw',
+            'header.test_payload._R4IKOrGOs4ggEHWT598QqEsG2UnwR8oVMHg60DxRBpUT75QfJ__-URCSC5bPp5ngswug2RKMrx03miB-GI4Dw==',
           metadata: {
             style: {
               background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
