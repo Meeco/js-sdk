@@ -10,7 +10,7 @@
   "bugs": "https://github.com/Meeco/cli/issues",
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
-    "@meeco/file-storage-node": "5.0.1",
+    "@meeco/file-storage-node": "5.0.3",
     "@meeco/keystore-api-sdk": "9.1.1-develop.20221114150017.009a31b",
     "@meeco/sdk": "^4.0.2",
     "@meeco/vault-api-sdk": "37.6.1-develop.20221113172557.1b02443a9",
