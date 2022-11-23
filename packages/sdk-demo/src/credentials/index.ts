@@ -63,7 +63,7 @@ function updateEnvironment() {
   localStorage.setItem('authorizationToken', authorizationToken);
   localStorage.setItem('organisationId', organisationId);
 
-  if (!vcUrl || !authorizationToken) {
+  if (!vcUrl || !authorizationToken || !organisationId) {
     return $set('environmentStatus', 'Error: Please configure all environment & auth fields');
   }
 
