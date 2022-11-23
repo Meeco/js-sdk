@@ -1,22 +1,26 @@
 import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
+import { v4 as uuidv4 } from 'uuid';
 import { DidDto, DIDRequestHandler, DIDResultDto } from '../../util/did-management';
 import { DIDBase, SupportedDidMethod } from './did-base';
 import { IKeyPairDID } from './key-pair-did';
 
 export class DIDWeb extends DIDBase {
+  private id: string = uuidv4();
   constructor(
     public keyPair: IKeyPairDID,
     public didDocument: DidDocumentDto = {},
-    options: OptionsDto = {
+    public options: OptionsDto = {
       clientSecretMode: false,
       network: undefined,
-    }
+    },
+    public domain: string = 'did-web.godiddy.com'
   ) {
     super(SupportedDidMethod.WEB, didDocument, options);
+    this.didDocument = { ...super.didDocument, id: `did:web:${domain}:${this.id}` };
   }
 
-  setVerificationMethod(domain: string = 'did-web-meeco.me') {
-    const id = `did:web:${domain}:${this.keyPair.getPublicKeyBase58()}#key-1`;
+  setVerificationMethod() {
+    const id = `did:web:${this.domain}:${this.id}#key-1`;
     const verificationMethod = {
       id,
       type: 'Ed25519VerificationKey2018',

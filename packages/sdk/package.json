@@ -24,20 +24,21 @@
     "node-fetch": "^2.6.7",
     "node-forge": "0.10.0",
     "parameterize-js": "^1.0.0",
-    "tslib": "^2.4.0"
+    "tslib": "^2.4.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@oclif/config": "^1.18.3",
     "@oclif/test": "^2.1.0",
     "@types/chai": "^4.3.1",
     "@types/debug": "^4.1.7",
+    "@types/elliptic": "^6.4.14",
     "@types/jsrp": "~0.2.3",
     "@types/mocha": "^9.1.1",
     "@types/node": "^16.11.42",
     "@types/node-fetch": "^2.5.10",
     "@types/node-forge": "~0.9.7",
     "@types/sinon": "^10.0.12",
-    "@types/elliptic": "^6.4.14",
     "bili": "^5.0.5",
     "chai": "^4.3.6",
     "nock": "^13.2.8",
