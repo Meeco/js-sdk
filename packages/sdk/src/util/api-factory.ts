@@ -58,6 +58,7 @@ const keystoreAPIKeys =
       'Authorization': userAuth.keystore_access_token,
       'Meeco-Organisation-Id': userAuth.organisation_id || '',
       'Meeco-Delegation-Id': userAuth.delegation_id || '',
+      'Meeco-Srt': userAuth.srt || '',
       authorizationoidc2: userAuth.oidc_token || '',
     }[name] as string);
 
@@ -72,6 +73,7 @@ const vaultAPIKeys = (environment: Environment, userAuth: IVaultToken) => (name:
     'Authorization': userAuth.vault_access_token,
     'Meeco-Delegation-Id': userAuth.delegation_id || '',
     'Meeco-Organisation-Id': userAuth.organisation_id || '',
+    'Meeco-Srt': userAuth.srt || '',
     authorizationoidc2: userAuth.oidc_token || '',
   }[name] as string);
 
