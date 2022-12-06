@@ -23,6 +23,7 @@ export interface IVaultToken {
   delegation_id?: string;
   oidc_token?: string;
   organisation_id?: string;
+  srt?: string;
 }
 
 export interface IDEK {
@@ -38,6 +39,7 @@ export interface IKeystoreToken {
   delegation_id?: string;
   oidc_token?: string;
   organisation_id?: string;
+  srt?: string;
 }
 
 export interface IIdentityNetworkToken {
