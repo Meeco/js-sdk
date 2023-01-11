@@ -17,6 +17,7 @@ import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from '
  * Works for items owned by the current user as well as for items owned by someone else and on-shared by the current user.
  * @param ownerId only return Items created by the given user id.
  * @param own only return Items you created.
+ * @param name name of item.
  */
 export interface IItemListFilterOptions {
   templateIds?: string[];
@@ -26,6 +27,7 @@ export interface IItemListFilterOptions {
   ownerId?: string;
   own?: boolean;
   itemIds?: string[];
+  name?: string;
 }
 
 /** DecryptedItems together with response metadata if needed for paging etc. */
@@ -109,11 +111,12 @@ export class ItemService extends Service<ItemApi> {
     const { classificationNodeName, classificationNodeNames } =
       this.getClassifications(listFilterOptions);
 
-    const { templateIds, scheme, sharedWith, ownerId, own, itemIds } = listFilterOptions || {};
+    const { templateIds, scheme, sharedWith, ownerId, own, itemIds, name } =
+      listFilterOptions || {};
 
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
       templateIds?.join(','),
-      undefined,
+      name,
       scheme,
       classificationNodeName,
       classificationNodeNames,
@@ -158,12 +161,12 @@ export class ItemService extends Service<ItemApi> {
     const { classificationNodeName, classificationNodeNames } =
       this.getClassifications(listFilterOptions);
 
-    const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
+    const { templateIds, scheme, sharedWith, ownerId, own, name } = listFilterOptions || {};
 
     return getAllPaged(cursor =>
       api.itemsGet(
         templateIds?.join(','),
-        undefined,
+        name,
         scheme,
         classificationNodeName,
         classificationNodeNames,
@@ -195,10 +198,11 @@ export class ItemService extends Service<ItemApi> {
     const { classificationNodeName, classificationNodeNames } =
       this.getClassifications(listFilterOptions);
 
-    const { templateIds, scheme, sharedWith, ownerId, own } = listFilterOptions || {};
+    const { templateIds, scheme, sharedWith, ownerId, own, name } = listFilterOptions || {};
 
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
       templateIds?.join(','),
+      name,
       scheme,
       classificationNodeName,
       classificationNodeNames,

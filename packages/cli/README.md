@@ -329,7 +329,6 @@ once approved it can be access with follwoing command
 - [`meeco organization-members:update`](#meeco-organization-membersupdate)
 - [`meeco organization-services:create ORGANIZATION_ID`](#meeco-organization-servicescreate-organization_id)
 - [`meeco organization-services:get ORGANIZATION_ID SERVICE_ID`](#meeco-organization-servicesget-organization_id-service_id)
-- [`meeco organization-services:list ORGANIZATION_ID`](#meeco-organization-serviceslist-organization_id)
 - [`meeco organization-services:login`](#meeco-organization-serviceslogin)
 - [`meeco organization-services:update ORGANIZATION_ID`](#meeco-organization-servicesupdate-organization_id)
 - [`meeco organizations:create`](#meeco-organizationscreate)
@@ -1101,31 +1100,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/organization-services/get.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/get.ts)_
-
-## `meeco organization-services:list ORGANIZATION_ID`
-
-List requested services for a given organization. Members of the organization with roles owner and admin can use this command to list the requested services for this organization.
-
-```
-USAGE
-  $ meeco organization-services:list [ORGANIZATION_ID] -a <value> [-e <value>] [--delegationId <value>] [--all]
-
-FLAGS
-  -a, --auth=<value>         (required) [default: .user.yaml] Authorization config yaml file (if not using the default
-                             .user.yaml)
-  -e, --environment=<value>  [default: .environment.yaml] environment config file
-  --all                      Get all possible results from web API, possibly with multiple calls.
-  --delegationId=<value>     delegation id of the connection to perform the task on behalf of
-
-DESCRIPTION
-  List requested services for a given organization. Members of the organization with roles owner and admin can use this
-  command to list the requested services for this organization.
-
-EXAMPLES
-  $ meeco organization-services:list <organization_id>
-```
-
-_See code: [src/commands/organization-services/list.ts](https://github.com/Meeco/cli/blob/master/src/commands/organization-services/list.ts)_
 
 ## `meeco organization-services:login`
 

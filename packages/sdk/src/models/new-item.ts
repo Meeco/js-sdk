@@ -32,7 +32,8 @@ export class NewItem extends ItemChange {
     public readonly label: string,
     public template_name: string,
     public slots: NewSlot[] = [],
-    public classification_nodes: Partial<ClassificationNode>[] = []
+    public classification_nodes: Partial<ClassificationNode>[] = [],
+    public name?: string
   ) {
     super(slots, classification_nodes);
     if (this.label === '') {
@@ -88,6 +89,7 @@ export class NewItem extends ItemChange {
       template_name: this.template_name,
       item: {
         label: this.label,
+        name: this.name,
         slots_attributes,
         classification_nodes_attributes,
       },

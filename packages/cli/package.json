@@ -11,9 +11,9 @@
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
     "@meeco/file-storage-node": "5.0.3",
-    "@meeco/keystore-api-sdk": "9.1.1-develop.20221114150017.009a31b",
+    "@meeco/keystore-api-sdk": "10.0.0-develop.20221206103343.8418111",
     "@meeco/sdk": "^4.0.2",
-    "@meeco/vault-api-sdk": "37.6.1-develop.20221113172557.1b02443a9",
+    "@meeco/vault-api-sdk": "39.0.1-develop.20221207204109.6df32faac",
     "oclif": "^3.1.0",
     "@oclif/core": "^1.9.9",
     "@oclif/plugin-version": "^1.1.1",
