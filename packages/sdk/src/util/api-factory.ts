@@ -153,7 +153,7 @@ const keystoreAPI = (
           );
       },
     }
-  ) as InstanceType<typeof Keystore[typeof api]>;
+  ) as InstanceType<(typeof Keystore)[typeof api]>;
 };
 
 /**
@@ -185,7 +185,7 @@ const vaultAPI = (
           );
       },
     }
-  ) as InstanceType<typeof Vault[typeof api]>;
+  ) as InstanceType<(typeof Vault)[typeof api]>;
 };
 
 /**
@@ -218,7 +218,7 @@ const identityNetworkAPI = (
           );
       },
     }
-  ) as InstanceType<typeof IdentityNetwork[typeof api]>;
+  ) as InstanceType<(typeof IdentityNetwork)[typeof api]>;
 };
 
 /**
@@ -251,7 +251,7 @@ const vcAPI = (
           );
       },
     }
-  ) as InstanceType<typeof VC[typeof api]>;
+  ) as InstanceType<(typeof VC)[typeof api]>;
 };
 
 /**
@@ -285,7 +285,7 @@ export type KeystoreAPIFactory = (
   headers?: IHeaders
 ) => KeystoreAPIFactoryInstance;
 export type KeystoreAPIFactoryInstance = {
-  [key in KeystoreAPIName]: InstanceType<typeof Keystore[key]>;
+  [key in KeystoreAPIName]: InstanceType<(typeof Keystore)[key]>;
 };
 
 export type IdentityNetworkAPIFactory = (
@@ -293,12 +293,12 @@ export type IdentityNetworkAPIFactory = (
   headers?: IHeaders
 ) => IdentityNetworkAPIFactoryInstance;
 export type IdentityNetworkAPIFactoryInstance = {
-  [key in IdentityNetworkAPIName]: InstanceType<typeof IdentityNetwork[key]>;
+  [key in IdentityNetworkAPIName]: InstanceType<(typeof IdentityNetwork)[key]>;
 };
 
 export type VCAPIFactory = (userAuth: IVCToken, headers?: IHeaders) => VCAPIFactoryInstance;
 export type VCAPIFactoryInstance = {
-  [key in VCAPIName]: InstanceType<typeof VC[key]>;
+  [key in VCAPIName]: InstanceType<(typeof VC)[key]>;
 };
 
 /**
@@ -331,7 +331,7 @@ export type VaultAPIFactory = (
   userAuth: IVaultToken,
   headers?: IHeaders
 ) => VaultAPIFactoryInstance;
-export type VaultAPIFactoryInstance = { [key in VaultAPIName]: InstanceType<typeof Vault[key]> };
+export type VaultAPIFactoryInstance = { [key in VaultAPIName]: InstanceType<(typeof Vault)[key]> };
 
 /**
  * Results in a factory function that can be passed user auth information and then get
