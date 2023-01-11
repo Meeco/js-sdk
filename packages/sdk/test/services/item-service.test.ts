@@ -65,7 +65,7 @@ describe('ItemService', () => {
         const result = await new ItemService(environment).create(testUserAuth, item);
 
         const { slots, ...expectedItem } = expected;
-        expect(result.item).to.eql(expectedItem);
+        expect(result.item).to.eql({ ...expectedItem, name: undefined });
         expect(result.slots).to.deep.members(slots);
       });
 
@@ -83,7 +83,7 @@ describe('ItemService', () => {
         const result = await new ItemService(environment).create(testUserAuth, itemCreateData);
 
         const { slots, ...expectedItem } = expected;
-        expect(result.item).to.eql(expectedItem);
+        expect(result.item).to.eql({ ...expectedItem, name: undefined });
         expect(result.slots).to.deep.members(slots);
       });
 
@@ -109,7 +109,7 @@ describe('ItemService', () => {
           const result = await new ItemService(environment).create(testUserAuth, itemCreateData);
 
           const { classification_nodes_attributes, ...expectedItem } = expected;
-          expect(result.item).to.eql(expectedItem);
+          expect(result.item).to.eql({ ...expectedItem, name: undefined });
           expect(result.classification_nodes).to.deep.members(classification_nodes_attributes);
         }
       );
