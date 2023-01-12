@@ -1,6 +1,7 @@
 import { CredentialsApi, GenerateCredentialDto } from '@meeco/vc-api-sdk';
+import { generateKeyPairFromSeed } from '@stablelib/ed25519';
+import { createJWT, decodeJWT, EdDSASigner } from 'did-jwt';
 import { Ed25519 } from '../models/did-management';
-import cryppo from './cryppo-service';
 import Service, { IVCToken } from './service';
 
 /**
@@ -29,18 +30,22 @@ export class CredentialService extends Service<CredentialsApi> {
       credentials
     ).CredentialsApi.credentialsControllerGenerate(organisationID, { credential: payload });
 
-    const signature = await this.sign(result.credential.unsigned_vc_jwt, key);
+    const signedCredential = await this.signJWT(
+      result.credential.unsigned_vc_jwt,
+      payload.issuer,
+      key
+    );
 
     return {
-      credential: [result.credential.unsigned_vc_jwt, signature].join('.'),
+      credential: signedCredential,
       metadata: result.credential.metadata,
     };
   }
 
-  private sign(data: string | Uint8Array, key: Ed25519) {
-    const toSign = typeof data === 'string' ? new Uint8Array(Buffer.from(data)) : data;
-    const signature = key.sign(toSign);
+  private signJWT(unsignedJWT: string | Uint8Array, issuer: string, key: Ed25519) {
+    const signer = EdDSASigner(generateKeyPairFromSeed(key.keyPair.secret()).secretKey);
+    const decoded = decodeJWT(`${unsignedJWT}.unsigned`);
 
-    return cryppo.encodeSafe64(cryppo.bytesBufferToBinaryString(Buffer.from(signature)));
+    return createJWT(decoded.payload, { issuer, signer }, decoded.header);
   }
 }
