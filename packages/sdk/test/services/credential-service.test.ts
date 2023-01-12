@@ -24,7 +24,7 @@ describe('CredentialService', () => {
         api
           .post('/credentials/generate')
           .matchHeader('Authorization', testUserAuth.vc_access_token)
-          .matchHeader('X-Meeco-Organisation-Id', ORGANISATION_ID)
+          .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
           // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
           .reply(401, {
             message: 'Unauthorized',
@@ -56,7 +56,7 @@ describe('CredentialService', () => {
         api
           .post('/credentials/generate')
           .matchHeader('Authorization', testUserAuth.vc_access_token)
-          .matchHeader('X-Meeco-Organisation-Id', ORGANISATION_ID)
+          .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
           // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
           .reply(201, {
             credential: {
