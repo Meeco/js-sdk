@@ -17,8 +17,6 @@ describe('API Factories', () => {
         .get('/keypairs/my-id')
         .matchHeader('Meeco-Subscription-Key', 'my_sub_key')
         .matchHeader('Authorization', 'my-keystore-token')
-        .matchHeader('X_MEECO_API_VERSION', '2.0.0')
-        .matchHeader('X_MEECO_API_COMPONENT', 'keystore')
         .reply(200, {
           keypair: {
             id: 'my-id',
@@ -56,8 +54,6 @@ describe('API Factories', () => {
         .get('/keypairs/my-id')
         .matchHeader('Meeco-Subscription-Key', 'my_sub_key')
         .matchHeader('Authorization', 'my-keystore-token')
-        .matchHeader('X_MEECO_API_VERSION', '2.0.0')
-        .matchHeader('X_MEECO_API_COMPONENT', 'keystore')
         .matchHeader('X_MY_CUSTOM_HEADER', 'foo')
         .reply(200, {
           keypair: {
@@ -132,8 +128,6 @@ describe('API Factories', () => {
         .get('/items/my-id')
         .matchHeader('Meeco-Subscription-Key', 'my_sub_key')
         .matchHeader('Authorization', 'my-vault-token')
-        .matchHeader('X_MEECO_API_VERSION', '2.0.0')
-        .matchHeader('X_MEECO_API_COMPONENT', 'vault')
         .reply(200, {
           attachments: [],
           classification_nodes: [],
@@ -160,8 +154,6 @@ describe('API Factories', () => {
         .get('/items/my-id')
         .matchHeader('Meeco-Subscription-Key', 'my_sub_key')
         .matchHeader('Authorization', 'my-vault-token')
-        .matchHeader('X_MEECO_API_VERSION', '2.0.0')
-        .matchHeader('X_MEECO_API_COMPONENT', 'vault')
         .matchHeader('X_MY_CUSTOM_HEADER', 'foo')
         .reply(200, {
           attachments: [],

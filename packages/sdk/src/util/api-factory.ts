@@ -25,8 +25,6 @@ export const configureFetch = (_fetch: any) => (fetchLib = _fetch);
 const debugCurl = debug('meeco:http');
 (<any>global).FormData = (<any>global).FormData || SDKFormData;
 
-const X_MEECO_API_VERSION = '2.0.0';
-
 /**
  * User authentication token for the given API or the entire user with tokens
  */
@@ -146,8 +144,6 @@ const keystoreAPI = (
             environment.keystore.url,
             {
               ...additionalHeaders,
-              X_MEECO_API_VERSION,
-              X_MEECO_API_COMPONENT: 'keystore',
             },
             args
           );
@@ -178,8 +174,6 @@ const vaultAPI = (
             environment.vault.url,
             {
               ...additionalHeaders,
-              X_MEECO_API_VERSION,
-              X_MEECO_API_COMPONENT: 'vault',
             },
             args
           );
@@ -210,8 +204,6 @@ const identityNetworkAPI = (
             environment.identityNetwork.url,
             {
               ...additionalHeaders,
-              X_MEECO_API_VERSION,
-              X_MEECO_API_COMPONENT: 'identityNetwork',
               Authorization: userAuth.identity_network_access_token,
             },
             args
@@ -243,8 +235,6 @@ const vcAPI = (
             environment.vc.url,
             {
               ...additionalHeaders,
-              X_MEECO_API_VERSION,
-              X_MEECO_API_COMPONENT: 'vc',
               Authorization: userAuth.vc_access_token,
             },
             args
