@@ -13,7 +13,7 @@ export function signUnsignedJWT(unsignedJWT: string, issuerDID: string, key: Ed2
   const signer = EdDSASigner(generateKeyPairFromSeed(key.keyPair.secret()).secretKey);
   const decoded = decodeJWT(`${unsignedJWT}.unsigned`);
 
-  //sign self issued Id_Token JWT
+  // sign self issued Id_Token JWT
   if (decoded.payload.iss === SELF_ISSUED_V2 || decoded.payload.iss === SELF_ISSUED_V2_VC_INTEROP) {
     if (!signer) throw new Error('missing_signer: No Signer functionality has been configured');
     if (!decoded.header.typ) decoded.header.typ = 'JWT';
