@@ -13,7 +13,7 @@ export class DIDWeb extends DIDBase {
       clientSecretMode: false,
       network: undefined,
     },
-    public domain: string = 'did-web.godiddy.com'
+    public domain: string = 'did-web.securevalue.exchange'
   ) {
     super(SupportedDidMethod.WEB, didDocument, options);
     this.didDocument = { ...super.didDocument, id: `did:web:${domain}:${this.id}` };
