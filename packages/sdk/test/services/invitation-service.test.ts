@@ -5,6 +5,7 @@ import { default as connectionResponseWithCreatedSharesReport } from '../fixture
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('InvitationService', () => {
+  const invitationId = '1';
   const connectionName = 'name';
   const savedKeyPairId = '123';
 
@@ -29,6 +30,44 @@ describe('InvitationService', () => {
         .matchHeader('Meeco-Subscription-Key', environment.keystore.subscription_key)
         .reply(200, { keypair: { id: savedKeyPairId, public_key: 'new_public_key' } });
   }
+
+  describe('#list', () => {
+    function getInvitationsAPI() {
+      return api =>
+        api
+          .get('/invitations')
+          .matchHeader('Authorization', testUserAuth.vault_access_token)
+          .matchHeader('Meeco-Subscription-Key', environment.vault.subscription_key)
+          .reply(200, { invitations: [] });
+    }
+
+    customTest
+      .mockCryppo()
+      .nock('https://sandbox.meeco.me/vault', getInvitationsAPI())
+      .do(() => new InvitationService(environment).list(testUserAuth))
+      .it('returns a list of invitations');
+  });
+
+  describe('#get', () => {
+    function getInvitationsAPI() {
+      return api =>
+        api
+          .get(`/invitations/${invitationId}`)
+          .matchHeader('Authorization', testUserAuth.vault_access_token)
+          .matchHeader('Meeco-Subscription-Key', environment.vault.subscription_key)
+          .reply(200, {
+            invitation: {},
+            share_intents: [],
+            recipient_public_key: null,
+          });
+    }
+
+    customTest
+      .mockCryppo()
+      .nock('https://sandbox.meeco.me/vault', getInvitationsAPI())
+      .do(() => new InvitationService(environment).get(testUserAuth, invitationId))
+      .it('returns an invitation');
+  });
 
   describe('#create', () => {
     function postInvitationAPI() {
@@ -66,7 +105,9 @@ describe('InvitationService', () => {
       )
       .nock('https://sandbox.meeco.me/vault', postInvitationAPI())
       .do(() =>
-        new InvitationService(environment).create(testUserAuth, connectionName, savedKeyPairId)
+        new InvitationService(environment).create(testUserAuth, connectionName, {
+          keypairId: savedKeyPairId,
+        })
       )
       .it('allows using an existing keypair');
 
@@ -75,7 +116,9 @@ describe('InvitationService', () => {
         api.get(`/keypairs/${savedKeyPairId}`).reply(404)
       )
       .do(() =>
-        new InvitationService(environment).create(testUserAuth, connectionName, savedKeyPairId)
+        new InvitationService(environment).create(testUserAuth, connectionName, {
+          keypairId: savedKeyPairId,
+        })
       )
       .catch(e => expect(e).to.be.ok)
       .it('throws an error if the specified keypair is not found');

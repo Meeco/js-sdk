@@ -16,7 +16,7 @@ export class InvitationService extends Service<InvitationApi> {
    * Throws an error if the key pair does not exist.
    */
   public async list(credentials: IVaultToken & IKeystoreToken & IDEK & IKEK): Promise<{
-    invitations: Array<Invitation>;
+    invitations: Invitation[];
   }> {
     this.logger.log('Sending invitation request');
     const invitations = await this.vaultAPIFactory(credentials).InvitationApi.invitationsGet();
