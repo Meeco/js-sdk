@@ -95,15 +95,13 @@ export class DelegationService extends Service<DelegationApi> {
       { vault_account_id, delegation_role }
     );
 
-    return await new InvitationService(this.environment).create(
-      credentials,
-      connectionName,
+    return await new InvitationService(this.environment).create(credentials, connectionName, {
       keypairId,
-      {
+      delegationIntent: {
         delegationToken: delegation.delegation_token,
         delegateRole: delegation.delegation_role,
-      }
-    );
+      },
+    });
   }
 
   // Delegation connection Step 2 - Delegate

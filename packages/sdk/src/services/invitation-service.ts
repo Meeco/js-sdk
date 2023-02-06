@@ -11,6 +11,37 @@ export class InvitationService extends Service<InvitationApi> {
   }
 
   /**
+   * Retrieves invitations that the current user has created. Parameter state fetches invitations with a certain state.
+   * @param keypairId Use this public key in the new Connection. This is a Keystore Keypair.id (not external_id).
+   * Throws an error if the key pair does not exist.
+   */
+  public async list(credentials: IVaultToken & IKeystoreToken & IDEK & IKEK): Promise<{
+    invitations: Array<Invitation>;
+  }> {
+    this.logger.log('Sending invitation request');
+    const invitations = await this.vaultAPIFactory(credentials).InvitationApi.invitationsGet();
+
+    return invitations;
+  }
+
+  /**
+   * Retrieves invitations that the current user has created. Parameter state fetches invitations with a certain state.
+   * @param keypairId Use this public key in the new Connection. This is a Keystore Keypair.id (not external_id).
+   * Throws an error if the key pair does not exist.
+   */
+  public async get(
+    credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
+    id: string
+  ): Promise<Invitation> {
+    this.logger.log('Sending invitation request');
+    const { invitation } = await this.vaultAPIFactory(credentials).InvitationApi.invitationsIdGet(
+      id
+    );
+
+    return invitation;
+  }
+
+  /**
    * Create an invitation token for a Connection (exchanging public keys to share Items).
    * @param connectionName Used in the new Connection, only visible to the creating user.
    * @param keypairId Use this public key in the new Connection. This is a Keystore Keypair.id (not external_id).
@@ -19,8 +50,17 @@ export class InvitationService extends Service<InvitationApi> {
   public async create(
     credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
     connectionName: string,
-    keypairId?: string,
-    delegationIntent?: { delegationToken: string; delegateRole: string }
+    {
+      keypairId,
+      delegationIntent,
+      isMultistepWorkflow = false,
+    }:
+      | {
+          keypairId?: string;
+          delegationIntent?: { delegationToken: string; delegateRole: string };
+          isMultistepWorkflow?: boolean;
+        }
+      | undefined = {}
   ): Promise<Invitation> {
     const { key_encryption_key, data_encryption_key } = credentials;
 
@@ -50,6 +90,7 @@ export class InvitationService extends Service<InvitationApi> {
           encrypted_recipient_name: encryptedName,
           delegation_token: delegationIntent?.delegationToken,
           delegate_role: delegationIntent?.delegateRole,
+          multistep_workflow: isMultistepWorkflow,
         },
       })
       .then(result => result.invitation);
