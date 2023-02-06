@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
-    "@meeco/vault-api-sdk": "39.0.1-develop.20221207204109.6df32faac",
+    "@meeco/vault-api-sdk": "^39.1.0-develop.20230122160002.13cbdc869",
     "axios": "^0.27.2",
     "tslib": "^2.4.0"
   },

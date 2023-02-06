@@ -13,7 +13,7 @@
     "@meeco/file-storage-node": "5.0.3",
     "@meeco/keystore-api-sdk": "10.0.0-develop.20221206103343.8418111",
     "@meeco/sdk": "^4.0.2",
-    "@meeco/vault-api-sdk": "39.0.1-develop.20221207204109.6df32faac",
+    "@meeco/vault-api-sdk": "^39.1.0-develop.20230122160002.13cbdc869",
     "oclif": "^3.1.0",
     "@oclif/core": "^1.9.9",
     "@oclif/plugin-version": "^1.1.1",
