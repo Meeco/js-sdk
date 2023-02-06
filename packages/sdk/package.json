@@ -81,8 +81,8 @@
     "test": "ts-mocha -p test/tsconfig.json \"test/**/*.test.ts\"",
     "@meeco/vault-api-sdk": "npm install @meeco/vault-api-sdk@develop",
     "@meeco/identity-network-api-sdk": "npm install @meeco/identity-network-api-sdk@develop",
-    "@meeco/keystore-api-sdk": "npm install @meeco/keystore-api-api-sdk@develop",
-    "@meeco/vc-api-sdk": "npm install @meeco/vc-api-api-sdk@develop"
+    "@meeco/keystore-api-sdk": "npm install @meeco/keystore-api-sdk@develop",
+    "@meeco/vc-api-sdk": "npm install @meeco/vc-api-sdk@develop"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
