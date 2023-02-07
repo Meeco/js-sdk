@@ -10,10 +10,10 @@
   "types": "dist/src/index.d.ts",
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
-    "@meeco/identity-network-api-sdk": "1.0.1-develop.20230113003220.425f01b",
+    "@meeco/identity-network-api-sdk": "1.0.2-develop.20230202223958.3da7c5f",
     "@meeco/keystore-api-sdk": "10.0.0-develop.20221206103343.8418111",
     "@meeco/vault-api-sdk": "^39.1.0-develop.20230122160002.13cbdc869",
-    "@meeco/vc-api-sdk": "4.0.0-develop.20230112163242.4e0c6b3",
+    "@meeco/vc-api-sdk": "4.0.0-develop.20230206153548.2d56a8c",
     "bs58": "5.0.0",
     "buffer": "^6.0.3",
     "chalk": "^4.1.2",
