@@ -9,7 +9,6 @@ export interface IFileStorageAuthConfiguration {
   vault_access_token?: string;
   delegation_id?: string;
   subscription_key?: string;
-  oidc_token?: string;
 }
 
 export function buildApiConfig(
@@ -46,10 +45,6 @@ export function getHeaders(auth: IFileStorageAuthConfiguration): { [header: stri
     headers['Authorization'] = auth.vault_access_token;
   }
 
-  if (auth.oidc_token) {
-    headers['authorizationoidc2'] = auth.oidc_token;
-  }
-
   return headers;
 }
 
@@ -65,10 +60,6 @@ export function getBlobHeaders(auth: IFileStorageAuthConfiguration): { [header: 
 
   if (auth.subscription_key) {
     headers['Meeco-Subscription-Key'] = auth.subscription_key;
-  }
-
-  if (auth.oidc_token) {
-    headers['authorizationoidc2'] = auth.oidc_token;
   }
 
   if (auth.vault_access_token) {

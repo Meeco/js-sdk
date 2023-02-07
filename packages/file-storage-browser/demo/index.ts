@@ -104,6 +104,14 @@ async function attachFile() {
         subscription_key: subscriptionKey,
         provider_api_key: '',
       },
+      identityNetwork: {
+        url: '',
+        subscription_key: subscriptionKey,
+      },
+      vc: {
+        url: '',
+        subscription_key: subscriptionKey,
+      },
     });
 
     // itemService now accepts authdata, as user could fetch shared item and not its own item through this endpoint.
@@ -113,7 +121,6 @@ async function attachFile() {
       {
         data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
-        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
@@ -125,7 +132,6 @@ async function attachFile() {
       vaultUrl,
       authConfig: {
         vault_access_token: vaultAccessToken,
-        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
       videoCodec,
@@ -170,7 +176,6 @@ async function attachFile() {
     const updated = await itemService.update(
       {
         vault_access_token: vaultAccessToken,
-        oidc_token: oidcAccessToken,
         data_encryption_key: privateDek,
       },
       itemUpdateData
@@ -260,6 +265,14 @@ async function downloadAttachment() {
         subscription_key: subscriptionKey,
         provider_api_key: '',
       },
+      identityNetwork: {
+        url: '',
+        subscription_key: subscriptionKey,
+      },
+      vc: {
+        url: '',
+        subscription_key: subscriptionKey,
+      },
     });
 
     // itemService now accepts authdata, as user could fetch shared item and not its own item through this endpoint.
@@ -269,7 +282,6 @@ async function downloadAttachment() {
       {
         data_encryption_key: dek,
         vault_access_token: vaultAccessToken,
-        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
@@ -284,7 +296,6 @@ async function downloadAttachment() {
       vaultUrl,
       authConfig: {
         vault_access_token: vaultAccessToken,
-        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
       progressUpdateFunc,
@@ -366,6 +377,14 @@ async function attachThumbnail() {
         subscription_key: subscriptionKey,
         provider_api_key: '',
       },
+      identityNetwork: {
+        url: '',
+        subscription_key: subscriptionKey,
+      },
+      vc: {
+        url: '',
+        subscription_key: subscriptionKey,
+      },
     });
 
     const itemService = new ItemService(environment);
@@ -373,7 +392,6 @@ async function attachThumbnail() {
       {
         data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
-        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
@@ -396,7 +414,6 @@ async function attachThumbnail() {
       sizeType,
       authConfig: {
         vault_access_token: vaultAccessToken,
-        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
       vaultUrl,
@@ -443,6 +460,14 @@ async function thumbnailDownload() {
         subscription_key: subscriptionKey,
         provider_api_key: '',
       },
+      identityNetwork: {
+        url: '',
+        subscription_key: subscriptionKey,
+      },
+      vc: {
+        url: '',
+        subscription_key: subscriptionKey,
+      },
     });
 
     const itemService = new ItemService(environment);
@@ -450,7 +475,6 @@ async function thumbnailDownload() {
       {
         data_encryption_key: privateDek,
         vault_access_token: vaultAccessToken,
-        oidc_token: oidcAccessToken,
         key_encryption_key: keyEncryptionKey,
         keystore_access_token: keystoreAccessToken,
       },
@@ -476,7 +500,6 @@ async function thumbnailDownload() {
       vaultUrl: environment.vault.url,
       authConfig: {
         vault_access_token: vaultAccessToken,
-        oidc_token: oidcAccessToken,
         subscription_key: subscriptionKey,
       },
     });

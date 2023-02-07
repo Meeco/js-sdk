@@ -4,7 +4,6 @@ import { AttachmentService } from '../src/attachment-service';
 
 const kateAuth = {
   vault_access_token: '',
-  oidc_token: undefined,
   delegation_id: undefined,
   data_encryption_key: EncryptionKey.fromSerialized(''),
   key_encryption_key: EncryptionKey.fromSerialized(''),

@@ -57,7 +57,6 @@ const keystoreAPIKeys =
       'Meeco-Organisation-Id': userAuth.organisation_id || '',
       'Meeco-Delegation-Id': userAuth.delegation_id || '',
       'Meeco-Srt': userAuth.srt || '',
-      authorizationoidc2: userAuth.oidc_token || '',
     }[name] as string);
 
 /**
@@ -72,7 +71,6 @@ const vaultAPIKeys = (environment: Environment, userAuth: IVaultToken) => (name:
     'Meeco-Delegation-Id': userAuth.delegation_id || '',
     'Meeco-Organisation-Id': userAuth.organisation_id || '',
     'Meeco-Srt': userAuth.srt || '',
-    authorizationoidc2: userAuth.oidc_token || '',
   }[name] as string);
 
 function fetchInterceptor(url, options) {

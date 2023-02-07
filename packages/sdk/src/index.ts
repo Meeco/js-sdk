@@ -38,7 +38,7 @@ export * from './services/user-service';
 export * from './util/api-factory';
 export * from './util/did-management';
 export * from './util/find-connection-between';
-export { signUnsignedJWT } from './util/jwt';
+export * from './util/jwt';
 export * from './util/paged';
 export { default as Secrets } from './util/secrets';
 export { default as SlotHelpers } from './util/slot-helpers';

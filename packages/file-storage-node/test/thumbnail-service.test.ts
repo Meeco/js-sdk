@@ -10,7 +10,6 @@ const fakeVault = 'https://sandbox.meeco.me/vault';
 const fakeAuth: IFileStorageAuthConfiguration = {
   vault_access_token: 'vaultToken',
   subscription_key: 'subKey',
-  oidc_token: 'oidc',
 };
 
 describe('ThumbnailService', () => {
@@ -22,7 +21,6 @@ describe('ThumbnailService', () => {
           .get(`/thumbnails/id`)
           .reply(200, { redirect_url: fakeVault + '/some_url' })
           .get('/some_url')
-          .matchHeader('authorizationoidc2', fakeAuth.oidc_token!)
           .matchHeader('Meeco-Subscription-Key', fakeAuth.subscription_key!)
           .reply(200, '123abc');
       })
@@ -85,7 +83,6 @@ describe('ThumbnailService', () => {
           .get(`/thumbnails/id`)
           .reply(200, { redirect_url: fakeVault + '/some_url' })
           .get('/some_url')
-          .matchHeader('authorizationoidc2', fakeAuth.oidc_token!)
           .matchHeader('Meeco-Subscription-Key', fakeAuth.subscription_key!)
           .reply(200, '123abc');
       })

@@ -10,7 +10,6 @@ interface IAuthMetadata {
   key_encryption_key: string | SymmetricKey; // base64
   data_encryption_key: string | SymmetricKey; // base64
   delegation_id?: string;
-  oidc_token?: string;
 }
 
 interface IAuthSpec {
@@ -41,7 +40,6 @@ export class AuthConfig {
   public key_encryption_key: SymmetricKey;
   public readonly passphrase_derived_key: SymmetricKey;
   public delegation_id?: string;
-  public oidc_token?: string;
   public loaded_delegations?: { [user_id: string]: LoadedDelegation };
 
   constructor(data: {
@@ -52,7 +50,6 @@ export class AuthConfig {
     key_encryption_key: SymmetricKey;
     passphrase_derived_key: SymmetricKey;
     delegation_id?: string;
-    oidc_token?: string;
     loaded_delegations?: { [user_id: string]: LoadedDelegation };
   }) {
     this.secret = data.secret;
@@ -62,7 +59,6 @@ export class AuthConfig {
     this.key_encryption_key = data.key_encryption_key;
     this.passphrase_derived_key = data.passphrase_derived_key;
     this.delegation_id = data.delegation_id;
-    this.oidc_token = data.oidc_token;
     this.loaded_delegations = data.loaded_delegations;
   }
 
@@ -171,7 +167,6 @@ export class AuthConfig {
       secret: json.secret,
       vault_access_token: json.vault_access_token,
       delegation_id: json.delegation_id,
-      oidc_token: json.oidc_token,
       loaded_delegations: loadedDelegationsDeserializedKeys,
     });
   }
@@ -205,7 +200,6 @@ export class AuthConfig {
       secret: this.secret,
       vault_access_token: this.vault_access_token,
       delegation_id: this.delegation_id,
-      oidc_token: this.oidc_token,
       loaded_delegations: loadedDelegationsSerializedKeys,
     };
   }
