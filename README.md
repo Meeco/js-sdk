@@ -47,3 +47,20 @@ If this is the case to get started with a new package.
 6. Add the name of the package along with the directory of the src to the root's tsconfig.json under `"paths"`. e.g. `"@meeco/example-package": ["packages/example-package/src"]`
 
 The above is just a basic guide to get started, feel free, if you're know what you're doing, to go off the rails a bit.
+
+## Updating a Package version of this Monorepo
+
+To insure consistency we have to update a node_module version for all our packages. To make it easier there are several updating tools that does the job for you. It supports:
+1. `@meeco/vault-api-sdk`
+2. `@meeco/identity-network-api-sdk`
+3. `@meeco/keystore-api-sdk`
+4. `@meeco/vc-api-sdk`
+
+To perform the update of a node_module you should just call:
+```
+npm update {node_module name from supports list}
+```
+Example:
+```
+npm update @meeco/vault-api-sdk
+```
