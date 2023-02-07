@@ -4,6 +4,7 @@
   "scripts": {
     "alias": "alias meeco=\"node --inspect --require tsconfig-paths/register ./packages/cli/bin/run\"",
     "bootstrap": "lerna bootstrap --hoist --nohoist=mithril --nohoist=@types/mithril",
+    "update": "lerna run",
     "build": "lerna run build",
     "docs": "lerna run docs",
     "postinstall": "ts-node scripts/check-node-and-npm-versions.ts && npm run bootstrap",

@@ -78,7 +78,11 @@
     "prepack": "npm run build",
     "build:typedoc": "typedoc --out ../../docs/js-sdk --tsconfig tsconfig.json --cleanOutputDir --name 'Meeco SDK Documentation' --entryPoints AuthData  --excludePrivate src/index.ts",
     "docs": "npm run build:typedoc",
-    "test": "ts-mocha -p test/tsconfig.json \"test/**/*.test.ts\""
+    "test": "ts-mocha -p test/tsconfig.json \"test/**/*.test.ts\"",
+    "@meeco/vault-api-sdk": "npm install @meeco/vault-api-sdk@develop",
+    "@meeco/identity-network-api-sdk": "npm install @meeco/identity-network-api-sdk@develop",
+    "@meeco/keystore-api-sdk": "npm install @meeco/keystore-api-sdk@develop",
+    "@meeco/vc-api-sdk": "npm install @meeco/vc-api-sdk@develop"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",

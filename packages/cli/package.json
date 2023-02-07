@@ -124,7 +124,9 @@
     "test": "ts-mocha -p ./test/tsconfig.json \"./test/**/*.test.ts\"",
     "prepkg": "npm run prepack",
     "build": "npm run pkg",
-    "pkg": "oclif pack tarballs"
+    "pkg": "oclif pack tarballs",
+    "@meeco/vault-api-sdk": "npm install @meeco/vault-api-sdk@develop",
+    "@meeco/keystore-api-sdk": "npm install @meeco/keystore-api-sdk@develop"
   },
   "types": "lib/index.d.ts"
 }

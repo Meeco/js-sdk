@@ -14,7 +14,8 @@
     "build:esm": "tsc -p tsconfig.esm.json",
     "build:umd": "tsc -p tsconfig.umd.json",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
-    "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md"
+    "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
+    "@meeco/vault-api-sdk": "npm install @meeco/vault-api-sdk@develop"
   },
   "dependencies": {
     "@meeco/cryppo": "2.0.2",

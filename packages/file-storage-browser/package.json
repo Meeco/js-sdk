@@ -17,7 +17,8 @@
     "build:demo": "webpack",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
-    "docs": "typedoc --out docs --tsconfig tsconfig.json --cleanOutputDir --excludePrivate --excludeProtected src/index.ts"
+    "docs": "typedoc --out docs --tsconfig tsconfig.json --cleanOutputDir --excludePrivate --excludeProtected src/index.ts",
+    "@meeco/vault-api-sdk": "npm install @meeco/vault-api-sdk@develop"
   },
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
