@@ -10,16 +10,21 @@ import {
   encryptWithKey,
   generateDerivedKey,
   generateEncryptionVerificationArtifacts,
+  generateRandomBytesString,
   IDerivedKey,
   KeyDerivationStrategy,
 } from '@meeco/cryppo';
 import {
   DataEncryptionKeyApi,
   KeyEncryptionKeyApi,
+  KeypairApi,
   PassphraseDerivationArtefactApi,
 } from '@meeco/keystore-api-sdk';
 import { UserApi } from '@meeco/vault-api-sdk';
-import Service, { IKeystoreToken, IVaultToken } from './service';
+import { DIDWeb } from '../models/did-management';
+import { Ed25519 } from '../models/did-management/Ed25519';
+import { DIDManagementService } from './did-management-service';
+import Service, { IIdentityNetworkToken, IKEK, IKeystoreToken, IVaultToken } from './service';
 
 type ServiceCredentials = IVaultToken & IKeystoreToken;
 
@@ -70,10 +75,40 @@ export class OIDCUserService extends Service<UserApi> {
     }
 
     return {
-      mek,
+      mek: mek.key,
       kek,
       dek,
     };
+  }
+
+  /**
+   * Supports only DIDWeb at the moment
+   */
+  public async getVaultDID(credentials: ServiceCredentials & IIdentityNetworkToken & IKEK) {
+    const meApi = this.getAPI(credentials);
+    const keypairApi = this.keystoreAPIFactory(credentials).KeypairApi;
+    const didManagementService = new DIDManagementService(this.environment);
+
+    const kek = EncryptionKey.fromBytes(credentials.key_encryption_key.key);
+
+    let vaultUser = await meApi.meGet().then(resp => resp.user);
+
+    const result = await this.loadOrGenerateDID(
+      credentials,
+      kek,
+      vaultUser.did,
+      didManagementService,
+      keypairApi
+    );
+
+    /**
+     * Set DID reference if one was not set before
+     */
+    if (!vaultUser.did) {
+      vaultUser = await meApi.mePut({ user: { did: result.did } }).then(resp => resp.user);
+    }
+
+    return result;
   }
 
   /**
@@ -198,12 +233,12 @@ export class OIDCUserService extends Service<UserApi> {
     }
   }
 
-  private async loadKEK(mek: IMEKData, kekApi: KeyEncryptionKeyApi) {
+  private async loadKEK(mek: IMEKData, kekApi: KeyEncryptionKeyApi): Promise<IKeyData> {
     const { key_encryption_key: kekLoadResult } = await kekApi.keyEncryptionKeyGet();
     return this.decryptKey(mek.key.key, kekLoadResult.serialized_key_encryption_key);
   }
 
-  private async generateKEK(mek: IMEKData, kekApi: KeyEncryptionKeyApi) {
+  private async generateKEK(mek: IMEKData, kekApi: KeyEncryptionKeyApi): Promise<IKeyData> {
     const kek = await this.generateKey(mek.key.key);
 
     await kekApi.keyEncryptionKeyPost({
@@ -256,6 +291,81 @@ export class OIDCUserService extends Service<UserApi> {
   }
 
   /**
+   * DID
+   */
+  private async loadOrGenerateDID(
+    credentials: ServiceCredentials & IIdentityNetworkToken,
+    kek: EncryptionKey,
+    did: string | null,
+    didManagementService: DIDManagementService,
+    keypairApi: KeypairApi
+  ) {
+    if (did) {
+      return this.loadDID(kek, did, keypairApi);
+    }
+    return this.generateDID(credentials, kek, keypairApi, didManagementService);
+  }
+
+  private async generateDID(
+    credentials: ServiceCredentials & IIdentityNetworkToken,
+    kek: EncryptionKey,
+    keypairApi: KeypairApi,
+    didManagementService: DIDManagementService
+  ) {
+    const didSecret = binaryStringToBytes(generateRandomBytesString(32));
+    const didKeypair = new Ed25519(didSecret);
+    const didWeb = new DIDWeb(didKeypair);
+
+    const verificationMethodId = didWeb.setVerificationMethod();
+
+    didWeb.setAssertionMethod(verificationMethodId).setAuthentication(verificationMethodId);
+
+    const createDidResult = await didManagementService.create(
+      credentials,
+      didWeb,
+      credentials.organisation_id
+    );
+
+    const encryptedSecret = await this.encryptBinary(kek, didSecret);
+
+    const newDid = createDidResult.didState?.did as string;
+
+    await keypairApi.keypairsPost({
+      encrypted_serialized_key: <string>encryptedSecret.serialized,
+      public_key: didKeypair.getPublicKeyBase58(),
+      metadata: {
+        did: newDid,
+        public_key_encoding: 'base58',
+        private_key_info: 'stores encrypted 32 random bytes used as a secret to derive Ed25519 key',
+      },
+      external_identifiers: [
+        this.generateKeypairExternalIdentifer(newDid),
+        this.generateKeypairExternalIdentifer(verificationMethodId),
+      ],
+    });
+
+    return {
+      didSecret: <Uint8Array>didSecret,
+      didKeypair,
+      did: <string>createDidResult?.didState?.did,
+    };
+  }
+
+  private async loadDID(kek: EncryptionKey, did: string, keypairApi: KeypairApi) {
+    const { keypair } = await keypairApi.keypairsExternalIdExternalIdGet(
+      this.generateKeypairExternalIdentifer(did)
+    );
+
+    const didSecret = await this.decryptBinary(kek, keypair.encrypted_serialized_key);
+
+    return {
+      didSecret: <Uint8Array>didSecret,
+      didKeypair: new Ed25519(<Uint8Array>didSecret),
+      did,
+    };
+  }
+
+  /**
    * Utils
    */
 
@@ -302,5 +412,9 @@ export class OIDCUserService extends Service<UserApi> {
       useSalt: derivationArtifacts?.salt || '',
       hash: derivationArtifacts?.hash || 'SHA256',
     };
+  }
+
+  private generateKeypairExternalIdentifer(did: string, keyId?: string): string {
+    return Buffer.from([did, keyId].filter(v => !!v).join('#')).toString('hex');
   }
 }
