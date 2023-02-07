@@ -28,6 +28,7 @@ export * from './services/delegation-service';
 export * from './services/did-management-service';
 export * from './services/invitation-service';
 export * from './services/item-service';
+export * from './services/oidc-user-service';
 export * from './services/organization-members-service';
 export * from './services/organization-service';
 export * from './services/organization-services-service';
