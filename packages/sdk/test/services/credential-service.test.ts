@@ -16,14 +16,16 @@ describe('CredentialService', () => {
     const secret = cryppo.binaryStringToBytes('abcdabcdabcdabcdabcdabcdabcdabcd');
     const keyPair = new Ed25519(secret);
 
-    console.log(testUserAuth.vault_access_token);
-    console.log(testUserAuth.vc_access_token);
+    const userAuth = {
+      ...testUserAuth,
+      organisation_id: ORGANISATION_ID,
+    };
 
     customTest
       .nock('https://vc-dev.meeco.me', api => {
         api
           .post('/credentials/generate')
-          .matchHeader('Authorization', testUserAuth.vc_access_token)
+          .matchHeader('Authorization', userAuth.vc_access_token)
           .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
           // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
           .reply(401, {
@@ -34,13 +36,12 @@ describe('CredentialService', () => {
       })
       .add('credential', () =>
         new CredentialService(environment).issue(
-          testUserAuth,
+          userAuth,
           {
             issuer: 'did:key:z6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd',
             credential_type_id: CREDENTIAL_TYPE_ID,
             claims: CREDENTIAL_CLAIMS,
           },
-          ORGANISATION_ID,
           keyPair
         )
       )
@@ -55,7 +56,7 @@ describe('CredentialService', () => {
       .nock('https://vc-dev.meeco.me', api => {
         api
           .post('/credentials/generate')
-          .matchHeader('Authorization', testUserAuth.vc_access_token)
+          .matchHeader('Authorization', userAuth.vc_access_token)
           .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
           // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
           .reply(201, {
@@ -74,13 +75,12 @@ describe('CredentialService', () => {
       })
       .add('credential', () =>
         new CredentialService(environment).issue(
-          testUserAuth,
+          userAuth,
           {
             issuer: 'did:key:z6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd',
             credential_type_id: CREDENTIAL_TYPE_ID,
             claims: CREDENTIAL_CLAIMS,
           },
-          ORGANISATION_ID,
           keyPair
         )
       )

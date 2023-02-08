@@ -5,6 +5,12 @@ import { MeecoServiceError } from '../models/service-error';
 import { SymmetricKey } from '../models/symmetric-key';
 import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
 
+interface ICreateInvitationOptions {
+  keypairId?: string;
+  delegationIntent?: { delegationToken: string; delegateRole: string };
+  isMultistepWorkflow?: boolean;
+}
+
 export class InvitationService extends Service<InvitationApi> {
   public getAPI(token: IVaultToken): InvitationApi {
     return this.vaultAPIFactory(token).InvitationApi;
@@ -50,17 +56,7 @@ export class InvitationService extends Service<InvitationApi> {
   public async create(
     credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
     connectionName: string,
-    {
-      keypairId,
-      delegationIntent,
-      isMultistepWorkflow = false,
-    }:
-      | {
-          keypairId?: string;
-          delegationIntent?: { delegationToken: string; delegateRole: string };
-          isMultistepWorkflow?: boolean;
-        }
-      | undefined = {}
+    { keypairId, delegationIntent, isMultistepWorkflow = false }: ICreateInvitationOptions = {}
   ): Promise<Invitation> {
     const { key_encryption_key, data_encryption_key } = credentials;
 
@@ -79,13 +75,13 @@ export class InvitationService extends Service<InvitationApi> {
     );
 
     this.logger.log('Sending invitation request');
+
     return this.vaultAPIFactory(credentials)
       .InvitationApi.invitationsPost({
         public_key: {
           keypair_external_id: keyPair.id,
           public_key: keyPair.public_key,
         },
-        // TODO: check if delegation_token is back to swagger.json later
         invitation: <any>{
           encrypted_recipient_name: encryptedName,
           delegation_token: delegationIntent?.delegationToken,

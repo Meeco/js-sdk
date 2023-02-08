@@ -42,10 +42,12 @@ export interface IKeystoreToken {
 
 export interface IIdentityNetworkToken {
   identity_network_access_token: string;
+  organisation_id?: string;
 }
 
 export interface IVCToken {
   vc_access_token: string;
+  organisation_id?: string;
 }
 
 /**

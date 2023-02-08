@@ -1,5 +1,6 @@
 import { CredentialsApi, GenerateCredentialDto } from '@meeco/vc-api-sdk';
 import { Ed25519 } from '../models/did-management';
+import { MeecoServiceError } from '../models/service-error';
 import { signUnsignedJWT } from '../util/jwt';
 import Service, { IVCToken } from './service';
 
@@ -19,15 +20,18 @@ export class CredentialService extends Service<CredentialsApi> {
    * @param key - instance of Ed25519
    * @returns Promise<{credential: string; metadata: {style: {"text-color": string, background: string, image: string}}}>
    */
-  public async issue(
-    credentials: IVCToken,
-    payload: GenerateCredentialDto,
-    organisationID: string,
-    key: Ed25519
-  ) {
+  public async issue(credentials: IVCToken, payload: GenerateCredentialDto, key: Ed25519) {
+    if (!credentials.organisation_id) {
+      throw new MeecoServiceError(
+        'credentials.organisation_id parameter is required to issue a credential'
+      );
+    }
+
     const result = await this.vcAPIFactory(
       credentials
-    ).CredentialsApi.credentialsControllerGenerate(organisationID, { credential: payload });
+    ).CredentialsApi.credentialsControllerGenerate(credentials.organisation_id, {
+      credential: payload,
+    });
 
     const signedCredential = await signUnsignedJWT(
       result.credential.unsigned_vc_jwt,

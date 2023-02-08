@@ -197,13 +197,12 @@ async function issueCredential() {
 
   try {
     resp = await service.issue(
-      { vc_access_token: auth.authorizationToken },
+      { vc_access_token: auth.authorizationToken, organisation_id: auth.organisationId },
       {
         credential_type_id: credentialTypeId,
         issuer,
         claims,
       },
-      auth.organisationId,
       privateKey!
     );
 

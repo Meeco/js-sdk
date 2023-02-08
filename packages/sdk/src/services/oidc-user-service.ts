@@ -26,7 +26,8 @@ import { Ed25519 } from '../models/did-management/Ed25519';
 import { DIDManagementService } from './did-management-service';
 import Service, { IIdentityNetworkToken, IKEK, IKeystoreToken, IVaultToken } from './service';
 
-type ServiceCredentials = IVaultToken & IKeystoreToken;
+type GetVaultKeysCredentials = IVaultToken & IKeystoreToken;
+type GetVaultDIDCredentials = GetVaultKeysCredentials & IIdentityNetworkToken & IKEK;
 
 interface IMEKData {
   key: {
@@ -47,7 +48,7 @@ export class OIDCUserService extends Service<UserApi> {
     return this.vaultAPIFactory(token).UserApi;
   }
 
-  public async getVaultKeys(credentials: ServiceCredentials, passphrase: string) {
+  public async getVaultKeys(credentials: GetVaultKeysCredentials, passphrase: string) {
     const keystoreFactory = this.keystoreAPIFactory(credentials);
     const pdaApi = keystoreFactory.PassphraseDerivationArtefactApi;
     const kekApi = keystoreFactory.KeyEncryptionKeyApi;
@@ -84,7 +85,7 @@ export class OIDCUserService extends Service<UserApi> {
   /**
    * Supports only DIDWeb at the moment
    */
-  public async getVaultDID(credentials: ServiceCredentials & IIdentityNetworkToken & IKEK) {
+  public async getVaultDID(credentials: GetVaultDIDCredentials) {
     const meApi = this.getAPI(credentials);
     const keypairApi = this.keystoreAPIFactory(credentials).KeypairApi;
     const didManagementService = new DIDManagementService(this.environment);
@@ -294,7 +295,7 @@ export class OIDCUserService extends Service<UserApi> {
    * DID
    */
   private async loadOrGenerateDID(
-    credentials: ServiceCredentials & IIdentityNetworkToken,
+    credentials: GetVaultDIDCredentials,
     kek: EncryptionKey,
     did: string | null,
     didManagementService: DIDManagementService,
@@ -307,7 +308,7 @@ export class OIDCUserService extends Service<UserApi> {
   }
 
   private async generateDID(
-    credentials: ServiceCredentials & IIdentityNetworkToken,
+    credentials: GetVaultDIDCredentials,
     kek: EncryptionKey,
     keypairApi: KeypairApi,
     didManagementService: DIDManagementService
