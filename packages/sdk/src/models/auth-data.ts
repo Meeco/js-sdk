@@ -13,7 +13,6 @@ export class AuthData {
   public secret: string;
   public vault_access_token: string;
   public delegation_id?: string;
-  public oidc_token?: string;
   public identity_network_access_token: string;
   public vc_access_token: string;
 
@@ -25,7 +24,6 @@ export class AuthData {
     secret: string;
     vault_access_token: string;
     delegation_id?: string;
-    oidc_token?: string;
     identity_network_access_token: string;
     vc_access_token: string;
   }) {
@@ -36,7 +34,6 @@ export class AuthData {
     this.secret = config.secret;
     this.vault_access_token = config.vault_access_token;
     this.delegation_id = config.delegation_id;
-    this.oidc_token = config.oidc_token;
     this.identity_network_access_token = config.identity_network_access_token;
     this.vault_access_token = config.vault_access_token;
     this.vc_access_token = config.vc_access_token;

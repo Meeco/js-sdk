@@ -5,7 +5,6 @@ metadata:
   key_encryption_key: bXlfa2V5X2VuY3J5cHRpb25fa2V5
   keystore_access_token: a2V5c3RvcmVfYXV0aF90b2tlbg==
   loaded_delegations: null
-  oidc_token: null
   passphrase_derived_key: BsKhFEfDtTfDscK6PMOrwr3DiToiwrFbJ2V4OMO7wqFmw55Q
   secret: 1.mocked_generated_username.my_secret_key
   vault_access_token: 2FPN4n5T68xy78i6HHuQ
