@@ -27,11 +27,10 @@ export class CredentialService extends Service<CredentialsApi> {
       );
     }
 
-    const result = await this.vcAPIFactory(
-      credentials
-    ).CredentialsApi.credentialsControllerGenerate(credentials.organisation_id, {
-      credential: payload,
-    });
+    const result = await this.getAPI(credentials).credentialsControllerGenerate(
+      credentials.organisation_id,
+      { credential: payload }
+    );
 
     const signedCredential = await signUnsignedJWT(
       result.credential.unsigned_vc_jwt,
