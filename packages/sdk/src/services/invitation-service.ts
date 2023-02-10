@@ -1,5 +1,5 @@
 import { Keypair as APIKeypair } from '@meeco/keystore-api-sdk';
-import { Connection, Invitation, InvitationApi } from '@meeco/vault-api-sdk';
+import { Connection, Invitation, InvitationApi, PostInvitation } from '@meeco/vault-api-sdk';
 import DecryptedKeypair from '../models/decrypted-keypair';
 import { MeecoServiceError } from '../models/service-error';
 import { SymmetricKey } from '../models/symmetric-key';
@@ -9,6 +9,7 @@ interface ICreateInvitationOptions {
   keypairId?: string;
   delegationIntent?: { delegationToken: string; delegateRole: string };
   isMultistepWorkflow?: boolean;
+  senderToRecipientData?: any;
 }
 
 export class InvitationService extends Service<InvitationApi> {
@@ -56,7 +57,12 @@ export class InvitationService extends Service<InvitationApi> {
   public async create(
     credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
     connectionName: string,
-    { keypairId, delegationIntent, isMultistepWorkflow = false }: ICreateInvitationOptions = {}
+    {
+      keypairId,
+      delegationIntent,
+      isMultistepWorkflow = false,
+      senderToRecipientData,
+    }: ICreateInvitationOptions = {}
   ): Promise<Invitation> {
     const { key_encryption_key, data_encryption_key } = credentials;
 
@@ -82,11 +88,12 @@ export class InvitationService extends Service<InvitationApi> {
           keypair_external_id: keyPair.id,
           public_key: keyPair.public_key,
         },
-        invitation: <any>{
+        invitation: <PostInvitation>{
           encrypted_recipient_name: encryptedName,
           delegation_token: delegationIntent?.delegationToken,
           delegate_role: delegationIntent?.delegateRole,
-          multistep_workflow: isMultistepWorkflow,
+          multistep_workflow: isMultistepWorkflow.toString(),
+          sender_to_recipient_data: senderToRecipientData,
         },
       })
       .then(result => result.invitation);
