@@ -74,6 +74,18 @@ export class ConnectionService extends Service<ConnectionApi> {
   }
 
   /**
+   * Used for deleting a connection between two vaults.
+   * Throws an error if connection does not exist.
+   */
+  public async deleteConnection(credentials: IVaultToken, id: string) {
+    try {
+      await this.vaultAPIFactory(credentials).ConnectionApi.connectionsIdDelete(id);
+    } catch (error) {
+      throw new Error(`Connection ${id} not found.`);
+    }
+  }
+
+  /**
    * @deprecated Use {@link list} instead.
    * @param user
    */
