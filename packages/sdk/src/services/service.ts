@@ -22,7 +22,6 @@ export interface IVaultToken {
   vault_access_token: string;
   delegation_id?: string;
   organisation_id?: string;
-  srt?: string;
 }
 
 export interface IDEK {
@@ -37,7 +36,6 @@ export interface IKeystoreToken {
   keystore_access_token: string;
   delegation_id?: string;
   organisation_id?: string;
-  srt?: string;
 }
 
 export interface IIdentityNetworkToken {
