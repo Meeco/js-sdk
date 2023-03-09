@@ -54,9 +54,8 @@ const keystoreAPIKeys =
       // Must be uppercase
       // prettier-ignore
       'Authorization': userAuth.keystore_access_token,
-      'Meeco-Organisation-Id': userAuth.organisation_id || '',
-      'Meeco-Delegation-Id': userAuth.delegation_id || '',
-      'Meeco-Srt': userAuth.srt || '',
+      'Meeco-Organisation-Id': userAuth.organisation_id || undefined,
+      'Meeco-Delegation-Id': userAuth.delegation_id || undefined,
     }[name] as string);
 
 /**
@@ -68,9 +67,8 @@ const vaultAPIKeys = (environment: Environment, userAuth: IVaultToken) => (name:
     // Must be uppercase
     // prettier-ignore
     'Authorization': userAuth.vault_access_token,
-    'Meeco-Delegation-Id': userAuth.delegation_id || '',
-    'Meeco-Organisation-Id': userAuth.organisation_id || '',
-    'Meeco-Srt': userAuth.srt || '',
+    'Meeco-Delegation-Id': userAuth.delegation_id || undefined,
+    'Meeco-Organisation-Id': userAuth.organisation_id || undefined,
   }[name] as string);
 
 function fetchInterceptor(url, options) {
