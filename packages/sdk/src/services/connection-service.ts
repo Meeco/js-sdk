@@ -78,11 +78,7 @@ export class ConnectionService extends Service<ConnectionApi> {
    * Throws an error if connection does not exist.
    */
   public async deleteConnection(credentials: IVaultToken, id: string) {
-    try {
       await this.vaultAPIFactory(credentials).ConnectionApi.connectionsIdDelete(id);
-    } catch (error) {
-      throw new Error(`Connection ${id} not found.`);
-    }
   }
 
   /**
