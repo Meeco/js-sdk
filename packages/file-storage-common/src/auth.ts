@@ -9,6 +9,7 @@ export interface IFileStorageAuthConfiguration {
   vault_access_token?: string;
   delegation_id?: string;
   subscription_key?: string;
+  organisation_id?: string;
 }
 
 export function buildApiConfig(
@@ -16,11 +17,19 @@ export function buildApiConfig(
   vaultUrl: string,
   fetchApi?: any
 ): Configuration {
+  /**
+   * generated vault-api-sdk rewrite the Authorization header to empty string, therefore below code is unnecessary
+   *  will remove it in next release after thoruogh testing
+   */
   const headers = getHeaders(auth);
 
   const configParams: ConfigurationParameters = {
     basePath: vaultUrl,
     headers,
+    /**
+     * generated vault-api-sdk uses apiKey to set Authorization header
+     */
+    apiKey: getApiKeys(auth) as (name: string) => string,
   };
   if (fetchApi) {
     configParams['fetchApi'] = fetchApi;
@@ -68,3 +77,16 @@ export function getBlobHeaders(auth: IFileStorageAuthConfiguration): { [header: 
 
   return headers;
 }
+
+/**
+ * generated vault-api-sdk uses apiKey to set Authorization header
+ */
+const getApiKeys = (config: IFileStorageAuthConfiguration) => (name: string) =>
+  ({
+    'Meeco-Subscription-Key': config.subscription_key,
+    // Must be uppercase
+    // prettier-ignore
+    'Authorization': config.vault_access_token,
+    'Meeco-Delegation-Id': config.delegation_id || '',
+    'Meeco-Organisation-Id': config.organisation_id || '',
+  }[name] as string);
