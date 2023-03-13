@@ -1,6 +1,6 @@
 {
   "name": "@meeco/file-storage-common",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "description": "Core module for uploading and downloading encrypted files",
   "source": "src/index.ts",
   "types": "./lib/index.d.ts",
