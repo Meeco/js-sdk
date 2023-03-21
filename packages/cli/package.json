@@ -13,7 +13,7 @@
     "@meeco/file-storage-node": "5.0.4",
     "@meeco/keystore-api-sdk": "10.0.0-develop.20221206103343.8418111",
     "@meeco/sdk": "^4.0.2",
-    "@meeco/vault-api-sdk": "^39.1.0-develop.20230122160002.13cbdc869",
+    "@meeco/vault-api-sdk": "^39.2.0-develop.20230308080848.2beaeb8c2",
     "oclif": "^3.1.0",
     "@oclif/core": "^1.9.9",
     "@oclif/plugin-version": "^1.1.1",
@@ -124,9 +124,7 @@
     "test": "ts-mocha -p ./test/tsconfig.json \"./test/**/*.test.ts\"",
     "prepkg": "npm run prepack",
     "build": "npm run pkg",
-    "pkg": "oclif pack tarballs",
-    "@meeco/vault-api-sdk": "npm install @meeco/vault-api-sdk@develop",
-    "@meeco/keystore-api-sdk": "npm install @meeco/keystore-api-sdk@develop"
+    "pkg": "oclif pack tarballs"
   },
   "types": "lib/index.d.ts"
 }
