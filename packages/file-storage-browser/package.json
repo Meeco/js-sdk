@@ -17,14 +17,13 @@
     "build:demo": "webpack",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
-    "docs": "typedoc --out docs --tsconfig tsconfig.json --cleanOutputDir --excludePrivate --excludeProtected src/index.ts",
-    "@meeco/vault-api-sdk": "npm install @meeco/vault-api-sdk@develop"
+    "docs": "typedoc --out docs --tsconfig tsconfig.json --cleanOutputDir --excludePrivate --excludeProtected src/index.ts"
   },
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
     "@meeco/file-storage-common": "^5.0.4",
     "@meeco/style-kit": "^2.0.1",
-    "@meeco/vault-api-sdk": "^39.1.0-develop.20230122160002.13cbdc869",
+    "@meeco/vault-api-sdk": "39.2.1-develop.20230327103616.7b9cc8e3f",
     "axios": "^0.27.2",
     "crypto-browserify": "^3.12.0",
     "process": "^0.11.10",

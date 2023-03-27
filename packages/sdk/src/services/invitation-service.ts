@@ -62,7 +62,8 @@ export class InvitationService extends Service<InvitationApi> {
       delegationIntent,
       isMultistepWorkflow = false,
       senderToRecipientData,
-    }: ICreateInvitationOptions = {}
+    }: ICreateInvitationOptions = {},
+    senderDid?: string
   ): Promise<Invitation> {
     const { key_encryption_key, data_encryption_key } = credentials;
 
@@ -94,6 +95,7 @@ export class InvitationService extends Service<InvitationApi> {
           delegate_role: delegationIntent?.delegateRole,
           multistep_workflow: isMultistepWorkflow.toString(),
           sender_to_recipient_data: senderToRecipientData,
+          sender_did: senderDid,
         },
       })
       .then(result => result.invitation);
@@ -110,7 +112,8 @@ export class InvitationService extends Service<InvitationApi> {
     credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
     name: string,
     invitationToken: string,
-    keypairId?: string
+    keypairId?: string,
+    recipientDid?: string
   ): Promise<Connection> {
     const { key_encryption_key, data_encryption_key } = credentials;
 
@@ -138,6 +141,7 @@ export class InvitationService extends Service<InvitationApi> {
         connection: {
           encrypted_recipient_name: encryptedName,
           invitation_token: invitationToken,
+          recipient_did: recipientDid,
         },
       })
       .then(res => res.connection);

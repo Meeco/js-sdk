@@ -1,7 +1,7 @@
 {
   "name": "@meeco/sdk",
   "description": "A wrapper library around Meeco's various API SDK's and encryption libraries",
-  "version": "4.7.2",
+  "version": "4.9.0",
   "author": "Meeco",
   "bugs": "https://github.com/Meeco/cli/issues",
   "source": "src/index.ts",
@@ -12,7 +12,7 @@
     "@meeco/cryppo": "2.0.2",
     "@meeco/identity-network-api-sdk": "1.0.2-develop.20230202223958.3da7c5f",
     "@meeco/keystore-api-sdk": "10.0.0-develop.20221206103343.8418111",
-    "@meeco/vault-api-sdk": "^39.1.0-develop.20230122160002.13cbdc869",
+    "@meeco/vault-api-sdk": "39.2.1-develop.20230327103616.7b9cc8e3f",
     "@meeco/vc-api-sdk": "5.2.0-develop.20230303192025.15f6604",
     "bs58": "5.0.0",
     "buffer": "^6.0.3",
@@ -78,11 +78,7 @@
     "prepack": "npm run build",
     "build:typedoc": "typedoc --out ../../docs/js-sdk --tsconfig tsconfig.json --cleanOutputDir --name 'Meeco SDK Documentation' --entryPoints AuthData  --excludePrivate src/index.ts",
     "docs": "npm run build:typedoc",
-    "test": "ts-mocha -p test/tsconfig.json \"test/**/*.test.ts\"",
-    "@meeco/vault-api-sdk": "npm install @meeco/vault-api-sdk@develop",
-    "@meeco/identity-network-api-sdk": "npm install @meeco/identity-network-api-sdk@develop",
-    "@meeco/keystore-api-sdk": "npm install @meeco/keystore-api-sdk@develop",
-    "@meeco/vc-api-sdk": "npm install @meeco/vc-api-sdk@develop"
+    "test": "ts-mocha -p test/tsconfig.json \"test/**/*.test.ts\""
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
