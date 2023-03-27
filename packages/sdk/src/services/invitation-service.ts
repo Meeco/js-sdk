@@ -110,7 +110,8 @@ export class InvitationService extends Service<InvitationApi> {
     credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
     name: string,
     invitationToken: string,
-    keypairId?: string
+    keypairId?: string,
+    recipientDid?: string
   ): Promise<Connection> {
     const { key_encryption_key, data_encryption_key } = credentials;
 
@@ -138,6 +139,7 @@ export class InvitationService extends Service<InvitationApi> {
         connection: {
           encrypted_recipient_name: encryptedName,
           invitation_token: invitationToken,
+          recipient_did: recipientDid,
         },
       })
       .then(res => res.connection);
