@@ -200,7 +200,7 @@ async function issueCredential() {
       { vc_access_token: auth.authorizationToken, organisation_id: auth.organisationId },
       {
         credential_type_id: credentialTypeId,
-        issuer,
+        issuer: { id: issuer },
         claims,
       },
       privateKey!
