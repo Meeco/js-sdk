@@ -34,7 +34,7 @@ export class CredentialService extends Service<CredentialsApi> {
 
     const signedCredential = await signUnsignedJWT(
       result.credential.unsigned_vc_jwt,
-      payload.issuer,
+      payload.issuer.id,
       key
     );
 
