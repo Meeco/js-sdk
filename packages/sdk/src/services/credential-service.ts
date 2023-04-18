@@ -7,6 +7,10 @@ import Service, { IVCToken } from './service';
 /**
  * Manage verifiable credentials
  */
+export interface GenerateCredentialExtendedDto extends Omit<GenerateCredentialDto, 'issuer'> {
+  issuer: string | { id: string; name?: string };
+}
+
 export class CredentialService extends Service<CredentialsApi> {
   public getAPI(token: IVCToken) {
     return this.vcAPIFactory(token).CredentialsApi;
@@ -20,7 +24,7 @@ export class CredentialService extends Service<CredentialsApi> {
    * @param key - instance of Ed25519
    * @returns Promise<{credential: string; metadata: {style: {"text-color": string, background: string, image: string}}}>
    */
-  public async issue(credentials: IVCToken, payload: GenerateCredentialDto, key: Ed25519) {
+  public async issue(credentials: IVCToken, payload: GenerateCredentialExtendedDto, key: Ed25519) {
     if (!credentials.organisation_id) {
       throw new MeecoServiceError(
         'credentials.organisation_id parameter is required to issue a credential'
@@ -29,12 +33,12 @@ export class CredentialService extends Service<CredentialsApi> {
 
     const result = await this.getAPI(credentials).credentialsControllerGenerate(
       credentials.organisation_id,
-      { credential: payload }
+      { credential: <any>payload }
     );
 
     const signedCredential = await signUnsignedJWT(
       result.credential.unsigned_vc_jwt,
-      payload.issuer.id,
+      typeof payload.issuer === 'string' ? payload.issuer : payload.issuer.id,
       key
     );
 
