@@ -38,7 +38,7 @@ describe('CredentialService', () => {
         new CredentialService(environment).issue(
           userAuth,
           {
-            issuer: 'did:key:z6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd',
+            issuer: { id: 'did:key:z6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd' },
             credential_type_id: CREDENTIAL_TYPE_ID,
             claims: CREDENTIAL_CLAIMS,
           },
@@ -77,7 +77,10 @@ describe('CredentialService', () => {
         new CredentialService(environment).issue(
           userAuth,
           {
-            issuer: 'did:key:z6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd',
+            issuer: {
+              id: 'did:key:z6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd',
+              name: 'test-issuer',
+            },
             credential_type_id: CREDENTIAL_TYPE_ID,
             claims: CREDENTIAL_CLAIMS,
           },
