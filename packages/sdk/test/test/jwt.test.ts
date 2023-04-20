@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { decodeJWT, hexToBytes } from 'did-jwt';
 
 describe('#signUnsignedJWT', () => {
-  it('sign self issued id_token', async () => {
+  it('signs self issued id_token', async () => {
     const key = new Ed25519(
       hexToBytes('9d99ba973c73fd9b6697a7c0ede97429c9100e6a9c5d524930c8747b5df75345')
     );
@@ -14,14 +14,14 @@ describe('#signUnsignedJWT', () => {
     const SELF_ISSUED_V2_VC_INTEROP = 'https://self-issued.me/v2/openid-vc';
     const result = await signUnsignedJWT(unsignedJWT, decodedUnsignedJWT.payload.iss!, key);
 
-    const decodedSignJWT = decodeJWT(result);
+    const decodedSignedJWT = decodeJWT(result);
 
     // tslint:disable-next-line:no-unused-expression
-    expect(decodedSignJWT.signature).to.exist;
-    expect(decodedSignJWT.payload.iss).to.eql(SELF_ISSUED_V2_VC_INTEROP);
+    expect(decodedSignedJWT.signature).to.exist;
+    expect(decodedSignedJWT.payload.iss).to.eql(SELF_ISSUED_V2_VC_INTEROP);
   });
 
-  it('sign vp_token', async () => {
+  it('signs vp_token', async () => {
     const key = new Ed25519(
       hexToBytes('1fb93b9ea823629edbab4df4a2cdef9fea5510e367db839cdb7c827e16507484')
     );
@@ -31,10 +31,34 @@ describe('#signUnsignedJWT', () => {
     const decodedUnsignedJWT = decodeJWT(unsignedJWT + '.unsigned');
     const result = await signUnsignedJWT(unsignedJWT, decodedUnsignedJWT.payload.iss!, key);
 
-    const decodedSignJWT = decodeJWT(result);
+    const decodedSignedJWT = decodeJWT(result);
 
     // tslint:disable-next-line:no-unused-expression
-    expect(decodedSignJWT.signature).to.exist;
-    expect(decodedSignJWT.payload.iss).to.eql(decodedUnsignedJWT.payload.iss);
+    expect(decodedSignedJWT.signature).to.exist;
+    expect(decodedSignedJWT.payload.iss).to.eql(decodedUnsignedJWT.payload.iss);
+  });
+
+  it('signs vp_token and sets issuer as an object', async () => {
+    const key = new Ed25519(
+      hexToBytes('1fb93b9ea823629edbab4df4a2cdef9fea5510e367db839cdb7c827e16507484')
+    );
+
+    const unsignedJWT =
+      'eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDp3ZWI6ZGlkLXdlYi5nb2RpZGR5LmNvbTo0YTliMWVhOS1jYmEzLTRlYmEtODFhMS1kZTYwZGExMjUwZGQja2V5LTEiLCJ0eXAiOiJKV1QifQ.eyJjbGFpbXMiOnsidnBfdG9rZW4iOnsicHJlc2VudGF0aW9uX2RlZmluaXRpb24iOnsiaWQiOiIwMjhhYmM5Zi1mOTAyLTRlNTEtYTRmZi01NGQwYzYwMDk4NzIiLCJpbnB1dF9kZXNjcmlwdG9ycyI6W3siaWQiOiJjODYzZTk2ZC0zODk1LTQxYjMtYjhlNy1hMDY3ZGFmMjIxY2UiLCJzY2hlbWEiOlt7InVyaSI6Imh0dHBzOi8vdmMtZGV2Lm1lZWNvLm1lL3NjaGVtYXMvYTJiNTBmOTItY2FmMS00ODJlLWFjOTYtMmQxN2NlNGNjNGEwLzEuMC4wL3NjaGVtYS5qc29uIn1dfV0sIm5hbWUiOiJwZXJzb24gdmVyaWZpY2F0aW9uIiwicHVycG9zZSI6InZlcmlmeSBwZXJzb24gbmFtZSBhbmQgYWdlIn19fSwiY2xpZW50X2lkIjoiZGlkOndlYjpkaWQtd2ViLmdvZGlkZHkuY29tOjRhOWIxZWE5LWNiYTMtNGViYS04MWExLWRlNjBkYTEyNTBkZCIsImlzcyI6ImRpZDp3ZWI6ZGlkLXdlYi5nb2RpZGR5LmNvbTo0YTliMWVhOS1jYmEzLTRlYmEtODFhMS1kZTYwZGExMjUwZGQiLCJub25jZSI6IjdrdG8yM25pZzQiLCJyZWRpcmVjdF91cmkiOiJodHRwczovL3ZjLWRldi5tZWVjby5tZS9vaWRjL3ByZXNlbnRhdGlvbnMvcmVxdWVzdHMvNDcyZjA4YWEtNjExMC00YmY2LWE1ZmItYjhiMGNhZjEyNWE1L3N1Ym1pc3Npb25zIiwicmVnaXN0cmF0aW9uIjp7ImNsaWVudF9uYW1lIjoidmlqYXkgb3JnIiwiY2xpZW50X3B1cnBvc2UiOiIiLCJzdWJqZWN0X3N5bnRheF90eXBlc19zdXBwb3J0ZWQiOlsiZGlkOndlYiIsImRpZDprZXkiXSwidnBfZm9ybWF0cyI6eyJqd3RfdmMiOnsiYWxnIjpbIkVkRFNBIl19LCJqd3RfdnAiOnsiYWxnIjpbIkVkRFNBIl19fX0sInJlc3BvbnNlX21vZGUiOiJwb3N0IiwicmVzcG9uc2VfdHlwZSI6ImlkX3Rva2VuIiwic2NvcGUiOiJvcGVuaWQifQ';
+    const decodedUnsignedJWT = decodeJWT(unsignedJWT + '.unsigned');
+    const result = await signUnsignedJWT(
+      unsignedJWT,
+      { id: decodedUnsignedJWT.payload.iss!, name: 'Test Issuer' },
+      key
+    );
+
+    const decodedSignedJWT = decodeJWT(result);
+
+    // tslint:disable-next-line:no-unused-expression
+    expect(decodedSignedJWT.signature).to.exist;
+    expect(decodedSignedJWT.payload.iss).to.eql({
+      id: decodedUnsignedJWT.payload.iss!,
+      name: 'Test Issuer',
+    });
   });
 });
