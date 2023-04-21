@@ -10,5 +10,5 @@ export function signUnsignedJWT(unsignedJWT: string, issuer: string, key: Ed2551
   const signer = EdDSASigner(generateKeyPairFromSeed(key.keyPair.secret()).secretKey);
   const decoded = decodeJWT(`${unsignedJWT}.unsigned`);
 
-  return createJWT(decoded.payload, { issuer: issuer, signer }, decoded.header);
+  return createJWT(decoded.payload, { issuer, signer }, decoded.header);
 }

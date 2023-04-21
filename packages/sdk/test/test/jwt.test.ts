@@ -38,7 +38,10 @@ describe('#signUnsignedJWT', () => {
     expect(decodedSignedJWT.payload.iss).to.eql(decodedUnsignedJWT.payload.iss);
   });
 
-  //TODO: VS - find out how issuer name can be added to vp_token unsignedJWT - could be added as custom claim https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims#custom-claims
+  /**
+   * TODO: VS - find out how issuer name can be added to vp_token unsignedJWT -
+   * could be added as custom claim https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims#custom-claims
+   */
   it('signs vp_token and sets issuer as an object', async () => {
     const key = new Ed25519(
       hexToBytes('1fb93b9ea823629edbab4df4a2cdef9fea5510e367db839cdb7c827e16507484')
@@ -53,9 +56,6 @@ describe('#signUnsignedJWT', () => {
 
     // tslint:disable-next-line:no-unused-expression
     expect(decodedSignedJWT.signature).to.exist;
-    expect(decodedSignedJWT.payload.iss).to.eql({
-      id: decodedUnsignedJWT.payload.iss!,
-      name: 'Test Issuer',
-    });
+    expect(decodedSignedJWT.payload.iss).to.eql(decodedUnsignedJWT.payload.iss!);
   });
 });
