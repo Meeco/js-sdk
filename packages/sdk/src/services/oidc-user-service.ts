@@ -21,7 +21,7 @@ import {
   PassphraseDerivationArtefactApi,
 } from '@meeco/keystore-api-sdk';
 import { UserApi } from '@meeco/vault-api-sdk';
-import { DIDWeb } from '../models/did-management';
+import { DIDBase, DIDKey, DIDWeb } from '../models/did-management';
 import { Ed25519 } from '../models/did-management/Ed25519';
 import { DIDManagementService } from './did-management-service';
 import Service, { IIdentityNetworkToken, IKEK, IKeystoreToken, IVaultToken } from './service';
@@ -85,7 +85,10 @@ export class OIDCUserService extends Service<UserApi> {
   /**
    * Supports only DIDWeb at the moment
    */
-  public async getVaultDID(credentials: GetVaultDIDCredentials) {
+  public async getVaultDID(
+    credentials: GetVaultDIDCredentials,
+    defaultDIDMethod: 'did:web' | 'did:key' = 'did:web'
+  ) {
     const meApi = this.getAPI(credentials);
     const keypairApi = this.keystoreAPIFactory(credentials).KeypairApi;
     const didManagementService = new DIDManagementService(this.environment);
@@ -99,7 +102,8 @@ export class OIDCUserService extends Service<UserApi> {
       kek,
       vaultUser.did,
       didManagementService,
-      keypairApi
+      keypairApi,
+      defaultDIDMethod
     );
 
     /**
@@ -299,31 +303,48 @@ export class OIDCUserService extends Service<UserApi> {
     kek: EncryptionKey,
     did: string | null,
     didManagementService: DIDManagementService,
-    keypairApi: KeypairApi
+    keypairApi: KeypairApi,
+    defaultDIDMethod: 'did:web' | 'did:key'
   ) {
     if (did) {
       return this.loadDID(kek, did, keypairApi);
     }
-    return this.generateDID(credentials, kek, keypairApi, didManagementService);
+    return this.generateDID(credentials, kek, keypairApi, didManagementService, defaultDIDMethod);
   }
 
   private async generateDID(
     credentials: GetVaultDIDCredentials,
     kek: EncryptionKey,
     keypairApi: KeypairApi,
-    didManagementService: DIDManagementService
+    didManagementService: DIDManagementService,
+    defaultDIDMethod: 'did:web' | 'did:key'
   ) {
     const didSecret = binaryStringToBytes(generateRandomBytesString(32));
     const didKeypair = new Ed25519(didSecret);
-    const didWeb = new DIDWeb(didKeypair);
+    let didInstance: DIDBase;
+    let verificationMethodId: string;
 
-    const verificationMethodId = didWeb.setVerificationMethod();
+    switch (defaultDIDMethod) {
+      case 'did:key':
+        didInstance = new DIDKey(didKeypair);
+        verificationMethodId = `did:key:${didKeypair.getPublicKeyBase58()}#${didKeypair.getPublicKeyBase58()}`;
+        break;
 
-    didWeb.setAssertionMethod(verificationMethodId).setAuthentication(verificationMethodId);
+      case 'did:web':
+        didInstance = new DIDWeb(didKeypair);
+        verificationMethodId = (didInstance as DIDWeb).setVerificationMethod();
+        (didInstance as DIDWeb)
+          .setAssertionMethod(verificationMethodId)
+          .setAuthentication(verificationMethodId);
+        break;
+
+      default:
+        throw new Error('Not supported did method provided');
+    }
 
     const createDidResult = await didManagementService.create(
       credentials,
-      didWeb,
+      didInstance,
       credentials.organisation_id
     );
 
