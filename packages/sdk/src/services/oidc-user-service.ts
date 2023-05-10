@@ -21,6 +21,8 @@ import {
   PassphraseDerivationArtefactApi,
 } from '@meeco/keystore-api-sdk';
 import { UserApi } from '@meeco/vault-api-sdk';
+import multibase from 'multibase';
+import multicodec from 'multicodec';
 import { DIDBase, DIDKey, DIDWeb } from '../models/did-management';
 import { Ed25519 } from '../models/did-management/Ed25519';
 import { DIDManagementService } from './did-management-service';
@@ -326,8 +328,11 @@ export class OIDCUserService extends Service<UserApi> {
 
     switch (defaultDIDMethod) {
       case 'did:key':
+        const keyBytes = multicodec.addPrefix('ed25519-pub', didKeypair.keyPair.getPublic());
+        const keyEncoded = multibase.encode('base58btc', keyBytes);
+        const keyEncodedStr = Buffer.from(keyEncoded).toString();
         didInstance = new DIDKey(didKeypair);
-        verificationMethodId = `did:key:${didKeypair.getPublicKeyBase58()}#${didKeypair.getPublicKeyBase58()}`;
+        verificationMethodId = `did:key:${keyEncodedStr}#${keyEncodedStr}`;
         break;
 
       case 'did:web':
