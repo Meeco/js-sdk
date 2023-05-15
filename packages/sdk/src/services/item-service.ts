@@ -198,7 +198,8 @@ export class ItemService extends Service<ItemApi> {
     const { classificationNodeName, classificationNodeNames } =
       this.getClassifications(listFilterOptions);
 
-    const { templateIds, scheme, sharedWith, ownerId, own, name } = listFilterOptions || {};
+    const { templateIds, scheme, sharedWith, ownerId, own, itemIds, name } =
+      listFilterOptions || {};
 
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
       templateIds?.join(','),
@@ -209,8 +210,9 @@ export class ItemService extends Service<ItemApi> {
       sharedWith,
       ownerId,
       own !== undefined ? own.toString() : undefined,
+      itemIds !== undefined ? itemIds.join(',') : undefined,
       options?.nextPageAfter,
-      options?.perPage?.toString()
+      options?.perPage
     );
 
     const slots = await Promise.all(result.slots.map(s => SlotHelpers.decryptSlot(credentials, s)));
