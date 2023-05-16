@@ -165,19 +165,28 @@ export class ShareService extends Service<SharesApi> {
     credentials: IVaultToken,
     shareType: ShareType = ShareType.Incoming,
     mustAccept?: AcceptanceRequest | string,
-    options?: IPageOptions
+    options?: IPageOptions,
+    order?: string,
+    ownConnectionId?: string
   ): Promise<Share[]> {
     const api = this.vaultAPIFactory(credentials).SharesApi;
 
     let response: SharesIncomingResponse | SharesOutgoingResponse;
     switch (shareType) {
       case ShareType.Outgoing:
-        response = await api.outgoingSharesGet(options?.nextPageAfter, options?.perPage);
+        response = await api.outgoingSharesGet(
+          options?.nextPageAfter,
+          options?.perPage,
+          order,
+          ownConnectionId
+        );
         break;
       case ShareType.Incoming:
         response = await api.incomingSharesGet(
           options?.nextPageAfter,
           options?.perPage,
+          order,
+          ownConnectionId,
           mustAccept
         );
         break;
@@ -189,7 +198,9 @@ export class ShareService extends Service<SharesApi> {
     credentials: IVaultToken,
     mustAccept?: AcceptanceRequest | string,
     shareIds?: string[],
-    options?: IPageOptions
+    options?: IPageOptions,
+    order?: string,
+    ownConnectionId?: string
   ): Promise<Share[]> {
     const api = this.vaultAPIFactory(credentials).SharesApi;
 
@@ -197,6 +208,8 @@ export class ShareService extends Service<SharesApi> {
     const response = await api.incomingSharesGet(
       options?.nextPageAfter,
       options?.perPage,
+      order,
+      ownConnectionId,
       mustAccept,
       shareFilter
     );
@@ -206,11 +219,19 @@ export class ShareService extends Service<SharesApi> {
   public async listOutgoingShares(
     credentials: IVaultToken,
     itemIds?: string[],
-    options?: IPageOptions
+    options?: IPageOptions,
+    order?: string,
+    ownConnectionId?: string
   ): Promise<Share[]> {
     const api = this.vaultAPIFactory(credentials).SharesApi;
 
-    const response = await api.outgoingSharesGet(options?.nextPageAfter, options?.perPage, itemIds);
+    const response = await api.outgoingSharesGet(
+      options?.nextPageAfter,
+      options?.perPage,
+      order,
+      ownConnectionId,
+      itemIds
+    );
 
     return response.shares;
   }
