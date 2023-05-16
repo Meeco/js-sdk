@@ -223,6 +223,7 @@ async function extractResponseErrorBody(e: any, result: any) {
   const textStreamReader = (e.response.body as ReadableStream)
     .pipeThrough(new TextDecoderStream())
     .getReader();
+
   while (true) {
     const { value, done } = await textStreamReader.read();
     if (done) {
@@ -231,5 +232,6 @@ async function extractResponseErrorBody(e: any, result: any) {
     console.log('Received', value);
     result = JSON.parse(value);
   }
+
   return result;
 }

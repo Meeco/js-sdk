@@ -1,7 +1,7 @@
 {
   "name": "@meeco/sdk",
   "description": "A wrapper library around Meeco's various API SDK's and encryption libraries",
-  "version": "4.9.9",
+  "version": "4.10.1",
   "author": "Meeco",
   "bugs": "https://github.com/Meeco/cli/issues",
   "source": "src/index.ts",
@@ -10,10 +10,10 @@
   "types": "dist/src/index.d.ts",
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
-    "@meeco/identity-network-api-sdk": "1.0.2-develop.20230202223958.3da7c5f",
-    "@meeco/keystore-api-sdk": "10.0.0-develop.20221206103343.8418111",
-    "@meeco/vault-api-sdk": "39.2.1-develop.20230327103616.7b9cc8e3f",
-    "@meeco/vc-api-sdk": "6.0.2-develop.20230423230514.016c102",
+    "@meeco/identity-network-api-sdk": "1.0.3-develop.20230515131422.1e6ded5",
+    "@meeco/keystore-api-sdk": "10.0.10-develop.20230403094158.5f63ec4",
+    "@meeco/vault-api-sdk": "39.3.0-develop.20230515202630.10925468e",
+    "@meeco/vc-api-sdk": "6.1.0-develop.20230427100227.304a491",
     "bs58": "5.0.0",
     "buffer": "^6.0.3",
     "chalk": "^4.1.2",
