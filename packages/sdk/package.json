@@ -1,7 +1,7 @@
 {
   "name": "@meeco/sdk",
   "description": "A wrapper library around Meeco's various API SDK's and encryption libraries",
-  "version": "4.9.6",
+  "version": "4.9.9",
   "author": "Meeco",
   "bugs": "https://github.com/Meeco/cli/issues",
   "source": "src/index.ts",
@@ -22,11 +22,13 @@
     "elliptic": "^6.5.4",
     "form-data": "^4.0.0",
     "jsrp": "~0.2.4",
+    "multiformats": "^9.9.0",
     "node-fetch": "^2.6.7",
     "node-forge": "0.10.0",
     "parameterize-js": "^1.0.0",
     "tslib": "^2.4.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "varint": "^6.0.0"
   },
   "devDependencies": {
     "@oclif/config": "^1.18.3",
