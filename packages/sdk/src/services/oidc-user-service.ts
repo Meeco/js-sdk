@@ -45,6 +45,8 @@ interface IKeyData {
   serializedKey: string;
 }
 
+type DIDMethodParam = 'did:web' | 'did:key';
+
 export class OIDCUserService extends Service<UserApi> {
   public getAPI(token: IVaultToken): UserApi {
     return this.vaultAPIFactory(token).UserApi;
@@ -89,7 +91,7 @@ export class OIDCUserService extends Service<UserApi> {
    */
   public async getVaultDID(
     credentials: GetVaultDIDCredentials,
-    defaultDIDMethod: 'did:web' | 'did:key' = 'did:web'
+    defaultDIDMethod: DIDMethodParam = 'did:web'
   ) {
     const meApi = this.getAPI(credentials);
     const keypairApi = this.keystoreAPIFactory(credentials).KeypairApi;
@@ -306,7 +308,7 @@ export class OIDCUserService extends Service<UserApi> {
     did: string | null,
     didManagementService: DIDManagementService,
     keypairApi: KeypairApi,
-    defaultDIDMethod: 'did:web' | 'did:key'
+    defaultDIDMethod: DIDMethodParam
   ) {
     if (did) {
       return this.loadDID(kek, did, keypairApi);
@@ -319,7 +321,7 @@ export class OIDCUserService extends Service<UserApi> {
     kek: EncryptionKey,
     keypairApi: KeypairApi,
     didManagementService: DIDManagementService,
-    defaultDIDMethod: 'did:web' | 'did:key'
+    defaultDIDMethod: DIDMethodParam
   ) {
     const didSecret = binaryStringToBytes(generateRandomBytesString(32));
     const didKeypair = new Ed25519(didSecret);

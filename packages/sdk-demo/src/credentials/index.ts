@@ -1,4 +1,11 @@
-import { configureFetch, CredentialService, Ed25519, Environment, vcAPIFactory } from '@meeco/sdk';
+import {
+  configureFetch,
+  CredentialService,
+  Environment,
+  SigningAlg,
+  vcAPIFactory,
+} from '@meeco/sdk';
+import { generateKeyPairFromSeed } from '@stablelib/ed25519';
 import JSONFormatter from 'json-formatter-js';
 
 const $ = id => document.getElementById(id)!;
@@ -169,7 +176,7 @@ async function createCredentialType() {
 async function issueCredential() {
   const credentialTypeId = $get('credentialTypeId')?.trim();
   const issuer = $get('credentialIssuer')?.trim();
-  let privateKey: Ed25519;
+  let privateKeyBytes: Uint8Array;
   let claims: any;
 
   try {
@@ -180,7 +187,7 @@ async function issueCredential() {
 
   try {
     const buf = Buffer.from($get('credentialPrivateKeyHex')?.trim(), 'hex');
-    privateKey = new Ed25519(Uint8Array.from(buf));
+    privateKeyBytes = generateKeyPairFromSeed(Uint8Array.from(buf)).secretKey;
   } catch (_e) {
     $('issueCredentialResult').replaceChildren(formatChild('Invalid key hex').render());
   }
@@ -203,7 +210,8 @@ async function issueCredential() {
         issuer: { id: issuer },
         claims,
       },
-      privateKey!
+      privateKeyBytes!,
+      SigningAlg.EdDSA
     );
 
     const [_h, encodedPayload, _s] = resp.credential.split('.');
