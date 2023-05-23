@@ -1,14 +1,34 @@
-import { generateKeyPairFromSeed } from '@stablelib/ed25519';
-import { createJWT, decodeJWT, EdDSASigner } from 'did-jwt';
-import { Ed25519 } from '../models/did-management';
+import { createJWT, decodeJWT, EdDSASigner, ES256KSigner, Signer } from 'did-jwt';
 
-export function signUnsignedJWT(unsignedJWT: string, issuer: string, key: Ed25519) {
+export enum SigningAlg {
+  'ES256K' = 'ES256K',
+  'EdDSA' = 'EdDSA',
+}
+
+export function signUnsignedJWT(
+  unsignedJWT: string,
+  issuer: string,
+  key: Uint8Array,
+  alg: SigningAlg
+) {
   if (unsignedJWT.split('.').length > 2) {
     throw new Error('Credential already contains a signature');
   }
 
-  const signer = EdDSASigner(generateKeyPairFromSeed(key.keyPair.secret()).secretKey);
+  let signer: Signer;
+
+  switch (alg) {
+    case SigningAlg.ES256K:
+      signer = ES256KSigner(key);
+      break;
+    case SigningAlg.EdDSA:
+      signer = EdDSASigner(key);
+      break;
+    default:
+      throw new Error(`Not supported signing alg parameter passed: ${alg}`);
+  }
+
   const decoded = decodeJWT(`${unsignedJWT}.unsigned`);
 
-  return createJWT(decoded.payload, { issuer, signer }, decoded.header);
+  return createJWT(decoded.payload, { issuer, signer }, { ...decoded.header, alg });
 }
