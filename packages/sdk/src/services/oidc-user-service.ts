@@ -24,7 +24,7 @@ import { UserApi } from '@meeco/vault-api-sdk';
 import { base58btc } from 'multiformats/bases/base58';
 import { DIDBase, DIDKey, DIDWeb } from '../models/did-management';
 import { Ed25519 } from '../models/did-management/Ed25519';
-import { Ed25519PubCodec } from '../util/ed25519-pub-codec';
+import { Ed25519PubCodec } from '../util/codecs';
 import { DIDManagementService } from './did-management-service';
 import Service, { IIdentityNetworkToken, IKEK, IKeystoreToken, IVaultToken } from './service';
 

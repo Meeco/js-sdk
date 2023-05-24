@@ -1,20 +1,11 @@
-// @ts-check
-
-import { BlockCodec, ByteView } from 'multiformats/codecs/interface';
+import { ByteView } from 'multiformats/codecs/interface';
 import * as varint from 'varint';
 
-/**
- * Secp256k1PubCodec MULTICODEC(public-key-type, raw-public-key-bytes)
- * https://github.com/multiformats/js-multiformats#multicodec-encoders--decoders--codecs
- * Implementation of BlockCodec interface which implements both BlockEncoder and BlockDecoder.
- * @template T
- * @typedef {import('./interface').ByteView<T>} ByteView
- */
-
-export class Secp256k1PubCodec implements BlockCodec<number, Uint8Array> {
+export abstract class BaseCodec {
   // values retrieved from https://raw.githubusercontent.com/multiformats/multicodec/master/table.csv
-  name = 'secp256k1-pub';
-  code = 0xe7;
+  abstract name: string;
+  abstract code: number;
+
   encode(data: Uint8Array): ByteView<Uint8Array> {
     const prefix = this.varintEncode(this.code);
     return this.concat([prefix, data], prefix.length + data.length);
@@ -29,7 +20,7 @@ export class Secp256k1PubCodec implements BlockCodec<number, Uint8Array> {
    * @param {Array<ArrayLike<number>>} arrays
    * @param {number} [length]
    */
-  private concat(arrays: ArrayLike<number>[], length: number) {
+  protected concat(arrays: ArrayLike<number>[], length: number) {
     if (!length) {
       length = arrays.reduce((acc, curr) => acc + curr.length, 0);
     }
@@ -48,7 +39,7 @@ export class Secp256k1PubCodec implements BlockCodec<number, Uint8Array> {
   /**
    * @param {number} num
    */
-  private varintEncode(num: number) {
+  protected varintEncode(num: number) {
     return Uint8Array.from(varint.encode(num));
   }
 
@@ -58,7 +49,7 @@ export class Secp256k1PubCodec implements BlockCodec<number, Uint8Array> {
    * @param {Uint8Array} data
    * @returns {Uint8Array}
    */
-  private rmPrefix(data: Uint8Array): Uint8Array {
+  protected rmPrefix(data: Uint8Array): Uint8Array {
     varint.decode(/** @type {Buffer} */ data);
     return data.slice(varint.decode.bytes);
   }
