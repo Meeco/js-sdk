@@ -296,5 +296,145 @@ describe('CredentialService', () => {
           });
         });
     });
+
+    describe('ES256', () => {
+      const privateKeyBytes = Buffer.from(
+        '2aa7d6d1c65e3bda76ab1d709e2eb9b46dddf05ab9ce70bc2f137730d92d59dd',
+        'hex'
+      );
+      const issuerDID = 'did:key:zQ3shfZn2QwYA8KrSRCdwSHWYGtQWKa69FR8sjmmPMZDLc4rL';
+
+      customTest
+        .nock('https://vc-dev.meeco.me', api => {
+          api
+            .post('/credentials/generate')
+            .matchHeader('Authorization', userAuth.vc_access_token)
+            .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
+            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
+            .reply(401, {
+              message: 'Unauthorized',
+              http_code: 401,
+              extra_info: {},
+            });
+        })
+        .add('credential', () =>
+          new CredentialService(environment).issue(
+            userAuth,
+            {
+              issuer: { id: issuerDID },
+              credential_type_id: CREDENTIAL_TYPE_ID,
+              claims: CREDENTIAL_CLAIMS,
+            },
+            privateKeyBytes,
+            SigningAlg.ES256
+          )
+        )
+        .catch(async (err: any) => {
+          const text = await err.response.text();
+          expect(text).to.eq('{"message":"Unauthorized","http_code":401,"extra_info":{}}');
+          expect(err.response.status).to.eq(401);
+        })
+        .it('throws an error if unauthorized response is returned');
+
+      customTest
+        .nock('https://vc-dev.meeco.me', api => {
+          api
+            .post('/credentials/generate')
+            .matchHeader('Authorization', userAuth.vc_access_token)
+            .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
+            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
+            .reply(201, {
+              credential: {
+                unsigned_vc_jwt:
+                  'eyJhbGciOiJFZDI1NTE5IiwidHlwIjoiSldUIn0.eyJpYXQiOjE2NDA5OTUyMDAsImV4cCI6MTg5MzQ5OTIwMCwidmMiOnsiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiXSwiaWQiOiJ1cm46dXVpZDoyM2I4NDFmMi1hM2RjLTQ3N2YtYTllMS01MDI0ZDFkY2MwMmIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZ0N2R2lTZkpqNmhmcFJWSFc2RnFmbVdVeXo3dnh1OGd1enE3ZmNFQ0M5REUiLCJuYW1lIjoidGVzdCJ9LCJpc3N1YW5jZURhdGUiOiIyMDIyLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTY2hlbWEiOnsiaWQiOiJodHRwczovL3ZjLWRldi5tZWVjby5tZS9zY2hlbWFzLzFjY2Q1ZmI3LTZiZDUtNDkzMy04NjM2LWRlZDNjYjc5ODFhNi8xLjAuMC9zY2hlbWEuanNvbiIsInR5cGUiOiJKc29uU2NoZW1hVmFsaWRhdG9yMjAxOCJ9LCJleHBpcmF0aW9uRGF0ZSI6IjIwMzAtMDEtMDFUMTI6MDA6MDBaIn0sInN1YiI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmJmIjoxNjQwOTk1MjAwLCJpc3MiOiJkaWQ6a2V5Ono2TWtnQ3ZHaVNmSmo2aGZwUlZIVzZGcWZtV1V5ejd2eHU4Z3V6cTdmY0VDQzlERSJ9',
+                metadata: {
+                  style: {
+                    'text-color': '#FFF',
+                    background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
+                    image: 'https://vc.meeco.me/image.png',
+                  },
+                },
+              },
+            });
+        })
+        .add('credential', () =>
+          new CredentialService(environment).issue(
+            userAuth,
+            {
+              issuer: {
+                id: issuerDID,
+                name: 'test-issuer',
+              },
+              credential_type_id: CREDENTIAL_TYPE_ID,
+              claims: CREDENTIAL_CLAIMS,
+            },
+            privateKeyBytes,
+            SigningAlg.ES256
+          )
+        )
+        .it('returns signed credential and its metadata with issuer name', ({ credential }) => {
+          expect(credential).to.eql({
+            credential:
+              'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NDA5OTUyMDAsImV4cCI6MTg5MzQ5OTIwMCwidmMiOnsiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiXSwiaWQiOiJ1cm46dXVpZDoyM2I4NDFmMi1hM2RjLTQ3N2YtYTllMS01MDI0ZDFkY2MwMmIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZ0N2R2lTZkpqNmhmcFJWSFc2RnFmbVdVeXo3dnh1OGd1enE3ZmNFQ0M5REUiLCJuYW1lIjoidGVzdCJ9LCJpc3N1YW5jZURhdGUiOiIyMDIyLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTY2hlbWEiOnsiaWQiOiJodHRwczovL3ZjLWRldi5tZWVjby5tZS9zY2hlbWFzLzFjY2Q1ZmI3LTZiZDUtNDkzMy04NjM2LWRlZDNjYjc5ODFhNi8xLjAuMC9zY2hlbWEuanNvbiIsInR5cGUiOiJKc29uU2NoZW1hVmFsaWRhdG9yMjAxOCJ9LCJleHBpcmF0aW9uRGF0ZSI6IjIwMzAtMDEtMDFUMTI6MDA6MDBaIn0sInN1YiI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmJmIjoxNjQwOTk1MjAwLCJpc3MiOiJkaWQ6a2V5OnpRM3NoZlpuMlF3WUE4S3JTUkNkd1NIV1lHdFFXS2E2OUZSOHNqbW1QTVpETGM0ckwifQ.XzP7t9FdUtDASYVoIFlMmf7adITje0VHCLMoeAFDSwrPCX_GE7AVTtYXPUyNXr2JjjQb8lm1DaKQIBt3Q0zL5w',
+            metadata: {
+              style: {
+                background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
+                image: 'https://vc.meeco.me/image.png',
+                'text-color': '#FFF',
+              },
+            },
+          });
+        });
+
+      customTest
+        .nock('https://vc-dev.meeco.me', api => {
+          api
+            .post('/credentials/generate')
+            .matchHeader('Authorization', userAuth.vc_access_token)
+            .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
+            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
+            .reply(201, {
+              credential: {
+                unsigned_vc_jwt:
+                  'eyJhbGciOiJFZDI1NTE5IiwidHlwIjoiSldUIn0.eyJpYXQiOjE2NDA5OTUyMDAsImV4cCI6MTg5MzQ5OTIwMCwidmMiOnsiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiXSwiaWQiOiJ1cm46dXVpZDoyM2I4NDFmMi1hM2RjLTQ3N2YtYTllMS01MDI0ZDFkY2MwMmIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImlzc3VlciI6eyJpZCI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmFtZSI6InRlc3QtaXNzdWVyIn0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZ0N2R2lTZkpqNmhmcFJWSFc2RnFmbVdVeXo3dnh1OGd1enE3ZmNFQ0M5REUiLCJuYW1lIjoidGVzdCJ9LCJpc3N1YW5jZURhdGUiOiIyMDIyLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTY2hlbWEiOnsiaWQiOiJodHRwczovL3ZjLWRldi5tZWVjby5tZS9zY2hlbWFzLzFjY2Q1ZmI3LTZiZDUtNDkzMy04NjM2LWRlZDNjYjc5ODFhNi8xLjAuMC9zY2hlbWEuanNvbiIsInR5cGUiOiJKc29uU2NoZW1hVmFsaWRhdG9yMjAxOCJ9LCJleHBpcmF0aW9uRGF0ZSI6IjIwMzAtMDEtMDFUMTI6MDA6MDBaIn0sInN1YiI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmJmIjoxNjQwOTk1MjAwLCJpc3MiOnsiaWQiOiJkaWQ6a2V5Ono2TWtnQ3ZHaVNmSmo2aGZwUlZIVzZGcWZtV1V5ejd2eHU4Z3V6cTdmY0VDQzlERSIsIm5hbWUiOiJ0ZXN0LWlzc3VlciJ9fQ',
+                metadata: {
+                  style: {
+                    'text-color': '#FFF',
+                    background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
+                    image: 'https://vc.meeco.me/image.png',
+                  },
+                },
+              },
+            });
+        })
+        .add('credential', () =>
+          new CredentialService(environment).issue(
+            userAuth,
+            {
+              issuer: {
+                id: issuerDID,
+                name: 'test-issuer',
+              },
+              credential_type_id: CREDENTIAL_TYPE_ID,
+              claims: CREDENTIAL_CLAIMS,
+            },
+            privateKeyBytes,
+            SigningAlg.ES256
+          )
+        )
+        .it('returns signed credential and its metadata', ({ credential }) => {
+          expect(credential).to.eql({
+            credential:
+              'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NDA5OTUyMDAsImV4cCI6MTg5MzQ5OTIwMCwidmMiOnsiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiXSwiaWQiOiJ1cm46dXVpZDoyM2I4NDFmMi1hM2RjLTQ3N2YtYTllMS01MDI0ZDFkY2MwMmIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImlzc3VlciI6eyJpZCI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmFtZSI6InRlc3QtaXNzdWVyIn0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZ0N2R2lTZkpqNmhmcFJWSFc2RnFmbVdVeXo3dnh1OGd1enE3ZmNFQ0M5REUiLCJuYW1lIjoidGVzdCJ9LCJpc3N1YW5jZURhdGUiOiIyMDIyLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTY2hlbWEiOnsiaWQiOiJodHRwczovL3ZjLWRldi5tZWVjby5tZS9zY2hlbWFzLzFjY2Q1ZmI3LTZiZDUtNDkzMy04NjM2LWRlZDNjYjc5ODFhNi8xLjAuMC9zY2hlbWEuanNvbiIsInR5cGUiOiJKc29uU2NoZW1hVmFsaWRhdG9yMjAxOCJ9LCJleHBpcmF0aW9uRGF0ZSI6IjIwMzAtMDEtMDFUMTI6MDA6MDBaIn0sInN1YiI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmJmIjoxNjQwOTk1MjAwLCJpc3MiOiJkaWQ6a2V5OnpRM3NoZlpuMlF3WUE4S3JTUkNkd1NIV1lHdFFXS2E2OUZSOHNqbW1QTVpETGM0ckwifQ._hd-U6FV4Jzk34elapEQ3T_W4CQLeY_KlA_wRz-PpRzRwFOL9WIkr9pKxGNOqtR--dBRkxQeXOUrWazHLc-Qlg',
+            metadata: {
+              style: {
+                background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
+                image: 'https://vc.meeco.me/image.png',
+                'text-color': '#FFF',
+              },
+            },
+          });
+        });
+    });
   });
 });

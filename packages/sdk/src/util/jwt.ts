@@ -1,7 +1,8 @@
-import { createJWT, decodeJWT, EdDSASigner, ES256KSigner, Signer } from 'did-jwt';
+import { createJWT, decodeJWT, EdDSASigner, ES256KSigner, ES256Signer, Signer } from 'did-jwt';
 
 export enum SigningAlg {
   'ES256K' = 'ES256K',
+  'ES256' = 'ES256',
   'EdDSA' = 'EdDSA',
 }
 
@@ -20,6 +21,9 @@ export function signUnsignedJWT(
   switch (alg) {
     case SigningAlg.ES256K:
       signer = ES256KSigner(key);
+      break;
+    case SigningAlg.ES256:
+      signer = ES256Signer(key);
       break;
     case SigningAlg.EdDSA:
       signer = EdDSASigner(key);
