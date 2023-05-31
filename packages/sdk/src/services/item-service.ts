@@ -28,6 +28,7 @@ export interface IItemListFilterOptions {
   own?: boolean;
   itemIds?: string[];
   name?: string;
+  order?: 'asc' | 'desc';
 }
 
 /** DecryptedItems together with response metadata if needed for paging etc. */
@@ -111,7 +112,7 @@ export class ItemService extends Service<ItemApi> {
     const { classificationNodeName, classificationNodeNames } =
       this.getClassifications(listFilterOptions);
 
-    const { templateIds, scheme, sharedWith, ownerId, own, itemIds, name } =
+    const { templateIds, scheme, sharedWith, ownerId, own, itemIds, name, order } =
       listFilterOptions || {};
 
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
@@ -125,7 +126,8 @@ export class ItemService extends Service<ItemApi> {
       own !== undefined ? own.toString() : undefined,
       itemIds !== undefined ? itemIds.join(',') : undefined,
       options?.nextPageAfter,
-      options?.perPage
+      options?.perPage,
+      order
     );
 
     if (resultHasNext(result) && options?.perPage === undefined) {
@@ -161,7 +163,7 @@ export class ItemService extends Service<ItemApi> {
     const { classificationNodeName, classificationNodeNames } =
       this.getClassifications(listFilterOptions);
 
-    const { templateIds, scheme, sharedWith, ownerId, own, name } = listFilterOptions || {};
+    const { templateIds, scheme, sharedWith, ownerId, own, name, order } = listFilterOptions || {};
 
     return getAllPaged(cursor =>
       api.itemsGet(
@@ -174,7 +176,9 @@ export class ItemService extends Service<ItemApi> {
         ownerId,
         own !== undefined ? own.toString() : undefined,
         undefined,
-        cursor
+        cursor,
+        undefined,
+        order
       )
     ).then(reducePages);
   }
@@ -198,7 +202,7 @@ export class ItemService extends Service<ItemApi> {
     const { classificationNodeName, classificationNodeNames } =
       this.getClassifications(listFilterOptions);
 
-    const { templateIds, scheme, sharedWith, ownerId, own, itemIds, name } =
+    const { templateIds, scheme, sharedWith, ownerId, own, itemIds, name, order } =
       listFilterOptions || {};
 
     const result = await this.vaultAPIFactory(credentials).ItemApi.itemsGet(
@@ -212,7 +216,8 @@ export class ItemService extends Service<ItemApi> {
       own !== undefined ? own.toString() : undefined,
       itemIds !== undefined ? itemIds.join(',') : undefined,
       options?.nextPageAfter,
-      options?.perPage
+      options?.perPage,
+      order
     );
 
     const slots = await Promise.all(result.slots.map(s => SlotHelpers.decryptSlot(credentials, s)));
