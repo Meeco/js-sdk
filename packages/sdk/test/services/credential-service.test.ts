@@ -100,7 +100,7 @@ describe('CredentialService', () => {
               style: {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
-                'text-color': '#FFF',
+                text_color: '#FFF',
               },
             },
           });
@@ -150,7 +150,7 @@ describe('CredentialService', () => {
               style: {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
-                'text-color': '#FFF',
+                text_color: '#FFF',
               },
             },
           });
@@ -240,7 +240,7 @@ describe('CredentialService', () => {
               style: {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
-                'text-color': '#FFF',
+                text_color: '#FFF',
               },
             },
           });
@@ -290,7 +290,7 @@ describe('CredentialService', () => {
               style: {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
-                'text-color': '#FFF',
+                text_color: '#FFF',
               },
             },
           });
@@ -380,7 +380,7 @@ describe('CredentialService', () => {
               style: {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
-                'text-color': '#FFF',
+                text_color: '#FFF',
               },
             },
           });
@@ -430,7 +430,7 @@ describe('CredentialService', () => {
               style: {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
-                'text-color': '#FFF',
+                text_color: '#FFF',
               },
             },
           });
