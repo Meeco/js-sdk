@@ -1,5 +1,11 @@
 import { Keypair as APIKeypair } from '@meeco/keystore-api-sdk';
-import { Connection, Invitation, InvitationApi, PostInvitation } from '@meeco/vault-api-sdk';
+import {
+  Connection,
+  ConnectionResponseWithCreatedSharesReport,
+  Invitation,
+  InvitationApi,
+  PostInvitation,
+} from '@meeco/vault-api-sdk';
 import DecryptedKeypair from '../models/decrypted-keypair';
 import { MeecoServiceError } from '../models/service-error';
 import { SymmetricKey } from '../models/symmetric-key';
@@ -102,11 +108,13 @@ export class InvitationService extends Service<InvitationApi> {
   }
 
   /**
+   * @deprecated Use [[acceptInvite]] to get ConnectionResponseWithCreatedSharesReport.
    * Create a Connection from an Invitation token.
    * @param connectionName Used in the new Connection, only visible to the creating user.
    * @param invitationToken From an existing Invitation request. Throws an exception if it does not exist.
    * @param keypairId Use this public key in the new Connection. This is a Keystore Keypair.id (not external_id).
    * Throws an error if the key pair does not exist.
+   * @returns Connection
    */
   public async accept(
     credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
@@ -115,6 +123,26 @@ export class InvitationService extends Service<InvitationApi> {
     keypairId?: string,
     recipientDid?: string
   ): Promise<Connection> {
+    return this.acceptInvite(credentials, name, invitationToken, keypairId, recipientDid).then(
+      res => res.connection
+    );
+  }
+
+  /**
+   * Create a Connection from an Invitation token.
+   * @param connectionName Used in the new Connection, only visible to the creating user.
+   * @param invitationToken From an existing Invitation request. Throws an exception if it does not exist.
+   * @param keypairId Use this public key in the new Connection. This is a Keystore Keypair.id (not external_id).
+   * Throws an error if the key pair does not exist.
+   * @returns ConnectionResponseWithCreatedSharesReport
+   */
+  public async acceptInvite(
+    credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
+    name: string,
+    invitationToken: string,
+    keypairId?: string,
+    recipientDid?: string
+  ): Promise<ConnectionResponseWithCreatedSharesReport> {
     const { key_encryption_key, data_encryption_key } = credentials;
 
     let keyPair: APIKeypair;
@@ -144,7 +172,7 @@ export class InvitationService extends Service<InvitationApi> {
           recipient_did: recipientDid,
         },
       })
-      .then(res => res.connection);
+      .then(res => res);
   }
 
   private async encryptNameOrDefault(

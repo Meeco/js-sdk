@@ -12,7 +12,7 @@
     "@meeco/cryppo": "2.0.2",
     "@meeco/identity-network-api-sdk": "1.1.0-develop.20230808164050.d37ca3c",
     "@meeco/keystore-api-sdk": "10.1.1-develop.20230816154849.c7c2018",
-    "@meeco/vault-api-sdk": "39.4.1-develop.20230818080512.d94ef569f",
+    "@meeco/vault-api-sdk": "39.4.3-develop.20230901112213.dbdb3fe8b",
     "@meeco/vc-api-sdk": "8.0.1-develop.20230824061955.6fcc462",
     "bs58": "5.0.0",
     "buffer": "^6.0.3",
