@@ -110,11 +110,12 @@ export class DelegationService extends Service<DelegationApi> {
     connectionName: string,
     invitationToken: string
   ) {
-    const connection = await new InvitationService(this.environment).accept(
+    const result = await new InvitationService(this.environment).accept(
       credentials,
       connectionName,
       invitationToken
     );
+    const connection = result.connection;
 
     const { keypair } = await this.keystoreAPIFactory(credentials).KeypairApi.keypairsIdGet(
       connection.own.user_keypair_external_id!

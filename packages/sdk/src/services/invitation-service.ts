@@ -1,6 +1,5 @@
 import { Keypair as APIKeypair } from '@meeco/keystore-api-sdk';
 import {
-  Connection,
   ConnectionResponseWithCreatedSharesReport,
   Invitation,
   InvitationApi,
@@ -108,27 +107,6 @@ export class InvitationService extends Service<InvitationApi> {
   }
 
   /**
-   * @deprecated Use [[acceptInvite]] to get ConnectionResponseWithCreatedSharesReport.
-   * Create a Connection from an Invitation token.
-   * @param connectionName Used in the new Connection, only visible to the creating user.
-   * @param invitationToken From an existing Invitation request. Throws an exception if it does not exist.
-   * @param keypairId Use this public key in the new Connection. This is a Keystore Keypair.id (not external_id).
-   * Throws an error if the key pair does not exist.
-   * @returns Connection
-   */
-  public async accept(
-    credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
-    name: string,
-    invitationToken: string,
-    keypairId?: string,
-    recipientDid?: string
-  ): Promise<Connection> {
-    return this.acceptInvite(credentials, name, invitationToken, keypairId, recipientDid).then(
-      res => res.connection
-    );
-  }
-
-  /**
    * Create a Connection from an Invitation token.
    * @param connectionName Used in the new Connection, only visible to the creating user.
    * @param invitationToken From an existing Invitation request. Throws an exception if it does not exist.
@@ -136,7 +114,7 @@ export class InvitationService extends Service<InvitationApi> {
    * Throws an error if the key pair does not exist.
    * @returns ConnectionResponseWithCreatedSharesReport
    */
-  public async acceptInvite(
+  public async accept(
     credentials: IVaultToken & IKeystoreToken & IKEK & IDEK,
     name: string,
     invitationToken: string,

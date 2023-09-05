@@ -152,9 +152,7 @@ describe('InvitationService', () => {
         postKeyPairAPI({ id: savedKeyPairId, public_key: 'new_public_key' })
       )
       .nock('https://sandbox.meeco.me/vault', postConnectionAPI())
-      .do(() =>
-        new InvitationService(environment).acceptInvite(testUserAuth, connectionName, token)
-      )
+      .do(() => new InvitationService(environment).accept(testUserAuth, connectionName, token))
       .it('accepts an invitation creating a new keypair');
 
     customTest
@@ -165,7 +163,7 @@ describe('InvitationService', () => {
       )
       .nock('https://sandbox.meeco.me/vault', postConnectionAPI())
       .do(() =>
-        new InvitationService(environment).acceptInvite(
+        new InvitationService(environment).accept(
           testUserAuth,
           connectionName,
           token,
@@ -181,9 +179,7 @@ describe('InvitationService', () => {
         postKeyPairAPI({ id: savedKeyPairId, public_key: 'new_public_key' })
       )
       .nock('https://sandbox.meeco.me/vault', api => api.post('/connections').reply(404))
-      .do(() =>
-        new InvitationService(environment).acceptInvite(testUserAuth, connectionName, token)
-      )
+      .do(() => new InvitationService(environment).accept(testUserAuth, connectionName, token))
       .catch(/.*/)
       .it('throws an error if token does not exist');
   });
