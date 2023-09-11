@@ -5,7 +5,7 @@ type NextPageSpecR = string | null;
 
 interface IPagedResponse {
   next_page_after: NextPageSpecR;
-  meta: object[];
+  meta: object;
 }
 
 // The type in the API response is not the type in the input...
@@ -14,7 +14,7 @@ function cleanInput(x: NextPageSpecR): NextPageSpec {
 }
 
 export function resultHasNext(r: IPagedResponse): boolean {
-  const pageExists: boolean = r.meta.some(x => x['next_page_exists']) || !!r.next_page_after;
+  const pageExists: boolean = r.meta['next_page_exists'] || !!r.next_page_after;
   if (pageExists && !r.next_page_after) {
     // Expect this error on API update or bad test cases.
     throw new Error(
