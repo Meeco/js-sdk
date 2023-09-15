@@ -1,3 +1,4 @@
+import { CollectionReport } from '@meeco/vault-api-sdk';
 import { SimpleLogger } from '../util/logger';
 
 type NextPageSpec = string | undefined;
@@ -5,7 +6,7 @@ type NextPageSpecR = string | null;
 
 interface IPagedResponse {
   next_page_after: NextPageSpecR;
-  meta: object;
+  meta: CollectionReport;
 }
 
 // The type in the API response is not the type in the input...
@@ -85,11 +86,9 @@ function combinePages<T extends {}>(checkObjects: boolean) {
 
     Object.entries(result).forEach(([k, e]) => {
       if (e instanceof Array) {
-        if (k === 'meta') {
-          result[k] = b[k];
-        } else {
-          result[k] = e.concat(b[k]);
-        }
+        result[k] = e.concat(b[k]);
+      } else if (k === 'meta') {
+        result[k] = b[k];
       } else if (e && checkObjects && typeof e === 'object') {
         throw new Error(
           'Combining paged results for object-valued property "' + k + '" is probably an error'

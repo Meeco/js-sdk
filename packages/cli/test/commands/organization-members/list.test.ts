@@ -91,18 +91,16 @@ const response = {
       role: 'admin',
     },
   ],
-  meta: [],
+  meta: {},
 };
 
 const responsePart1 = {
   ...response,
   members: [response.members[0]],
   next_page_after: MOCK_NEXT_PAGE_AFTER,
-  meta: [
-    {
-      next_page_exists: true,
-    },
-  ],
+  meta: {
+    order: 'asc',
+  },
 };
 
 const responsePart2 = {

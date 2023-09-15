@@ -183,5 +183,5 @@ const response = {
       share_id: null,
     },
   ],
-  meta: [],
+  meta: {},
 };

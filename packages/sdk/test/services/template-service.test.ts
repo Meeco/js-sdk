@@ -34,7 +34,7 @@ describe('TemplateService', () => {
     attachments: [],
     thumbnails: [],
     classification_nodes: [],
-    meta: [],
+    meta: {},
   };
 
   describe('#get', () => {
@@ -118,11 +118,9 @@ describe('TemplateService', () => {
         },
       ],
       next_page_after: MOCK_NEXT_PAGE_AFTER,
-      meta: [
-        {
-          next_page_exists: true,
-        },
-      ],
+      meta: {
+        order: 'asc',
+      },
     };
 
     const responsePart2 = {
@@ -133,11 +131,9 @@ describe('TemplateService', () => {
           slot_ids: ['sport', 'recreational'],
         },
       ],
-      meta: [
-        {
-          next_page_exists: false,
-        },
-      ],
+      meta: {
+        order: 'asc',
+      },
     };
 
     customTest
@@ -193,7 +189,7 @@ describe('TemplateService', () => {
             ...response,
             item_templates: [response.item_templates[0]],
             next_page_after: MOCK_NEXT_PAGE_AFTER,
-            meta: [{ next_page_exists: true }],
+            meta: { order: 'asc' },
           });
 
         api
@@ -205,7 +201,7 @@ describe('TemplateService', () => {
           .reply(200, {
             ...response,
             item_templates: [response.item_templates[1]],
-            meta: [],
+            meta: {},
           });
 
         api.get('/item_templates/drink_id').reply(200, {
