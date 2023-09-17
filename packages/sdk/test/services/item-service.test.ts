@@ -242,7 +242,7 @@ describe('ItemService', () => {
       classification_nodes: [],
       shares: [],
       thumbnails: [],
-      meta: [],
+      meta: {},
     };
 
     customTest
@@ -299,7 +299,7 @@ describe('ItemService', () => {
       classification_nodes: [],
       shares: [],
       thumbnails: [],
-      meta: [],
+      meta: {},
     };
 
     const responsePart1 = {
@@ -307,7 +307,7 @@ describe('ItemService', () => {
       items: [response.items[0]],
       slots: [response.slots[0]],
       next_page_after: MOCK_NEXT_PAGE_AFTER,
-      meta: [{ next_page_exists: true }],
+      meta: { order: 'asc' },
     };
 
     const responsePart2 = {
@@ -375,7 +375,7 @@ describe('ItemService', () => {
       classification_nodes: [],
       shares: [],
       thumbnails: [],
-      meta: [],
+      meta: {},
     };
 
     customTest
@@ -392,10 +392,21 @@ describe('ItemService', () => {
       )
       .add('response', async () => await new ItemService(environment).listDecrypted(testUserAuth))
       .it('works for no items', ({ response }) => {
+        console.log(response);
+
         // tslint:disable-next-line:no-unused-expression
         expect(response.items).to.be.empty;
-        // tslint:disable-next-line:no-unused-expression
-        expect(response.meta).to.be.empty;
+        expect(response.meta).to.be.eql({
+          current_cursor: undefined,
+          order: undefined,
+          order_by: undefined,
+          order_from_params: undefined,
+          page: undefined,
+          page_count: undefined,
+          per_page: undefined,
+          per_page_from_params: undefined,
+          records_count: undefined,
+        });
       });
 
     customTest

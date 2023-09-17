@@ -6,8 +6,8 @@ import {
   DEFAULT_CLASSIFICATION_SCHEME,
 } from '../../../src/util/constants';
 import {
-  customTest,
   MOCK_NEXT_PAGE_AFTER,
+  customTest,
   outputFixture,
   testEnvironmentFile,
   testGetAll,
@@ -146,7 +146,7 @@ const templates = {
       background_color: null,
     },
   ],
-  meta: [],
+  meta: {},
 };
 
 const responsePart1 = {
@@ -162,11 +162,9 @@ const responsePart1 = {
     },
   ],
   next_page_after: MOCK_NEXT_PAGE_AFTER,
-  meta: [
-    {
-      next_page_exists: true,
-    },
-  ],
+  meta: {
+    next_page_exists: true,
+  },
 };
 
 const responsePart2 = {
@@ -177,11 +175,9 @@ const responsePart2 = {
       slot_ids: ['sport', 'recreational'],
     },
   ],
-  meta: [
-    {
-      next_page_exists: false,
-    },
-  ],
+  meta: {
+    next_page_exists: false,
+  },
 };
 
 function vaultAPIFactory(environment) {

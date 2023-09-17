@@ -81,7 +81,7 @@ describe('ConnectionService', () => {
       .matchHeader('Authorization', 'from_vault_access_token')
       .matchHeader('Meeco-Subscription-Key', 'environment_subscription_key')
       .once()
-      .reply(200, { connections: [], meta: [] });
+      .reply(200, { connections: [], meta: {} });
 
     api
       .get('/connections')
@@ -144,7 +144,7 @@ describe('ConnectionService', () => {
         },
       },
     ],
-    meta: [],
+    meta: {},
   };
 
   describe('#list', () => {
@@ -179,7 +179,7 @@ describe('ConnectionService', () => {
           .get('/connections')
           .matchHeader('Authorization', testUserAuth.vault_access_token)
           .matchHeader('Meeco-Subscription-Key', environment.vault.subscription_key)
-          .reply(200, { connections: [{ own: { encrypted_recipient_name: null } }], meta: [] });
+          .reply(200, { connections: [{ own: { encrypted_recipient_name: null } }], meta: {} });
       })
       .add('connections', () => new ConnectionService(environment).list(testUserAuth))
       .it(
@@ -194,16 +194,14 @@ describe('ConnectionService', () => {
       ...connectionResponse,
       connections: [connectionsResponse.connections[0]],
       next_page_after: MOCK_NEXT_PAGE_AFTER,
-      meta: [
-        {
-          next_page_exists: true,
-        },
-      ],
+      meta: {
+        order: 'asc',
+      },
     };
     const responsePart2 = {
       ...connectionResponse,
       connections: [connectionsResponse.connections[1]],
-      meta: [],
+      meta: {},
     };
 
     customTest

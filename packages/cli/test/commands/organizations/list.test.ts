@@ -148,14 +148,14 @@ const response = {
     },
   ],
   services: [],
-  meta: [],
+  meta: {},
 };
 
 const responsePart1 = {
   organizations: [response.organizations[1]],
   services: [],
   next_page_after: MOCK_NEXT_PAGE_AFTER,
-  meta: [{ next_page_exists: true }],
+  meta: { order: 'asc' },
 };
 
 const responsePart2 = {

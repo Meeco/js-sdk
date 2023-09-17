@@ -432,7 +432,7 @@ describe('ShareService', () => {
         },
       ],
       next_page_after: '3',
-      meta: [],
+      meta: <any>{},
     };
 
     // Incoming shares

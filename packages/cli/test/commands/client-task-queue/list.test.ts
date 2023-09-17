@@ -34,7 +34,7 @@ describe('client-task-queue:list', () => {
         created_at: new Date(1),
       },
     ],
-    meta: [],
+    meta: {},
   };
 
   customTest
@@ -95,7 +95,7 @@ describe('client-task-queue:list', () => {
         created_at: new Date(1),
       },
     ],
-    meta: [],
+    meta: {},
   };
 
   customTest
