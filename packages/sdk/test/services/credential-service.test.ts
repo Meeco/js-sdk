@@ -30,7 +30,6 @@ describe('CredentialService', () => {
             .post('/credentials/generate')
             .matchHeader('Authorization', userAuth.vc_access_token)
             .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
-            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
             .reply(401, {
               message: 'Unauthorized',
               http_code: 401,
@@ -62,7 +61,6 @@ describe('CredentialService', () => {
             .post('/credentials/generate')
             .matchHeader('Authorization', userAuth.vc_access_token)
             .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
-            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
             .reply(201, {
               credential: {
                 unsigned_vc_jwt:
@@ -112,7 +110,6 @@ describe('CredentialService', () => {
             .post('/credentials/generate')
             .matchHeader('Authorization', userAuth.vc_access_token)
             .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
-            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
             .reply(201, {
               credential: {
                 unsigned_vc_jwt:
@@ -170,7 +167,6 @@ describe('CredentialService', () => {
             .post('/credentials/generate')
             .matchHeader('Authorization', userAuth.vc_access_token)
             .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
-            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
             .reply(401, {
               message: 'Unauthorized',
               http_code: 401,
@@ -202,7 +198,6 @@ describe('CredentialService', () => {
             .post('/credentials/generate')
             .matchHeader('Authorization', userAuth.vc_access_token)
             .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
-            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
             .reply(201, {
               credential: {
                 unsigned_vc_jwt:
@@ -252,7 +247,6 @@ describe('CredentialService', () => {
             .post('/credentials/generate')
             .matchHeader('Authorization', userAuth.vc_access_token)
             .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
-            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
             .reply(201, {
               credential: {
                 unsigned_vc_jwt:
@@ -310,7 +304,6 @@ describe('CredentialService', () => {
             .post('/credentials/generate')
             .matchHeader('Authorization', userAuth.vc_access_token)
             .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
-            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
             .reply(401, {
               message: 'Unauthorized',
               http_code: 401,
@@ -342,7 +335,6 @@ describe('CredentialService', () => {
             .post('/credentials/generate')
             .matchHeader('Authorization', userAuth.vc_access_token)
             .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
-            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
             .reply(201, {
               credential: {
                 unsigned_vc_jwt:
@@ -392,7 +384,6 @@ describe('CredentialService', () => {
             .post('/credentials/generate')
             .matchHeader('Authorization', userAuth.vc_access_token)
             .matchHeader('Meeco-Organisation-Id', ORGANISATION_ID)
-            // .matchHeader('Meeco-Subscription-Key', environment.vc.subscription_key)
             .reply(201, {
               credential: {
                 unsigned_vc_jwt:

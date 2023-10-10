@@ -17,7 +17,7 @@ export class CredentialService extends Service<CredentialsApi> {
 
   /**
    *
-   * @param credentials
+   * @param auth
    * @param payload - credential type, claims and basic credential parameters
    * @param organisationID - signing organisation ID
    * @param key - private key bytes in a form of Uint8Array
@@ -25,21 +25,20 @@ export class CredentialService extends Service<CredentialsApi> {
    * @returns Promise<{credential: string; metadata: {style: {"text-color": string, background: string, image: string}}}>
    */
   public async issue(
-    credentials: IVCToken,
+    auth: IVCToken,
     payload: GenerateCredentialExtendedDto,
     key: Uint8Array,
     alg: SigningAlg
   ) {
-    if (!credentials.organisation_id) {
+    if (!auth.organisation_id) {
       throw new MeecoServiceError(
         'credentials.organisation_id parameter is required to issue a credential'
       );
     }
 
-    const result = await this.getAPI(credentials).credentialsControllerGenerate(
-      credentials.organisation_id,
-      { credential: <any>payload }
-    );
+    const result = await this.getAPI(auth).credentialsControllerGenerate(auth.organisation_id, {
+      credential: <any>payload,
+    });
 
     const signedCredential = await signUnsignedJWT(
       result.credential.unsigned_vc_jwt,
