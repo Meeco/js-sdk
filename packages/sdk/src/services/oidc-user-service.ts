@@ -28,8 +28,8 @@ import { Ed25519PubCodec } from '../util/codecs';
 import { DIDManagementService } from './did-management-service';
 import Service, { IIdentityNetworkToken, IKEK, IKeystoreToken, IVaultToken } from './service';
 
-type GetVaultKeysCredentials = IVaultToken & IKeystoreToken;
-type GetVaultDIDCredentials = GetVaultKeysCredentials & IIdentityNetworkToken & IKEK;
+type GetVaultKeysAuth = IVaultToken & IKeystoreToken;
+type GetVaultDIDAuth = GetVaultKeysAuth & IIdentityNetworkToken & IKEK;
 
 interface IMEKData {
   key: {
@@ -52,12 +52,40 @@ export class OIDCUserService extends Service<UserApi> {
     return this.vaultAPIFactory(token).UserApi;
   }
 
-  public async getVaultKeys(credentials: GetVaultKeysCredentials, passphrase: string) {
-    const keystoreFactory = this.keystoreAPIFactory(credentials);
+  public async hasPassphraseSet(auth: IKeystoreToken) {
+    const keystoreFactory = this.keystoreAPIFactory(auth);
+    const pdaApi = keystoreFactory.PassphraseDerivationArtefactApi;
+    const kekApi = keystoreFactory.KeyEncryptionKeyApi;
+
+    const isArtefactsSet = await pdaApi
+      .passphraseDerivationArtefactGet()
+      .then(() => true)
+      .catch(err => {
+        if (err?.status === 404) {
+          return false;
+        }
+        throw err;
+      });
+
+    const isKekSet = await kekApi
+      .keyEncryptionKeyGet()
+      .then(() => true)
+      .catch(err => {
+        if (err?.status === 404) {
+          return false;
+        }
+        throw err;
+      });
+
+    return isArtefactsSet && isKekSet;
+  }
+
+  public async getVaultKeys(auth: GetVaultKeysAuth, passphrase: string) {
+    const keystoreFactory = this.keystoreAPIFactory(auth);
     const pdaApi = keystoreFactory.PassphraseDerivationArtefactApi;
     const kekApi = keystoreFactory.KeyEncryptionKeyApi;
     const dekApi = keystoreFactory.DataEncryptionKeyApi;
-    const meApi = this.getAPI(credentials);
+    const meApi = this.getAPI(auth);
 
     const mek = await this.loadOrGenerateMEK(passphrase, pdaApi);
     const kek = await this.loadOrGenerateKEK(mek, kekApi);
@@ -90,7 +118,7 @@ export class OIDCUserService extends Service<UserApi> {
    * Supports only DIDWeb at the moment
    */
   public async getVaultDID(
-    credentials: GetVaultDIDCredentials,
+    credentials: GetVaultDIDAuth,
     defaultDIDMethod: DIDMethodParam = 'did:web'
   ) {
     const meApi = this.getAPI(credentials);
@@ -303,7 +331,7 @@ export class OIDCUserService extends Service<UserApi> {
    * DID
    */
   private async loadOrGenerateDID(
-    credentials: GetVaultDIDCredentials,
+    credentials: GetVaultDIDAuth,
     kek: EncryptionKey,
     did: string | null,
     didManagementService: DIDManagementService,
@@ -317,7 +345,7 @@ export class OIDCUserService extends Service<UserApi> {
   }
 
   private async generateDID(
-    credentials: GetVaultDIDCredentials,
+    credentials: GetVaultDIDAuth,
     kek: EncryptionKey,
     keypairApi: KeypairApi,
     didManagementService: DIDManagementService,
