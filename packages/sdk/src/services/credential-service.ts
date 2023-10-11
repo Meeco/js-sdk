@@ -164,14 +164,16 @@ export class CredentialService extends Service<CredentialsApi> {
       this.formatIdToItemName(decodedCredential.payload.vc.id)
     );
 
-    return itemService.create(
-      {
-        vault_access_token: auth.vault_access_token,
-        organisation_id: auth.organisation_id,
-        data_encryption_key: auth.data_encryption_key,
-      },
-      newVerifiableCredentialItem
-    );
+    const itemServiceAuth = {
+      vault_access_token: auth.vault_access_token,
+      data_encryption_key: auth.data_encryption_key,
+    };
+
+    if (auth.organisation_id) {
+      itemServiceAuth['organisation_id'] = auth.organisation_id;
+    }
+
+    return itemService.create(itemServiceAuth, newVerifiableCredentialItem);
   }
 
   /**
