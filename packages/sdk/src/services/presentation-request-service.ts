@@ -16,7 +16,7 @@ export interface CreatePresentationRequestResponseItemParams {
   verificationResult: PresentationRequestResponseVerificationResultResponseDto;
 }
 
-export class PresentationRequest extends Service<PresentationRequestsApi> {
+export class PresentationRequestService extends Service<PresentationRequestsApi> {
   public getAPI(token: IVCToken) {
     return this.vcAPIFactory(token).PresentationRequestsApi;
   }
