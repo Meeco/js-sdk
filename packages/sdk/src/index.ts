@@ -32,6 +32,7 @@ export * from './services/oidc-user-service';
 export * from './services/organization-members-service';
 export * from './services/organization-service';
 export * from './services/organization-services-service';
+export * from './services/presentation-request-service';
 export * from './services/service';
 export * from './services/share-service';
 export * from './services/template-service';
