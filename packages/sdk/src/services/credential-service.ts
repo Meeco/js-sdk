@@ -108,14 +108,14 @@ export class CredentialService extends Service<CredentialsApi> {
         slot_type_name: SlotType.DateTime,
         label: CREDENTIAL_ITEM.ISSUED_AT_SLOT_LABEL,
         name: CREDENTIAL_ITEM.ISSUED_AT_SLOT_NAME,
-        value: new Date(decodedCredential.payload.vc.issuanceDate),
+        value: new Date(decodedCredential.payload.vc.issuanceDate).toJSON(),
       },
       {
         slot_type_name: SlotType.DateTime,
         label: CREDENTIAL_ITEM.EXPIRES_AT_SLOT_LABEL,
         name: CREDENTIAL_ITEM.EXPIRES_AT_SLOT_NAME,
         value: decodedCredential.payload.vc.expirationDate
-          ? new Date(decodedCredential.payload.vc.expirationDate)
+          ? new Date(decodedCredential.payload.vc.expirationDate).toJSON()
           : null,
       },
       {
@@ -152,7 +152,7 @@ export class CredentialService extends Service<CredentialsApi> {
         slot_type_name: SlotType.Bool,
         label: CREDENTIAL_ITEM.REVOCABLE_SLOT_LABEL,
         name: CREDENTIAL_ITEM.REVOCABLE_SLOT_NAME,
-        value: decodedCredential.payload.vc.credentialStatus ? true : false,
+        value: decodedCredential.payload.vc.credentialStatus ? 'true' : 'false',
       },
       {
         slot_type_name: SlotType.KeyValue,
