@@ -52,6 +52,9 @@ export class OIDCUserService extends Service<UserApi> {
     return this.vaultAPIFactory(token).UserApi;
   }
 
+  /**
+   * @description Checks if provided Vault account has passphrase configured already.
+   */
   public async hasPassphraseSet(auth: IKeystoreToken) {
     const keystoreFactory = this.keystoreAPIFactory(auth);
     const pdaApi = keystoreFactory.PassphraseDerivationArtefactApi;
@@ -80,6 +83,9 @@ export class OIDCUserService extends Service<UserApi> {
     return isArtefactsSet && isKekSet;
   }
 
+  /**
+   * @description Loads existing Vault keys if present. Otherwise, creates new keys based on the provided passphrase
+   */
   public async getVaultKeys(auth: GetVaultKeysAuth, passphrase: string) {
     const keystoreFactory = this.keystoreAPIFactory(auth);
     const pdaApi = keystoreFactory.PassphraseDerivationArtefactApi;
@@ -115,22 +121,20 @@ export class OIDCUserService extends Service<UserApi> {
   }
 
   /**
+   * @description Loads existing Vault DID information and keys if present. Otherwise, registers and assigns one.
    * Supports only DIDWeb at the moment
    */
-  public async getVaultDID(
-    credentials: GetVaultDIDAuth,
-    defaultDIDMethod: DIDMethodParam = 'did:web'
-  ) {
-    const meApi = this.getAPI(credentials);
-    const keypairApi = this.keystoreAPIFactory(credentials).KeypairApi;
+  public async getVaultDID(auth: GetVaultDIDAuth, defaultDIDMethod: DIDMethodParam = 'did:web') {
+    const meApi = this.getAPI(auth);
+    const keypairApi = this.keystoreAPIFactory(auth).KeypairApi;
     const didManagementService = new DIDManagementService(this.environment);
 
-    const kek = EncryptionKey.fromBytes(credentials.key_encryption_key.key);
+    const kek = EncryptionKey.fromBytes(auth.key_encryption_key.key);
 
     let vaultUser = await meApi.meGet().then(resp => resp.user);
 
     const result = await this.loadOrGenerateDID(
-      credentials,
+      auth,
       kek,
       vaultUser.did,
       didManagementService,
@@ -331,7 +335,7 @@ export class OIDCUserService extends Service<UserApi> {
    * DID
    */
   private async loadOrGenerateDID(
-    credentials: GetVaultDIDAuth,
+    auth: GetVaultDIDAuth,
     kek: EncryptionKey,
     did: string | null,
     didManagementService: DIDManagementService,
@@ -341,11 +345,11 @@ export class OIDCUserService extends Service<UserApi> {
     if (did) {
       return this.loadDID(kek, did, keypairApi);
     }
-    return this.generateDID(credentials, kek, keypairApi, didManagementService, defaultDIDMethod);
+    return this.generateDID(auth, kek, keypairApi, didManagementService, defaultDIDMethod);
   }
 
   private async generateDID(
-    credentials: GetVaultDIDAuth,
+    auth: GetVaultDIDAuth,
     kek: EncryptionKey,
     keypairApi: KeypairApi,
     didManagementService: DIDManagementService,
@@ -377,9 +381,9 @@ export class OIDCUserService extends Service<UserApi> {
     }
 
     const createDidResult = await didManagementService.create(
-      credentials,
+      auth,
       didInstance,
-      credentials.organisation_id
+      auth.organisation_id
     );
 
     const encryptedSecret = await this.encryptBinary(kek, didSecret);

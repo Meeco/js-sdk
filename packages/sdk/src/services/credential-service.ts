@@ -9,7 +9,7 @@ import { DecryptedItem } from '../models/decrypted-item';
 import { NewItem } from '../models/new-item';
 import { MeecoServiceError } from '../models/service-error';
 import { SlotType } from '../models/slot-types';
-import { CREDENTIAL_ITEM } from '../util/constants';
+import { CREDENTIAL_FORMAT, CREDENTIAL_ITEM } from '../util/constants';
 import { SigningAlg, signUnsignedJWT } from '../util/jwt';
 import { ItemService } from './item-service';
 import Service, { IDEK, IVCToken, IVaultToken } from './service';
@@ -82,6 +82,12 @@ export class CredentialService extends Service<CredentialsApi> {
         label: CREDENTIAL_ITEM.JWT_SLOT_LABEL,
         name: CREDENTIAL_ITEM.JWT_SLOT_NAME,
         value: credentialJWT,
+      },
+      {
+        slot_type_name: SlotType.KeyValue,
+        label: CREDENTIAL_ITEM.CREDENTIAL_FORMAT_SLOT_LABEL,
+        name: CREDENTIAL_ITEM.CREDENTIAL_FORMAT_SLOT_NAME,
+        value: credentialJWT.includes('~') ? CREDENTIAL_FORMAT.SD_JWT_VC : CREDENTIAL_FORMAT.JWT_VC,
       },
       {
         slot_type_name: SlotType.KeyValue,

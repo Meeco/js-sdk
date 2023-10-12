@@ -1,3 +1,8 @@
+export enum CREDENTIAL_FORMAT {
+  'JWT_VC' = 'jwt_vc',
+  'SD_JWT_VC' = 'sd_jwt_vc',
+}
+
 /**
  * Credential item attributes
  */
@@ -5,6 +10,8 @@ export const CREDENTIAL_ITEM = {
   TEMPLATE_NAME: 'verifiable_credential',
   JWT_SLOT_NAME: 'credential_jwt',
   JWT_SLOT_LABEL: 'Credential JWT',
+  CREDENTIAL_FORMAT_SLOT_NAME: 'credential_format',
+  CREDENTIAL_FORMAT_SLOT_LABEL: 'Credential format',
   ISSUER_SLOT_NAME: 'issuer',
   ISSUER_SLOT_LABEL: 'Issuer',
   SUBJECT_SLOT_NAME: 'subject',
