@@ -54,6 +54,7 @@ export class CredentialService extends Service<CredentialsApi> {
       );
     }
 
+    jwtFormat = jwtFormat || CredentialsControllerGenerateAcceptEnum.Jwt;
     const result = await this.getAPI(auth).credentialsControllerGenerate(
       auth.organisation_id,
       {
@@ -78,11 +79,11 @@ export class CredentialService extends Service<CredentialsApi> {
       alg
     );
 
-    let credential = signedCredential;
-    if (jwtFormat && jwtFormat === CredentialsControllerGenerateAcceptEnum.VcsdJwt) {
-      const index = result.credential.unsigned_vc_jwt.indexOf('~');
-      credential = signedCredential + result.credential.unsigned_vc_jwt.slice(index);
-    }
+    const credential =
+      jwtFormat === CredentialsControllerGenerateAcceptEnum.VcsdJwt
+        ? signedCredential +
+          result.credential.unsigned_vc_jwt.slice(result.credential.unsigned_vc_jwt.indexOf('~'))
+        : signedCredential;
 
     return {
       credential,
