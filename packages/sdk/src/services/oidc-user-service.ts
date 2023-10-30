@@ -11,8 +11,6 @@ import {
   generateDerivedKey,
   generateEncryptionVerificationArtifacts,
   generateRandomBytesString,
-  IDerivedKey,
-  KeyDerivationStrategy,
 } from '@meeco/cryppo';
 import {
   DataEncryptionKeyApi,
@@ -194,28 +192,25 @@ export class OIDCUserService extends Service<UserApi> {
 
   private async deriveMEK(
     passphrase: string,
-    derivationArtifacts?: DerivedKeyOptions,
+    derivedKeyOptions?: DerivedKeyOptions,
     verificationArtifacts?: string
   ) {
     if (
-      (derivationArtifacts && !verificationArtifacts) ||
-      (verificationArtifacts && !derivationArtifacts)
+      (derivedKeyOptions && !verificationArtifacts) ||
+      (verificationArtifacts && !derivedKeyOptions)
     ) {
       throw new Error('both artefacts params must be provided');
     }
 
-    if (derivationArtifacts) {
-      const key2 = await generateDerivedKey({
-        passphrase,
-        ...this.iDerivedKeyToParams(derivationArtifacts),
-      });
+    if (derivedKeyOptions) {
+      const key2 = await derivedKeyOptions.deriveKey(passphrase);
 
       /**
        * Key verification
        */
       const { token: token2, encrypted } = decodeDerivationArtifacts(<string>verificationArtifacts);
       const verificationArtifactsDecryptedBytes = <Uint8Array>(
-        await this.decryptBinary(key2.key, encrypted)
+        await this.decryptBinary(key2, encrypted)
       );
       const verificationArtifactsDecrypted = bytesToBinaryString(
         verificationArtifactsDecryptedBytes
@@ -227,18 +222,18 @@ export class OIDCUserService extends Service<UserApi> {
       }
 
       return {
-        key: key2,
-        derivationArtifacts: key2.options.serialize(),
+        key: {
+          key: key2,
+          options: derivedKeyOptions,
+        },
+        derivationArtifacts: derivedKeyOptions.serialize(),
         verificationArtifacts: <string>verificationArtifacts,
       };
     }
 
     const { token, salt } = generateEncryptionVerificationArtifacts();
 
-    const key = await generateDerivedKey({
-      passphrase,
-      ...this.iDerivedKeyToParams({ salt }),
-    });
+    const key = await generateDerivedKey({ passphrase });
 
     const encryptedTokenAndSalt = await encryptWithKey({
       data: binaryStringToBytes(`${token}.${salt}`),
@@ -461,17 +456,6 @@ export class OIDCUserService extends Service<UserApi> {
       serialized: data,
       key,
     });
-  }
-
-  private iDerivedKeyToParams(derivationArtifacts?: Partial<IDerivedKey>) {
-    return {
-      iterationVariance: 0,
-      minIterations: derivationArtifacts?.iterations || 10000,
-      length: derivationArtifacts?.length || 32,
-      strategy: derivationArtifacts?.strategy || KeyDerivationStrategy.Pbkdf2Hmac,
-      useSalt: derivationArtifacts?.salt || '',
-      hash: derivationArtifacts?.hash || 'SHA256',
-    };
   }
 
   private generateKeypairExternalIdentifer(did: string, keyId?: string): string {
