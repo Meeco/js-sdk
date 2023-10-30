@@ -2,6 +2,7 @@ import {
   CreateCredentialTypeStyleDto,
   CredentialTypeModelDto,
   CredentialsApi,
+  CredentialsControllerGenerateAcceptEnum,
   GenerateCredentialDto,
 } from '@meeco/vc-api-sdk';
 import { decodeJWT } from 'did-jwt';
@@ -25,7 +26,6 @@ export interface CreateVerifiableCredentialItemParams {
   credentialJWT: string;
   credentialType: CredentialTypeModelDto;
 }
-
 export class CredentialService extends Service<CredentialsApi> {
   public getAPI(token: IVCToken) {
     return this.vcAPIFactory(token).CredentialsApi;
@@ -38,13 +38,15 @@ export class CredentialService extends Service<CredentialsApi> {
    * @param organisationID - signing organisation ID
    * @param key - private key bytes in a form of Uint8Array
    * @param alg - SigningAlg enum value
+   * @param jwtFormat - optional parameter to specify JWT format (default is VC-JWT)
    * @returns Promise<{credential: string; metadata: {style: {"text-color": string, background: string, image: string}}}>
    */
   public async issue(
     auth: IVCToken,
     payload: GenerateCredentialExtendedDto,
     key: Uint8Array,
-    alg: SigningAlg
+    alg: SigningAlg,
+    jwtFormat?: CredentialsControllerGenerateAcceptEnum
   ) {
     if (!auth.organisation_id) {
       throw new MeecoServiceError(
@@ -52,19 +54,39 @@ export class CredentialService extends Service<CredentialsApi> {
       );
     }
 
-    const result = await this.getAPI(auth).credentialsControllerGenerate(auth.organisation_id, {
-      credential: <any>payload,
-    });
+    jwtFormat = jwtFormat || CredentialsControllerGenerateAcceptEnum.Jwt;
+    const result = await this.getAPI(auth).credentialsControllerGenerate(
+      auth.organisation_id,
+      {
+        credential: <any>payload,
+      },
+      jwtFormat
+    );
+
+    let unsigned_vc_jwt =
+      jwtFormat && jwtFormat === CredentialsControllerGenerateAcceptEnum.VcsdJwt
+        ? result.credential.unsigned_vc_jwt.split('~')[0]
+        : result.credential.unsigned_vc_jwt;
+
+    if (unsigned_vc_jwt.endsWith('.')) {
+      unsigned_vc_jwt = unsigned_vc_jwt.slice(0, -1);
+    }
 
     const signedCredential = await signUnsignedJWT(
-      result.credential.unsigned_vc_jwt,
+      unsigned_vc_jwt,
       typeof payload.issuer === 'string' ? payload.issuer : payload.issuer.id,
       key,
       alg
     );
 
+    const credential =
+      jwtFormat === CredentialsControllerGenerateAcceptEnum.VcsdJwt
+        ? signedCredential +
+          result.credential.unsigned_vc_jwt.slice(result.credential.unsigned_vc_jwt.indexOf('~'))
+        : signedCredential;
+
     return {
-      credential: signedCredential,
+      credential,
       metadata: result.credential.metadata,
     };
   }
