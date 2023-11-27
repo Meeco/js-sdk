@@ -167,7 +167,7 @@ describe('ConnectionService', () => {
       })
       .add('connections', () => new ConnectionService(environment).list(testUserAuth))
       .it('decrypts connection name', ({ connections }) => {
-        for (const connection of connections) {
+        for (const connection of connections.connections) {
           expect(connection.recipient_name).to.match(/.+\[decrypted with my_generated_dek\]$/);
         }
       });
@@ -185,7 +185,7 @@ describe('ConnectionService', () => {
       .it(
         'handles connections with null encrypted_recipient_name',
         ({ connections }) =>
-          expect(connections[0].connection.own.encrypted_recipient_name).to.be.null
+          expect(connections.connections[0].connection.own.encrypted_recipient_name).to.be.null
       );
   });
 

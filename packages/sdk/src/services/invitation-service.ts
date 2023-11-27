@@ -3,6 +3,7 @@ import {
   ConnectionResponseWithCreatedSharesReport,
   Invitation,
   InvitationApi,
+  InvitationsResponse,
   PostInvitation,
 } from '@meeco/vault-api-sdk';
 import DecryptedKeypair from '../models/decrypted-keypair';
@@ -27,9 +28,9 @@ export class InvitationService extends Service<InvitationApi> {
    * @param keypairId Use this public key in the new Connection. This is a Keystore Keypair.id (not external_id).
    * Throws an error if the key pair does not exist.
    */
-  public async list(credentials: IVaultToken & IKeystoreToken & IDEK & IKEK): Promise<{
-    invitations: Invitation[];
-  }> {
+  public async list(
+    credentials: IVaultToken & IKeystoreToken & IDEK & IKEK
+  ): Promise<InvitationsResponse> {
     this.logger.log('Sending invitation request');
     const invitations = await this.vaultAPIFactory(credentials).InvitationApi.invitationsGet();
 
