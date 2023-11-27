@@ -1,6 +1,7 @@
 import { bytesToBinaryString } from '@meeco/cryppo';
 import { InvitationService } from '@meeco/sdk';
 import { expect } from 'chai';
+import { MOCK_NEXT_PAGE_AFTER } from '../constants';
 import { default as connectionResponseWithCreatedSharesReport } from '../fixtures/responses/connection-response-with-created-shares-report';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
@@ -38,14 +39,14 @@ describe('InvitationService', () => {
           .get('/invitations')
           .matchHeader('Authorization', testUserAuth.vault_access_token)
           .matchHeader('Meeco-Subscription-Key', environment.vault.subscription_key)
-          .reply(200, { invitations: [] });
+          .reply(200, { invitations: [], meta: {}, next_page_after: MOCK_NEXT_PAGE_AFTER });
     }
 
     customTest
       .mockCryppo()
       .nock('https://sandbox.meeco.me/vault', getInvitationsAPI())
       .do(() => new InvitationService(environment).list(testUserAuth))
-      .it('returns a list of invitations');
+      .it('returns a list of invitations',);
   });
 
   describe('#get', () => {

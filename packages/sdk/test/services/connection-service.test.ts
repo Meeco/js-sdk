@@ -145,6 +145,7 @@ describe('ConnectionService', () => {
       },
     ],
     meta: {},
+    next_page_after: '',
   };
 
   describe('#list', () => {
@@ -170,6 +171,8 @@ describe('ConnectionService', () => {
         for (const connection of connections.connections) {
           expect(connection.recipient_name).to.match(/.+\[decrypted with my_generated_dek\]$/);
         }
+        expect(connections.meta).to.be('');
+        expect(connections.next_page_after).to.be('');
       });
 
     customTest
