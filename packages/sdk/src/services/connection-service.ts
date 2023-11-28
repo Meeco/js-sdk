@@ -1,4 +1,9 @@
-import { Connection, ConnectionApi, ConnectionsResponse } from '@meeco/vault-api-sdk';
+import {
+  CollectionReport,
+  Connection,
+  ConnectionApi,
+  ConnectionsResponse,
+} from '@meeco/vault-api-sdk';
 import { AuthData } from '../models/auth-data';
 import { SymmetricKey } from '../models/symmetric-key';
 import { getAllPaged, resultHasNext } from '../util/paged';
@@ -8,6 +13,12 @@ import Service, { IDEK, IPageOptions, IVaultToken } from './service';
 export interface IDecryptedConnection {
   recipient_name: string | null;
   connection: Connection;
+}
+
+export interface IDecryptedConnectionsResponse {
+  connections: IDecryptedConnection[];
+  meta: CollectionReport;
+  next_page_after: string | null;
 }
 
 export interface IConnectionMetadata {
@@ -92,7 +103,7 @@ export class ConnectionService extends Service<ConnectionApi> {
   public async list(
     credentials: IVaultToken & IDEK,
     options?: IPageOptions
-  ): Promise<IDecryptedConnection[]> {
+  ): Promise<IDecryptedConnectionsResponse> {
     const { data_encryption_key } = credentials;
 
     this.logger.log('Fetching connections');
@@ -106,7 +117,15 @@ export class ConnectionService extends Service<ConnectionApi> {
     }
 
     this.logger.log('Decrypting connection names');
-    return Promise.all((result.connections || []).map(this.decryptConnection(data_encryption_key)));
+    const decryptConnections = Promise.all(
+      (result.connections || []).map(this.decryptConnection(data_encryption_key))
+    );
+    const decryptConnectionsResponse: IDecryptedConnectionsResponse = {
+      connections: await decryptConnections,
+      meta: result.meta,
+      next_page_after: result.next_page_after,
+    };
+    return decryptConnectionsResponse;
   }
 
   public async listAll(credentials: IVaultToken & IDEK): Promise<IDecryptedConnection[]> {

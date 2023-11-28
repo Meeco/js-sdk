@@ -144,7 +144,18 @@ describe('ConnectionService', () => {
         },
       },
     ],
-    meta: {},
+    meta: {
+      current_cursor: null,
+      order: 'desc',
+      order_by: 'connections.created_at',
+      order_from_params: false,
+      page: null,
+      page_count: null,
+      per_page: 200,
+      per_page_from_params: false,
+      records_count: null,
+    },
+    next_page_after: MOCK_NEXT_PAGE_AFTER,
   };
 
   describe('#list', () => {
@@ -167,9 +178,11 @@ describe('ConnectionService', () => {
       })
       .add('connections', () => new ConnectionService(environment).list(testUserAuth))
       .it('decrypts connection name', ({ connections }) => {
-        for (const connection of connections) {
+        for (const connection of connections.connections) {
           expect(connection.recipient_name).to.match(/.+\[decrypted with my_generated_dek\]$/);
         }
+        expect(connections.meta).to.eql(connectionsResponse.meta);
+        expect(connections.next_page_after).to.eql(MOCK_NEXT_PAGE_AFTER);
       });
 
     customTest
@@ -185,7 +198,7 @@ describe('ConnectionService', () => {
       .it(
         'handles connections with null encrypted_recipient_name',
         ({ connections }) =>
-          expect(connections[0].connection.own.encrypted_recipient_name).to.be.null
+          expect(connections.connections[0].connection.own.encrypted_recipient_name).to.be.null
       );
   });
 
