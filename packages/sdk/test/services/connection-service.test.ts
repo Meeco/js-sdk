@@ -155,7 +155,7 @@ describe('ConnectionService', () => {
       per_page_from_params: false,
       records_count: null,
     },
-    next_page_after: '',
+    next_page_after: MOCK_NEXT_PAGE_AFTER,
   };
 
   describe('#list', () => {
@@ -182,7 +182,7 @@ describe('ConnectionService', () => {
           expect(connection.recipient_name).to.match(/.+\[decrypted with my_generated_dek\]$/);
         }
         expect(connections.meta).to.eql(connectionsResponse.meta);
-        expect(connections.next_page_after).to.eql('');
+        expect(connections.next_page_after).to.eql(MOCK_NEXT_PAGE_AFTER);
       });
 
     customTest
