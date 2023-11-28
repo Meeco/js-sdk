@@ -33,20 +33,40 @@ describe('InvitationService', () => {
   }
 
   describe('#list', () => {
+    const responseMeta = {
+      current_cursor: null,
+      order: 'desc',
+      order_by: 'connections.created_at',
+      order_from_params: false,
+      page: null,
+      page_count: null,
+      per_page: 200,
+      per_page_from_params: false,
+      records_count: null,
+    };
+
     function getInvitationsAPI() {
       return api =>
         api
           .get('/invitations')
           .matchHeader('Authorization', testUserAuth.vault_access_token)
           .matchHeader('Meeco-Subscription-Key', environment.vault.subscription_key)
-          .reply(200, { invitations: [], meta: {}, next_page_after: MOCK_NEXT_PAGE_AFTER });
+          .reply(200, {
+            invitations: [],
+            meta: responseMeta,
+            next_page_after: MOCK_NEXT_PAGE_AFTER,
+          });
     }
 
     customTest
       .mockCryppo()
       .nock('https://sandbox.meeco.me/vault', getInvitationsAPI())
-      .do(() => new InvitationService(environment).list(testUserAuth))
-      .it('returns a list of invitations',);
+      .add('invitations', () => new InvitationService(environment).list(testUserAuth))
+      .it('returns a list of invitations', ({ invitations }) => {
+        expect(invitations.invitations).to.eql([]);
+        expect(invitations.meta).to.eql(responseMeta);
+        expect(invitations.next_page_after).to.eql(MOCK_NEXT_PAGE_AFTER);
+      });
   });
 
   describe('#get', () => {

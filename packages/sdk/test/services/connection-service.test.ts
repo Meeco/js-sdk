@@ -144,7 +144,17 @@ describe('ConnectionService', () => {
         },
       },
     ],
-    meta: {},
+    meta: {
+      current_cursor: null,
+      order: 'desc',
+      order_by: 'connections.created_at',
+      order_from_params: false,
+      page: null,
+      page_count: null,
+      per_page: 200,
+      per_page_from_params: false,
+      records_count: null,
+    },
     next_page_after: '',
   };
 
@@ -171,8 +181,8 @@ describe('ConnectionService', () => {
         for (const connection of connections.connections) {
           expect(connection.recipient_name).to.match(/.+\[decrypted with my_generated_dek\]$/);
         }
-        expect(connections.meta).to.be('');
-        expect(connections.next_page_after).to.be('');
+        expect(connections.meta).to.eql(connectionsResponse.meta);
+        expect(connections.next_page_after).to.eql('');
       });
 
     customTest
