@@ -16,6 +16,8 @@ import { IFullLogger, Logger, noopLogger, toFullLogger } from '../util/logger';
 export interface IPageOptions {
   nextPageAfter?: string;
   perPage?: number;
+  page?: number;
+  delegation?: string;
 }
 
 export interface IVaultToken {

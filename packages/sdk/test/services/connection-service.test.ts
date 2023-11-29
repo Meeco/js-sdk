@@ -201,6 +201,20 @@ describe('ConnectionService', () => {
           expect(connections.connections[0].connection.own.encrypted_recipient_name).to.be.null
       );
   });
+  describe('#list with pagination', () => {
+    customTest
+      .mockCryppo()
+      .nock('https://sandbox.meeco.me/vault', api => {
+        api
+          .get('/connections')
+          .matchHeader('Authorization', testUserAuth.vault_access_token)
+          .matchHeader('Meeco-Subscription-Key', environment.vault.subscription_key)
+          .query({ page: 2 })
+          .reply(200, connectionsResponse);
+      })
+      .add('connections', () => new ConnectionService(environment).list(testUserAuth, { page: 2 }))
+      .it('calls GET /connections');
+  });
 
   describe('#listAll', () => {
     const responsePart1 = {
