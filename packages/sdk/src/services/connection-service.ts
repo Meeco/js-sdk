@@ -109,7 +109,9 @@ export class ConnectionService extends Service<ConnectionApi> {
     this.logger.log('Fetching connections');
     const result = await this.vaultAPIFactory(credentials).ConnectionApi.connectionsGet(
       options?.nextPageAfter,
-      options?.perPage
+      options?.perPage,
+      options?.page,
+      options?.delegation
     );
 
     if (resultHasNext(result) && options?.perPage === undefined) {
