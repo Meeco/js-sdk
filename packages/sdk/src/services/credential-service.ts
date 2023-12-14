@@ -5,7 +5,7 @@ import {
   CredentialsControllerGenerateAcceptEnum,
   GenerateCredentialDto,
 } from '@meeco/vc-api-sdk';
-import { decodeJWT } from 'did-jwt';
+import { JWTPayload, decodeJWT } from 'did-jwt';
 import { DecryptedItem } from '../models/decrypted-item';
 import { NewItem } from '../models/new-item';
 import { MeecoServiceError } from '../models/service-error';
@@ -95,8 +95,14 @@ export class CredentialService extends Service<CredentialsApi> {
     auth: IVaultToken & IDEK,
     { credentialJWT, credentialType }: CreateVerifiableCredentialItemParams
   ): Promise<DecryptedItem> {
-    const decodedCredential = decodeJWT(credentialJWT.split('~')[0]);
     const itemService = new ItemService(this.environment);
+
+    const decodedCredential = decodeJWT(credentialJWT.split('~')[0]);
+    const credentialFormat = credentialJWT.includes('~')
+      ? CREDENTIAL_FORMAT.SD_JWT_VC
+      : CREDENTIAL_FORMAT.JWT_VC;
+
+    const vcClaims = this.getVcClaims(decodedCredential.payload, credentialFormat);
 
     const slots = [
       {
@@ -109,48 +115,43 @@ export class CredentialService extends Service<CredentialsApi> {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.CREDENTIAL_FORMAT_SLOT_LABEL,
         name: CREDENTIAL_ITEM.CREDENTIAL_FORMAT_SLOT_NAME,
-        value: credentialJWT.includes('~') ? CREDENTIAL_FORMAT.SD_JWT_VC : CREDENTIAL_FORMAT.JWT_VC,
+        value: credentialFormat,
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.ISSUER_SLOT_LABEL,
         name: CREDENTIAL_ITEM.ISSUER_SLOT_NAME,
-        value:
-          typeof decodedCredential.payload.vc.issuer === 'string'
-            ? decodedCredential.payload.vc.issuer
-            : decodedCredential.payload.vc.issuer.id,
+        value: typeof vcClaims.issuer === 'string' ? vcClaims.issuer : vcClaims.issuer.id,
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.SUBJECT_SLOT_LABEL,
         name: CREDENTIAL_ITEM.SUBJECT_SLOT_NAME,
-        value: decodedCredential.payload.vc.credentialSubject.id,
+        value: vcClaims.subject,
       },
       {
         slot_type_name: SlotType.DateTime,
         label: CREDENTIAL_ITEM.ISSUED_AT_SLOT_LABEL,
         name: CREDENTIAL_ITEM.ISSUED_AT_SLOT_NAME,
-        value: new Date(decodedCredential.payload.vc.issuanceDate).toJSON(),
+        value: new Date(vcClaims.issuanceDate).toJSON(),
       },
       {
         slot_type_name: SlotType.DateTime,
         label: CREDENTIAL_ITEM.EXPIRES_AT_SLOT_LABEL,
         name: CREDENTIAL_ITEM.EXPIRES_AT_SLOT_NAME,
-        value: decodedCredential.payload.vc.expirationDate
-          ? new Date(decodedCredential.payload.vc.expirationDate).toJSON()
-          : null,
+        value: vcClaims.expirationDate ? new Date(vcClaims.expirationDate).toJSON() : null,
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.CREDENTIAL_ID_SLOT_LABEL,
         name: CREDENTIAL_ITEM.CREDENTIAL_ID_SLOT_NAME,
-        value: decodedCredential.payload.vc.id,
+        value: vcClaims.id,
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.SCHEMA_URL_LABEL,
         name: CREDENTIAL_ITEM.SCHEMA_URL_NAME,
-        value: decodedCredential.payload.vc.credentialSchema?.id || null,
+        value: vcClaims.credentialSchema?.id || null,
       },
       {
         slot_type_name: SlotType.KeyValue,
@@ -174,22 +175,22 @@ export class CredentialService extends Service<CredentialsApi> {
         slot_type_name: SlotType.Bool,
         label: CREDENTIAL_ITEM.REVOCABLE_SLOT_LABEL,
         name: CREDENTIAL_ITEM.REVOCABLE_SLOT_NAME,
-        value: decodedCredential.payload.vc.credentialStatus ? 'true' : 'false',
+        value: vcClaims.revocable ? 'true' : 'false',
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.ISSUER_NAME_SLOT_LABEL,
         name: CREDENTIAL_ITEM.ISSUER_NAME_SLOT_NAME,
-        value: decodedCredential.payload.vc.issuer?.name || null,
+        value: vcClaims.issuer?.name || null,
       },
     ];
 
     const newVerifiableCredentialItem = new NewItem(
-      decodedCredential.payload.vc.id,
+      vcClaims.id,
       CREDENTIAL_ITEM.TEMPLATE_NAME,
       slots,
       undefined,
-      this.formatIdToItemName(decodedCredential.payload.vc.id)
+      this.formatIdToItemName(vcClaims.id)
     );
 
     const itemServiceAuth = {
@@ -230,5 +231,31 @@ export class CredentialService extends Service<CredentialsApi> {
       textColor: styles.text_color,
       logo: styles.image,
     });
+  }
+
+  private isSdJwtVc(format: string) {
+    return CREDENTIAL_FORMAT.SD_JWT_VC === format;
+  }
+
+  private getVcClaims(payload: JWTPayload, format: string) {
+    return this.isSdJwtVc(format)
+      ? {
+          issuer: payload.iss,
+          subject: payload.sub,
+          issuanceDate: payload.iat,
+          expirationDate: payload.exp,
+          id: payload.jti,
+          credentialSchema: null,
+          revocable: false,
+        }
+      : {
+          issuer: payload.vc.issuer,
+          subject: payload.vc.credentialSubject.id,
+          issuanceDate: payload.vc.issuanceDate,
+          expirationDate: payload.vc.expirationDate,
+          id: payload.vc.id,
+          credentialSchema: payload.vc.credentialSchema,
+          revocable: payload.vc.credentialStatus,
+        };
   }
 }
