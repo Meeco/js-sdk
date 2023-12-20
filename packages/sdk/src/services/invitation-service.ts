@@ -9,13 +9,22 @@ import {
 import DecryptedKeypair from '../models/decrypted-keypair';
 import { MeecoServiceError } from '../models/service-error';
 import { SymmetricKey } from '../models/symmetric-key';
-import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
+import Service, { IDEK, IKEK, IKeystoreToken, IPageOptions, IVaultToken } from './service';
 
 interface ICreateInvitationOptions {
   keypairId?: string;
   delegationIntent?: { delegationToken: string; delegateRole: string };
   isMultistepWorkflow?: boolean;
   senderToRecipientData?: any;
+}
+
+export enum InvitationStateEnum {
+  New = 'new',
+  Connected = 'connected',
+  Rejected = 'rejected',
+  Accepted = 'accepted',
+  Cancelled = 'cancelled',
+  Expired = 'expired',
 }
 
 export class InvitationService extends Service<InvitationApi> {
@@ -25,14 +34,22 @@ export class InvitationService extends Service<InvitationApi> {
 
   /**
    * Retrieves invitations that the current user has created. Parameter state fetches invitations with a certain state.
+   * @param state only fetch invitations with a certain state. Currenty there are 5 states: new, connected, accepted, rejected, cancelled, expired, If parameter state is not submitted, only invitations with states new, accepted and rejected are fetched.
    * @param keypairId Use this public key in the new Connection. This is a Keystore Keypair.id (not external_id).
    * Throws an error if the key pair does not exist.
    */
   public async list(
-    credentials: IVaultToken & IKeystoreToken & IDEK & IKEK
+    credentials: IVaultToken & IKeystoreToken & IDEK & IKEK,
+    options?: IPageOptions,
+    state?: InvitationStateEnum
   ): Promise<InvitationsResponse> {
     this.logger.log('Sending invitation request');
-    const invitations = await this.vaultAPIFactory(credentials).InvitationApi.invitationsGet();
+    const invitations = await this.vaultAPIFactory(credentials).InvitationApi.invitationsGet(
+      state,
+      options?.nextPageAfter,
+      options?.perPage,
+      options?.page
+    );
 
     return invitations;
   }
