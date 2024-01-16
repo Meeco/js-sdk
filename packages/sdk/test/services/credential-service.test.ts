@@ -1,7 +1,8 @@
-import { SigningAlg } from '@meeco/sdk';
+import { DecryptedItem, DecryptedItems, ItemService, SigningAlg } from '@meeco/sdk';
 import { CredentialsControllerGenerateAcceptEnum } from '@meeco/vc-api-sdk';
 import { generateKeyPairFromSeed } from '@stablelib/ed25519';
 import { expect } from 'chai';
+import sinon from 'sinon';
 import { CredentialService } from '../../src/services/credential-service';
 import cryppo from '../../src/services/cryppo-service';
 import { customTest, environment, testUserAuth } from '../test-helpers';
@@ -742,6 +743,167 @@ describe('CredentialService', () => {
             },
           });
         });
+    });
+  });
+
+  describe('VC Vault Item', () => {
+    let credentialService: CredentialService;
+
+    beforeEach(() => {
+      credentialService = new CredentialService(environment);
+    });
+
+    describe('createVerifiableCredentialItem', () => {
+      customTest
+      .stub(
+        ItemService.prototype,
+        'create',
+        sinon.stub().returns(Promise.resolve({} as DecryptedItem))
+      )
+      .it('should create a verifiable credential item', async () => {
+        const credentialJWT =
+        'eyJ0eXAiOiJ2YytzZC1qd3QiLCJhbGciOiJFZDI1NTE5Iiwia2lkIjoiZGlkOndlYjpkaWQtd2ViLnNlY3VyZXZhbHVlLmV4Y2hhbmdlOjAyOTc4ZWYxLThmZWEtNDZlZS04MmU3LTZhYjZlOTZkMTYzMyNrZXktMSJ9.eyJpYXQiOjE3MDUzNzgyNzYsImNuZiI6eyJqd2siOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsIngiOiJqalBqc0hPaTNlSl9SeTBwYUtla2ozSHhleFJiNDNVWURWOGZJNjNEWEYwIiwieSI6Iic5X1VZNDZKN3lVN3E4amRNN3B4MEg2NVp2YWFNb281Z2J0MzVFYVFpMW9nIn19LCJpc3MiOiJkaWQ6d2ViOmRpZC13ZWIuc2VjdXJldmFsdWUuZXhjaGFuZ2U6MDI5NzhlZjEtOGZlYS00NmVlLTgyZTctNmFiNmU5NmQxNjMzIiwidmN0IjoiU3R1ZGVudElEIiwianRpIjoidXJuOnV1aWQ6NjZjZmRlMGEtYmFjOS00ZWQzLThjZWUtMTBlNGE0MTdkY2M5IiwiX3NkIjpbIk1JaWhjaDJacVdlU1FraEtGdDhiWmRid3RhZzRjNWZVdUdvU2lDSmswNVUiLCJULU4xNFpGVHpzcWtPWVI2ZXNaVjZIMUJRT20zMFJTcFRPQ01JY0FWVEtzIiwiZ3RnOHllSmpfT2ZwbE43eTZva3k4MXdkOUFCOUdPVU51Sk05ODgwWjVxWSIsImlPUWZaSTNRRU9hcHhNZnk3YnlkV3R2VWlWR01zTkxYa3d3YmJFaXpvUU0iXSwiX3NkX2FsZyI6InNoYS0yNTYifQ.M5GJO0y1ohtpeMhuOQOLNN_dNz2Wo1Ur4M5-NsbhKlIiGFTzDFZw3C3eLqilnR9l2PnB9xJTyp4u6GPVdYZeDw~WyJIMDlneWlFUnlxeWJCRWp3IiwiZ2l2ZW5OYW1lIiwiSm9obiJd~WyJKeEZPZmhMcTJFZ2ZSQWNkIiwiZmFtaWx5TmFtZSIsIkRvZSJd~';
+
+       await credentialService.createVerifiableCredentialItem(
+          {
+            vault_access_token: testUserAuth.vault_access_token,
+            data_encryption_key: testUserAuth.data_encryption_key,
+          },
+          {
+            credentialJWT
+          }
+        );
+
+        const itemServiceAuth = {
+          vault_access_token: testUserAuth.vault_access_token,
+          data_encryption_key: testUserAuth.data_encryption_key,
+        };
+
+        const expectedItem =   {
+          slots: [
+            {
+              slot_type_name: 'key_value',
+              label: 'Credential JWT',
+              name: 'credential_jwt',
+              value: 'eyJ0eXAiOiJ2YytzZC1qd3QiLCJhbGciOiJFZDI1NTE5Iiwia2lkIjoiZGlkOndlYjpkaWQtd2ViLnNlY3VyZXZhbHVlLmV4Y2hhbmdlOjAyOTc4ZWYxLThmZWEtNDZlZS04MmU3LTZhYjZlOTZkMTYzMyNrZXktMSJ9.eyJpYXQiOjE3MDUzNzgyNzYsImNuZiI6eyJqd2siOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsIngiOiJqalBqc0hPaTNlSl9SeTBwYUtla2ozSHhleFJiNDNVWURWOGZJNjNEWEYwIiwieSI6Iic5X1VZNDZKN3lVN3E4amRNN3B4MEg2NVp2YWFNb281Z2J0MzVFYVFpMW9nIn19LCJpc3MiOiJkaWQ6d2ViOmRpZC13ZWIuc2VjdXJldmFsdWUuZXhjaGFuZ2U6MDI5NzhlZjEtOGZlYS00NmVlLTgyZTctNmFiNmU5NmQxNjMzIiwidmN0IjoiU3R1ZGVudElEIiwianRpIjoidXJuOnV1aWQ6NjZjZmRlMGEtYmFjOS00ZWQzLThjZWUtMTBlNGE0MTdkY2M5IiwiX3NkIjpbIk1JaWhjaDJacVdlU1FraEtGdDhiWmRid3RhZzRjNWZVdUdvU2lDSmswNVUiLCJULU4xNFpGVHpzcWtPWVI2ZXNaVjZIMUJRT20zMFJTcFRPQ01JY0FWVEtzIiwiZ3RnOHllSmpfT2ZwbE43eTZva3k4MXdkOUFCOUdPVU51Sk05ODgwWjVxWSIsImlPUWZaSTNRRU9hcHhNZnk3YnlkV3R2VWlWR01zTkxYa3d3YmJFaXpvUU0iXSwiX3NkX2FsZyI6InNoYS0yNTYifQ.M5GJO0y1ohtpeMhuOQOLNN_dNz2Wo1Ur4M5-NsbhKlIiGFTzDFZw3C3eLqilnR9l2PnB9xJTyp4u6GPVdYZeDw~WyJIMDlneWlFUnlxeWJCRWp3IiwiZ2l2ZW5OYW1lIiwiSm9obiJd~WyJKeEZPZmhMcTJFZ2ZSQWNkIiwiZmFtaWx5TmFtZSIsIkRvZSJd~'
+            },
+            {
+              slot_type_name: 'key_value',
+              label: 'Credential format',
+              name: 'credential_format',
+              value: 'vc+sd-jwt'
+            },
+            {
+              slot_type_name: 'key_value',
+              label: 'Issuer',
+              name: 'issuer',
+              value: 'did:web:did-web.securevalue.exchange:02978ef1-8fea-46ee-82e7-6ab6e96d1633'
+            },
+            {
+              slot_type_name: 'key_value',
+              label: 'Subject',
+              name: 'subject',
+              value: null
+            },
+            {
+              slot_type_name: 'datetime',
+              label: 'Issued at',
+              name: 'issued_at',
+              value: '1970-01-20T17:42:58.276Z'
+            },
+            {
+              slot_type_name: 'datetime',
+              label: 'Expires at',
+              name: 'expires_at',
+              value: null
+            },
+            {
+              slot_type_name: 'key_value',
+              label: 'Credential ID',
+              name: 'credential_id',
+              value: 'urn:uuid:66cfde0a-bac9-4ed3-8cee-10e4a417dcc9'
+            },
+            {
+              slot_type_name: 'key_value',
+              label: 'Schema url',
+              name: 'schema_url',
+              value: null
+            },
+            {
+              slot_type_name: 'key_value',
+              label: 'Credential type id',
+              name: 'credential_type_id',
+              value: null
+            },
+            {
+              slot_type_name: 'key_value',
+              label: 'Credential type name',
+              name: 'credential_type_name',
+              value: null
+            },
+            {
+              slot_type_name: 'key_value',
+              label: 'Styles',
+              name: 'styles',
+              value: null
+            },
+            {
+              slot_type_name: 'bool',
+              label: 'Revocable',
+              name: 'revocable',
+              value: 'false'
+            },
+            {
+              slot_type_name: 'key_value',
+              label: 'Issuer name',
+              name: 'issuer_name',
+              value: null
+            }
+          ],
+          classification_nodes: [],
+          label: 'urn:uuid:66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
+          template_name: 'verifiable_credential',
+          name: '66cfde0a-bac9-4ed3-8cee-10e4a417dcc9'
+        };
+        sinon.assert.calledWith(ItemService.prototype.create as sinon.SinonStub, 
+          itemServiceAuth,
+          sinon.match(expectedItem)
+        );
+      });
+    });
+
+    describe('findVerifiableCredentialItemsById', () => {
+      customTest
+      .stub(
+        ItemService.prototype,
+        'listDecrypted',
+        sinon.stub().returns(Promise.resolve({} as DecryptedItems))
+      ).
+      it('should find verifiable credential items by id', async () => {
+        const mockCredentialId = 'urn:uuid:58864fac-1857-40f8-9f37-8fdd4fe1cc2e';
+       
+         await credentialService.findVerifiableCredentialItemsById(
+          {
+            vault_access_token: testUserAuth.vault_access_token,
+            data_encryption_key: testUserAuth.data_encryption_key,
+          },
+          mockCredentialId
+        );
+     
+        const itemServiceAuth = {
+          vault_access_token: testUserAuth.vault_access_token,
+          data_encryption_key: testUserAuth.data_encryption_key,
+        };
+
+        const expectedQuery = {
+            name: '58864fac-1857-40f8-9f37-8fdd4fe1cc2e'
+        };
+
+        sinon.assert.calledWith(ItemService.prototype.listDecrypted as sinon.SinonStub, 
+          itemServiceAuth,
+          expectedQuery
+        );
+      });
     });
   });
 });
