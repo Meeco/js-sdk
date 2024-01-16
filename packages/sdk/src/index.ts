@@ -39,7 +39,7 @@ export * from './services/template-service';
 export * from './services/user-service';
 export * from './util/api-factory';
 export * from './util/codecs';
-export { CREDENTIAL_FORMAT } from './util/constants';
+export * from './util/constants';
 export * from './util/did-management';
 export * from './util/find-connection-between';
 export * from './util/jwt';

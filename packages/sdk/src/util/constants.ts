@@ -1,6 +1,6 @@
 export enum CREDENTIAL_FORMAT {
-  'JWT_VC' = 'jwt_vc',
-  'SD_JWT_VC' = 'sd_jwt_vc',
+  'JWT_VC' = 'jwt_vc_json',
+  'SD_JWT_VC' = 'vc+sd-jwt',
 }
 
 /**

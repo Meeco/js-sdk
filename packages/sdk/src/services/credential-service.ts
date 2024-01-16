@@ -12,7 +12,7 @@ import { MeecoServiceError } from '../models/service-error';
 import { SlotType } from '../models/slot-types';
 import { CREDENTIAL_FORMAT, CREDENTIAL_ITEM } from '../util/constants';
 import { SigningAlg, signUnsignedJWT } from '../util/jwt';
-import { ItemService } from './item-service';
+import { DecryptedItems, ItemService } from './item-service';
 import Service, { IDEK, IVCToken, IVaultToken } from './service';
 
 /**
@@ -24,7 +24,7 @@ export interface GenerateCredentialExtendedDto extends Omit<GenerateCredentialDt
 
 export interface CreateVerifiableCredentialItemParams {
   credentialJWT: string;
-  credentialType: CredentialTypeModelDto;
+  credentialType?: CredentialTypeModelDto;
 }
 export class CredentialService extends Service<CredentialsApi> {
   public getAPI(token: IVCToken) {
@@ -157,19 +157,19 @@ export class CredentialService extends Service<CredentialsApi> {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.CREDENTIAL_TYPE_ID_LABEL,
         name: CREDENTIAL_ITEM.CREDENTIAL_TYPE_ID_NAME,
-        value: credentialType.id,
+        value: credentialType?.id || null,
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.CREDENTIAL_TYPE_NAME_SLOT_LABEL,
         name: CREDENTIAL_ITEM.CREDENTIAL_TYPE_NAME_SLOT_NAME,
-        value: credentialType.name,
+        value: credentialType?.name || null,
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.STYLES_SLOT_LABEL,
         name: CREDENTIAL_ITEM.STYLES_SLOT_NAME,
-        value: this.formatStyles(credentialType.style),
+        value: credentialType?.style ? this.formatStyles(credentialType.style) : null,
       },
       {
         slot_type_name: SlotType.Bool,
@@ -203,6 +203,25 @@ export class CredentialService extends Service<CredentialsApi> {
     }
 
     return itemService.create(itemServiceAuth, newVerifiableCredentialItem);
+  }
+
+  public async findVerifiableCredentialItemsById(
+    auth: IVaultToken & IDEK,
+    credentialId: string
+  ): Promise<DecryptedItems> {
+    const itemService = new ItemService(this.environment);
+    credentialId = this.formatIdToItemName(credentialId);
+
+    const itemServiceAuth = {
+      vault_access_token: auth.vault_access_token,
+      data_encryption_key: auth.data_encryption_key,
+    };
+
+    if (auth.organisation_id) {
+      itemServiceAuth['organisation_id'] = auth.organisation_id;
+    }
+
+    return await itemService.listDecrypted(itemServiceAuth, { name: credentialId });
   }
 
   /**
@@ -241,7 +260,7 @@ export class CredentialService extends Service<CredentialsApi> {
     return this.isSdJwtVc(format)
       ? {
           issuer: payload.iss,
-          subject: payload.sub,
+          subject: payload?.sub || null,
           issuanceDate: payload.iat,
           expirationDate: payload.exp,
           id: payload.jti,
