@@ -1,15 +1,11 @@
-export enum CREDENTIAL_FORMAT {
-  'JWT_VC' = 'jwt_vc_json',
-  'SD_JWT_VC' = 'vc+sd-jwt',
-}
-
 /**
  * Credential item attributes
  */
 export const CREDENTIAL_ITEM = {
   TEMPLATE_NAME: 'verifiable_credential',
-  JWT_SLOT_NAME: 'credential_jwt',
-  JWT_SLOT_LABEL: 'Credential JWT',
+  // TODO: rename to credential from credential_jwt as it may not be always a JWT - depends on the format https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#appendix-E.1.1.6
+  CREDENTIAL_SLOT_NAME: 'credential_jwt',
+  CREDENTIAL_SLOT_LABEL: 'Credential',
   CREDENTIAL_FORMAT_SLOT_NAME: 'credential_format',
   CREDENTIAL_FORMAT_SLOT_LABEL: 'Credential format',
   ISSUER_SLOT_NAME: 'issuer',

@@ -5,12 +5,11 @@ import {
   CredentialsControllerGenerateAcceptEnum,
   GenerateCredentialDto,
 } from '@meeco/vc-api-sdk';
-import { JWTPayload, decodeJWT } from 'did-jwt';
 import { DecryptedItem } from '../models/decrypted-item';
 import { NewItem } from '../models/new-item';
 import { MeecoServiceError } from '../models/service-error';
 import { SlotType } from '../models/slot-types';
-import { CREDENTIAL_FORMAT, CREDENTIAL_ITEM } from '../util/constants';
+import { CREDENTIAL_ITEM } from '../util/constants';
 import { SigningAlg, signUnsignedJWT } from '../util/jwt';
 import { DecryptedItems, ItemService } from './item-service';
 import Service, { IDEK, IVCToken, IVaultToken } from './service';
@@ -22,8 +21,21 @@ export interface GenerateCredentialExtendedDto extends Omit<GenerateCredentialDt
   issuer: string | { id: string; name?: string };
 }
 
+export interface CredentialDetail {
+  issuer: any | null;
+  subject: string | null;
+  issuanceDate: Date | null;
+  expirationDate: Date | null;
+  id: string | null;
+  credentialSchema: any | null;
+  revocable: boolean | null;
+}
+
 export interface CreateVerifiableCredentialItemParams {
-  credentialJWT: string;
+  credential: string;
+  format: string;
+  id: string;
+  credentialDetail?: CredentialDetail;
   credentialType?: CredentialTypeModelDto;
 }
 export class CredentialService extends Service<CredentialsApi> {
@@ -93,65 +105,130 @@ export class CredentialService extends Service<CredentialsApi> {
 
   public async createVerifiableCredentialItem(
     auth: IVaultToken & IDEK,
-    { credentialJWT, credentialType }: CreateVerifiableCredentialItemParams
+    {
+      credential,
+      format,
+      id,
+      credentialDetail,
+      credentialType,
+    }: CreateVerifiableCredentialItemParams
   ): Promise<DecryptedItem> {
+    const slots = this.createSlots(credential, format, credentialDetail, credentialType);
+
+    const newVerifiableCredentialItem = new NewItem(
+      id,
+      CREDENTIAL_ITEM.TEMPLATE_NAME,
+      slots,
+      undefined,
+      id
+    );
+
     const itemService = new ItemService(this.environment);
+    const itemServiceAuth = this.createItemServiceAuth(auth);
 
-    const decodedCredential = decodeJWT(credentialJWT.split('~')[0]);
-    const credentialFormat = credentialJWT.includes('~')
-      ? CREDENTIAL_FORMAT.SD_JWT_VC
-      : CREDENTIAL_FORMAT.JWT_VC;
+    return itemService.create(itemServiceAuth, newVerifiableCredentialItem);
+  }
 
-    const vcClaims = this.getVcClaims(decodedCredential.payload, credentialFormat);
+  public async findVerifiableCredentialItemsById(
+    auth: IVaultToken & IDEK,
+    id: string
+  ): Promise<DecryptedItems> {
+    const itemService = new ItemService(this.environment);
+    const itemServiceAuth = this.createItemServiceAuth(auth);
 
-    const slots = [
+    return await itemService.listDecrypted(itemServiceAuth, { name: id });
+  }
+
+  /**
+   * Helpers
+   */
+
+  private formatStyles(styles: CreateCredentialTypeStyleDto) {
+    if (!styles) {
+      return null;
+    }
+
+    /**
+     * Format that Portal is using
+     */
+    return JSON.stringify({
+      backgroundColor: styles.background,
+      textColor: styles.text_color,
+      logo: styles.image,
+    });
+  }
+
+  private createItemServiceAuth(auth: IVaultToken & IDEK) {
+    const itemServiceAuth = {
+      vault_access_token: auth.vault_access_token,
+      data_encryption_key: auth.data_encryption_key,
+    };
+
+    if (auth.organisation_id) {
+      itemServiceAuth['organisation_id'] = auth.organisation_id;
+    }
+
+    return itemServiceAuth;
+  }
+
+  private createSlots(
+    credential: string,
+    format: string,
+    credentialDetail?: CredentialDetail,
+    credentialType?: CredentialTypeModelDto
+  ) {
+    return [
       {
         slot_type_name: SlotType.KeyValue,
-        label: CREDENTIAL_ITEM.JWT_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.JWT_SLOT_NAME,
-        value: credentialJWT,
+        label: CREDENTIAL_ITEM.CREDENTIAL_SLOT_LABEL,
+        name: CREDENTIAL_ITEM.CREDENTIAL_SLOT_NAME,
+        value: credential,
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.CREDENTIAL_FORMAT_SLOT_LABEL,
         name: CREDENTIAL_ITEM.CREDENTIAL_FORMAT_SLOT_NAME,
-        value: credentialFormat,
+        value: format,
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.ISSUER_SLOT_LABEL,
         name: CREDENTIAL_ITEM.ISSUER_SLOT_NAME,
-        value: typeof vcClaims.issuer === 'string' ? vcClaims.issuer : vcClaims.issuer.id,
+        value: credentialDetail?.issuer
+          ? typeof credentialDetail.issuer === 'string'
+            ? credentialDetail.issuer
+            : credentialDetail.issuer?.id || null
+          : null,
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.SUBJECT_SLOT_LABEL,
         name: CREDENTIAL_ITEM.SUBJECT_SLOT_NAME,
-        value: vcClaims.subject,
+        value: credentialDetail?.subject || null,
       },
       {
         slot_type_name: SlotType.DateTime,
         label: CREDENTIAL_ITEM.ISSUED_AT_SLOT_LABEL,
         name: CREDENTIAL_ITEM.ISSUED_AT_SLOT_NAME,
-        value: new Date(vcClaims.issuanceDate).toJSON(),
+        value: credentialDetail?.issuanceDate ? credentialDetail.issuanceDate.toJSON() : null,
       },
       {
         slot_type_name: SlotType.DateTime,
         label: CREDENTIAL_ITEM.EXPIRES_AT_SLOT_LABEL,
         name: CREDENTIAL_ITEM.EXPIRES_AT_SLOT_NAME,
-        value: vcClaims.expirationDate ? new Date(vcClaims.expirationDate).toJSON() : null,
+        value: credentialDetail?.expirationDate ? credentialDetail.expirationDate.toJSON() : null,
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.CREDENTIAL_ID_SLOT_LABEL,
         name: CREDENTIAL_ITEM.CREDENTIAL_ID_SLOT_NAME,
-        value: vcClaims.id,
+        value: credentialDetail?.id || null,
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.SCHEMA_URL_LABEL,
         name: CREDENTIAL_ITEM.SCHEMA_URL_NAME,
-        value: vcClaims.credentialSchema?.id || null,
+        value: credentialDetail?.credentialSchema?.id ? credentialDetail.credentialSchema.id : null,
       },
       {
         slot_type_name: SlotType.KeyValue,
@@ -175,106 +252,19 @@ export class CredentialService extends Service<CredentialsApi> {
         slot_type_name: SlotType.Bool,
         label: CREDENTIAL_ITEM.REVOCABLE_SLOT_LABEL,
         name: CREDENTIAL_ITEM.REVOCABLE_SLOT_NAME,
-        value: vcClaims.revocable ? 'true' : 'false',
+        value:
+          credentialDetail?.revocable === null || credentialDetail?.revocable === undefined
+            ? null
+            : credentialDetail?.revocable
+            ? 'true'
+            : 'false',
       },
       {
         slot_type_name: SlotType.KeyValue,
         label: CREDENTIAL_ITEM.ISSUER_NAME_SLOT_LABEL,
         name: CREDENTIAL_ITEM.ISSUER_NAME_SLOT_NAME,
-        value: vcClaims.issuer?.name || null,
+        value: credentialDetail?.issuer?.name || null,
       },
     ];
-
-    const newVerifiableCredentialItem = new NewItem(
-      vcClaims.id,
-      CREDENTIAL_ITEM.TEMPLATE_NAME,
-      slots,
-      undefined,
-      this.formatIdToItemName(vcClaims.id)
-    );
-
-    const itemServiceAuth = {
-      vault_access_token: auth.vault_access_token,
-      data_encryption_key: auth.data_encryption_key,
-    };
-
-    if (auth.organisation_id) {
-      itemServiceAuth['organisation_id'] = auth.organisation_id;
-    }
-
-    return itemService.create(itemServiceAuth, newVerifiableCredentialItem);
-  }
-
-  public async findVerifiableCredentialItemsById(
-    auth: IVaultToken & IDEK,
-    credentialId: string
-  ): Promise<DecryptedItems> {
-    const itemService = new ItemService(this.environment);
-    credentialId = this.formatIdToItemName(credentialId);
-
-    const itemServiceAuth = {
-      vault_access_token: auth.vault_access_token,
-      data_encryption_key: auth.data_encryption_key,
-    };
-
-    if (auth.organisation_id) {
-      itemServiceAuth['organisation_id'] = auth.organisation_id;
-    }
-
-    return await itemService.listDecrypted(itemServiceAuth, { name: credentialId });
-  }
-
-  /**
-   * Helpers
-   */
-
-  private formatIdToItemName(id: string) {
-    /**
-     * For credentials starting with urn:uuid: it will crop it and leave only uuid part
-     * Regular uuids will not be changed
-     */
-    const processedId = id.replace(/[^a-z0-9-]/gi, '_');
-    return processedId.slice(processedId.lastIndexOf('_') + 1);
-  }
-
-  private formatStyles(styles: CreateCredentialTypeStyleDto) {
-    if (!styles) {
-      return null;
-    }
-
-    /**
-     * Format that Portal is using
-     */
-    return JSON.stringify({
-      backgroundColor: styles.background,
-      textColor: styles.text_color,
-      logo: styles.image,
-    });
-  }
-
-  private isSdJwtVc(format: string) {
-    return CREDENTIAL_FORMAT.SD_JWT_VC === format;
-  }
-
-  private getVcClaims(payload: JWTPayload, format: string) {
-    return this.isSdJwtVc(format)
-      ? {
-          issuer: payload.iss,
-          subject: payload?.sub || null,
-          issuanceDate: payload.iat,
-          expirationDate: payload.exp,
-          id: payload.jti,
-          credentialSchema: null,
-          revocable: false,
-        }
-      : {
-          issuer: payload.vc.issuer,
-          subject: payload.vc.credentialSubject.id,
-          issuanceDate: payload.vc.issuanceDate,
-          expirationDate: payload.vc.expirationDate,
-          id: payload.vc.id,
-          credentialSchema: payload.vc.credentialSchema,
-          revocable: payload.vc.credentialStatus,
-        };
   }
 }
