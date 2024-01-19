@@ -760,8 +760,8 @@ describe('CredentialService', () => {
           'create',
           sinon.stub().returns(Promise.resolve({} as DecryptedItem))
         )
-        .it('should create a verifiable credential item', async () => {
-          const credentialJWT =
+        .it('should create a verifiable credential item for format vc+sd-jwt', async () => {
+          const credential =
             'eyJ0eXAiOiJ2YytzZC1qd3QiLCJhbGciOiJFZDI1NTE5Iiwia2lkIjoiZGlkOndlYjpkaWQtd2ViLnNlY3VyZXZhbHVlLmV4Y2hhbmdlOjAyOTc4ZWYxLThmZWEtNDZlZS04MmU3LTZhYjZlOTZkMTYzMyNrZXktMSJ9.eyJpYXQiOjE3MDUzNzgyNzYsImNuZiI6eyJqd2siOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsIngiOiJqalBqc0hPaTNlSl9SeTBwYUtla2ozSHhleFJiNDNVWURWOGZJNjNEWEYwIiwieSI6Iic5X1VZNDZKN3lVN3E4amRNN3B4MEg2NVp2YWFNb281Z2J0MzVFYVFpMW9nIn19LCJpc3MiOiJkaWQ6d2ViOmRpZC13ZWIuc2VjdXJldmFsdWUuZXhjaGFuZ2U6MDI5NzhlZjEtOGZlYS00NmVlLTgyZTctNmFiNmU5NmQxNjMzIiwidmN0IjoiU3R1ZGVudElEIiwianRpIjoidXJuOnV1aWQ6NjZjZmRlMGEtYmFjOS00ZWQzLThjZWUtMTBlNGE0MTdkY2M5IiwiX3NkIjpbIk1JaWhjaDJacVdlU1FraEtGdDhiWmRid3RhZzRjNWZVdUdvU2lDSmswNVUiLCJULU4xNFpGVHpzcWtPWVI2ZXNaVjZIMUJRT20zMFJTcFRPQ01JY0FWVEtzIiwiZ3RnOHllSmpfT2ZwbE43eTZva3k4MXdkOUFCOUdPVU51Sk05ODgwWjVxWSIsImlPUWZaSTNRRU9hcHhNZnk3YnlkV3R2VWlWR01zTkxYa3d3YmJFaXpvUU0iXSwiX3NkX2FsZyI6InNoYS0yNTYifQ.M5GJO0y1ohtpeMhuOQOLNN_dNz2Wo1Ur4M5-NsbhKlIiGFTzDFZw3C3eLqilnR9l2PnB9xJTyp4u6GPVdYZeDw~WyJIMDlneWlFUnlxeWJCRWp3IiwiZ2l2ZW5OYW1lIiwiSm9obiJd~WyJKeEZPZmhMcTJFZ2ZSQWNkIiwiZmFtaWx5TmFtZSIsIkRvZSJd~';
 
           await credentialService.createVerifiableCredentialItem(
@@ -770,7 +770,18 @@ describe('CredentialService', () => {
               data_encryption_key: testUserAuth.data_encryption_key,
             },
             {
-              credentialJWT,
+              credential,
+              format: 'vc+sd-jwt',
+              id: '66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
+              credentialDetail: {
+                issuer: 'did:web:did-web.securevalue.exchange:02978ef1-8fea-46ee-82e7-6ab6e96d1633',
+                subject: undefined,
+                issuanceDate: new Date('1970-01-20T17:42:58.276Z'),
+                expirationDate: undefined,
+                id: 'urn:uuid:66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
+                credentialSchema: undefined,
+                revocable: undefined,
+              },
             }
           );
 
@@ -783,10 +794,9 @@ describe('CredentialService', () => {
             slots: [
               {
                 slot_type_name: 'key_value',
-                label: 'Credential JWT',
+                label: 'Credential',
                 name: 'credential_jwt',
-                value:
-                  'eyJ0eXAiOiJ2YytzZC1qd3QiLCJhbGciOiJFZDI1NTE5Iiwia2lkIjoiZGlkOndlYjpkaWQtd2ViLnNlY3VyZXZhbHVlLmV4Y2hhbmdlOjAyOTc4ZWYxLThmZWEtNDZlZS04MmU3LTZhYjZlOTZkMTYzMyNrZXktMSJ9.eyJpYXQiOjE3MDUzNzgyNzYsImNuZiI6eyJqd2siOnsia3R5IjoiRUMiLCJjcnYiOiJQLTI1NiIsIngiOiJqalBqc0hPaTNlSl9SeTBwYUtla2ozSHhleFJiNDNVWURWOGZJNjNEWEYwIiwieSI6Iic5X1VZNDZKN3lVN3E4amRNN3B4MEg2NVp2YWFNb281Z2J0MzVFYVFpMW9nIn19LCJpc3MiOiJkaWQ6d2ViOmRpZC13ZWIuc2VjdXJldmFsdWUuZXhjaGFuZ2U6MDI5NzhlZjEtOGZlYS00NmVlLTgyZTctNmFiNmU5NmQxNjMzIiwidmN0IjoiU3R1ZGVudElEIiwianRpIjoidXJuOnV1aWQ6NjZjZmRlMGEtYmFjOS00ZWQzLThjZWUtMTBlNGE0MTdkY2M5IiwiX3NkIjpbIk1JaWhjaDJacVdlU1FraEtGdDhiWmRid3RhZzRjNWZVdUdvU2lDSmswNVUiLCJULU4xNFpGVHpzcWtPWVI2ZXNaVjZIMUJRT20zMFJTcFRPQ01JY0FWVEtzIiwiZ3RnOHllSmpfT2ZwbE43eTZva3k4MXdkOUFCOUdPVU51Sk05ODgwWjVxWSIsImlPUWZaSTNRRU9hcHhNZnk3YnlkV3R2VWlWR01zTkxYa3d3YmJFaXpvUU0iXSwiX3NkX2FsZyI6InNoYS0yNTYifQ.M5GJO0y1ohtpeMhuOQOLNN_dNz2Wo1Ur4M5-NsbhKlIiGFTzDFZw3C3eLqilnR9l2PnB9xJTyp4u6GPVdYZeDw~WyJIMDlneWlFUnlxeWJCRWp3IiwiZ2l2ZW5OYW1lIiwiSm9obiJd~WyJKeEZPZmhMcTJFZ2ZSQWNkIiwiZmFtaWx5TmFtZSIsIkRvZSJd~',
+                value: credential,
               },
               {
                 slot_type_name: 'key_value',
@@ -852,7 +862,7 @@ describe('CredentialService', () => {
                 slot_type_name: 'bool',
                 label: 'Revocable',
                 name: 'revocable',
-                value: 'false',
+                value: null,
               },
               {
                 slot_type_name: 'key_value',
@@ -862,7 +872,259 @@ describe('CredentialService', () => {
               },
             ],
             classification_nodes: [],
-            label: 'urn:uuid:66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
+            label: '66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
+            template_name: 'verifiable_credential',
+            name: '66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
+          };
+          sinon.assert.calledWith(
+            ItemService.prototype.create as sinon.SinonStub,
+            itemServiceAuth,
+            sinon.match(expectedItem)
+          );
+        });
+
+      customTest
+        .stub(
+          ItemService.prototype,
+          'create',
+          sinon.stub().returns(Promise.resolve({} as DecryptedItem))
+        )
+        .it('should create a verifiable credential item for format jwt_vc_json', async () => {
+          const credential =
+            'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL2V4YW1wbGVzL3YxIl0sImlkIjoiaHR0cDovL2V4YW1wbGUuZWR1L2NyZWRlbnRpYWxzLzM3MzIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiVW5pdmVyc2l0eURlZ3JlZUNyZWRlbnRpYWwiXSwiaXNzdWVyIjoiaHR0cHM6Ly9leGFtcGxlLmVkdS9pc3N1ZXJzLzU2NTA0OSIsImlzc3VhbmNlRGF0ZSI6IjIwMTAtMDEtMDFUMDA6MDA6MDBaIiwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6ZXhhbXBsZTplYmZlYjFmNzEyZWJjNmYxYzI3NmUxMmVjMjEiLCJkZWdyZWUiOnsidHlwZSI6IkJhY2hlbG9yRGVncmVlIiwibmFtZSI6IkJhY2hlbG9yIG9mIFNjaWVuY2UgYW5kIEFydHMifX19LCJpc3MiOiJodHRwczovL2V4YW1wbGUuZWR1L2lzc3VlcnMvNTY1MDQ5IiwibmJmIjoxMjYyMzA0MDAwLCJqdGkiOiJodHRwOi8vZXhhbXBsZS5lZHUvY3JlZGVudGlhbHMvMzczMiIsInN1YiI6ImRpZDpleGFtcGxlOmViZmViMWY3MTJlYmM2ZjFjMjc2ZTEyZWMyMSJ9.z5vgMTK1nfizNCg5N-niCOL3WUIAL7nXy-nGhDZYO_-PNGeE-0djCpWAMH8fD8eWSID5PfkPBYkx_dfLJnQ7NA';
+
+          await credentialService.createVerifiableCredentialItem(
+            {
+              vault_access_token: testUserAuth.vault_access_token,
+              data_encryption_key: testUserAuth.data_encryption_key,
+            },
+            {
+              credential,
+              format: 'jwt_vc_json',
+              id: '66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
+              credentialDetail: {
+                issuer: 'https://example.edu/issuers/565049',
+                subject: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
+                issuanceDate: new Date('2010-01-01T00:00:00Z'),
+                id: 'http://example.edu/credentials/3732',
+              },
+            }
+          );
+
+          const itemServiceAuth = {
+            vault_access_token: testUserAuth.vault_access_token,
+            data_encryption_key: testUserAuth.data_encryption_key,
+          };
+
+          const expectedItem = {
+            slots: [
+              {
+                slot_type_name: 'key_value',
+                label: 'Credential',
+                name: 'credential_jwt',
+                value: credential,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Credential format',
+                name: 'credential_format',
+                value: 'jwt_vc_json',
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Issuer',
+                name: 'issuer',
+                value: 'https://example.edu/issuers/565049',
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Subject',
+                name: 'subject',
+                value: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
+              },
+              {
+                slot_type_name: 'datetime',
+                label: 'Issued at',
+                name: 'issued_at',
+                value: '2010-01-01T00:00:00.000Z',
+              },
+              {
+                slot_type_name: 'datetime',
+                label: 'Expires at',
+                name: 'expires_at',
+                value: null,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Credential ID',
+                name: 'credential_id',
+                value: 'http://example.edu/credentials/3732',
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Schema url',
+                name: 'schema_url',
+                value: null,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Credential type id',
+                name: 'credential_type_id',
+                value: null,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Credential type name',
+                name: 'credential_type_name',
+                value: null,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Styles',
+                name: 'styles',
+                value: null,
+              },
+              {
+                slot_type_name: 'bool',
+                label: 'Revocable',
+                name: 'revocable',
+                value: null,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Issuer name',
+                name: 'issuer_name',
+                value: null,
+              },
+            ],
+            classification_nodes: [],
+            label: '66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
+            template_name: 'verifiable_credential',
+            name: '66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
+          };
+          sinon.assert.calledWith(
+            ItemService.prototype.create as sinon.SinonStub,
+            itemServiceAuth,
+            sinon.match(expectedItem)
+          );
+        });
+
+      customTest
+        .stub(
+          ItemService.prototype,
+          'create',
+          sinon.stub().returns(Promise.resolve({} as DecryptedItem))
+        )
+        .it('should create a verifiable credential item for format ldp_vc', async () => {
+          const credential =
+            '{"@context":["https://www.w3.org/2018/credentials/v1","https://www.w3.org/2018/credentials/examples/v1"],"id":"http://example.edu/credentials/3732","type":["VerifiableCredential","UniversityDegreeCredential"],"issuer":"https://example.edu/issuers/565049","issuanceDate":"2010-01-01T00:00:00Z","credentialSubject":{"id":"did:example:ebfeb1f712ebc6f1c276e12ec21","degree":{"type":"BachelorDegree","name":"Bachelor of Science and Arts"}},"proof":{"type":"Ed25519Signature2020","created":"2022-02-25T14:58:43Z","verificationMethod":"https://example.edu/issuers/565049#key-1","proofPurpose":"assertionMethod","proofValue":"zeEdUoM7m9cY8ZyTpey83yBKeBcmcvbyrEQzJ19rD2UXArU2U1jPGoEtrRvGYppdiK37GU4NBeoPakxpWhAvsVSt"}}';
+
+          await credentialService.createVerifiableCredentialItem(
+            {
+              vault_access_token: testUserAuth.vault_access_token,
+              data_encryption_key: testUserAuth.data_encryption_key,
+            },
+            {
+              credential,
+              format: 'ldp_vc',
+              id: '66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
+              credentialDetail: {
+                issuer: 'https://example.edu/issuers/565049',
+                subject: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
+                issuanceDate: new Date('2010-01-01T00:00:00Z'),
+                id: 'http://example.edu/credentials/3732',
+              },
+            }
+          );
+
+          const itemServiceAuth = {
+            vault_access_token: testUserAuth.vault_access_token,
+            data_encryption_key: testUserAuth.data_encryption_key,
+          };
+
+          const expectedItem = {
+            slots: [
+              {
+                slot_type_name: 'key_value',
+                label: 'Credential',
+                name: 'credential_jwt',
+                value: credential,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Credential format',
+                name: 'credential_format',
+                value: 'ldp_vc',
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Issuer',
+                name: 'issuer',
+                value: 'https://example.edu/issuers/565049',
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Subject',
+                name: 'subject',
+                value: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
+              },
+              {
+                slot_type_name: 'datetime',
+                label: 'Issued at',
+                name: 'issued_at',
+                value: '2010-01-01T00:00:00.000Z',
+              },
+              {
+                slot_type_name: 'datetime',
+                label: 'Expires at',
+                name: 'expires_at',
+                value: null,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Credential ID',
+                name: 'credential_id',
+                value: 'http://example.edu/credentials/3732',
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Schema url',
+                name: 'schema_url',
+                value: null,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Credential type id',
+                name: 'credential_type_id',
+                value: null,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Credential type name',
+                name: 'credential_type_name',
+                value: null,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Styles',
+                name: 'styles',
+                value: null,
+              },
+              {
+                slot_type_name: 'bool',
+                label: 'Revocable',
+                name: 'revocable',
+                value: null,
+              },
+              {
+                slot_type_name: 'key_value',
+                label: 'Issuer name',
+                name: 'issuer_name',
+                value: null,
+              },
+            ],
+            classification_nodes: [],
+            label: '66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
             template_name: 'verifiable_credential',
             name: '66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
           };
