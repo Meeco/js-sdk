@@ -775,12 +775,12 @@ describe('CredentialService', () => {
               id: '66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
               credentialDetail: {
                 issuer: 'did:web:did-web.securevalue.exchange:02978ef1-8fea-46ee-82e7-6ab6e96d1633',
-                subject: null,
+                subject: undefined,
                 issuanceDate: new Date('1970-01-20T17:42:58.276Z'),
-                expirationDate: null,
+                expirationDate: undefined,
                 id: 'urn:uuid:66cfde0a-bac9-4ed3-8cee-10e4a417dcc9',
-                credentialSchema: null,
-                revocable: null,
+                credentialSchema: undefined,
+                revocable: undefined,
               },
             }
           );
@@ -906,10 +906,7 @@ describe('CredentialService', () => {
                 issuer: 'https://example.edu/issuers/565049',
                 subject: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
                 issuanceDate: new Date('2010-01-01T00:00:00Z'),
-                expirationDate: null,
                 id: 'http://example.edu/credentials/3732',
-                credentialSchema: null,
-                revocable: null,
               },
             }
           );
@@ -1035,10 +1032,7 @@ describe('CredentialService', () => {
                 issuer: 'https://example.edu/issuers/565049',
                 subject: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
                 issuanceDate: new Date('2010-01-01T00:00:00Z'),
-                expirationDate: null,
                 id: 'http://example.edu/credentials/3732',
-                credentialSchema: null,
-                revocable: null,
               },
             }
           );
@@ -1150,7 +1144,7 @@ describe('CredentialService', () => {
           sinon.stub().returns(Promise.resolve({} as DecryptedItems))
         )
         .it('should find verifiable credential items by id', async () => {
-          const mockCredentialId = '58864fac-1857-40f8-9f37-8fdd4fe1cc2e';
+          const mockCredentialId = 'urn:uuid:58864fac-1857-40f8-9f37-8fdd4fe1cc2e';
 
           await credentialService.findVerifiableCredentialItemsById(
             {

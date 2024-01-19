@@ -22,13 +22,13 @@ export interface GenerateCredentialExtendedDto extends Omit<GenerateCredentialDt
 }
 
 export interface CredentialDetail {
-  issuer: any | null;
-  subject: string | null;
-  issuanceDate: Date | null;
-  expirationDate: Date | null;
-  id: string | null;
-  credentialSchema: any | null;
-  revocable: boolean | null;
+  issuer?: string | { id: string; name?: string };
+  subject?: string;
+  issuanceDate?: Date;
+  expirationDate?: Date;
+  id?: string;
+  credentialSchema?: { id: string; type: string };
+  revocable?: boolean;
 }
 
 export interface CreateVerifiableCredentialItemParams {
@@ -114,13 +114,14 @@ export class CredentialService extends Service<CredentialsApi> {
     }: CreateVerifiableCredentialItemParams
   ): Promise<DecryptedItem> {
     const slots = this.createSlots(credential, format, credentialDetail, credentialType);
+    const itemLabelAndName = this.formatIdToItemName(id);
 
     const newVerifiableCredentialItem = new NewItem(
-      id,
+      itemLabelAndName,
       CREDENTIAL_ITEM.TEMPLATE_NAME,
       slots,
       undefined,
-      id
+      itemLabelAndName
     );
 
     const itemService = new ItemService(this.environment);
@@ -133,10 +134,11 @@ export class CredentialService extends Service<CredentialsApi> {
     auth: IVaultToken & IDEK,
     id: string
   ): Promise<DecryptedItems> {
+    const itemName = this.formatIdToItemName(id);
     const itemService = new ItemService(this.environment);
     const itemServiceAuth = this.createItemServiceAuth(auth);
 
-    return await itemService.listDecrypted(itemServiceAuth, { name: id });
+    return await itemService.listDecrypted(itemServiceAuth, { name: itemName });
   }
 
   /**
@@ -177,94 +179,117 @@ export class CredentialService extends Service<CredentialsApi> {
     credentialDetail?: CredentialDetail,
     credentialType?: CredentialTypeModelDto
   ) {
+    const issuer = credentialDetail?.issuer;
+    let issuerId: string | null = null;
+    if (issuer) {
+      issuerId = typeof issuer === 'string' ? issuer : issuer?.id || null;
+    }
+
+    const subject = credentialDetail?.subject || null;
+    const issuanceDate = credentialDetail?.issuanceDate
+      ? credentialDetail.issuanceDate.toJSON()
+      : null;
+    const expirationDate = credentialDetail?.expirationDate
+      ? credentialDetail.expirationDate.toJSON()
+      : null;
+    const id = credentialDetail?.id || null;
+    const schemaId = credentialDetail?.credentialSchema?.id || null;
+    const typeId = credentialType?.id || null;
+    const typeName = credentialType?.name || null;
+    const style = credentialType?.style ? this.formatStyles(credentialType.style) : null;
+    const revocable =
+      credentialDetail?.revocable === null || credentialDetail?.revocable === undefined
+        ? null
+        : credentialDetail?.revocable
+        ? 'true'
+        : 'false';
+    const issuerName =
+      (credentialDetail?.issuer as { id: string; name?: string | undefined })?.name || null;
+
     return [
-      {
-        slot_type_name: SlotType.KeyValue,
-        label: CREDENTIAL_ITEM.CREDENTIAL_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.CREDENTIAL_SLOT_NAME,
-        value: credential,
-      },
-      {
-        slot_type_name: SlotType.KeyValue,
-        label: CREDENTIAL_ITEM.CREDENTIAL_FORMAT_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.CREDENTIAL_FORMAT_SLOT_NAME,
-        value: format,
-      },
-      {
-        slot_type_name: SlotType.KeyValue,
-        label: CREDENTIAL_ITEM.ISSUER_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.ISSUER_SLOT_NAME,
-        value: credentialDetail?.issuer
-          ? typeof credentialDetail.issuer === 'string'
-            ? credentialDetail.issuer
-            : credentialDetail.issuer?.id || null
-          : null,
-      },
-      {
-        slot_type_name: SlotType.KeyValue,
-        label: CREDENTIAL_ITEM.SUBJECT_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.SUBJECT_SLOT_NAME,
-        value: credentialDetail?.subject || null,
-      },
-      {
-        slot_type_name: SlotType.DateTime,
-        label: CREDENTIAL_ITEM.ISSUED_AT_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.ISSUED_AT_SLOT_NAME,
-        value: credentialDetail?.issuanceDate ? credentialDetail.issuanceDate.toJSON() : null,
-      },
-      {
-        slot_type_name: SlotType.DateTime,
-        label: CREDENTIAL_ITEM.EXPIRES_AT_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.EXPIRES_AT_SLOT_NAME,
-        value: credentialDetail?.expirationDate ? credentialDetail.expirationDate.toJSON() : null,
-      },
-      {
-        slot_type_name: SlotType.KeyValue,
-        label: CREDENTIAL_ITEM.CREDENTIAL_ID_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.CREDENTIAL_ID_SLOT_NAME,
-        value: credentialDetail?.id || null,
-      },
-      {
-        slot_type_name: SlotType.KeyValue,
-        label: CREDENTIAL_ITEM.SCHEMA_URL_LABEL,
-        name: CREDENTIAL_ITEM.SCHEMA_URL_NAME,
-        value: credentialDetail?.credentialSchema?.id ? credentialDetail.credentialSchema.id : null,
-      },
-      {
-        slot_type_name: SlotType.KeyValue,
-        label: CREDENTIAL_ITEM.CREDENTIAL_TYPE_ID_LABEL,
-        name: CREDENTIAL_ITEM.CREDENTIAL_TYPE_ID_NAME,
-        value: credentialType?.id || null,
-      },
-      {
-        slot_type_name: SlotType.KeyValue,
-        label: CREDENTIAL_ITEM.CREDENTIAL_TYPE_NAME_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.CREDENTIAL_TYPE_NAME_SLOT_NAME,
-        value: credentialType?.name || null,
-      },
-      {
-        slot_type_name: SlotType.KeyValue,
-        label: CREDENTIAL_ITEM.STYLES_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.STYLES_SLOT_NAME,
-        value: credentialType?.style ? this.formatStyles(credentialType.style) : null,
-      },
-      {
-        slot_type_name: SlotType.Bool,
-        label: CREDENTIAL_ITEM.REVOCABLE_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.REVOCABLE_SLOT_NAME,
-        value:
-          credentialDetail?.revocable === null || credentialDetail?.revocable === undefined
-            ? null
-            : credentialDetail?.revocable
-            ? 'true'
-            : 'false',
-      },
-      {
-        slot_type_name: SlotType.KeyValue,
-        label: CREDENTIAL_ITEM.ISSUER_NAME_SLOT_LABEL,
-        name: CREDENTIAL_ITEM.ISSUER_NAME_SLOT_NAME,
-        value: credentialDetail?.issuer?.name || null,
-      },
+      this.createSlot(
+        CREDENTIAL_ITEM.CREDENTIAL_SLOT_LABEL,
+        CREDENTIAL_ITEM.CREDENTIAL_SLOT_NAME,
+        credential
+      ),
+      this.createSlot(
+        CREDENTIAL_ITEM.CREDENTIAL_FORMAT_SLOT_LABEL,
+        CREDENTIAL_ITEM.CREDENTIAL_FORMAT_SLOT_NAME,
+        format
+      ),
+      this.createSlot(
+        CREDENTIAL_ITEM.ISSUER_SLOT_LABEL,
+        CREDENTIAL_ITEM.ISSUER_SLOT_NAME,
+        issuerId
+      ),
+      this.createSlot(
+        CREDENTIAL_ITEM.SUBJECT_SLOT_LABEL,
+        CREDENTIAL_ITEM.SUBJECT_SLOT_NAME,
+        subject
+      ),
+      this.createSlot(
+        CREDENTIAL_ITEM.ISSUED_AT_SLOT_LABEL,
+        CREDENTIAL_ITEM.ISSUED_AT_SLOT_NAME,
+        issuanceDate,
+        SlotType.DateTime
+      ),
+      this.createSlot(
+        CREDENTIAL_ITEM.EXPIRES_AT_SLOT_LABEL,
+        CREDENTIAL_ITEM.EXPIRES_AT_SLOT_NAME,
+        expirationDate,
+        SlotType.DateTime
+      ),
+      this.createSlot(
+        CREDENTIAL_ITEM.CREDENTIAL_ID_SLOT_LABEL,
+        CREDENTIAL_ITEM.CREDENTIAL_ID_SLOT_NAME,
+        id
+      ),
+      this.createSlot(CREDENTIAL_ITEM.SCHEMA_URL_LABEL, CREDENTIAL_ITEM.SCHEMA_URL_NAME, schemaId),
+      this.createSlot(
+        CREDENTIAL_ITEM.CREDENTIAL_TYPE_ID_LABEL,
+        CREDENTIAL_ITEM.CREDENTIAL_TYPE_ID_NAME,
+        typeId
+      ),
+      this.createSlot(
+        CREDENTIAL_ITEM.CREDENTIAL_TYPE_NAME_SLOT_LABEL,
+        CREDENTIAL_ITEM.CREDENTIAL_TYPE_NAME_SLOT_NAME,
+        typeName
+      ),
+      this.createSlot(CREDENTIAL_ITEM.STYLES_SLOT_LABEL, CREDENTIAL_ITEM.STYLES_SLOT_NAME, style),
+      this.createSlot(
+        CREDENTIAL_ITEM.REVOCABLE_SLOT_LABEL,
+        CREDENTIAL_ITEM.REVOCABLE_SLOT_NAME,
+        revocable,
+        SlotType.Bool
+      ),
+      this.createSlot(
+        CREDENTIAL_ITEM.ISSUER_NAME_SLOT_LABEL,
+        CREDENTIAL_ITEM.ISSUER_NAME_SLOT_NAME,
+        issuerName
+      ),
     ];
+  }
+
+  private createSlot(
+    label: string,
+    name: string,
+    value: any,
+    slotType: SlotType = SlotType.KeyValue
+  ) {
+    return {
+      slot_type_name: slotType,
+      label,
+      name,
+      value,
+    };
+  }
+
+  private formatIdToItemName(id: string) {
+    /**
+     * For credentials starting with urn:uuid: it will crop it and leave only uuid part
+     * Regular uuids will not be changed
+     */
+    const processedId = id.replace(/[^a-z0-9-]/gi, '_');
+    return processedId.slice(processedId.lastIndexOf('_') + 1);
   }
 }
