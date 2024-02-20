@@ -181,6 +181,7 @@ export class CredentialService extends Service<CredentialsApi> {
   ) {
     const issuer = credentialDetail?.issuer;
     let issuerId: string | null = null;
+
     if (issuer) {
       issuerId = typeof issuer === 'string' ? issuer : issuer?.id || null;
     }

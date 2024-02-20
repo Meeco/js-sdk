@@ -1,8 +1,8 @@
 import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
 import {
-  DidDto,
   DIDRequestHandler,
   DIDResultDto,
+  DidDto,
 } from '../../util/did-management/did-action-handler';
 import { IKeyPairDID } from './key-pair-did';
 
@@ -23,6 +23,8 @@ export enum SupportedDidDocumentOperation {
 }
 
 export abstract class DIDBase {
+  abstract keyPair: IKeyPairDID;
+
   constructor(
     public method: string,
     public didDocument: DidDocumentDto,
@@ -32,7 +34,6 @@ export abstract class DIDBase {
     this.options = options;
     this.didDocument = didDocument;
   }
-  abstract keyPair: IKeyPairDID;
 
   abstract getHandlerChain<TypeDIDResultDto extends DIDResultDto, TypeDidDto extends DidDto>():
     | DIDRequestHandler<TypeDIDResultDto, TypeDidDto>

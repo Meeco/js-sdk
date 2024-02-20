@@ -1,6 +1,5 @@
-import { DecryptedItem, DecryptedItems, ItemService, SigningAlg } from '@meeco/sdk';
+import { DecryptedItem, DecryptedItems, Ed25519, ItemService, SigningAlg } from '@meeco/sdk';
 import { CredentialsControllerGenerateAcceptEnum } from '@meeco/vc-api-sdk';
-import { generateKeyPairFromSeed } from '@stablelib/ed25519';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { CredentialService } from '../../src/services/credential-service';
@@ -22,8 +21,8 @@ describe('CredentialService', () => {
     };
 
     describe('EdDSA', () => {
-      const secret = cryppo.binaryStringToBytes('abcdabcdabcdabcdabcdabcdabcdabcd');
-      const keyPair = generateKeyPairFromSeed(secret);
+      const seed = cryppo.binaryStringToBytes('abcdabcdabcdabcdabcdabcdabcdabcd');
+      const keyPair = new Ed25519(seed);
       const issuerDID = 'did:key:z6MkuS4gudyuiFp5MGTsFfPSyn4uUQKhY8vFFzPMNQDANoLd';
 
       customTest
@@ -46,7 +45,7 @@ describe('CredentialService', () => {
               credential_type_id: CREDENTIAL_TYPE_ID,
               claims: CREDENTIAL_CLAIMS,
             },
-            keyPair.secretKey,
+            keyPair.getSecretKey(),
             SigningAlg.EdDSA
           )
         )
@@ -88,7 +87,7 @@ describe('CredentialService', () => {
               credential_type_id: CREDENTIAL_TYPE_ID,
               claims: CREDENTIAL_CLAIMS,
             },
-            keyPair.secretKey,
+            keyPair.getSecretKey(),
             SigningAlg.EdDSA
           )
         )
@@ -137,7 +136,7 @@ describe('CredentialService', () => {
               credential_type_id: CREDENTIAL_TYPE_ID,
               claims: CREDENTIAL_CLAIMS,
             },
-            keyPair.secretKey,
+            keyPair.getSecretKey(),
             SigningAlg.EdDSA
           )
         )
@@ -187,7 +186,7 @@ describe('CredentialService', () => {
               credential_type_id: CREDENTIAL_TYPE_ID,
               claims: CREDENTIAL_CLAIMS,
             },
-            keyPair.secretKey,
+            keyPair.getSecretKey(),
             SigningAlg.EdDSA,
             CredentialsControllerGenerateAcceptEnum.VcsdJwt
           )
@@ -241,7 +240,7 @@ describe('CredentialService', () => {
               credential_type_id: CREDENTIAL_TYPE_ID,
               claims: CREDENTIAL_CLAIMS,
             },
-            keyPair.secretKey,
+            keyPair.getSecretKey(),
             SigningAlg.EdDSA,
             CredentialsControllerGenerateAcceptEnum.VcsdJwt
           )
@@ -337,7 +336,7 @@ describe('CredentialService', () => {
         .it('returns signed credential and its metadata with issuer name', ({ credential }) => {
           expect(credential).to.eql({
             credential:
-              'eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJpYXQiOjE2NDA5OTUyMDAsImV4cCI6MTg5MzQ5OTIwMCwidmMiOnsiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiXSwiaWQiOiJ1cm46dXVpZDoyM2I4NDFmMi1hM2RjLTQ3N2YtYTllMS01MDI0ZDFkY2MwMmIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZ0N2R2lTZkpqNmhmcFJWSFc2RnFmbVdVeXo3dnh1OGd1enE3ZmNFQ0M5REUiLCJuYW1lIjoidGVzdCJ9LCJpc3N1YW5jZURhdGUiOiIyMDIyLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTY2hlbWEiOnsiaWQiOiJodHRwczovL3ZjLWRldi5tZWVjby5tZS9zY2hlbWFzLzFjY2Q1ZmI3LTZiZDUtNDkzMy04NjM2LWRlZDNjYjc5ODFhNi8xLjAuMC9zY2hlbWEuanNvbiIsInR5cGUiOiJKc29uU2NoZW1hVmFsaWRhdG9yMjAxOCJ9LCJleHBpcmF0aW9uRGF0ZSI6IjIwMzAtMDEtMDFUMTI6MDA6MDBaIn0sInN1YiI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmJmIjoxNjQwOTk1MjAwLCJpc3MiOiJkaWQ6a2V5OnpRM3NoZlpuMlF3WUE4S3JTUkNkd1NIV1lHdFFXS2E2OUZSOHNqbW1QTVpETGM0ckwifQ.EWY756i7RoCeOP1lefsfY85GDcLlkOd1r45LZUVHo-SNk0JmdVMnw-MVCMk8O8d8LOGuaBHwO4UGnznbande6w',
+              'eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJpYXQiOjE2NDA5OTUyMDAsImV4cCI6MTg5MzQ5OTIwMCwidmMiOnsiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiXSwiaWQiOiJ1cm46dXVpZDoyM2I4NDFmMi1hM2RjLTQ3N2YtYTllMS01MDI0ZDFkY2MwMmIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZ0N2R2lTZkpqNmhmcFJWSFc2RnFmbVdVeXo3dnh1OGd1enE3ZmNFQ0M5REUiLCJuYW1lIjoidGVzdCJ9LCJpc3N1YW5jZURhdGUiOiIyMDIyLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTY2hlbWEiOnsiaWQiOiJodHRwczovL3ZjLWRldi5tZWVjby5tZS9zY2hlbWFzLzFjY2Q1ZmI3LTZiZDUtNDkzMy04NjM2LWRlZDNjYjc5ODFhNi8xLjAuMC9zY2hlbWEuanNvbiIsInR5cGUiOiJKc29uU2NoZW1hVmFsaWRhdG9yMjAxOCJ9LCJleHBpcmF0aW9uRGF0ZSI6IjIwMzAtMDEtMDFUMTI6MDA6MDBaIn0sInN1YiI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmJmIjoxNjQwOTk1MjAwLCJpc3MiOiJkaWQ6a2V5OnpRM3NoZlpuMlF3WUE4S3JTUkNkd1NIV1lHdFFXS2E2OUZSOHNqbW1QTVpETGM0ckwifQ.EWY756i7RoCeOP1lefsfY85GDcLlkOd1r45LZUVHo-RybL2ZiqzYPBzq9zbDxDiCjc0ufp1YZLa5MySxZb7iVg',
             metadata: {
               style: {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
@@ -386,7 +385,7 @@ describe('CredentialService', () => {
         .it('returns signed credential and its metadata', ({ credential }) => {
           expect(credential).to.eql({
             credential:
-              'eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJpYXQiOjE2NDA5OTUyMDAsImV4cCI6MTg5MzQ5OTIwMCwidmMiOnsiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiXSwiaWQiOiJ1cm46dXVpZDoyM2I4NDFmMi1hM2RjLTQ3N2YtYTllMS01MDI0ZDFkY2MwMmIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImlzc3VlciI6eyJpZCI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmFtZSI6InRlc3QtaXNzdWVyIn0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZ0N2R2lTZkpqNmhmcFJWSFc2RnFmbVdVeXo3dnh1OGd1enE3ZmNFQ0M5REUiLCJuYW1lIjoidGVzdCJ9LCJpc3N1YW5jZURhdGUiOiIyMDIyLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTY2hlbWEiOnsiaWQiOiJodHRwczovL3ZjLWRldi5tZWVjby5tZS9zY2hlbWFzLzFjY2Q1ZmI3LTZiZDUtNDkzMy04NjM2LWRlZDNjYjc5ODFhNi8xLjAuMC9zY2hlbWEuanNvbiIsInR5cGUiOiJKc29uU2NoZW1hVmFsaWRhdG9yMjAxOCJ9LCJleHBpcmF0aW9uRGF0ZSI6IjIwMzAtMDEtMDFUMTI6MDA6MDBaIn0sInN1YiI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmJmIjoxNjQwOTk1MjAwLCJpc3MiOiJkaWQ6a2V5OnpRM3NoZlpuMlF3WUE4S3JTUkNkd1NIV1lHdFFXS2E2OUZSOHNqbW1QTVpETGM0ckwifQ.4DbFu02ZeuPd8J4JV0VUcEwmguP_mfQG2Catv8BhcE3QfJL74N2uyBBobZd-155ONN_m8sc35tQLWcHPxheFDA',
+              'eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJpYXQiOjE2NDA5OTUyMDAsImV4cCI6MTg5MzQ5OTIwMCwidmMiOnsiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiXSwiaWQiOiJ1cm46dXVpZDoyM2I4NDFmMi1hM2RjLTQ3N2YtYTllMS01MDI0ZDFkY2MwMmIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIl0sImlzc3VlciI6eyJpZCI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmFtZSI6InRlc3QtaXNzdWVyIn0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZ0N2R2lTZkpqNmhmcFJWSFc2RnFmbVdVeXo3dnh1OGd1enE3ZmNFQ0M5REUiLCJuYW1lIjoidGVzdCJ9LCJpc3N1YW5jZURhdGUiOiIyMDIyLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTY2hlbWEiOnsiaWQiOiJodHRwczovL3ZjLWRldi5tZWVjby5tZS9zY2hlbWFzLzFjY2Q1ZmI3LTZiZDUtNDkzMy04NjM2LWRlZDNjYjc5ODFhNi8xLjAuMC9zY2hlbWEuanNvbiIsInR5cGUiOiJKc29uU2NoZW1hVmFsaWRhdG9yMjAxOCJ9LCJleHBpcmF0aW9uRGF0ZSI6IjIwMzAtMDEtMDFUMTI6MDA6MDBaIn0sInN1YiI6ImRpZDprZXk6ejZNa2dDdkdpU2ZKajZoZnBSVkhXNkZxZm1XVXl6N3Z4dThndXpxN2ZjRUNDOURFIiwibmJmIjoxNjQwOTk1MjAwLCJpc3MiOiJkaWQ6a2V5OnpRM3NoZlpuMlF3WUE4S3JTUkNkd1NIV1lHdFFXS2E2OUZSOHNqbW1QTVpETGM0ckwifQ.4DbFu02ZeuPd8J4JV0VUcEwmguP_mfQG2Catv8BhcE0vg20EHyJRN--XkmiBKGGwhc718-gQuWe0eJy9Ch68NQ',
             metadata: {
               style: {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',

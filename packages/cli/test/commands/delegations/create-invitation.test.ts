@@ -28,8 +28,6 @@ describe('delegations:create-invitation', () => {
         'utf-8'
       );
 
-      console.log(expected);
-
       expect(ctx.stdout).to.contain(expected.trim());
     });
 });
