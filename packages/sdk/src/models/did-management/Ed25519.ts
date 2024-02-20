@@ -1,7 +1,6 @@
 // tslint:disable-next-line: no-var-requires
 const b58 = require('bs58');
 import { ed25519 } from '@noble/curves/ed25519';
-import { sha512 } from '@noble/hashes/sha512';
 import { bytesToHex } from '@noble/hashes/utils';
 import { bytesToBase64url } from 'did-jwt';
 import { IKeyPairDID } from './key-pair-did';
@@ -10,8 +9,11 @@ export class Ed25519 implements IKeyPairDID {
   static keyType: 'ed25519' = 'ed25519';
   static SEED_LENGTH = 32;
 
+  /**
+   * In some cases you will find seed and privateKey used interchangeably. However, private key is calculates based on the seed.
+   * @noble/* libraries expect seed to be passed and internally calculates private key where it is necessary.
+   */
   private seed: Uint8Array;
-  private privateKey: Uint8Array;
   private publicKey: Uint8Array;
 
   constructor(seed: Uint8Array | string) {
@@ -20,9 +22,7 @@ export class Ed25519 implements IKeyPairDID {
     }
 
     this.seed = typeof seed === 'string' ? Buffer.from(seed, 'binary') : seed;
-
-    this.privateKey = this.derivePrivateKey(this.seed);
-    this.publicKey = ed25519.getPublicKey(this.privateKey);
+    this.publicKey = ed25519.getPublicKey(this.seed);
   }
 
   getName(): string {
@@ -30,7 +30,7 @@ export class Ed25519 implements IKeyPairDID {
   }
 
   sign(message: Uint8Array): Uint8Array {
-    return ed25519.sign(message, this.privateKey);
+    return ed25519.sign(message, this.seed);
   }
 
   getPublicKeyBase58(): string {
@@ -45,8 +45,16 @@ export class Ed25519 implements IKeyPairDID {
     return bytesToBase64url(this.publicKey);
   }
 
+  /**
+   * Outside of IKeyPairDID interface scope
+   */
+
   getPublic(): Uint8Array {
     return this.publicKey;
+  }
+
+  getSeed(): Uint8Array {
+    return this.seed;
   }
 
   getSecretKey(): Uint8Array {
@@ -55,23 +63,5 @@ export class Ed25519 implements IKeyPairDID {
     secretKey.set(this.publicKey, 32);
 
     return secretKey;
-  }
-
-  /**
-   * Private
-   */
-
-  private derivePrivateKey(seed: Uint8Array) {
-    const hashedSeed = sha512(seed);
-    const privateKey = hashedSeed.slice(0, 32);
-
-    // tslint:disable-next-line no-bitwise
-    privateKey[0] &= 248;
-    // tslint:disable-next-line no-bitwise
-    privateKey[31] &= 127;
-    // tslint:disable-next-line no-bitwise
-    privateKey[31] |= 64;
-
-    return privateKey;
   }
 }
