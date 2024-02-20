@@ -187,7 +187,7 @@ async function issueCredential() {
 
   try {
     const buf = Buffer.from($get('credentialPrivateKeyHex')?.trim(), 'hex');
-    privateKeyBytes = new Ed25519(Uint8Array.from(buf)).getSecretKey();
+    privateKeyBytes = new Ed25519(Uint8Array.from(buf)).getSeed();
   } catch (_e) {
     $('issueCredentialResult').replaceChildren(formatChild('Invalid key hex').render());
   }

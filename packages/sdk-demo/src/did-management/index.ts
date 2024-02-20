@@ -167,7 +167,7 @@ async function createDID() {
   const secret = self.crypto.getRandomValues(array);
   const keyPair = new Ed25519(secret);
   console.log(`public key hex: ${keyPair.getPublicKeyHex()}`);
-  console.log(`private secret key hex: ${bytesToHex(keyPair.getSecretKey())}`);
+  console.log(`private key hex: ${bytesToHex(keyPair.getSeed())}`);
 
   let did: DIDBase;
   switch (method) {
@@ -216,11 +216,11 @@ async function createDID() {
   const formatter = new JSONFormatter(generatedDID, 2);
   $('didCreationResult').replaceChildren(formatter.render());
   createdDidResult = JSON.stringify({
-    secret: bytesToHex(keyPair.getSecretKey()),
+    secret: bytesToHex(keyPair.getSeed()),
     publicKey: keyPair.getPublicKeyHex(),
     result: generatedDID,
   });
-  $set('secretField', bytesToHex(keyPair.getSecretKey()));
+  $set('secretField', bytesToHex(keyPair.getSeed()));
   $set('pkField', keyPair.getPublicKeyHex());
   $('copyCreateDID').removeAttribute('disabled');
 }
