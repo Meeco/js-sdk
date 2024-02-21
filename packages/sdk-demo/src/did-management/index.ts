@@ -8,6 +8,7 @@ import {
   Ed25519,
   Environment,
 } from '@meeco/sdk';
+import { bytesToHex } from '@noble/hashes/utils';
 import JSONFormatter from 'json-formatter-js';
 
 const $ = id => document.getElementById(id)!;
@@ -166,7 +167,7 @@ async function createDID() {
   const secret = self.crypto.getRandomValues(array);
   const keyPair = new Ed25519(secret);
   console.log(`public key hex: ${keyPair.getPublicKeyHex()}`);
-  console.log(`private key hex: ${keyPair.keyPair.getSecret('hex')}`);
+  console.log(`private key hex: ${bytesToHex(keyPair.getSeed())}`);
 
   let did: DIDBase;
   switch (method) {
@@ -215,11 +216,11 @@ async function createDID() {
   const formatter = new JSONFormatter(generatedDID, 2);
   $('didCreationResult').replaceChildren(formatter.render());
   createdDidResult = JSON.stringify({
-    secret: keyPair.keyPair.getSecret('hex'),
+    secret: bytesToHex(keyPair.getSeed()),
     publicKey: keyPair.getPublicKeyHex(),
     result: generatedDID,
   });
-  $set('secretField', keyPair.keyPair.getSecret('hex'));
+  $set('secretField', bytesToHex(keyPair.getSeed()));
   $set('pkField', keyPair.getPublicKeyHex());
   $('copyCreateDID').removeAttribute('disabled');
 }

@@ -350,15 +350,15 @@ export class OIDCUserService extends Service<UserApi> {
     didManagementService: DIDManagementService,
     defaultDIDMethod: DIDMethodParam
   ) {
-    const didSecret = binaryStringToBytes(generateRandomBytesString(32));
-    const didKeypair = new Ed25519(didSecret);
+    const didSeed = binaryStringToBytes(generateRandomBytesString(32));
+    const didKeypair = new Ed25519(didSeed);
     let didInstance: DIDBase;
     let verificationMethodId: string;
 
     switch (defaultDIDMethod) {
       case 'did:key':
         const codec = new Ed25519PubCodec();
-        const encodedPubKey = base58btc.encode(codec.encode(didKeypair.keyPair.getPublic()));
+        const encodedPubKey = base58btc.encode(codec.encode(didKeypair.getPublic()));
         didInstance = new DIDKey(didKeypair);
         verificationMethodId = `did:key:${encodedPubKey}#${encodedPubKey}`;
         break;
@@ -381,12 +381,12 @@ export class OIDCUserService extends Service<UserApi> {
       auth.organisation_id
     );
 
-    const encryptedSecret = await this.encryptBinary(kek, didSecret);
+    const encryptedSeed = await this.encryptBinary(kek, didSeed);
 
     const newDid = createDidResult.didState?.did as string;
 
     await keypairApi.keypairsPost({
-      encrypted_serialized_key: <string>encryptedSecret.serialized,
+      encrypted_serialized_key: <string>encryptedSeed.serialized,
       public_key: didKeypair.getPublicKeyBase58(),
       metadata: {
         did: newDid,
@@ -400,7 +400,7 @@ export class OIDCUserService extends Service<UserApi> {
     });
 
     return {
-      didSecret: <Uint8Array>didSecret,
+      didSeed: <Uint8Array>didSeed,
       didKeypair,
       did: <string>createDidResult?.didState?.did,
     };
@@ -411,11 +411,11 @@ export class OIDCUserService extends Service<UserApi> {
       this.generateKeypairExternalIdentifer(did)
     );
 
-    const didSecret = await this.decryptBinary(kek, keypair.encrypted_serialized_key);
+    const didSeed = await this.decryptBinary(kek, keypair.encrypted_serialized_key);
 
     return {
-      didSecret: <Uint8Array>didSecret,
-      didKeypair: new Ed25519(<Uint8Array>didSecret),
+      didSeed: <Uint8Array>didSeed,
+      didKeypair: new Ed25519(<Uint8Array>didSeed),
       did,
     };
   }

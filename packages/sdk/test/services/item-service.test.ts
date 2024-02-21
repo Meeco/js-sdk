@@ -392,8 +392,6 @@ describe('ItemService', () => {
       )
       .add('response', async () => await new ItemService(environment).listDecrypted(testUserAuth))
       .it('works for no items', ({ response }) => {
-        console.log(response);
-
         // tslint:disable-next-line:no-unused-expression
         expect(response.items).to.be.empty;
         expect(response.meta).to.be.eql({

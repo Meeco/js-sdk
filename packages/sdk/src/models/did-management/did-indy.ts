@@ -1,8 +1,8 @@
 import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
 import {
-  DidDto,
   DIDRequestHandler,
   DIDResultDto,
+  DidDto,
 } from '../../util/did-management/did-action-handler';
 import { GetVerificationMethodActionHandler } from '../../util/did-management/get-verification-method-action-handler';
 import { SigningRequestAttribActionHandler } from '../../util/did-management/signing-request-attrib-action-handler';
@@ -21,6 +21,7 @@ export class DIDIndy extends DIDBase {
   ) {
     super(SupportedDidMethod.INDY, didDocument, options);
   }
+
   getHandlerChain<
     TypeDIDResultDto extends DIDResultDto,
     TypeDidDto extends DidDto

@@ -1,8 +1,8 @@
 import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
 import {
-  DidDto,
   DIDRequestHandler,
   DIDResultDto,
+  DidDto,
   GetVerificationMethodActionHandler,
 } from '../../util/did-management';
 import { DIDBase, SupportedDidMethod } from './did-base';

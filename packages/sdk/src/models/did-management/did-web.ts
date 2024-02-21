@@ -1,11 +1,12 @@
 import { DidDocumentDto, OptionsDto } from '@meeco/identity-network-api-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import { DidDto, DIDRequestHandler, DIDResultDto } from '../../util/did-management';
+import { DIDRequestHandler, DIDResultDto, DidDto } from '../../util/did-management';
 import { DIDBase, SupportedDidMethod } from './did-base';
 import { IKeyPairDID } from './key-pair-did';
 
 export class DIDWeb extends DIDBase {
   private id: string = uuidv4();
+
   constructor(
     public keyPair: IKeyPairDID,
     public didDocument: DidDocumentDto = {},
