@@ -12,6 +12,7 @@ export interface CreatePresentationRequestResponseItemParams {
   presentationRequestId: string;
   idToken: string;
   vpToken: string;
+  presentationSubmission: string;
   state: string;
   verificationResult: PresentationRequestResponseVerificationResultResponseDto;
 }
@@ -27,6 +28,7 @@ export class PresentationRequestService extends Service<PresentationRequestsApi>
       presentationRequestId,
       idToken,
       vpToken,
+      presentationSubmission,
       state,
       verificationResult,
     }: CreatePresentationRequestResponseItemParams
@@ -45,6 +47,12 @@ export class PresentationRequestService extends Service<PresentationRequestsApi>
         label: PRESENTATION_REQUEST_RESPONSE_ITEM.VP_TOKEN_SLOT_LABEL,
         name: PRESENTATION_REQUEST_RESPONSE_ITEM.VP_TOKEN_SLOT_NAME,
         value: vpToken,
+      },
+      {
+        slot_type_name: SlotType.KeyValue,
+        label: PRESENTATION_REQUEST_RESPONSE_ITEM.PRESENTATION_SUBMISSION_SLOT_LABEL,
+        name: PRESENTATION_REQUEST_RESPONSE_ITEM.PRESENTATION_SUBMISSION_SLOT_NAME,
+        value: presentationSubmission,
       },
       {
         slot_type_name: SlotType.KeyValue,
