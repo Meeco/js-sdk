@@ -41,6 +41,8 @@ export const PRESENTATION_REQUEST_RESPONSE_ITEM = {
   ID_TOKEN_SLOT_LABEL: 'ID Token',
   VP_TOKEN_SLOT_NAME: 'vp_token',
   VP_TOKEN_SLOT_LABEL: 'VP Token',
+  PRESENTATION_SUBMISSION_SLOT_NAME: 'presentation_submission',
+  PRESENTATION_SUBMISSION_SLOT_LABEL: 'Presentation Submission',
   STATE_SLOT_NAME: 'state',
   STATE_SLOT_LABEL: 'State',
   VERIFICATION_RESULT_SLOT_NAME: 'verification_result',
