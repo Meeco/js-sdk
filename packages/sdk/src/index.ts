@@ -38,6 +38,7 @@ export * from './services/share-service';
 export * from './services/template-service';
 export * from './services/user-service';
 export * from './util/api-factory';
+export * from './util/api-model';
 export * from './util/codecs';
 export * from './util/constants';
 export * from './util/did-management';
