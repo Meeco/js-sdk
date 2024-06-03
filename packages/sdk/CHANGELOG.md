@@ -9,7 +9,7 @@ and this project (loosely) adheres to [Semantic Versioning](https://semver.org/s
 
 ### Changed
 
-- export types in svx api
+- Export SVX API types
 
 ## 5.1.0 (2024-05-16)
 
