@@ -44,6 +44,7 @@ export * from './util/did-management';
 export * from './util/find-connection-between';
 export * from './util/jwt';
 export * from './util/paged';
+export * from './util/sdk-api-types';
 export { default as Secrets } from './util/secrets';
 export { default as SlotHelpers } from './util/slot-helpers';
 export * from './util/transformers';
