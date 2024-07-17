@@ -35,7 +35,11 @@ describe('PresentationRequestService', () => {
           data_encryption_key: testUserAuth.data_encryption_key,
           key_encryption_key: testUserAuth.data_encryption_key,
         };
-        sinon.assert.calledWith(ItemService.prototype.get as sinon.SinonStub, itemServiceAuth);
+        sinon.assert.calledWith(
+          ItemService.prototype.get as sinon.SinonStub,
+          itemServiceAuth,
+          mockResponseId
+        );
       });
   });
   describe('#getPresentationRequestResponseItems', () => {
@@ -60,7 +64,8 @@ describe('PresentationRequestService', () => {
         };
         sinon.assert.calledWith(
           ItemService.prototype.listDecrypted as sinon.SinonStub,
-          itemServiceAuth
+          itemServiceAuth,
+          { name: mockRequestId }
         );
       });
   });

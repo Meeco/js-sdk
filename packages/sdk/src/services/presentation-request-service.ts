@@ -111,6 +111,9 @@ export class PresentationRequestService extends Service<PresentationRequestsApi>
       data_encryption_key: auth.data_encryption_key,
       key_encryption_key: auth.data_encryption_key,
     };
+    if (auth.organisation_id) {
+      itemServiceAuth['organisation_id'] = auth.organisation_id;
+    }
 
     return itemService.get(itemServiceAuth, itemId);
   }
@@ -124,6 +127,9 @@ export class PresentationRequestService extends Service<PresentationRequestsApi>
       vault_access_token: auth.vault_access_token,
       data_encryption_key: auth.data_encryption_key,
     };
+    if (auth.organisation_id) {
+      itemServiceAuth['organisation_id'] = auth.organisation_id;
+    }
 
     const itemName = this.formatIdToItemName(presentationRequestId);
 
