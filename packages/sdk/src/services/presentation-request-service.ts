@@ -6,7 +6,7 @@ import { NewItem } from '../models/new-item';
 import { SlotType } from '../models/slot-types';
 import { PRESENTATION_REQUEST_RESPONSE_ITEM } from '../util/constants';
 import { ItemService } from './item-service';
-import Service, { IDEK, IVCToken, IVaultToken } from './service';
+import Service, { IDEK, IKEK, IKeystoreToken, IVCToken, IVaultToken } from './service';
 
 export interface CreatePresentationRequestResponseItemParams {
   presentationRequestId: string;
@@ -98,6 +98,40 @@ export class PresentationRequestService extends Service<PresentationRequestsApi>
     }
 
     return itemService.create(itemServiceAuth, newPresentationRequestResponseItem);
+  }
+
+  public async getPresentationRequestResponseItem(
+    auth: IVaultToken & IKeystoreToken & IDEK & IKEK,
+    itemId: string
+  ) {
+    const itemService = new ItemService(this.environment);
+    const itemServiceAuth = {
+      vault_access_token: auth.vault_access_token,
+      keystore_access_token: auth.keystore_access_token,
+      data_encryption_key: auth.data_encryption_key,
+      key_encryption_key: auth.data_encryption_key,
+    };
+
+    return itemService.get(itemServiceAuth, itemId);
+  }
+
+  public async getPresentationRequestResponseItems(
+    auth: IVaultToken & IDEK,
+    presentationRequestId: string
+  ) {
+    const itemService = new ItemService(this.environment);
+    const itemServiceAuth = {
+      vault_access_token: auth.vault_access_token,
+      data_encryption_key: auth.data_encryption_key,
+    };
+
+    const itemName = this.formatIdToItemName(presentationRequestId);
+
+    return itemService.listDecrypted(itemServiceAuth, { name: itemName });
+  }
+
+  public async deletePresentationRequestResponseItem(auth: IVaultToken & IDEK, itemId: string) {
+    return this.vaultAPIFactory(auth).ItemApi.itemsIdDelete(itemId);
   }
 
   /**
