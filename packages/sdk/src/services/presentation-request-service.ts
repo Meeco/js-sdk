@@ -102,7 +102,7 @@ export class PresentationRequestService extends Service<PresentationRequestsApi>
 
   public async getPresentationRequestResponseItem(
     auth: IVaultToken & IKeystoreToken & IDEK & IKEK,
-    responseId: string
+    itemId: string
   ) {
     const itemService = new ItemService(this.environment);
     const itemServiceAuth = {
@@ -112,27 +112,26 @@ export class PresentationRequestService extends Service<PresentationRequestsApi>
       key_encryption_key: auth.data_encryption_key,
     };
 
-    return itemService.get(itemServiceAuth, responseId);
+    return itemService.get(itemServiceAuth, itemId);
   }
 
   public async getPresentationRequestResponseItems(
     auth: IVaultToken & IDEK,
-    credentialRequestId: string
+    presentationRequestId: string
   ) {
     const itemService = new ItemService(this.environment);
     const itemServiceAuth = {
       vault_access_token: auth.vault_access_token,
       data_encryption_key: auth.data_encryption_key,
     };
-    const listFilterOptions = {
-      name: credentialRequestId,
-    };
 
-    return itemService.listDecrypted(itemServiceAuth, listFilterOptions);
+    const itemName = this.formatIdToItemName(presentationRequestId);
+
+    return itemService.listDecrypted(itemServiceAuth, { name: itemName });
   }
 
-  public async deletePresentationRequestResponseItem(auth: IVaultToken & IDEK, responseId: string) {
-    return this.vaultAPIFactory(auth).ItemApi.itemsIdDelete(responseId);
+  public async deletePresentationRequestResponseItem(auth: IVaultToken & IDEK, itemId: string) {
+    return this.vaultAPIFactory(auth).ItemApi.itemsIdDelete(itemId);
   }
 
   /**
