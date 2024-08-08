@@ -37,27 +37,27 @@
     "@types/debug": "^4.1.7",
     "@types/jsrp": "~0.2.3",
     "@types/mocha": "^9.1.1",
+    "@types/node": "^16.18.82",
     "@types/node-fetch": "^2.5.10",
     "@types/node-forge": "~0.9.7",
-    "@types/node": "^16.18.82",
     "@types/sinon": "^10.0.12",
     "bili": "^5.0.5",
     "chai": "^4.3.6",
-    "nock": "^13.2.8",
+    "nock": "^14.0.0-beta.8",
     "prettier": "^2.7.1",
     "rollup-plugin-typescript2": "^0.30.0",
     "sinon": "^14.0.0",
     "ts-mocha": "^10.0.0",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "tslint-config-prettier": "^1.18.0",
     "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
     "typedoc": "^0.23.2",
     "typescript": "^4.7.4"
   },
   "engines": {
-    "node": ">=16.15.1",
-    "npm": ">=8.0.0"
+    "node": ">=20.16.0",
+    "npm": ">=10.8.1"
   },
   "files": [
     "/dist"

@@ -4,7 +4,6 @@ import * as Vault from '@meeco/vault-api-sdk';
 import { Configuration } from '@meeco/vault-api-sdk';
 import * as VC from '@meeco/vc-api-sdk';
 import { debug } from 'debug';
-import fetch from 'node-fetch';
 import { Environment } from '../models/environment';
 import { IIdentityNetworkToken, IKeystoreToken, IVaultToken, IVCToken } from '../services/service';
 import SDKFormData from './sdk-form-data';
@@ -15,12 +14,12 @@ import SDKFormData from './sdk-form-data';
 /* tslint:disable no-var-requires */
 const chalk = require('chalk');
 
-let fetchLib = (<any>global).fetch || fetch;
+let fetchLib = fetch;
 
 /**
  * Configure the fetch library to use for API requests
  */
-export const configureFetch = (_fetch: any) => (fetchLib = _fetch);
+export const configureFetch = (_fetch: any = fetch) => (fetchLib = _fetch);
 
 const debugCurl = debug('meeco:http');
 (<any>global).FormData = (<any>global).FormData || SDKFormData;
