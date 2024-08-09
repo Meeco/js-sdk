@@ -1,5 +1,6 @@
 import { OrganizationMembersService } from '@meeco/sdk';
 import { expect } from 'chai';
+import nock from 'nock';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
 import {
   customTest,
@@ -12,6 +13,10 @@ import {
 } from '../test-helpers';
 
 describe('OrganizationMembersService', () => {
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   describe('#createInvitation', () => {
     const response = {
       invitation: {

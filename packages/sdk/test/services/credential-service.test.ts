@@ -1,7 +1,6 @@
 import { DecryptedItem, DecryptedItems, Ed25519, ItemService, SigningAlg } from '@meeco/sdk';
 import { CredentialsControllerGenerateAcceptEnum } from '@meeco/vc-api-sdk';
 import { expect } from 'chai';
-import nock from 'nock';
 import sinon from 'sinon';
 import { CredentialService } from '../../src/services/credential-service';
 import cryppo from '../../src/services/cryppo-service';
@@ -20,10 +19,6 @@ describe('CredentialService', () => {
       ...testUserAuth,
       organisation_id: ORGANISATION_ID,
     };
-
-    before(() => {
-      nock('https://vc-dev.meeco.me').get('/').reply(200, {});
-    });
 
     describe('EdDSA', () => {
       const seed = cryppo.binaryStringToBytes('abcdabcdabcdabcdabcdabcdabcdabcd');

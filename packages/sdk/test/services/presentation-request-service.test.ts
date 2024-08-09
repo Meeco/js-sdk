@@ -1,5 +1,6 @@
 import { DecryptedItem } from '@meeco/sdk';
 import { PresentationRequestResponseVerificationResultResponseDto } from '@meeco/vc-api-sdk';
+import nock from 'nock';
 import sinon from 'sinon';
 import { DecryptedItems, ItemService } from '../../src/services/item-service';
 import { PresentationRequestService } from '../../src/services/presentation-request-service';
@@ -11,6 +12,11 @@ describe('PresentationRequestService', () => {
   beforeEach(() => {
     presentationRequestService = new PresentationRequestService(environment);
   });
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   describe('#getPresentationRequestResponseItem', () => {
     customTest
       .stub(

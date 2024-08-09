@@ -10,8 +10,8 @@ import { DIDManagementService } from '../../src/services/did-management-service'
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('IdentityNetworkService', () => {
-  before(() => {
-    nock('https://identity-network-dev.meeco.me').get('/').reply(200, {});
+  afterEach(() => {
+    nock.cleanAll();
   });
 
   const ORGANISATION_ID = 'e825bc79-fb0f-4a87-b94d-bcc0e2432100';

@@ -1,5 +1,6 @@
 import { SlotType, TemplateService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
+import nock from 'nock';
 import { reportIfTruncated } from '../../src/util/paged';
 import {
   DEFAULT_CLASSIFICATION_NAME,
@@ -9,6 +10,10 @@ import {
 import { customTest, environment, getOutputFixture, testUserAuth } from '../test-helpers';
 
 describe('TemplateService', () => {
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   const response = {
     item_templates: [
       {

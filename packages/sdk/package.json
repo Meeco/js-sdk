@@ -40,7 +40,6 @@
     "@types/node-forge": "~0.9.7",
     "@types/sinon": "^10.0.12",
     "chai": "^4.3.6",
-    "nock": "^14.0.0-beta.9",
     "prettier": "^2.7.1",
     "sinon": "^14.0.0",
     "ts-mocha": "^10.0.0",
@@ -81,5 +80,12 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
+  },
+  "overrides": {
+    "@oclif/test": {
+      "fancy-test": {
+        "nock": "14.0.0-beta.9"
+      }
+    }
   }
 }

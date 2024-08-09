@@ -1,6 +1,7 @@
 import { bytesToBinaryString } from '@meeco/cryppo';
 import { InvitationService } from '@meeco/sdk';
 import { expect } from 'chai';
+import nock from 'nock';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
 import { default as connectionResponseWithCreatedSharesReport } from '../fixtures/responses/connection-response-with-created-shares-report';
 import { customTest, environment, testUserAuth } from '../test-helpers';
@@ -31,6 +32,10 @@ describe('InvitationService', () => {
         .matchHeader('Meeco-Subscription-Key', environment.keystore.subscription_key)
         .reply(200, { keypair: { id: savedKeyPairId, public_key: 'new_public_key' } });
   }
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
 
   describe('#list', () => {
     const responseMeta = {

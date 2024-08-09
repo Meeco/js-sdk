@@ -8,8 +8,8 @@ describe('Organization-services login', () => {
   const input = getInputFixture('login-organization-service.input.json');
   const storedToken = 'abc';
 
-  before(() => {
-    nock('https://sandbox.meeco.me/vault').get('/').reply(200, {});
+  afterEach(() => {
+    nock.cleanAll();
   });
 
   customTest

@@ -10,6 +10,7 @@ describe('API Factories', () => {
   afterEach(() => {
     nock.cleanAll();
   });
+
   describe('keystoreAPIFactory', () => {
     it('adds the required authorization headers and default version headers to request methods', async () => {
       nock('https://meeco-keystore.example.com/')

@@ -1,6 +1,7 @@
 import { bytesToBinaryString } from '@meeco/cryppo';
 import { DecryptedKeypair, DelegationService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
+import nock from 'nock';
 import sinon from 'sinon';
 import { default as connectionResponse } from '../fixtures/responses/connection-response';
 import { default as connectionResponseWithCreatedSharesReport } from '../fixtures/responses/connection-response-with-created-shares-report';
@@ -75,6 +76,10 @@ describe('DelegationService', () => {
 
   const fromApi = (key, keypair) =>
     new DecryptedKeypair(connectionResponse.connection.own.user_public_key, decryptedPrivateKey);
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
 
   describe('#createChildUser', () => {
     const childConnectionIdentifier = 'external identifier';

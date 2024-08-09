@@ -1,6 +1,7 @@
 import { ItemUpdate, NewItem, NewSlot, SlotType } from '@meeco/sdk';
 import { ItemApi, ItemResponse } from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
+import nock from 'nock';
 import { ItemService } from '../../src/services/item-service';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
 import { default as MockItemResponse } from '../fixtures/responses/item-response/basic';
@@ -14,6 +15,10 @@ import {
 } from '../test-helpers';
 
 describe('ItemService', () => {
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   describe('#create', () => {
     function createItem({ template_name, item }) {
       const slot_ids = ['a', 'b', 'c', 'd', 'e'];

@@ -45,7 +45,6 @@
     "chai": "^4.3.6",
     "lerna": "^5.1.6",
     "ts-mocha": "^10.0.0",
-    "nock": "^13.2.8",
     "prettier": "^2.7.1",
     "sinon": "^14.0.0",
     "ts-node": "^10.9.2",
@@ -126,5 +125,12 @@
     "build": "npm run pkg",
     "pkg": "oclif pack tarballs"
   },
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "overrides": {
+    "@oclif/test": {
+      "fancy-test": {
+        "nock": "14.0.0-beta.9"
+      }
+    }
+  }
 }
