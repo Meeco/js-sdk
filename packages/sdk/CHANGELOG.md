@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project (loosely) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 6.0.0
+
+### Changed
+
+- Minimum required NodeJS version changed to `18.0.0`
+- Minimum required `npm` version changed to 10.0.0"
+- `bili` bundling package replaced with `tsup`
+
+### Removed
+
+- `node-fetch` dependency
+
+###
+
 ## 5.3.2
 
 ### Changed
