@@ -1,16 +1,16 @@
 import { expect } from '@oclif/test';
 import nock from 'nock';
-import * as nodeFetch from 'node-fetch';
 import { configureFetch, keystoreAPIFactory, vaultAPIFactory } from '../src/util/api-factory';
 
 describe('API Factories', () => {
   before(() => {
-    configureFetch(nodeFetch);
+    configureFetch();
   });
 
   afterEach(() => {
     nock.cleanAll();
   });
+
   describe('keystoreAPIFactory', () => {
     it('adds the required authorization headers and default version headers to request methods', async () => {
       nock('https://meeco-keystore.example.com/')

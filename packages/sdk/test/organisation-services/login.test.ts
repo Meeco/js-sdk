@@ -1,11 +1,16 @@
 import { OrganizationServicesService } from '@meeco/sdk';
 import { expect } from '@oclif/test';
+import nock from 'nock';
 import { decryptedPrivateKey } from '../fixtures/responses/keypair-response';
 import { customTest, environment, getInputFixture, testUserAuthFixture } from '../test-helpers';
 
 describe('Organization-services login', () => {
   const input = getInputFixture('login-organization-service.input.json');
   const storedToken = 'abc';
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
 
   customTest
     .mockCryppo()

@@ -1,5 +1,6 @@
 import { DidDocumentDto, DIDResolutionResultDto } from '@meeco/identity-network-api-sdk';
 import { expect } from 'chai';
+import nock from 'nock';
 import { DIDIndy } from '../../src/models/did-management/did-indy';
 import { DIDKey } from '../../src/models/did-management/did-key';
 import { DIDWeb } from '../../src/models/did-management/did-web';
@@ -9,6 +10,10 @@ import { DIDManagementService } from '../../src/services/did-management-service'
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('IdentityNetworkService', () => {
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   const ORGANISATION_ID = 'e825bc79-fb0f-4a87-b94d-bcc0e2432100';
   /**
    * Resolve DID with DID document representation or DID resolution result. https://w3c-ccg.github.io/did-resolution/#resolving

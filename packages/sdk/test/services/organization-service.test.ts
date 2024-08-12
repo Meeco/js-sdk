@@ -1,10 +1,15 @@
 import { expect } from 'chai';
+import nock from 'nock';
 import { OrganizationService } from '../../src/services/organization-service';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
 import { decryptedPrivateKey } from '../fixtures/responses/keypair-response';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
 describe('OrganizationService', () => {
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   describe('#create', () => {
     const orgName = 'SuperData Inc.';
     // defined by mockCryppo

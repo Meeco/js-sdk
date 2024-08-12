@@ -17,6 +17,7 @@ import {
   SharesOutgoingResponse,
 } from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
+import nock from 'nock';
 import sinon from 'sinon';
 import { default as itemResponse } from '../fixtures/responses/item-response/basic';
 import { customTest, environment, testUserAuth } from '../test-helpers';
@@ -30,6 +31,10 @@ describe('ShareService', () => {
 
     beforeEach(() => {
       service = new ShareService(environment);
+    });
+
+    afterEach(() => {
+      nock.cleanAll();
     });
 
     const connectionStub = customTest.mockCryppo().stub(

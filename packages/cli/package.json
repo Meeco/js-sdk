@@ -12,7 +12,7 @@
     "@meeco/cryppo": "2.0.2",
     "@meeco/file-storage-node": "5.0.4",
     "@meeco/keystore-api-sdk": "10.1.1-develop.20230816154849.c7c2018",
-    "@meeco/sdk": "^5.0.0",
+    "@meeco/sdk": "^6.0.0",
     "@meeco/vault-api-sdk": "39.6.1-develop.20231213134427.3dde2fcb3",
     "oclif": "^3.1.0",
     "@oclif/core": "^1.9.9",
@@ -29,7 +29,7 @@
     "node-fetch": "^2.6.7",
     "node-forge": "0.10.0",
     "qs": "^6.11.0",
-    "tslib": "^2.4.0",
+    "tslib": "^2.6.3",
     "yaml": "~2.1.1"
   },
   "devDependencies": {
@@ -45,7 +45,6 @@
     "chai": "^4.3.6",
     "lerna": "^5.1.6",
     "ts-mocha": "^10.0.0",
-    "nock": "^13.2.8",
     "prettier": "^2.7.1",
     "sinon": "^14.0.0",
     "ts-node": "^10.9.2",
@@ -55,8 +54,8 @@
     "typescript": "^4.7.4"
   },
   "engines": {
-    "node": ">=16.15.1",
-    "npm": ">=8.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=10.0.0"
   },
   "files": [
     "/bin",
@@ -126,5 +125,12 @@
     "build": "npm run pkg",
     "pkg": "oclif pack tarballs"
   },
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "overrides": {
+    "@oclif/test": {
+      "fancy-test": {
+        "nock": "14.0.0-beta.9"
+      }
+    }
+  }
 }
