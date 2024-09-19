@@ -159,6 +159,7 @@ async function createCredentialType() {
       credential_type: {
         name,
         schema_id: schemaId,
+        format: 'jwt_vc_json', // TODO: make this configurable
         style: {
           text_color: '#FFF',
           background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
