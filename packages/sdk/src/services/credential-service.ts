@@ -1,8 +1,8 @@
 import {
+  CreateCredentialTypeDtoFormatEnum,
   CreateCredentialTypeStyleDto,
   CredentialTypeModelDto,
   CredentialsApi,
-  CredentialsControllerGenerateAcceptEnum,
   GenerateCredentialDto,
 } from '@meeco/vc-api-sdk';
 import { DecryptedItem } from '../models/decrypted-item';
@@ -57,8 +57,7 @@ export class CredentialService extends Service<CredentialsApi> {
     auth: IVCToken,
     payload: GenerateCredentialExtendedDto,
     key: Uint8Array,
-    alg: SigningAlg,
-    jwtFormat?: CredentialsControllerGenerateAcceptEnum
+    alg: SigningAlg
   ) {
     if (!auth.organisation_id) {
       throw new MeecoServiceError(
@@ -66,19 +65,14 @@ export class CredentialService extends Service<CredentialsApi> {
       );
     }
 
-    jwtFormat = jwtFormat || CredentialsControllerGenerateAcceptEnum.Jwt;
-    const result = await this.getAPI(auth).credentialsControllerGenerate(
-      auth.organisation_id,
-      {
-        credential: <any>payload,
-      },
-      jwtFormat
-    );
+    const result = await this.getAPI(auth).credentialsControllerGenerate(auth.organisation_id, {
+      credential: <any>payload,
+    });
 
     let unsigned_vc_jwt =
-      jwtFormat && jwtFormat === CredentialsControllerGenerateAcceptEnum.VcsdJwt
-        ? result.credential.unsigned_vc_jwt.split('~')[0]
-        : result.credential.unsigned_vc_jwt;
+      result.credential.format === CreateCredentialTypeDtoFormatEnum.VcsdJwt
+        ? result.credential.credential.split('~')[0]
+        : result.credential.credential;
 
     if (unsigned_vc_jwt.endsWith('.')) {
       unsigned_vc_jwt = unsigned_vc_jwt.slice(0, -1);
@@ -92,13 +86,14 @@ export class CredentialService extends Service<CredentialsApi> {
     );
 
     const credential =
-      jwtFormat === CredentialsControllerGenerateAcceptEnum.VcsdJwt
+      result.credential.format === CreateCredentialTypeDtoFormatEnum.VcsdJwt
         ? signedCredential +
-          result.credential.unsigned_vc_jwt.slice(result.credential.unsigned_vc_jwt.indexOf('~'))
+          result.credential.credential.slice(result.credential.credential.indexOf('~'))
         : signedCredential;
 
     return {
       credential,
+      format: result.credential.format,
       metadata: result.credential.metadata,
     };
   }
