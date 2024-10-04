@@ -38,6 +38,7 @@ export interface CreateVerifiableCredentialItemParams {
   credentialDetail?: CredentialDetail;
   credentialType?: CredentialTypeModelDto;
 }
+
 export class CredentialService extends Service<CredentialsApi> {
   public getAPI(token: IVCToken) {
     return this.vcAPIFactory(token).CredentialsApi;
@@ -47,10 +48,8 @@ export class CredentialService extends Service<CredentialsApi> {
    *
    * @param auth
    * @param payload - credential type, claims and basic credential parameters
-   * @param organisationID - signing organisation ID
    * @param key - private key bytes in a form of Uint8Array
    * @param alg - SigningAlg enum value
-   * @param jwtFormat - optional parameter to specify JWT format (default is VC-JWT)
    * @returns Promise<{credential: string; metadata: {style: {"text-color": string, background: string, image: string}}}>
    */
   public async issue(
