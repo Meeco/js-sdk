@@ -5,6 +5,7 @@ import {
   Environment,
   SigningAlg,
   vcAPIFactory,
+  VCApiTypes,
 } from '@meeco/sdk';
 import JSONFormatter from 'json-formatter-js';
 
@@ -159,6 +160,7 @@ async function createCredentialType() {
       credential_type: {
         name,
         schema_id: schemaId,
+        format: VCApiTypes.UnsignedCredentialModelDtoFormatEnum.JwtVcJson, // TODO: make this configurable
         style: {
           text_color: '#FFF',
           background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
