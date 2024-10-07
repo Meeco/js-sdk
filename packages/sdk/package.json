@@ -1,13 +1,13 @@
 {
   "name": "@meeco/sdk",
   "description": "A wrapper library around Meeco's various API SDK's and encryption libraries",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "author": "Meeco",
   "bugs": "https://github.com/Meeco/cli/issues",
   "source": "src/index.ts",
   "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "types": "dist/src/index.d.ts",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "dependencies": {
     "@meeco/cryppo": "2.0.2",
     "@meeco/identity-network-api-sdk": "1.1.0-develop.20230808164050.d37ca3c",
@@ -67,7 +67,7 @@
   "license": "MIT",
   "repository": "Meeco/cli",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && tsup src/index.ts --format esm,cjs",
+    "build": "tsc -p tsconfig.build.json && tsup src/index.ts --format esm,cjs --tsconfig tsconfig.build.json && tsup src/index.ts --dts-only --tsconfig tsconfig.build.json",
     "format:check": "prettier -c \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" *.json README.md",
     "lint": "tslint -p . -t stylish -c ../../tslint.json && tslint -p test/tsconfig.json -t stylish -c ../../tslint.json",
