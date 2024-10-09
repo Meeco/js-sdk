@@ -1,7 +1,6 @@
-// tslint:disable-next-line: no-var-requires
-const b58 = require('bs58');
 import { ed25519 } from '@noble/curves/ed25519';
 import { bytesToHex } from '@noble/hashes/utils';
+import b58 from 'bs58';
 import { bytesToBase64url } from 'did-jwt';
 import { IKeyPairDID } from './key-pair-did';
 
