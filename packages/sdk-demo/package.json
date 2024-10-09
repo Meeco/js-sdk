@@ -13,7 +13,7 @@
     "lint": "tslint -p . -t stylish -c ../../tslint.json"
   },
   "dependencies": {
-    "@meeco/sdk": "^7.4.0",
+    "@meeco/sdk": "^7.5.0",
     "@meeco/style-kit": "^2.0.1",
     "crypto-browserify": "^3.12.0",
     "json-formatter-js": "^2.3.4",
