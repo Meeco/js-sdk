@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project (loosely) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 7.4.0
+
+### Fixed
+
+- Fix `import` of `form-data` dependency that makes library to crash
+
 ## 7.3.0
 
 ### Changed
@@ -13,7 +19,7 @@ and this project (loosely) adheres to [Semantic Versioning](https://semver.org/s
 
 ### Fixed
 
-- Fix `import` of `bs58` dependency that crashes the build
+- Fix `import` of `bs58` dependency that makes library to crash
 
 ## 7.2.0
 
