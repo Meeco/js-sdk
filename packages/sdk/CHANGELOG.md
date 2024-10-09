@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project (loosely) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 7.5.0
+
+### Fixed
+
+- Fix `import` of `chalk` dependency that makes library to crash
+
+## 7.4.0
+
+### Fixed
+
+- Fix `import` of `form-data` dependency that makes library to crash
+
+## 7.3.0
+
+### Changed
+
+- Upgraded `@meeco/vc-api-sdk` version to `10.0.0-develop.20241007171031.c55e9e0`
+
+### Fixed
+
+- Fix `import` of `bs58` dependency that makes library to crash
+
 ## 7.2.0
 
 ### Changed

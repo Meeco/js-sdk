@@ -1,6 +1,5 @@
-// tslint:disable-next-line: no-var-requires
-const b58 = require('bs58');
 import { binaryStringToBytes, bytesToBinaryString } from '@meeco/cryppo';
+import b58 from 'bs58';
 import { ERROR_CODES, MeecoServiceError } from '../models/service-error';
 import { SymmetricKey } from '../models/symmetric-key';
 import cryppo from '../services/cryppo-service';
