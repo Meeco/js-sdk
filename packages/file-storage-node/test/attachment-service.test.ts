@@ -128,9 +128,9 @@ describe('AttachmentService', () => {
         await service.upload({
           filePath: 'some/file.txt',
           authConfig: fakeAuth,
-          key: ({
+          key: {
             key: 'fake_key',
-          } as any) as EncryptionKey,
+          } as any as EncryptionKey,
         });
 
         // artifacts exist
@@ -142,12 +142,12 @@ describe('AttachmentService', () => {
         await new AttachmentService(fakeVault).upload({
           filePath: 'none-file',
           authConfig: fakeAuth,
-          key: ({
+          key: {
             key: 'fake_key',
-          } as any) as EncryptionKey,
+          } as any as EncryptionKey,
         });
       })
-      .catch(/^ENOENT:.*/)
+      .catch(/^ENOENT.*/)
       .it('reports a missing file');
   });
 });

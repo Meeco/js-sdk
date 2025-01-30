@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project (loosely) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 8.0.0
+
+### Changed
+
+- Upgraded `@meeco/vc-api-sdk` version to `11.0.0-develop.20250130001142.96e6f49`
+
 ## 7.8.0
 
 ### Changed
