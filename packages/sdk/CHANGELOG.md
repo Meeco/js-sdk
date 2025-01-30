@@ -11,6 +11,18 @@ and this project (loosely) adheres to [Semantic Versioning](https://semver.org/s
 
 - Upgraded `@meeco/vc-api-sdk` version to `11.0.0-develop.20250130001142.96e6f49`
 
+## 7.10.0
+
+### Changed
+
+- Upgraded `@meeco/vc-api-sdk` version to `10.0.0-develop.20250104004027.6ce989e`
+
+## 7.9.0
+
+### Changed
+
+- Upgraded `@meeco/vc-api-sdk` version to `10.0.0-develop.20250103220521.ae28eac`
+
 ## 7.8.0
 
 ### Changed
