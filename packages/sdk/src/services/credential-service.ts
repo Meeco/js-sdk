@@ -108,14 +108,13 @@ export class CredentialService extends Service<CredentialsApi> {
     }: CreateVerifiableCredentialItemParams
   ): Promise<DecryptedItem> {
     const slots = this.createSlots(credential, format, credentialDetail, credentialType);
-    const itemLabelAndName = this.formatIdToItemName(id);
 
     const newVerifiableCredentialItem = new NewItem(
-      itemLabelAndName,
+      id,
       CREDENTIAL_ITEM.TEMPLATE_NAME,
       slots,
       undefined,
-      itemLabelAndName
+      this.formatItemName(id)
     );
 
     const itemService = new ItemService(this.environment);
@@ -124,11 +123,11 @@ export class CredentialService extends Service<CredentialsApi> {
     return itemService.create(itemServiceAuth, newVerifiableCredentialItem);
   }
 
-  public async findVerifiableCredentialItemsById(
+  public async findVerifiableCredentialItemsByName(
     auth: IVaultToken & IDEK,
-    id: string
+    name: string
   ): Promise<DecryptedItems> {
-    const itemName = this.formatIdToItemName(id);
+    const itemName = this.formatItemName(name);
     const itemService = new ItemService(this.environment);
     const itemServiceAuth = this.createItemServiceAuth(auth);
 
@@ -279,12 +278,7 @@ export class CredentialService extends Service<CredentialsApi> {
     };
   }
 
-  private formatIdToItemName(id: string) {
-    /**
-     * For credentials starting with urn:uuid: it will crop it and leave only uuid part
-     * Regular uuids will not be changed
-     */
-    const processedId = id.replace(/[^a-z0-9-]/gi, '_');
-    return processedId.slice(processedId.lastIndexOf('_') + 1);
+  private formatItemName(id: string) {
+    return id.toLowerCase().replace(/[^a-z0-9_-]/gi, '_');
   }
 }

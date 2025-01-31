@@ -1148,7 +1148,7 @@ describe('CredentialService', () => {
         });
     });
 
-    describe('findVerifiableCredentialItemsById', () => {
+    describe('findVerifiableCredentialItemsByName', () => {
       customTest
         .stub(
           ItemService.prototype,
@@ -1158,7 +1158,7 @@ describe('CredentialService', () => {
         .it('should find verifiable credential items by id', async () => {
           const mockCredentialId = 'urn:uuid:58864fac-1857-40f8-9f37-8fdd4fe1cc2e';
 
-          await credentialService.findVerifiableCredentialItemsById(
+          await credentialService.findVerifiableCredentialItemsByName(
             {
               vault_access_token: testUserAuth.vault_access_token,
               data_encryption_key: testUserAuth.data_encryption_key,
@@ -1172,7 +1172,7 @@ describe('CredentialService', () => {
           };
 
           const expectedQuery = {
-            name: '58864fac-1857-40f8-9f37-8fdd4fe1cc2e',
+            name: 'urn_uuid_58864fac-1857-40f8-9f37-8fdd4fe1cc2e',
           };
 
           sinon.assert.calledWith(
