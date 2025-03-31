@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project (loosely) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 8.3.0
+
+### Changed
+
+- Upgraded `@meeco/vc-api-sdk` version to `11.1.0-stage.20250331110750.51eb54e`
+- Upgraded `@meeco/identity-network-api-sdk` version to `1.3.1-stage.20250303161027.c96e5da`
+- Upgraded `@meeco/keystore-api-sdk` version to `10.7.1-stage.20250320105714.379c594`
+- Upgraded `@meeco/vault-api-sdk` version to `40.2.0-stage.20250320105852.eb5a66b89`
+
 ## 8.2.0
 
 ### Changed
