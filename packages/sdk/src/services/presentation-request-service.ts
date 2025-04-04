@@ -137,7 +137,7 @@ export class PresentationRequestService extends Service<PresentationRequestsApi>
   }
 
   public async deletePresentationRequestResponseItem(auth: IVaultToken & IDEK, itemId: string) {
-    return this.vaultAPIFactory(auth).ItemApi.itemsIdDelete(itemId);
+    return this.vaultAPIFactory(auth).ItemApi.itemsItemIdDelete(itemId);
   }
 
   /**

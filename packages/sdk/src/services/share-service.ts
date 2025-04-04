@@ -2,7 +2,7 @@ import {
   Connection,
   EncryptedSlotValue,
   GetShareResponse,
-  ItemsIdSharesShareDeks,
+  ItemsItemIdSharesShareDeks,
   PutItemSharesRequest,
   Share,
   SharesApi,
@@ -138,7 +138,7 @@ export class ShareService extends Service<SharesApi> {
     const encryptedDek = await publicKey.encryptKey(dek);
 
     this.logger.log('Sending shared data');
-    const shareResult = await this.vaultAPIFactory(credentials).SharesApi.itemsIdSharesPost(
+    const shareResult = await this.vaultAPIFactory(credentials).SharesApi.itemsItemIdSharesPost(
       item.id,
       {
         shares: [
@@ -356,7 +356,9 @@ export class ShareService extends Service<SharesApi> {
 
     this.logger.log('Retrieving Share Public Keys');
     // retrieve the list of shares IDs and public keys via
-    const { shares } = await this.vaultAPIFactory(credentials).SharesApi.itemsIdSharesGet(itemId);
+    const { shares } = await this.vaultAPIFactory(credentials).SharesApi.itemsItemIdSharesGet(
+      itemId
+    );
 
     // prepare request body
 
@@ -368,7 +370,7 @@ export class ShareService extends Service<SharesApi> {
         const sharePublicKey = new RSAPublicKey(shareKey.public_key!);
         const encryptedDek = await sharePublicKey.encryptKey(dek);
 
-        const shareDek: ItemsIdSharesShareDeks = {
+        const shareDek: ItemsItemIdSharesShareDeks = {
           share_id: shareKey.id,
           dek: encryptedDek,
         };
@@ -410,7 +412,7 @@ export class ShareService extends Service<SharesApi> {
     // put items/{id}/shares
     // TODO skip/alert if no shares
     return this.vaultAPIFactory(credentials)
-      .SharesApi.itemsIdSharesPut(itemId, putItemSharesRequest)
+      .SharesApi.itemsItemIdSharesPut(itemId, putItemSharesRequest)
       .catch(err => {
         if ((<Response>err).status === 400) {
           throw new Error('Error updating shares: ' + err.statusText);

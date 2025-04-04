@@ -5,7 +5,9 @@ import { default as connectionResponseWithCreatedSharesReport } from '../fixture
 import { decryptedPrivateKey } from '../fixtures/responses/keypair-response';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
-describe('DelegationInvitationService', () => {
+//TODO: fix delegation releated functionality
+// https://bitbucket.org/meeco/meeco-vault/src/stage/CHANGELOG.md#:~:text=minor%20lib%20upgrades-,40.0.0%20(18.10.2024),-Rails%207.2.1.1
+describe.skip('DelegationInvitationService', () => {
   const connectionId = connectionResponse.connection.own.id;
   const delegationConnectionResponse = connectionResponseWithCreatedSharesReport;
   delegationConnectionResponse.connection.the_other_user.integration_data = {

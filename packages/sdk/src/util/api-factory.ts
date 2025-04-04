@@ -103,6 +103,14 @@ const callApiWithHeaders = (
   );
   const apiMethod = apiInstance[apiMethodName];
 
+  if (typeof apiMethod !== 'function') {
+    throw new Error(
+      `Method '${String(
+        apiMethodName
+      )}' not found on API '${api}'. Please check the method name and API version.`
+    );
+  }
+
   return apiMethod.call(apiInstance, ...args).catch(err => {
     if (err.status === 426) {
       throw new Error(

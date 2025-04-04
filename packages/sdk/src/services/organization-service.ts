@@ -1,8 +1,8 @@
 import {
+  Service as APIService,
   Organization,
   OrganizationsGetModeEnum,
   OrganizationsManagingOrganizationsApi,
-  Service as APIService,
 } from '@meeco/vault-api-sdk';
 import DecryptedKeypair from '../models/decrypted-keypair';
 import RSAPrivateKey from '../models/rsa-private-key';
@@ -30,7 +30,7 @@ export class OrganizationService extends Service<OrganizationsManagingOrganizati
     const orgKey = new RSAPrivateKey(privateKey);
     const result = await this.vaultAPIFactory(
       credentials
-    ).OrganizationsManagingOrganizationsApi.organizationsIdLoginPost(organizationId);
+    ).OrganizationsManagingOrganizationsApi.organizationsOrganizationIdLoginPost(organizationId);
 
     const decryptedVaultSessionToken = await orgKey.decryptToken(result.encrypted_access_token);
 
