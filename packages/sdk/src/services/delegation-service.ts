@@ -57,13 +57,8 @@ export class DelegationService extends Service<DelegationApi> {
 
     const childUser = childUserResponse.user;
 
-    // check existence of delegation_token in untyped field integration_data
-    const integrationData =
-      childUserResponse.connection_from_parent_to_child.the_other_user.integration_data;
-    if (integrationData == null) {
-      throw new Error('Missing delegation token after creating child user in Vault');
-    }
-    const delegation_token: string = integrationData['delegation_token'];
+    const delegation_token: string =
+      childUserResponse.connection_from_parent_to_child.the_other_user.delegation_token!;
 
     this.logger.log('Saving child user keys to keystore');
     return await this.keystoreAPIFactory(credentials)
@@ -218,11 +213,7 @@ export class DelegationService extends Service<DelegationApi> {
     return { delegation, connection };
   }
 
-  private getDelegationTokenFromConnection(connection) {
-    return (
-      connection.own.integration_data?.delegation_token ||
-      connection.the_other_user.integration_data?.delegation_token ||
-      ''
-    );
+  private getDelegationTokenFromConnection(connection: Connection) {
+    return connection.own?.delegation_token || connection.the_other_user?.delegation_token || '';
   }
 }

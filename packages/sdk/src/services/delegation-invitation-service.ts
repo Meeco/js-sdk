@@ -1,5 +1,5 @@
 import { signWithPrivateKey } from '@meeco/cryppo';
-import { DelegationInvitationApi } from '@meeco/vault-api-sdk';
+import { Connection, DelegationInvitationApi } from '@meeco/vault-api-sdk';
 import DecryptedKeypair from '../models/decrypted-keypair';
 import Service, { IDEK, IKEK, IKeystoreToken, IVaultToken } from './service';
 
@@ -66,11 +66,7 @@ export class DelegationInvitationService extends Service<DelegationInvitationApi
     return connection;
   }
 
-  private getDelegationTokenFromConnection(connection) {
-    return (
-      connection.own.integration_data?.delegation_token ||
-      connection.the_other_user.integration_data?.delegation_token ||
-      ''
-    );
+  private getDelegationTokenFromConnection(connection: Connection) {
+    return connection.own?.delegation_token || connection.the_other_user?.delegation_token || '';
   }
 }

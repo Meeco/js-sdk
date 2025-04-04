@@ -1,19 +1,22 @@
 import { DecryptedKeypair, DelegationInvitationService } from '@meeco/sdk';
+import {
+  TheOtherConnectedUserDataConnectionTypeEnum,
+  TheOtherConnectedUserDataDelegationRoleEnum,
+} from '@meeco/vault-api-sdk';
 import sinon from 'sinon';
 import { default as connectionResponse } from '../fixtures/responses/connection-response';
 import { default as connectionResponseWithCreatedSharesReport } from '../fixtures/responses/connection-response-with-created-shares-report';
 import { decryptedPrivateKey } from '../fixtures/responses/keypair-response';
 import { customTest, environment, testUserAuth } from '../test-helpers';
 
-//TODO: fix delegation releated functionality
-// https://bitbucket.org/meeco/meeco-vault/src/stage/CHANGELOG.md#:~:text=minor%20lib%20upgrades-,40.0.0%20(18.10.2024),-Rails%207.2.1.1
-describe.skip('DelegationInvitationService', () => {
+describe('DelegationInvitationService', () => {
   const connectionId = connectionResponse.connection.own.id;
   const delegationConnectionResponse = connectionResponseWithCreatedSharesReport;
-  delegationConnectionResponse.connection.the_other_user.integration_data = {
+  delegationConnectionResponse.connection.the_other_user = {
+    ...delegationConnectionResponse.connection.the_other_user,
     delegation_token: 'd0b2519e-4b19-4d34-98f5-505ae44d18fe',
-    intent: 'delegate',
-    role: 'owner',
+    delegation_role: TheOtherConnectedUserDataDelegationRoleEnum.Owner,
+    connection_type: TheOtherConnectedUserDataConnectionTypeEnum.Delegate,
   };
 
   const delegationResponse = {

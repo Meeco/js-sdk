@@ -13,7 +13,6 @@ const response: ConnectionResponse = {
     own: {
       id: 'f3fa4ede-77ea-4243-819e-7a4dd3b46edc',
       encrypted_recipient_name: null,
-      integration_data: {},
       connection_type: OwnConnectionDataConnectionTypeEnum.Null,
       user_id: 'd06eb085-766d-4444-8d03-892eb60c6f2b',
       user_type: OwnConnectionDataUserTypeEnum.Human,
@@ -22,10 +21,12 @@ const response: ConnectionResponse = {
       user_keypair_external_id: '68533f74-6165-49a7-939e-79e5e756dc57',
       delegation_role: OwnConnectionDataDelegationRoleEnum.Null,
       delegation_token: null,
+      organization_member_id: null,
+      did: null,
+      created_at: new Date('2021-05-05T07:21:08.833Z'),
     },
     the_other_user: {
       id: 'f0cdb46e-7178-4034-a58a-c93d6e5b4da9',
-      integration_data: {},
       connection_type: TheOtherConnectedUserDataConnectionTypeEnum.Null,
       user_id: '7ffdb069-9c8a-48a8-b36f-d974e1e87702',
       user_type: TheOtherConnectedUserDataUserTypeEnum.Human,
@@ -34,6 +35,8 @@ const response: ConnectionResponse = {
       user_keypair_external_id: '2076385c-5fb1-4b1b-9966-7fbd6282d308',
       delegation_role: TheOtherConnectedUserDataDelegationRoleEnum.Null,
       delegation_token: null,
+      organization_member_id: null,
+      did: null,
     },
   },
 };
