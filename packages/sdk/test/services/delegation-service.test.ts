@@ -1,5 +1,9 @@
 import { bytesToBinaryString } from '@meeco/cryppo';
 import { DecryptedKeypair, DelegationService } from '@meeco/sdk';
+import {
+  TheOtherConnectedUserDataConnectionTypeEnum,
+  TheOtherConnectedUserDataDelegationRoleEnum,
+} from '@meeco/vault-api-sdk';
 import { expect } from '@oclif/test';
 import nock from 'nock';
 import sinon from 'sinon';
@@ -11,10 +15,11 @@ import { customTest, environment, testUserAuth } from '../test-helpers';
 describe('DelegationService', () => {
   const connectionName = 'name';
   const delegationConnectionResponse = connectionResponseWithCreatedSharesReport;
-  delegationConnectionResponse.connection.the_other_user.integration_data = {
+  delegationConnectionResponse.connection.the_other_user = {
+    ...delegationConnectionResponse.connection.the_other_user,
     delegation_token: 'd0b2519e-4b19-4d34-98f5-505ae44d18fe',
-    intent: 'delegate',
-    role: 'owner',
+    delegation_role: TheOtherConnectedUserDataDelegationRoleEnum.Owner,
+    connection_type: TheOtherConnectedUserDataConnectionTypeEnum.Delegate,
   };
 
   const delegationResponse = {
@@ -94,7 +99,7 @@ describe('DelegationService', () => {
           .reply(200, {
             user: { id: '31bc2137-4d59-4c5e-a352-0525ee2ac858' },
             connection_from_parent_to_child: {
-              the_other_user: { integration_data: { delegation_token: fakeToken } },
+              the_other_user: { delegation_token: fakeToken },
             },
           });
     }

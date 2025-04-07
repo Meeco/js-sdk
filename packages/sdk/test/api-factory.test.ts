@@ -144,7 +144,7 @@ describe('API Factories', () => {
       const forUser = apiFactory(<any>{
         vault_access_token: 'my-vault-token',
       });
-      const result = await forUser.ItemApi.itemsIdGet('my-id');
+      const result = await forUser.ItemApi.itemsItemIdGet('my-id');
       // tslint:disable-next-line
       expect(result).to.be.ok;
     });
@@ -176,7 +176,7 @@ describe('API Factories', () => {
           X_MY_CUSTOM_HEADER: 'foo',
         }
       );
-      const result = await forUser.ItemApi.itemsIdGet('my-id');
+      const result = await forUser.ItemApi.itemsItemIdGet('my-id');
       expect(result).to.eql({
         item: undefined,
         attachments: [],
@@ -199,7 +199,7 @@ describe('API Factories', () => {
       });
       let error;
       try {
-        const result = await forUser.ItemApi.itemsIdGet('my-id');
+        const result = await forUser.ItemApi.itemsItemIdGet('my-id');
         expect(result).to.eql({
           status: 'ok',
         });

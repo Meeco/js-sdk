@@ -1,4 +1,8 @@
 import { OrganizationMembersService } from '@meeco/sdk';
+import {
+  TheOtherConnectedUserDataConnectionTypeEnum,
+  TheOtherConnectedUserDataDelegationRoleEnum,
+} from '@meeco/vault-api-sdk';
 import { expect } from 'chai';
 import nock from 'nock';
 import { MOCK_NEXT_PAGE_AFTER } from '../constants';
@@ -32,11 +36,9 @@ describe('OrganizationMembersService', () => {
         email: null,
         user_email: null,
         encrypted_recipient_name: null,
-        integration_data: {
-          intent: 'member',
-          organization_id: '00000000-0000-0000-0000-000000000000',
-          organization_member_role: 'admin',
-        },
+        delegation_role: TheOtherConnectedUserDataDelegationRoleEnum.Admin,
+        connection_type: TheOtherConnectedUserDataConnectionTypeEnum.Member,
+        organization_id: '00000000-0000-0000-0000-000000000000',
       },
     };
 

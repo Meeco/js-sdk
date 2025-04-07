@@ -102,6 +102,7 @@ describe('CredentialService', () => {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
                 text_color: '#FFF',
+                background_image: undefined,
               },
             },
           });
@@ -153,6 +154,7 @@ describe('CredentialService', () => {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
                 text_color: '#FFF',
+                background_image: undefined,
               },
             },
           });
@@ -206,6 +208,7 @@ describe('CredentialService', () => {
                   background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                   image: 'https://vc.meeco.me/image.png',
                   text_color: '#FFF',
+                  background_image: undefined,
                 },
               },
             });
@@ -228,6 +231,7 @@ describe('CredentialService', () => {
                     'text-color': '#FFF',
                     background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                     image: 'https://vc.meeco.me/image.png',
+                    background_image: undefined,
                   },
                 },
               },
@@ -258,6 +262,7 @@ describe('CredentialService', () => {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
                 text_color: '#FFF',
+                background_image: undefined,
               },
             },
           });
@@ -348,6 +353,7 @@ describe('CredentialService', () => {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
                 text_color: '#FFF',
+                background_image: undefined,
               },
             },
           });
@@ -399,6 +405,7 @@ describe('CredentialService', () => {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
                 text_color: '#FFF',
+                background_image: undefined,
               },
             },
           });
@@ -452,6 +459,7 @@ describe('CredentialService', () => {
                   background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                   image: 'https://vc.meeco.me/image.png',
                   text_color: '#FFF',
+                  background_image: undefined,
                 },
               },
             });
@@ -505,6 +513,7 @@ describe('CredentialService', () => {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
                 text_color: '#FFF',
+                background_image: undefined,
               },
             },
           });
@@ -595,6 +604,7 @@ describe('CredentialService', () => {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
                 text_color: '#FFF',
+                background_image: undefined,
               },
             },
           });
@@ -646,6 +656,7 @@ describe('CredentialService', () => {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
                 text_color: '#FFF',
+                background_image: undefined,
               },
             },
           });
@@ -699,6 +710,7 @@ describe('CredentialService', () => {
                   background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                   image: 'https://vc.meeco.me/image.png',
                   text_color: '#FFF',
+                  background_image: undefined,
                 },
               },
             });
@@ -751,6 +763,7 @@ describe('CredentialService', () => {
                 background: 'linear-gradient(135deg, #9900EF, #ffffff 200%)',
                 image: 'https://vc.meeco.me/image.png',
                 text_color: '#FFF',
+                background_image: undefined,
               },
             },
           });
