@@ -20,25 +20,35 @@ let auth: {
 };
 
 const EXAMPLE_SCHEMA = {
-  $schema: 'https://json-schema.org/draft/2019-09/schema',
-  name: 'Example',
-  description: '',
+  $id: 'https://example.com/schemas/email.json',
+  $schema: 'https://json-schema.org/draft/2020-12/schema',
+  name: 'Name Credential',
+  title: 'Name Credential',
+  description: 'Name Credential using JsonSchema',
   type: 'object',
   properties: {
-    id: {
-      type: 'string',
-    },
-    name: {
-      type: 'string',
+    credentialSubject: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+        },
+        name: {
+          type: 'string',
+        },
+      },
+      required: ['name'],
+      additionalProperties: false,
     },
   },
-  required: ['id', 'name'],
-  additionalProperties: false,
+  required: ['credentialSubject'],
 };
 
 const EXAMPLE_CLAIMS = {
-  id: 'did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK',
-  name: 'Test User',
+  credentialSubject: {
+    id: 'did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK',
+    name: 'Test User',
+  },
 };
 
 loadEnvironmentFromStorage();
