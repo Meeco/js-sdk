@@ -64,9 +64,9 @@ export class InvitationService extends Service<InvitationApi> {
     id: string
   ): Promise<Invitation> {
     this.logger.log('Sending invitation request');
-    const { invitation } = await this.vaultAPIFactory(credentials).InvitationApi.invitationsIdGet(
-      id
-    );
+    const { invitation } = await this.vaultAPIFactory(
+      credentials
+    ).InvitationApi.invitationsInvitationIdGet(id);
 
     return invitation;
   }

@@ -1,4 +1,8 @@
 import { DecryptedKeypair, DelegationInvitationService } from '@meeco/sdk';
+import {
+  TheOtherConnectedUserDataConnectionTypeEnum,
+  TheOtherConnectedUserDataDelegationRoleEnum,
+} from '@meeco/vault-api-sdk';
 import sinon from 'sinon';
 import { default as connectionResponse } from '../fixtures/responses/connection-response';
 import { default as connectionResponseWithCreatedSharesReport } from '../fixtures/responses/connection-response-with-created-shares-report';
@@ -8,10 +12,11 @@ import { customTest, environment, testUserAuth } from '../test-helpers';
 describe('DelegationInvitationService', () => {
   const connectionId = connectionResponse.connection.own.id;
   const delegationConnectionResponse = connectionResponseWithCreatedSharesReport;
-  delegationConnectionResponse.connection.the_other_user.integration_data = {
+  delegationConnectionResponse.connection.the_other_user = {
+    ...delegationConnectionResponse.connection.the_other_user,
     delegation_token: 'd0b2519e-4b19-4d34-98f5-505ae44d18fe',
-    intent: 'delegate',
-    role: 'owner',
+    delegation_role: TheOtherConnectedUserDataDelegationRoleEnum.Owner,
+    connection_type: TheOtherConnectedUserDataConnectionTypeEnum.Delegate,
   };
 
   const delegationResponse = {

@@ -63,7 +63,7 @@ export class ItemService extends Service<ItemApi> {
     credentials: IVaultToken & IDEK,
     newData: ItemUpdate
   ): Promise<DecryptedItem> {
-    const response = await this.vaultAPIFactory(credentials).ItemApi.itemsIdPut(
+    const response = await this.vaultAPIFactory(credentials).ItemApi.itemsItemIdPut(
       newData.id,
       await newData.toRequest(credentials)
     );
@@ -88,7 +88,7 @@ export class ItemService extends Service<ItemApi> {
   ): Promise<DecryptedItem> {
     let dataEncryptionKey = credentials.data_encryption_key;
 
-    const result = await this.vaultAPIFactory(credentials).ItemApi.itemsIdGet(id);
+    const result = await this.vaultAPIFactory(credentials).ItemApi.itemsItemIdGet(id);
     const { item } = result;
 
     // If the Item is from a share, use the share DEK to decrypt instead.

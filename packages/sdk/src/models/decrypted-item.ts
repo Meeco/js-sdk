@@ -4,7 +4,7 @@ import {
   EncryptedSlotValue,
   Item,
   ItemResponse,
-  ItemsIdSharesSlotValues,
+  ItemsItemIdSharesSlotValues,
   Thumbnail,
 } from '@meeco/vault-api-sdk';
 import cryppo from '../services/cryppo-service';
@@ -131,7 +131,7 @@ export class DecryptedItem extends ItemMap<SDKDecryptedSlot> {
    * The Item's slots are encrypted with the given DEK and value verification hashes are appended.
    * You must own the Item to update it like this.
    */
-  async toShareSlots(credentials: IDEK, shareId: string): Promise<ItemsIdSharesSlotValues[]> {
+  async toShareSlots(credentials: IDEK, shareId: string): Promise<ItemsItemIdSharesSlotValues[]> {
     if (!this.own) {
       throw new Error('cannot share non-owned Item');
     }
