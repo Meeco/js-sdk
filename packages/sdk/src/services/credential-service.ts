@@ -69,7 +69,7 @@ export class CredentialService extends Service<CredentialsApi> {
     });
 
     let unsigned_vc_jwt =
-      result.credential.format === CreateCredentialTypeDtoFormatEnum.VcsdJwt
+      result.credential.format === CreateCredentialTypeDtoFormatEnum.DcsdJwt
         ? result.credential.credential.split('~')[0]
         : result.credential.credential;
 
@@ -85,7 +85,7 @@ export class CredentialService extends Service<CredentialsApi> {
     );
 
     const credential =
-      result.credential.format === CreateCredentialTypeDtoFormatEnum.VcsdJwt
+      result.credential.format === CreateCredentialTypeDtoFormatEnum.DcsdJwt
         ? signedCredential +
           result.credential.credential.slice(result.credential.credential.indexOf('~'))
         : signedCredential;
