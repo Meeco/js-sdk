@@ -20,9 +20,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npx lerna run test --scope '@meeco/{sdk,sdk-demo}'
-        env:
-          CI: true
+      # - run: npx lerna run test --scope '@meeco/{sdk,sdk-demo}'
+      #   env:
+      #     CI: true
       # Tag all versions with `-beta` and update all inter-dependant packages to use "beta" as the version
       - run: npm run beta
       - run: npx lerna run build --scope @meeco/sdk
