@@ -30,7 +30,7 @@
     "node-forge": "0.10.0",
     "qs": "^6.11.0",
     "tslib": "^2.6.3",
-    "yaml": "~2.1.1"
+    "yaml": "~2.8.3"
   },
   "devDependencies": {
     "@oclif/test": "^2.1.0",
