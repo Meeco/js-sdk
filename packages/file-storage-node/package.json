@@ -18,7 +18,7 @@
     "@meeco/file-storage-common": "^5.0.6",
     "@meeco/vault-api-sdk": "40.2.0-stage.20250320105852.eb5a66b89",
     "file-saver": "^2.0.5",
-    "file-type": "^16.4.0",
+    "file-type": "^21.3.1",
     "form-data": "^4.0.0",
     "mime-file-extension": "^2.0.6",
     "node-fetch": "^2.6.7"
