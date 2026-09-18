@@ -1,5 +1,6 @@
 {
   "name": "@meeco/cli",
+  "deprecated": "This package is no longer maintained",
   "description": "A CLI tool for interacting with the Meeco APIs",
   "version": "3.1.2",
   "author": "Meeco",

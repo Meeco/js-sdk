@@ -1,6 +1,7 @@
 {
   "name": "@meeco/file-storage-node",
   "version": "5.0.5",
+  "deprecated": "This package is no longer maintained",
   "description": "",
   "source": "src/index.ts",
   "main": "lib/index.js",

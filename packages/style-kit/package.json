@@ -1,6 +1,7 @@
 {
   "name": "@meeco/style-kit",
   "version": "2.0.1",
+  "deprecated": "This package is no longer maintained",
   "description": "Meeco branded components and style mixins",
   "style": "build/main.css",
   "main": "build/bundle.js",

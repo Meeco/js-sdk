@@ -1,5 +1,6 @@
 {
   "name": "@meeco/sdk",
+  "deprecated": "This package is no longer maintained",
   "description": "A wrapper library around Meeco's various API SDK's and encryption libraries",
   "version": "8.6.0",
   "author": "Meeco",

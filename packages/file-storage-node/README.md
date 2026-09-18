@@ -1,5 +1,7 @@
 # @meeco/file-storage-node
 
+**This package is no longer maintained.**
+
 IMPORTANT: there are many improvements and optimisation planned for this package, it is not
 recommended to use it except for PoC at this stage.
 

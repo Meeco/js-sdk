@@ -1,6 +1,7 @@
 {
   "name": "@meeco/sdk-demo",
   "version": "3.0.3",
+  "deprecated": "This package is no longer maintained",
   "description": "A small demo of some SDK features",
   "author": "Meeco",
   "private": true,

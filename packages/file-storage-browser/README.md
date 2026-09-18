@@ -1,5 +1,7 @@
 # @meeco/file-storage-browser
 
+**This package is no longer maintained.**
+
 This file storage code has been seperated out of the main `@meeco/sdk` to keep it smaller.
 
 ## Installation
